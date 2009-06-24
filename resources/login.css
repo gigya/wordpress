@@ -1,0 +1,34 @@
+.login #login #nav {
+	clear: both;
+}
+
+#gs-for-socialize-or-text {
+	padding: 75px 15px 0 20px;
+	float: left;
+	font-size: 14px;
+}
+
+#componentDiv { /** Taken from default login styles **/
+	margin-left: 8px;
+	padding: 16px 8px 40px;
+	font-weight: normal;
+	border-radius: 5px;
+	background: #fff;
+	border: 1px solid #e5e5e5;
+	box-shadow: rgba(200, 200, 200, 1) 0 4px 18px;
+	-moz-border-radius: 11px;
+	-khtml-border-radius: 11px;
+	-webkit-border-radius: 11px;
+	-moz-box-shadow: rgba(200, 200, 200, 1) 0 4px 18px;
+	-webkit-box-shadow: rgba(200, 200, 200, 1) 0 4px 18px;
+	-khtml-box-shadow: rgba(200, 200, 200, 1) 0 4px 18px;
+}
+
+.login #login form,#componentDiv {
+	width: 278px;
+	float: left;
+}
+
+.login #login {
+	width: 700px;
+}

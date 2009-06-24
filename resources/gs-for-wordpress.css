@@ -1,0 +1,68 @@
+#gigya-socialize-update-text {
+	color: #333;
+	width: 95%;
+	margin-bottom: 2px;
+	font-size: .93em;
+}
+
+#gigya-socialize-update-submit {
+	font-size: .93em;
+	margin-bottom: 5px;
+}
+
+#gigya-socialize-profile-image {
+	display: block;
+	float: left;
+	margin: 0 10px 10px 0;
+}
+
+html body * #gigya-socialize-display-name {
+	font-weight: bold;
+	font-size: 1.1em;
+	margin-top: 0px;
+}
+
+#gigya-socialize-logout-link, #gigya-socialize-profile-link {
+	display: block;
+	clear: right;
+}
+
+#gigya-socialize-widget-content {
+	float: left;
+	font-size: 12px;
+}
+
+#gigya-socialize-update {
+	margin-bottom: 5px;
+}
+
+#gs-for-wordpress-login-container {
+	padding-left: 7px;
+}
+
+#gigya-socialize-widget-content h2 {
+	padding-left: 7px;
+}
+
+#gigya-socialize-invite-friends-link {
+	font-weight: bold;
+	font-size: .93em;
+}
+
+#gs-for-wordpress-widget {
+	float: left;
+	width: 100%;
+}
+
+#gigya-socialize-profile-link, #gigya-socialize-logout-link {
+	float: left;
+	clear: right;
+}
+
+#gigya-socialize-display-name {
+	margin-bottom: 0;x
+}
+
+form#gigya-socialize-update {
+	margin: 10px 0 5px;
+}
