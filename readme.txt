@@ -3,7 +3,7 @@ Contributors: nickohrn
 Tags: login, admin, user, accounts, authentication
 Requires at least: 2.6
 Tested up to: 2.8
-Stable tag: 0.5.0
+Stable tag: 0.5.1
 
 Provide your visitors with the option of logging in or connecting to your blog through their social networking accounts.
 
