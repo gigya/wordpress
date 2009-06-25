@@ -13,13 +13,13 @@
 			<tr>
 				<th scope="row"><label for="gs-for-wordpress-api-key"><?php _e( 'Gigya Socialize API Key' ); ?></label></th>
 				<td>
-					<input type="text" class="regular-text" id="gs-for-wordpress-api-key" name="gs-for-wordpress-api-key" value="<?php echo attribute_escape( $settings[ 'gs-for-wordpress-api-key' ] ); ?>" />
+					<input type="text" style="width:95%" class="regular-text" id="gs-for-wordpress-api-key" name="gs-for-wordpress-api-key" value="<?php echo attribute_escape( $settings[ 'gs-for-wordpress-api-key' ] ); ?>" />
 				</td>
 			</tr>
 			<tr>
 				<th scope="row"><label for="gs-for-wordpress-secret-key"><?php _e( 'Gigya Socialize Secret Key' ); ?></label></th>
 				<td>
-					<input type="text" class="regular-text" id="gs-for-wordpress-secret-key" name="gs-for-wordpress-secret-key" value="<?php echo attribute_escape( $settings[ 'gs-for-wordpress-secret-key' ] ); ?>" />
+					<input type="text" style="width:95%" class="regular-text" id="gs-for-wordpress-secret-key" name="gs-for-wordpress-secret-key" value="<?php echo attribute_escape( $settings[ 'gs-for-wordpress-secret-key' ] ); ?>" />
 				</td>
 			</tr>
 		</tbody>
@@ -31,7 +31,7 @@
 			<tr>
 				<th scope="row"><label for="gs-for-wordpress-friend-notification-title"><?php _e( 'Default Friend Invite Title' ); ?></label></th>
 				<td>
-					<input type="text" class="regular-text" id="gs-for-wordpress-friend-notification-title" name="gs-for-wordpress-friend-notification-title" value="<?php echo attribute_escape( $settings[ 'gs-for-wordpress-friend-notification-title' ] ); ?>" />
+					<input type="text" style="width:95%" class="regular-text" id="gs-for-wordpress-friend-notification-title" name="gs-for-wordpress-friend-notification-title" value="<?php echo attribute_escape( $settings[ 'gs-for-wordpress-friend-notification-title' ] ); ?>" />
 				</td>
 			</tr>
 			<tr>
