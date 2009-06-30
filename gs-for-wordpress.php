@@ -1,10 +1,10 @@
 <?php
 /*
-Plugin Name: Gigya Socialize for WordPress
+Plugin Name: Gigya Socialize - Increase Registration and Engagement using Facebook Connect, Twitter and OpenID
 Plugin URI: http://gigya.com
 Description: Integrates a variety of features of the Gigya Socialize service into a WordPress blog.
 Author: Nick Ohrn of Plugin-Developer.com
-Version: 1.0.0
+Version: 1.0.1
 Author URI: http://plugin-developer.com
 */
 
