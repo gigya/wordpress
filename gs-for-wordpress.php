@@ -102,7 +102,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 		 *
 		 * @var string
 		 */
-		var $version = '1.0.0';
+		var $version = '1.0.1';
 
 		/**
 		 * Adds all the appropriate actions and filters.
