@@ -4,7 +4,7 @@ Plugin Name: Gigya Socialize - Increase Registration and Engagement using Facebo
 Plugin URI: http://gigya.com
 Description: Integrates a variety of features of the Gigya Socialize service into a WordPress blog.
 Author: Nick Ohrn of Plugin-Developer.com
-Version: 1.0.1
+Version: 1.1.0
 Author URI: http://plugin-developer.com
 */
 
@@ -512,7 +512,8 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 		 * @param int $userId The unique identifier for the user.
 		 */
 		function registerGigyaData( $gigyaData, $userId ) {
-			update_usermeta( $userId, $gigyaData[ 'gigya-uid' ], $this->getMetaNameForNetwork( $gigyaData[ 'gigya-login-provider' ] ) );
+			global $wpdb;
+			$wpdb->query( $wpdb->prepare( "INSERT INTO {$wpdb->usermeta} (user_id, meta_key, meta_value) VALUES( %d, %s, %s )", $userId, $gigyaData[ 'gigya-uid' ], $this->getMetaNameForNetwork( $gigyaData[ 'gigya-login-provider' ] ) ) );
 			update_usermeta( $userId, $this->_metaSocializeLoginProvider, $gigyaData[ 'gigya-login-provider' ] );
 			update_usermeta( $userId, $this->_metaHasConnectedWithGigya, '1' );
 			update_usermeta( $userId, $this->_metaSocializeThumbnailUrl, $gigyaData[ 'gigya-thumbnail-url' ] );
@@ -533,6 +534,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 			$counter = 0;
 			while( username_exists( $user ) ) {
 				$user = $nick . $counter;
+				$counter++;
 			}
 			$pass = wp_generate_password( );
 			if( 'null' != $gigyaData[ 'gigya-email' ] ) {
