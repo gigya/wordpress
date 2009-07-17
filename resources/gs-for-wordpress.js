@@ -3,7 +3,12 @@ jQuery(document).ready(function() {
 		event.preventDefault();
 		if( jQuery('#gigya-socialize-update-text').val() != '' ) {
 			if( typeof( gigya ) != 'undefined' ) {
-				gigya.services.socialize.setStatus(gsConf, {status:jQuery('#gigya-socialize-update-text').val()});
+				var theStatus = jQuery('#gigya-socialize-update-text').val();
+				var via = jQuery('#gigya-socialize-update-via').val();
+				if( via != '' ) {
+					theStatus += ' via ' + via;
+				}
+				gigya.services.socialize.setStatus(gsConf, {status:theStatus});
 			}
 			jQuery('#gigya-socialize-update-text').val('What are you doing now?' );
 		}

@@ -5,7 +5,7 @@
 <script type="text/javascript" src="<?php echo $this->pluginFolder; ?>/resources/login.js"></script>
 <script type='text/javascript'>
 	jQuery(document).ready(function() {
-		jQuery('.login #login #nav').after('<a id="gs-for-wordpress-redirect-url" style="display: none;" href="<?php bloginfo( 'siteurl' ); ?>/wp-admin/"></a>');
+		jQuery('.login #login #nav').after('<a id="gs-for-wordpress-redirect-url" style="display: none;" href="<?php echo admin_url(); ?>"></a>');
 		<?php 
 		echo $this->getMainLoginUIComponentCode();
 		?>

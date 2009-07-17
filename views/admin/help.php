@@ -5,7 +5,7 @@
 	<h3 id="general"><?php _e( 'General' ); ?></h3>
 	<p><?php printf( __( 'To get started with Gigya Socialize, see the tutorial <a href="%s">here</a>.' ), 'http://wiki.gigya.com/030_Gigya_Socialize_API_2.0/020_Socialize_Setup' ); ?>
 	<h3 id="login-ui"><?php _e( 'Login UI' ); ?></h3>
-	<p><?php _e( 'For both the widget and main login configuration, you must enter the conf and login_params variables generated from the component designer.  The following is an example of what you might put in the settings textarea.' ); ?></p>
+	<p><?php _e( 'For both the widget and main login configuration, you must enter the conf and login_params variables generated from the component designer.  The following is an example of what you might put in the settings textarea.  <strong>Note: Don\'t copy the entire code in the configuration page. Your code should look exactly like the example shown below.</strong>' ); ?></p>
 	<pre><code>
 var conf=
 {

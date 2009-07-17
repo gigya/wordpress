@@ -22,12 +22,26 @@
 					<input type="text" style="width:95%" class="regular-text" id="gs-for-wordpress-secret-key" name="gs-for-wordpress-secret-key" value="<?php echo attribute_escape( $settings[ 'gs-for-wordpress-secret-key' ] ); ?>" />
 				</td>
 			</tr>
+			<tr>
+				<th scope="row"><label for="gs-for-wordpress-post-login-redirect"><?php _e( 'Post Login Redirect' ); ?></label></th>
+				<td>
+					<input type="text" style="width:95%" class="regular-text" id="gs-for-wordpress-post-login-redirect" name="gs-for-wordpress-post-login-redirect" value="<?php echo attribute_escape( $settings[ 'gs-for-wordpress-post-login-redirect' ] ); ?>" /><br />
+					<?php _e( 'If you provide a value here, users will be redirect to this paged after logging in via either the Gigya widget on the login page or the regular login form.  To redirect to your blog home page, enter ' . site_url() ); ?>
+				</td>
+			</tr>
 		</tbody>
 	</table>
 	
 	<h3><?php _e( 'Notification Settings' ); ?></h3>
 	<table class="form-table">
 		<tbody>
+			<tr>
+				<th scope="row"><label for="gs-for-wordpress-friend-status-update-via"><?php _e( 'Status Update Link' ); ?></label></th>
+				<td>
+					<input type="text" style="width:95%" class="regular-text" id="gis-for-wordpress-status-update-via" name="gs-for-wordpress-status-update-via" value="<?php echo attribute_escape( $settings[ 'gs-for-wordpress-status-update-via' ] ); ?>" /><br />
+					<?php _e( 'If you provide a value here, the link will be appended to all status updates users make from the Gigya widget on your site. For example: <code>Test Status Update</code> becomes <code>Test Status Update via http://example.com</code>' ); ?>
+				</td>
+			</tr>
 			<tr>
 				<th scope="row"><label for="gs-for-wordpress-friend-notification-title"><?php _e( 'Default Friend Invite Title' ); ?></label></th>
 				<td>

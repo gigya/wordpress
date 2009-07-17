@@ -121,6 +121,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 			add_action( 'init', array( &$this, 'loginUser' ) );
 			add_action( 'widgets_init', array( &$this, 'registerWidget' ) );
 			
+			add_filter( 'login_redirect', array( &$this, 'changeLoginRedirect' ) );
 			add_filter( 'get_avatar', array( &$this, 'changeAvatarImage' ), 10, 5 );
 			
 			$this->pluginFolder = WP_PLUGIN_URL . '/' . basename( dirname( __FILE__ ) );
@@ -181,6 +182,14 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 				}
 			}
 			return $avatar;
+		}
+		
+		function changeLoginRedirect( $url ) {
+			$settings = $this->getSettings();
+			if( !empty( $settings[ 'gs-for-wordpress-post-login-redirect' ] ) ) {
+				$url = $settings[ 'gs-for-wordpress-post-login-redirect' ];
+			}
+			return $url;
 		}
 
 		/**
@@ -268,6 +277,11 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 					$redirect = '';
 				}
 				header( 'Content-type: application/json' );
+				
+				if( $redirect == admin_url() ) {
+					$redirect = apply_filters( 'login_redirect', $redirect );
+				}
+				
 				echo json_encode( array( 'message' => $message, 'redirect' => $redirect ) );
 				exit( );
 			}
@@ -291,11 +305,13 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 			if( is_admin( ) && isset( $_POST[ 'save-gs-for-wordpress-settings' ] ) && check_admin_referer( 'save-gs-for-wordpress-settings' ) ) {
 				$settings[ 'gs-for-wordpress-api-key' ] = trim( htmlentities( strip_tags( stripslashes( $_POST[ 'gs-for-wordpress-api-key' ] ) ) ) );
 				$settings[ 'gs-for-wordpress-secret-key' ] = trim( htmlentities( strip_tags( stripslashes( $_POST[ 'gs-for-wordpress-secret-key' ] ) ) ) );
+				$settings[ 'gs-for-wordpress-post-login-redirect' ] = trim( htmlentities( strip_tags( stripslashes( $_POST[ 'gs-for-wordpress-post-login-redirect' ] ) ) ) );
+				$settings[ 'gs-for-wordpress-status-update-via' ] = trim( htmlentities( strip_tags( stripslashes( $_POST[ 'gs-for-wordpress-status-update-via' ] ) ) ) );
 				$settings[ 'gs-for-wordpress-friend-notification-title' ] = htmlentities( strip_tags( stripslashes( $_POST[ 'gs-for-wordpress-friend-notification-title' ] ) ) );
 				$settings[ 'gs-for-wordpress-friend-notification-content' ] = strip_tags( stripslashes( $_POST[ 'gs-for-wordpress-friend-notification-content' ] ), '<a><em><strong>' );
 				$settings[ 'gs-for-wordpress-friend-selector-component-ui' ] = stripslashes( $_POST[ 'gs-for-wordpress-friend-selector-component-ui' ] );
-				$settings[ 'gs-for-wordpress-widget-sign-in-component-ui' ] = stripslashes( $_POST[ 'gs-for-wordpress-widget-sign-in-component-ui' ] );
-				$settings[ 'gs-for-wordpress-sign-in-component-ui' ] = stripslashes( $_POST[ 'gs-for-wordpress-sign-in-component-ui' ] );
+				$settings[ 'gs-for-wordpress-widget-sign-in-component-ui' ] = $this->sanitizeCodeForConfig( stripslashes( $_POST[ 'gs-for-wordpress-widget-sign-in-component-ui' ] ) );
+				$settings[ 'gs-for-wordpress-sign-in-component-ui' ] = $this->sanitizeCodeForConfig( stripslashes( $_POST[ 'gs-for-wordpress-sign-in-component-ui' ] ) );
 				$this->saveSettings( $settings );
 				wp_redirect( 'options-general.php?page=gigya-socialize&updated=true' );
 				exit( );
@@ -431,6 +447,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 				headerText:'Or login using',
 				height:163,   
 				width:278,
+				useFacebookConnect: 'true',   
 				UIConfig:'<config><body><controls><snbuttons buttonsize=\"42\"></snbuttons></controls><background frame-color=\"#FFFFFF\"></background></body></config>',  
 				containerID:'componentDiv'
 			};";
@@ -450,6 +467,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 				headerText:'{$socializeHeader}',
 				height:100,
 				width:190,
+				useFacebookConnect: 'true',
 				UIConfig:'<config><body><controls><snbuttons buttonsize=\"28\"></snbuttons></controls><background frame-color=\"#FFFFFF\"></background></body></config>',
 				containerID:'componentDiv'
 			};";
@@ -556,6 +574,18 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 		}
 
 		/**
+		 * Sanitizes config code from the Gigya source.
+		 *
+		 * @param string $configCode
+		 */
+		function sanitizeCodeForConfig( $configCode ) {
+			$sanitized = preg_replace( array('/<script.*?>/','/<\/script>/'), '', $configCode );
+			$sanitized = str_replace( array( 'gigya.services.socialize.showLoginUI(conf,login_params);', '<div id="componentDiv"></div>' ), '', $sanitized );
+			$sanitized = preg_replace( '/}(\r)/', '};$1', $sanitized );
+			return trim($sanitized);
+		}
+		
+		/**
 		 * Returns a boolean indicating whether the current user has a gigya login provider UID.
 		 *
 		 * @param int|bool $userId The unique identifier for a user or false to use the current user.
@@ -620,7 +650,7 @@ if( !function_exists( 'json_encode' ) ) // Required to make this plugin compatib
 	function json_encode( $a = false ) {
 		if( is_null( $a ) ) {
 			return 'null';
-		} 
+		}
 		if( $a === false ) {
 			return 'false';
 		}
