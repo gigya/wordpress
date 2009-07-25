@@ -9,11 +9,11 @@ Author URI: http://plugin-developer.com
 */
 
 if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
-	
+
 	class GigyaSocializeForWordPress {
 
 		// PROVIDER INFORMATION
-		
+
 
 		/**
 		 * An array of login provider names that allow for the invitation of friends.
@@ -30,7 +30,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 		var $updateStatusValidNetworks = array( 'myspace', 'facebook', 'twitter' );
 
 		// META
-		
+
 
 		/**
 		 * Meta name for usermeta boolean indicator showing whether the user connected with Gigya Socialize in the past.
@@ -61,7 +61,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 		var $_metaRecentCommentPostedId = '_last_comment_post_id';
 
 		// SETTINGS
-		
+
 
 		/**
 		 * Default settings for the plugin.  These settings are used when no settings have yet been saved by the user.
@@ -71,11 +71,11 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 		var $defaults = array();
 
 		// MISC
-		
+
 
 		/**
-		 * Contains the computed result of the HTTP location of this plugin's folder.  This is a URL like 
-		 * http://myblog.com/wp-content/gs-for-wordpress without the trailing slash.  This is computed in 
+		 * Contains the computed result of the HTTP location of this plugin's folder.  This is a URL like
+		 * http://myblog.com/wp-content/gs-for-wordpress without the trailing slash.  This is computed in
 		 * the plugin constructor
 		 *
 		 * @var string
@@ -83,10 +83,10 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 		var $pluginFolder;
 
 		/**
-		 * The computed value of the jQuery location for the currently active WordPress install.  This is computed in the plugin 
+		 * The computed value of the jQuery location for the currently active WordPress install.  This is computed in the plugin
 		 * constructor.
 		 *
-		 * @var string 
+		 * @var string
 		 */
 		var $jQueryLocation;
 
@@ -120,16 +120,16 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 			add_action( 'init', array( &$this, 'savePluginSettings' ) );
 			add_action( 'init', array( &$this, 'loginUser' ) );
 			add_action( 'widgets_init', array( &$this, 'registerWidget' ) );
-			
+
 			add_filter( 'login_redirect', array( &$this, 'changeLoginRedirect' ) );
 			add_filter( 'get_avatar', array( &$this, 'changeAvatarImage' ), 10, 5 );
-			
+
 			$this->pluginFolder = WP_PLUGIN_URL . '/' . basename( dirname( __FILE__ ) );
 			$this->jQueryLocation = get_bloginfo( 'wpurl' ) . '/wp-includes/js/jquery/jquery.js';
 		}
 
 		/// CALLBACKS
-		
+
 
 		/**
 		 * Registers a new administrative page which displays the settings panel.
@@ -156,7 +156,11 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 				if( !empty( $commentId ) ) {
 					delete_usermeta( $user->ID, $this->_metaRecentCommentPostedId );
 					$usersComment = get_comment( $commentId );
-					$status = htmlentities( sprintf( __( 'I just commented on %s: %s (%s)' ), get_bloginfo( ), html_entity_decode( get_comment_link( $usersComment ) ), get_the_title( $usersComment->comment_post_ID ) ) );
+					$text = __( 'I just commented on %s: %s (%s)' );
+					if( '' != $settings[ 'gs-for-wordpress-status-update-via' ] ) {
+						$text .= ' via ' . wp_specialchars( $settings[ 'gs-for-wordpress-status-update-via' ] );
+					}
+					$status = htmlentities( sprintf( $text, get_bloginfo( ), html_entity_decode( get_comment_link( $usersComment ) ), get_the_title( $usersComment->comment_post_ID ) ) );
 					include ( 'views/comment-notification.php' );
 				}
 			}
@@ -183,7 +187,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 			}
 			return $avatar;
 		}
-		
+
 		function changeLoginRedirect( $url ) {
 			$settings = $this->getSettings();
 			if( !empty( $settings[ 'gs-for-wordpress-post-login-redirect' ] ) ) {
@@ -193,8 +197,8 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 		}
 
 		/**
-		 * If a user is associated with a Gigya ID and they are logged in to their account, then save some user meta indicating that 
-		 * they should have a notification sent on the next page load. 
+		 * If a user is associated with a Gigya ID and they are logged in to their account, then save some user meta indicating that
+		 * they should have a notification sent on the next page load.
 		 *
 		 * @param int $commentId The comment ID for a comment in the WordPress system.
 		 * @param mixed $approvalStatus The status of the comment 1/0 for approved/unapproved and spam for spam
@@ -217,7 +221,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 		}
 
 		/**
-		 * Prints out the appropriate script and style tags to the login page to create the Gigya login box. 
+		 * Prints out the appropriate script and style tags to the login page to create the Gigya login box.
 		 *
 		 */
 		function loginPageOutput() {
@@ -229,14 +233,14 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 		/**
 		 * Tries to login the user after they have used the gigya login mechnism.
 		 *
-		 * If the authentication hash matches, then the user is either logged in or a new user is created.  If a user cannot be 
-		 * 
+		 * If the authentication hash matches, then the user is either logged in or a new user is created.  If a user cannot be
+		 *
 		 */
 		function loginUser() {
 			if( 1 == $_POST[ 'gigya-authenticate' ] && isset( $_POST[ 'gigya-timestamp' ] ) && isset( $_POST[ 'gigya-uid' ] ) ) {
 				$message = __( 'Unknown error.' );
 				$redirect = '';
-				
+
 				$hash = $this->generateAuthenticationHash( $_POST[ 'gigya-timestamp' ], $_POST[ 'gigya-uid' ] );
 				if( $hash === $_POST[ 'gigya-signature' ] ) {
 					if( is_user_logged_in( ) ) {
@@ -263,7 +267,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 								}
 							}
 						}
-						
+
 						if( is_numeric( $user ) ) {
 							$message = sprintf( __( 'You are being logged in and will be redirected within 10 seconds.  If you are not redirected, please <a href="%1$s">click here</a>.' ), $_POST[ 'redirect-url' ] );
 							$redirect = $_POST[ 'redirect-url' ];
@@ -277,18 +281,18 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 					$redirect = '';
 				}
 				header( 'Content-type: application/json' );
-				
+
 				if( $redirect == admin_url() ) {
 					$redirect = apply_filters( 'login_redirect', $redirect );
 				}
-				
+
 				echo json_encode( array( 'message' => $message, 'redirect' => $redirect ) );
 				exit( );
 			}
 		}
 
 		/**
-		 * Registers the friend notifier widget. 
+		 * Registers the friend notifier widget.
 		 *
 		 */
 		function registerWidget() {
@@ -297,7 +301,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 		}
 
 		/**
-		 * Attempts to intercept a POST request that is saving the settings for the GS for WordPress plugin. 
+		 * Attempts to intercept a POST request that is saving the settings for the GS for WordPress plugin.
 		 *
 		 */
 		function savePluginSettings() {
@@ -309,7 +313,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 				$settings[ 'gs-for-wordpress-status-update-via' ] = trim( htmlentities( strip_tags( stripslashes( $_POST[ 'gs-for-wordpress-status-update-via' ] ) ) ) );
 				$settings[ 'gs-for-wordpress-friend-notification-title' ] = htmlentities( strip_tags( stripslashes( $_POST[ 'gs-for-wordpress-friend-notification-title' ] ) ) );
 				$settings[ 'gs-for-wordpress-friend-notification-content' ] = strip_tags( stripslashes( $_POST[ 'gs-for-wordpress-friend-notification-content' ] ), '<a><em><strong>' );
-				$settings[ 'gs-for-wordpress-friend-selector-component-ui' ] = stripslashes( $_POST[ 'gs-for-wordpress-friend-selector-component-ui' ] );
+				$settings[ 'gs-for-wordpress-friend-selector-component-ui' ] = $this->sanitizeCodeForFriendSelector( stripslashes( $_POST[ 'gs-for-wordpress-friend-selector-component-ui' ] ) );
 				$settings[ 'gs-for-wordpress-widget-sign-in-component-ui' ] = $this->sanitizeCodeForConfig( stripslashes( $_POST[ 'gs-for-wordpress-widget-sign-in-component-ui' ] ) );
 				$settings[ 'gs-for-wordpress-sign-in-component-ui' ] = $this->sanitizeCodeForConfig( stripslashes( $_POST[ 'gs-for-wordpress-sign-in-component-ui' ] ) );
 				$this->saveSettings( $settings );
@@ -322,7 +326,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 		}
 
 		/// WIDGET
-		
+
 
 		/**
 		 * Handles the output for the widget for the GS for WordPress widget.
@@ -368,7 +372,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 		}
 
 		/// SETTINGS
-		
+
 
 		/**
 		 * Removes the settings for the GS for WordPress plugin from the database.
@@ -401,7 +405,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 		}
 
 		/// UTILITIES
-		
+
 
 		/**
 		 * Edits the user data for a user connecting via GS.
@@ -439,16 +443,16 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 			$settings = $this->getSettings( );
 			$default = "
 			var conf = {
-			     'APIKey': '{$settings['gs-for-wordpress-api-key']}',  
-			     'enabledProviders': '*'  
+			     'APIKey': '{$settings['gs-for-wordpress-api-key']}',
+			     'enabledProviders': '*'
 			};
 			var login_params = {
-				showTermsLink:false,   
+				showTermsLink:false,
 				headerText:'Or login using',
-				height:163,   
+				height:163,
 				width:278,
-				useFacebookConnect: 'true',   
-				UIConfig:'<config><body><controls><snbuttons buttonsize=\"42\"></snbuttons></controls><background frame-color=\"#FFFFFF\"></background></body></config>',  
+				useFacebookConnect: 'true',
+				UIConfig:'<config><body><controls><snbuttons buttonsize=\"42\"></snbuttons></controls><background frame-color=\"#FFFFFF\"></background></body></config>',
 				containerID:'componentDiv'
 			};";
 			return empty( $settings[ 'gs-for-wordpress-sign-in-component-ui' ] ) ? $default : $settings[ 'gs-for-wordpress-sign-in-component-ui' ];
@@ -459,8 +463,8 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 			$socializeHeader = empty( $settings[ 'widget' ][ 'socialize-header' ] ) ? __( 'Or login using' ) : $settings[ 'widget' ][ 'socialize-header' ];
 			$default = "
 			var conf = {
-			     'APIKey': '{$settings['gs-for-wordpress-api-key']}',  
-			     'enabledProviders': '*'  
+			     'APIKey': '{$settings['gs-for-wordpress-api-key']}',
+			     'enabledProviders': '*'
 			};
 			var login_params = {
 				showTermsLink:false,
@@ -560,7 +564,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 			} else {
 				$email = '';
 			}
-			
+
 			$userData = array( 'user_login' => $user, 'user_pass' => $pass, 'user_email' => $email );
 			$userData[ 'user_nickname' ] = $gigyaData[ 'gigya-nickname' ];
 			$userData[ 'first_name' ] = 'null' == $gigyaData[ 'gigya-first-name' ] ? '' : $gigyaData[ 'gigya-first-name' ];
@@ -584,7 +588,20 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 			$sanitized = preg_replace( '/}(\r)/', '};$1', $sanitized );
 			return trim($sanitized);
 		}
-		
+
+		/**
+		 * Sanitizes code from the Gigya source.
+		 *
+		 * @param string $configCode
+		 */
+		function sanitizeCodeForFriendSelector( $configCode ) {
+			$numberMatches = preg_match( '/"UIConfig":"(.*)"/', $configCode, $matches );
+			if( isset( $matches[ 1 ] ) ) {
+				return '"UIConfig":"' . $matches[ 1 ] . '"';
+			}
+			return $configCode;
+		}
+
 		/**
 		 * Returns a boolean indicating whether the current user has a gigya login provider UID.
 		 *
@@ -606,7 +623,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 		 * Returns a boolean value indicating whether a user has previously connected via Gigya Socialize.
 		 *
 		 * @uses $wpdb
-		 * 
+		 *
 		 * @param array $gigyaData An array of all the pertinent data returned from the Gigya login call.
 		 * @return int|bool False if the user has never connected and the user id of the user if they have.
 		 */
@@ -662,7 +679,7 @@ if( !function_exists( 'json_encode' ) ) // Required to make this plugin compatib
 				// Always use "." for floats.
 				return floatval( str_replace( ",", ".", strval( $a ) ) );
 			}
-			
+
 			if( is_string( $a ) ) {
 				static $jsonReplaces = array( array( "\\", "/", "\n", "\t", "\r", "\b", "\f", '"' ), array( '\\\\', '\\/', '\\n', '\\t', '\\r', '\\b', '\\f', '\"' ) );
 				return '"' . str_replace( $jsonReplaces[ 0 ], $jsonReplaces[ 1 ], $a ) . '"';
