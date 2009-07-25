@@ -1,4 +1,4 @@
-<?php 
+<?php
 $user = wp_get_current_user();
 $settings = $this->getSettings();
 $thumbnail = $this->getUserThumbnail( $user->ID );
@@ -8,7 +8,7 @@ if( !empty( $thumbnail ) ) {
 } else {
 	print '<p><strong>';
 	printf( __( 'Hi, %s' ), $user->display_name );
-	print '</strong></pre>';
+	print '</strong></p>';
 }
 ?>
 <a id="gigya-socialize-profile-link" href="<?php echo site_url( 'wp-admin/profile.php' )?>"><?php _e( 'Edit profile' ); ?></a>
@@ -19,7 +19,7 @@ if( !empty( $thumbnail ) ) {
 if( in_array( $this->usersLoginProvider(), $this->updateStatusValidNetworks ) ) {
 	?>
 	<form method="post" action="" id="gigya-socialize-update">
-	<input type="text" name="gigya-socialize-update-text" id="gigya-socialize-update-text" value="<?php _e( 'What are you doing now?' ); ?>" /> 
+	<input type="text" name="gigya-socialize-update-text" id="gigya-socialize-update-text" value="<?php _e( 'What are you doing now?' ); ?>" />
 	<input type="submit" name="gigya-socialize-update-submit" id="gigya-socialize-update-submit" value="<?php _e( 'Update' ); ?>" />
 	<input type="hidden" name="gigya-socialize-update-provider" id="gigya-socialize-update-provider" value="<?php echo $this->usersLoginProvider(); ?>" />
 	<input type="hidden" name="gigya-socialize-update-via" id="gigya-socialize-update-via" value="<?php echo wp_specialchars( $settings[ 'gs-for-wordpress-status-update-via' ] ); ?>" />
