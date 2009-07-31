@@ -60,6 +60,13 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 		 */
 		var $_metaRecentCommentPostedId = '_last_comment_post_id';
 
+		/**
+		 * Meta name for usermeta string indicator that the user recently logged out.
+		 *
+		 * @var string
+		 */
+		var $_metaRecentLogoutPosted = '_recently_logged_out';
+
 		// SETTINGS
 
 
@@ -120,6 +127,8 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 			add_action( 'init', array( &$this, 'savePluginSettings' ) );
 			add_action( 'init', array( &$this, 'loginUser' ) );
 			add_action( 'widgets_init', array( &$this, 'registerWidget' ) );
+			add_action( 'wp_logout', array( &$this, 'logoutStorage' ) );
+
 
 			add_filter( 'login_redirect', array( &$this, 'changeLoginRedirect' ) );
 			add_filter( 'get_avatar', array( &$this, 'changeAvatarImage' ), 10, 5 );
@@ -163,6 +172,10 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 					$status = htmlentities( sprintf( $text, get_bloginfo( ), html_entity_decode( get_comment_link( $usersComment ) ), get_the_title( $usersComment->comment_post_ID ) ) );
 					include ( 'views/comment-notification.php' );
 				}
+			}
+
+			if( $_GET[ 'just-logged-out' ] == '1' ) {
+				include( 'views/logmeout.php' );
 			}
 		}
 
@@ -289,6 +302,15 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 				echo json_encode( array( 'message' => $message, 'redirect' => $redirect ) );
 				exit( );
 			}
+		}
+
+		/**
+		 * Stores an indicator that the users has just logged out and should be logged out of Gigya Socialize.
+		 *
+		 * @param int $userId The unique identifier for a user.
+		 */
+		function logoutStorage( ) {
+			add_filter( 'wp_redirect', create_function( '$x', 'return add_query_arg( "just-logged-out", 1, $x );' ) );
 		}
 
 		/**
