@@ -26,7 +26,7 @@ if( in_array( $this->usersLoginProvider(), $this->updateStatusValidNetworks ) ) 
 	</form>
 	<?php
 }
-if( in_array( $this->usersLoginProvider(), $this->updateStatusValidNetworks ) ) {
+if( in_array( $this->usersLoginProvider(), $this->inviteFriendsValidNetworks ) ) {
 	echo '<a id="gigya-socialize-invite-friends-link" href="' . site_url( 'wp-admin/profile.php?show-friend-selector=1#invite-your-friends' ) . '">';
 	echo empty( $options[ 'invite-friends' ] ) ? __( 'Invite your friends!' ) : $options[ 'invite-friends' ];
 	echo '</a>';

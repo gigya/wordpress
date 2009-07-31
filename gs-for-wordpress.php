@@ -491,10 +491,10 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 			var login_params = {
 				showTermsLink:false,
 				headerText:'{$socializeHeader}',
-				height:100,
-				width:190,
+				height:120,
+				width:140,
 				useFacebookConnect: 'true',
-				UIConfig:'<config><body><controls><snbuttons buttonsize=\"28\"></snbuttons></controls><background frame-color=\"#FFFFFF\"></background></body></config>',
+				UIConfig:'<config><body><controls><snbuttons buttonsize=\"33\"></snbuttons></controls><background frame-color=\"Transparent\"></background></body></config>',
 				containerID:'componentDiv'
 			};";
 			return empty( $settings[ 'gs-for-wordpress-widget-sign-in-component-ui' ] ) ? $default : $settings[ 'gs-for-wordpress-widget-sign-in-component-ui' ];
