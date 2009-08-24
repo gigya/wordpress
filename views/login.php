@@ -1,8 +1,8 @@
-<link rel="stylesheet" href="<?php echo $this->pluginUrl; ?>/resources/login.css" type="text/css" media="screen" />
-<script type="text/javascript" src="<?php echo $this->jQueryLocation; ?>"></script>
-<script type="text/javascript" src="<?php echo $this->pluginUrl; ?>/resources/gs-for-wordpress.js"></script>
-<script type="text/javascript" src="<?php echo $this->socializeJsLocation; ?>"></script>
-<script type="text/javascript" src="<?php echo $this->pluginUrl; ?>/resources/login.js"></script>
+<link rel="stylesheet" href="<?php echo $this->info->pluginUrl; ?>/resources/login.css" type="text/css" media="screen" />
+<script type="text/javascript" src="<?php echo $this->info->jQueryUrl; ?>"></script>
+<script type="text/javascript" src="<?php echo $this->info->pluginUrl; ?>/resources/gs-for-wordpress.js"></script>
+<script type="text/javascript" src="<?php echo $this->info->socializeUrl; ?>"></script>
+<script type="text/javascript" src="<?php echo $this->info->pluginUrl; ?>/resources/login.js"></script>
 <script type='text/javascript'>
 	jQuery(document).ready(function() {
 		jQuery('.login #login #nav').after('<a id="gs-for-wordpress-redirect-url" style="display: none;" href="<?php echo admin_url(); ?>"></a>');

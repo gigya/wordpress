@@ -7,55 +7,109 @@ class GigyaUser {
      * Meta name for usermeta boolean indicator showing whether the user connected with Gigya Socialize sometime in the past.
      * @var string
      */
-    var $_meta__HasConnectedWithGigya = '_has_connected_with_gigya';
+    var $_meta_HasConnectedWithGigya = '_has_connected_with_gigya';
+    var $_meta_SocializeLoginProviders = '_gigya_socialize_login_provider';
+    var $_meta_SocializeThumbnailUrl = '_gigya_socialize_thumbnail_url';
+    var $_meta_RecentCommentPostedId = '_last_comment_post_id';
+    var $_meta_RecentLogoutPosted = '_recently_logged_out';
+    
+    function hasThumbnailUrl($userId) {
+        $thumbUrl = get_usermeta($userId, $this->_meta_SocializeThumbnailUrl);
+        return ! empty($thumbUrl);
+    }
+    
+    function getThumbnailUrl($userId) {
+        $thumbUrl = get_usermeta($userId, $this->_meta_SocializeThumbnailUrl);
+        return $thumbUrl;
+    }
+    
+    function setThumbnailUrl($userId, $thumbnailUrl) {
+        update_usermeta($userId, $this->_meta_SocializeThumbnailUrl, $thumbnailUrl);
+    }
+    
+    function setHasConnected($userId) {
+        update_usermeta($userId, $this->_meta_HasConnectedWithGigya, '1');
+    }
+    
+    function addLoginProvider($userId, $loginProvider) {
+        $providers = $this->getLoginProviders($userId);
+        if (!in_array($loginProvider, $providers)) {
+            $providers[] = $loginProvider;
+        }
+        update_usermeta($userId, $this->_meta_SocializeLoginProviders, $providers);
+    }
     
     /**
-     * Meta name for usermeta string indicator of which Gigya Socialize login providers the user is utilizing.
-     * @var string
+     * Returns an array of login provider strings for the specified user.
+     * @param int $userId The unique ID for the user.
+     * @return array An array of network identifier strings.
      */
-    var $_meta__SocializeLoginProvider = '_gigya_socialize_login_provider';
+    function getLoginProviders($userId) {
+        $providers = get_usermeta($userId, $this->_meta_SocializeLoginProviders);
+        if (empty($providers)) {
+            $providers = array();
+        } elseif (!is_array($providers)) {
+            $providers = array($providers);
+        }
+        return $providers;
+    }
     
     /**
-     * Meta name for usermeta string indicator of what the thumbnail URL is for the user's profile photo.
-     * @var unknown_type
+     * @return array An array of network identifier strings.
      */
-    var $_meta__SocializeThumbnailUrl = '_gigya_socialize_thumbnail_url';
-    
-    /**
-     * Meta name for usermeta string indicator of what the last comment posted by the user was.
-     * @var string
-     */
-    var $_meta__RecentCommentPostedId = '_last_comment_post_id';
-    
-    /** 
-     * Meta name for usermeta string indicator that the user recently logged out.
-     * @var string
-     */
-    var $_meta__RecentLogoutPosted = '_recently_logged_out';
-    
-    /**
-     * Returns a string indicating the location of the user's thumbnail picture on a SN.
+    function getCurrentUserLoginProviders() {
+        if (!is_user_logged_in()) {
+            return array();
+        }
+        $user = wp_get_current_user();
+        return $this->getLoginProviders($user->ID);
+    }
+	
+	 /**
+     * Returns a boolean indicating whether the current user has a gigya login provider UID.
      *
-     * @param int $userId The unique identifier for a user.
-     * @return string Returns an absolute URL or an empty string if no thumbnail url is saved.
+     * @param int|bool $userId The unique identifier for a user or false to use the current user.
+     * @return bool Whether or not the current user has a gigya login provider UID.
      */
-    function getUserThumbnail($userId) {
-        return get_usermeta($userId, $this->_meta_SocializeThumbnailUrl);
+    function hasGigyaConnection($userId = false) {
+    	if( $false === $userId ) {
+    		$user = get_userdata( $userId );
+    	}
+        $user = wp_get_current_user();
+        return get_usermeta($user->ID, $this->_meta_HasConnectedWithGigya, true) == '1';
+    }
+    
+    /**
+     * @return int 0 if the user has never connected with Gigya or the user's ID if they have.
+     */
+    function hasPreviouslyConnected($uid, $network) {
+        global $wpdb;
+        $userId = $wpdb->get_var($wpdb->prepare("SELECT user_id FROM {$wpdb->usermeta} WHERE meta_key = %s AND meta_value = %s", $uid, $network));
+        return $userId ? (int) $userId : 0;
+    }
+    
+    function registerData($data, $userId) {
+        global $wpdb;
+        /// HAVE TO DO IT THIS WAY BECAUSE OF API FAULTS
+        $wpdb->query($wpdb->prepare("INSERT INTO {$wpdb->usermeta} (user_id, meta_key, meta_value) VALUES( %d, %s, %s )", $userId, $data['gigya-uid'], GigyaData::getMetaNameForNetwork($data['gigya-login-provider'])));
+        
+        $this->addLoginProvider($userId, $data['gigya-login-provider']);
+        $this->setHasConnected($userId);
+        $this->setThumbnailUrl($userId, $data['gigya-thumbnail-url']);
     }
 
     
-    /**
-     * Registers the fact that a user has connected via Gigya.
-     *
-     * @param array $data An associative array of data from GS.
-     * @param int $userId The unique identifier for the user.
-     */
-    function registerData($data, $userId) {
-        global $wpdb;
-        $wpdb->query($wpdb->prepare("INSERT INTO {$wpdb->usermeta} (user_id, meta_key, meta_value) VALUES( %d, %s, %s )", $userId, $data['gigya-uid'], $this->getMetaNameForNetwork($data['gigya-login-provider'])));
-        update_usermeta($userId, $this->_meta_SocializeLoginProvider, $data['gigya-login-provider']);
-        update_usermeta($userId, $this->_meta_HasConnectedWithGigya, '1');
-        update_usermeta($userId, $this->_meta_SocializeThumbnailUrl, $data['gigya-thumbnail-url']);
+    function editData($data, $userId) {
+        $this->setThumbnailUrl($userId, $data['gigya-thumbnail-url']);
+		
+        $_POST['first_name'] = $this->sanitizeNullString($data['gigya-first-name']);
+        $_POST['last_name'] = $this->sanitizeNullString($data['gigya-last-name']);
+        $_POST['display_name'] = $this->sanitizeNullString($data['gigya-nickname']);
+        $_POST['url'] = $this->sanitizeNullString($data['gigya-profile-url']);
+        if (!function_exists('edit_user')) {
+            include (ABSPATH.'/wp-admin/includes/user.php');
+        }
+        edit_user($userId);
     }
     
     /**
@@ -67,9 +121,8 @@ class GigyaUser {
     function registerUser($data) {
         require_once (ABSPATH.WPINC.'/registration.php');
         $username = $this->getUnusedUserName(sanitize_user($data['gigya-nickname']), $data['gigya-login-provider']);
-        $email = $this->getEmailFromGigyaData($data['email']);
+        $email = $this->sanitizeEmail($data['gigya-email']);
         $password = wp_generate_password();
-
         
         $userData = array('user_login'=>$username, 'user_pass'=>$password, 'user_email'=>$email);
         $userData['user_nickname'] = $username;
@@ -77,9 +130,10 @@ class GigyaUser {
         $userData['last_name'] = $this->sanitizeNullString($data['gigya-last-name']);
         $userData['display_name'] = $this->sanitizeNullString($data['gigya-nickname']);
         $userData['user_url'] = $this->sanitizeNullString($data['gigya-profile-url']);
-		
+        
         $userId = wp_insert_user($userData);
-		$this->registerData($data, $userId);
+        $this->registerData($data, $userId);
+        $this->editData($data,$userId);
 		
         $user = get_userdata($userId);
         return $user;
@@ -91,7 +145,7 @@ class GigyaUser {
      * @param string $email The email address to verify.
      * @return An empty string if the original email was invalid and the original email address otherwise.
      */
-    function getEmailFromGigyaData($email) {
+    function sanitizeEmail($email) {
         if (!is_email($email)) {
             $email = '';
         }
@@ -123,59 +177,6 @@ class GigyaUser {
      */
     function sanitizeNullString($possibleNull) {
         return $possibleNull == 'null' ? '' : $possibleNull;
-    }
-    
-    /**
-     * Returns a boolean indicating whether the current user has a gigya login provider UID.
-     *
-     * @param int|bool $userId The unique identifier for a user or false to use the current user.
-     * @return bool Whether or not the current user has a gigya login provider UID.
-     */
-    function userHasGigyaConnection($userId = false) {
-        if (!is_user_logged_in()) {
-            return false;
-        }
-        if (false === $userId) {
-            $user = wp_get_current_user();
-            $userId = $user->ID;
-        }
-        return get_usermeta($userId, $this->_meta_HasConnectedWithGigya, true) == '1';
-    }
-    
-    /**
-     * Returns a boolean value indicating whether a user has previously connected via Gigya Socialize.
-     *
-     * @uses $wpdb
-     *
-     * @param array $gigyaData An array of all the pertinent data returned from the Gigya login call.
-     * @return int|bool False if the user has never connected and the user id of the user if they have.
-     */
-    function userHasPreviouslyConnectedViaGigya($gigyaData) {
-        $loginProvider = $this->getMetaNameForNetwork($gigyaData['gigya-login-provider']);
-        global $wpdb;
-        $userId = $wpdb->get_var($wpdb->prepare("SELECT user_id FROM {$wpdb->usermeta} WHERE meta_key = %s AND meta_value = %s", $gigyaData['gigya-uid'], $loginProvider));
-        if (!$userId) {
-            return false;
-        } else {
-            $this->editUserData($gigyaData, $userId);
-            return (int) $userId;
-        }
-    }
-    
-    /**
-     * Returns the user's register Gigya login provider.
-     *
-     * @param int $userId The unique identifier for the user's login provider.
-     */
-    function usersLoginProvider($userId = false) {
-        if (!is_user_logged_in()) {
-            return '';
-        }
-        if (false === $userId) {
-            $user = wp_get_current_user();
-            $userId = $user->ID;
-        }
-        return get_usermeta($userId, $this->_meta_SocializeLoginProvider, true);
     }
 }
 ?>

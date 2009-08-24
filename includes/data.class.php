@@ -6,6 +6,10 @@ class GigyaData {
 
     var $settings = null;
     
+	function getMetaNameForNetwork( $loginProvider ) {
+		return preg_replace('|[^a-z0-9_]|i', '', '_gs-for-wordpress-uid-'.sanitize_title_with_dashes($loginProvider));
+	}
+	
     /** 
      * Generates an authentication hash from a timestamp and UID.
      *
@@ -19,6 +23,11 @@ class GigyaData {
         $hash = $this->HMAC_SHA1(base64_decode($secretKey), $timestamp.'_'.$uid);
         return base64_encode($hash);
     }
+	
+	function hashIsValid( $timestamp, $uid, $signature ) {
+		$hash = $this->generateAuthenticationHash($timestamp, $uid);
+		return $hash === $signature;
+	}
     
     /**
      * Generates a valid HMAC_SHA1 hash without any PEAR dependencies.  Hat tip to http://laughingmeme.org/tag/hmac-sha1/

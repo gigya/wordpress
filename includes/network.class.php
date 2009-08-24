@@ -17,6 +17,16 @@ class GigyaNetwork {
     
     var $_network_Yahoo = 'yahoo';
     
+    function canInviteFriends($providers) {
+        $intersection = array_intersect($providers, $this->getInviteValidNetworks());
+        return ! empty($intersection);
+    }
+    
+    function canUpdateStatus($providers) {
+        $intersection = array_intersect($providers, $this->getUpdateStatusValidNetworks());
+        return ! empty($intersection);
+    }
+    
     /**
      * Returns the constant names of the networks with which you can send invites.
      *
@@ -31,7 +41,7 @@ class GigyaNetwork {
      *
      * @return array
      */
-    function getStatusUpdateValidNetworks() {
+    function getUpdateStatusValidNetworks() {
         return array($this->_network_Facebook, $this->_network_MySpace, $this->_network_Twitter);
     }
 }

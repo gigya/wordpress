@@ -4,7 +4,7 @@
 <?php echo $before_widget; ?>
 <div id="gigya-socialize-widget-content" style="display: none;"><!-- Hide in case the user doesn't have JavaScript enabled. -->
 <?php 
-if( is_user_logged_in() && $this->userHasGigyaConnection() ) {
+if( is_user_logged_in() && $this->user->hasGigyaConnection() ) {
 	include( 'widget-connected.php' );
 } elseif( !is_user_logged_in() ) {
 	include( 'widget-not-logged-in.php' );

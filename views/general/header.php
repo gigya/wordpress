@@ -3,7 +3,6 @@ $settings = $this->data->getSettings();
 $apiKey = $settings['gs-for-wordpress-api-key'];
 ?>
 <link rel="stylesheet" href="<?php echo $this->info->pluginUrl; ?>/resources/gs-for-wordpress.css?ver=<?php echo $this->info->version; ?>" type="text/css" media="" />
-<script type="text/javascript" src="<?php echo $this->info->pluginUrl; ?>/resources/gs-for-wordpress.js?ver=<?php echo $this->info->version; ?>"></script>
 <script type="text/javascript" src="<?php echo $this->info->socializeUrl; ?>"></script>
 <script type="text/javascript">
 	var gigyaSocializeGeneralConfiguration = { 
@@ -11,9 +10,9 @@ $apiKey = $settings['gs-for-wordpress-api-key'];
 	};
 </script>
 <?php
-if (is_user_logged_in() && $this->userHasGigyaConnection()) {
+if (is_user_logged_in() && $this->user->hasGigyaConnection()) {
     $user = wp_get_current_user();
-    $commentId = get_usermeta($user->ID, $this->_metaRecentCommentPostedId, true);
+    $commentId = get_usermeta($user->ID, $this->user->_meta_RecentCommentPostedId);
     if (! empty($commentId)) {
         delete_usermeta($user->ID, $this->_metaRecentCommentPostedId);
         $usersComment = get_comment($commentId);

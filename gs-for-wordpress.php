@@ -43,11 +43,6 @@ if (!class_exists('GigyaSocialize')) {
          */
         var $user;
         
-        /**
-         * Adds all the appropriate actions and filters.
-         *
-         * @return GigyaSocializeForWordPress
-         */
         function GigyaSocialize() {
             $this->addActions();
             $this->addFilters();
@@ -58,11 +53,6 @@ if (!class_exists('GigyaSocialize')) {
             $this->user = new GigyaUser();
         }
         
-        /**
-         * Adds all necessary actions for the plugin's correct operation.
-         *
-         * @return void
-         */
         function addActions() {
             // ADMIN ONLY
             add_action('admin_head', array(&$this, 'header'));
@@ -74,6 +64,7 @@ if (!class_exists('GigyaSocialize')) {
             // OTHER
             add_action('comment_form', array(&$this, 'includeCommentFormExtra'));
             add_action('comment_post', array(&$this, 'commentPost'));
+            add_action('init', array(&$this, 'enqueueResources'));
             add_action('login_head', array(&$this, 'loginPageOutput'));
             add_action('parse_request', array(&$this, 'loginUser'));
             add_action('widgets_init', array(&$this, 'registerWidget'));
@@ -81,52 +72,33 @@ if (!class_exists('GigyaSocialize')) {
             add_action('wp_logout', array(&$this, 'logoutStorage'));
         }
         
-        /**
-         * Adds all necessary filters for the plugin's correct operation.
-         *
-         * @return void
-         */
         function addFilters() {
             add_filter('login_redirect', array(&$this, 'changeLoginRedirect'));
             add_filter('get_avatar', array(&$this, 'changeAvatarImage'), 10, 5);
         }
         
         /// CALLBACKS
-
         
-        /**
-         * Registers a new administrative page which displays the settings panel.
-         *
-         */
         function addAdministrativePage() {
             add_options_page(__('Gigya Socialize'), __('Gigya Socialize'), 'manage_options', 'gigya-socialize', array($this, 'displaySettingsPage'));
         }
         
-        /**
-         * Outputs all the necessary stuff to the theme's header, if necessary.
-         */
+        function enqueueResources() {
+            wp_enqueue_script('gigya-socialize', "{$this->info->pluginUrl}/resources/gs-for-wordpress.js", array('jquery'), $this->info->version);
+        }
+        
         function header() {
             include ($this->info->pluginFolder.'/views/general/header.php');
         }
         
-        /**
-         * Intercepts avatar output and replaces the default source with the one from the Gigya profile.
-         *
-         * @param string $avatar An image tag for output
-         * @param int|string $id_or_email User id or email address.
-         * @param int $size Size in pixels for the image
-         * @param string $default The location of the default image.
-         * @param string $alt The alt text to use.
-         */
         function changeAvatarImage($avatar, $id_or_email, $size, $default, $alt) {
             if (is_object($id_or_email)) {
+                // Comment object
                 $id_or_email = $id_or_email->user_id;
             }
-            if (is_numeric($id_or_email)) {
-                $thumb = $this->getUserThumbnail($id_or_email);
-                if (! empty($thumb)) {
-                    $avatar = preg_replace("/src='*?'/", "src='$thumb'", $avatar);
-                }
+            if (is_numeric($id_or_email) && $this->user->hasThumbnailUrl($id_or_email)) {
+                $thumb = $this->user->getThumbnailUrl($id_or_email);
+                $avatar = preg_replace("/src='*?'/", "src='$thumb'", $avatar);
             }
             return $avatar;
         }
@@ -149,7 +121,7 @@ if (!class_exists('GigyaSocialize')) {
         function commentPost($commentId, $approval = null) {
             $comment = get_comment($commentId);
             $approvalStatus = $comment->comment_approved;
-            if ($this->userHasGigyaConnection($comment->user_id) && $approvalStatus == 1 || $approval == 'approve') {
+            if ($this->user->hasGigyaConnection($comment->user_id) && $approvalStatus == 1 || $approval == 'approve') {
                 update_usermeta($comment->user_id, $this->_metaRecentCommentPostedId, $commentId);
             }
         }
@@ -157,7 +129,7 @@ if (!class_exists('GigyaSocialize')) {
         function includeCommentFormExtra() {
             $settings = $this->data->getSettings();
             if ($settings['gs-for-wordpress-comment-extras']) {
-                if (is_user_logged_in() && $this->userHasGigyaConnection()) {
+                if (is_user_logged_in() && $this->user->hasGigyaConnection()) {
                 
                 } elseif (!is_user_logged_in()) {
                 
@@ -188,59 +160,71 @@ if (!class_exists('GigyaSocialize')) {
         }
         
         /**
-         * Tries to login the user after they have used the gigya login mechnism.
-         *
-         * If the authentication hash matches, then the user is either logged in or a new user is created.  If a user cannot be
-         *
+         * Attempts to log a user in after they have used the Gigya authentication mechanism.
          */
         function loginUser() {
-            if (1 == $_POST['gigya-authenticate'] && isset($_POST['gigya-timestamp']) && isset($_POST['gigya-uid'])) {
-                $message = __('Unknown error.');
-                $redirect = '';
+            if ($this->isGigyaAuthenticationAttempt($_POST)) {
+                $loginResults = $this->loginViaGigya($_POST);
+                $isCommenting = $_POST['commenting'] == 1;
                 
-                $hash = $this->generateAuthenticationHash($_POST['gigya-timestamp'], $_POST['gigya-uid']);
-                if ($hash === $_POST['gigya-signature']) {
-                    if (is_user_logged_in()) {
-                        // Connect current user account
-                        $user = wp_get_current_user();
-                        $this->editUserData($_POST, $user->ID);
-                        $this->registerGigyaData($_POST, $user->ID);
-                        $message = __('Your WordPress account has been connected to your Social Network account.');
-                        $redirect = $_POST['redirect-url'];
-                    } else {
-                        $user = $this->userHasPreviouslyConnectedViaGigya($_POST);
-                        if (false === $user) {
-                            $allowRegistration = get_option('users_can_register');
-                            if ('0' == $allowRegistration) {
-                                $message = __('New user access is currently disabled for this site.');
-                                $redirect = '';
-                            } else {
-                                $userData = $this->registerNewGigyaUser($_POST);
-                                $user = $userData['ID'];
-                            }
-                        }
-                        
-                        if (is_numeric($user)) {
-                            $message = sprintf(__('You are being logged in and will be redirected within 10 seconds.  If you are not redirected, please <a href="%1$s">click here</a>.'), $_POST['redirect-url']);
-                            $redirect = $_POST['redirect-url'];
-                            set_current_user($user);
-                            wp_set_auth_cookie($user, true);
-                            do_action('wp_login', $user['name']);
-                        }
-                    }
-                } else {
-                    $message = sprintf(__('Experienced an unsuccessful authentication.  Please try again.'));
-                    $redirect = '';
-                }
                 header('Content-type: application/json');
-                
-                if ($redirect == admin_url()) {
-                    $redirect = apply_filters('login_redirect', $redirect);
-                }
-                
-                echo json_encode(array('message'=>$message, 'redirect'=>$redirect));
+                echo json_encode($loginResults);
                 exit();
             }
+        }
+        
+        function isGigyaAuthenticationAttempt($data) {
+            return (1 == $data['gigya-authenticate']) && isset($data['gigya-timestamp']) && isset($data['gigya-uid']);
+        }
+        
+        function loginViaGigya($data) {
+            $message = __('Unknown Error');
+            $redirectUrl = '';
+            
+            if ($this->data->hashIsValid($data['gigya-timestamp'], $data['gigya-uid'], $data['gigya-signature'])) {
+                if (is_user_logged_in()) {
+                    // Connect current user account
+                    $user = wp_get_current_user();
+                    $this->user->editData($data, $user->ID);
+                    $this->user->registerData($data, $user->ID);
+                    $message = __('Your WordPress account has been connected to your Social Network account.');
+                    $redirect = $data['redirect-url'];
+                } else {
+                    $userId = $this->user->hasPreviouslyConnected($data['gigya-uid'], GigyaData::getMetaNameForNetwork($data['gigya-login-provider']));
+                    if (!$user) {
+                        $allowRegistration = get_option('users_can_register');
+                        if ('0' == $allowRegistration) {
+                            $message = __('New user access is currently disabled for this site.');
+                            $redirect = '';
+                        } else {
+                            $user = $this->user->registerUser($data);
+                            $userId = $user->ID;
+                        }
+                    }
+                    
+                    if (is_numeric($userId)) {
+                        $user = get_userdata($userId);
+                        $message = sprintf(__('You are being logged in and will be redirected within 10 seconds.  If you are not redirected, please <a href="%1$s">click here</a>.'), $data['redirect-url']);
+                        $redirect = $data['redirect-url'];
+                        
+                        $this->setCredentials($user);
+                    }
+                }
+            } else {
+                $message = sprintf(__('Experienced an unsuccessful authentication.  Please try again.'));
+                $redirect = '';
+            }
+            
+            if ($redirect == admin_url()) {
+                $redirect = apply_filters('login_redirect', $redirect);
+            }
+            return array('message'=>$message, 'redirect'=>$redirect);
+        }
+        
+        function setCredentials($user) {
+            set_current_user($user->ID);
+            wp_set_auth_cookie($user->ID, true);
+            do_action('wp_login', $user->user_login);
         }
         
         /** 
@@ -330,27 +314,6 @@ if (!class_exists('GigyaSocialize')) {
             }
         }
         
-        /// UTILITIES
-
-        
-        /**
-         * Edits the user data for a user connecting via GS.
-         *
-         * @param array $gigyaData An associative array of data from the GS login process.
-         * @param int $userId The unique identifier for the user.
-         */
-        function editUserData($gigyaData, $userId) {
-            $_POST['first_name'] = 'null' == $gigyaData['gigya-first-name'] ? '' : $gigyaData['gigya-first-name'];
-            $_POST['last_name'] = 'null' == $gigyaData['gigya-last-name'] ? '' : $gigyaData['gigya-last-name'];
-            $_POST['display_name'] = 'null' == $gigyaData['gigya-nickname'] ? '' : $gigyaData['gigya-nickname'];
-            $_POST['url'] = 'null' == $gigyaData['gigya-profile-url'] ? '' : $gigyaData['gigya-profile-url'];
-            if (!function_exists('edit_user')) {
-                include (ABSPATH.'/wp-admin/includes/user.php');
-            }
-            edit_user($userId);
-            update_usermeta($userId, $this->_metaSocializeThumbnailUrl, $gigyaData['gigya-thumbnail-url']);
-        }
-        
         function getMainLoginUIComponentCode() {
             $settings = $this->data->getSettings();
             $default = "
@@ -418,18 +381,8 @@ if (!class_exists('GigyaSocialize')) {
                 return '';
             }
         }
-        
-        /**
-         * Returns the meta name for a particular network (for the usermeta table).
-         *
-         * @param string $network The network to retreive information for.
-         */
-        function getMetaNameForNetwork($network) {
-            return preg_replace('|[^a-z0-9_]|i', '', '_gs-for-wordpress-uid-'.sanitize_title_with_dashes($network));
-        }
-
-        
     }
-    
     $gigyaSocialize = new GigyaSocialize();
 }
+
+

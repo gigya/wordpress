@@ -1,6 +1,6 @@
 <?php 
-if( $this->userHasGigyaConnection() && in_array( $this->usersLoginProvider(), $this->inviteFriendsValidNetworks ) ) {
-	$settings = $this->getSettings();
+if( $this->user->hasGigyaConnection() && $this->network->canInviteFriends($this->user->getCurrentUserLoginProviders()) ) {
+	$settings = $this->data->getSettings();
 ?>
 <div style="display: none;" id="invite-friends-container">
 <h3 id="invite-your-friends" name="invite-your-friends"><?php _e( 'Invite Friends' ); ?></h3>
@@ -52,7 +52,7 @@ if( typeof( jQuery ) != 'undefined' && typeof( gigya ) != 'undefined' ) {
 				}
 				<?php echo $this->getFriendSelectorComponentCode(); ?>
 			};
-			gigya.services.socialize.showFriendSelectorUI(gsConf,friendsParams);
+			gigya.services.socialize.showFriendSelectorUI(gigyaSocializeGeneralConfiguration,friendsParams);
 		});
 		jQuery('#invite-friends-send').click(function(event) {
 			event.preventDefault();

@@ -8,7 +8,7 @@ jQuery(document).ready(function() {
 				if( via != '' ) {
 					theStatus += ' via ' + via;
 				}
-				gigya.services.socialize.setStatus(gsConf, {status:theStatus});
+				gigya.services.socialize.setStatus(gigyaSocializeGeneralConfiguration , {status:theStatus});
 			}
 			jQuery('#gigya-socialize-update-text').val('What are you doing now?' );
 		}
