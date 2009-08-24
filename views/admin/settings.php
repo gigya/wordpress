@@ -2,7 +2,7 @@
 <div class="wrap">
 	<h2><?php _e( 'Gigya Socialize' ); ?></h2>
 	<?php
-	$helpUrl = 'options-general.php?page=gigya-socialize&amp;help=1'; 
+	$helpUrl = 'options-general.php?page=gigya-socialize&amp;help=1';
 	echo sprintf( __( 'You can receive help for many of these settings by clicking <a target="_blank"  href="%1$s">here</a>.' ), $helpUrl );
 	?>
 	<form method="post">
@@ -29,9 +29,15 @@
 					<?php _e( 'If you provide a value here, users will be redirect to this paged after logging in via either the Gigya widget on the login page or the regular login form.  To redirect to your blog home page, enter ' . site_url() ); ?>
 				</td>
 			</tr>
+			<tr>
+				<th scope="row"><?php _e( 'Comment Extras' ); ?></th>
+				<td>
+					<label for="gs-for-wordpress-comment-extras"><input id="gs-for-wordpress-comment-extras" type="checkbox" name="gs-for-wordpress-comment-extras" value="1" <?php checked( true, $settings[ 'gs-for-wordpress-comment-extras'] ); ?> /> <?php _e( 'Enable commenting feature.' ); ?></label>
+				</td>
+			</tr>
 		</tbody>
 	</table>
-	
+
 	<h3><?php _e( 'Notification Settings' ); ?></h3>
 	<table class="form-table">
 		<tbody>
@@ -56,7 +62,7 @@
 			</tr>
 		</tbody>
 	</table>
-	
+
 	<h3><?php _e( 'Appearance' ); ?></h3>
 	<table class="form-table">
 		<tbody>
@@ -83,7 +89,7 @@
 			</tr>
 		</tbody>
 	</table>
-	
+
 	<p class="submit">
 		<?php wp_nonce_field( 'save-gs-for-wordpress-settings' ); ?>
 		<input type="submit" name="save-gs-for-wordpress-settings" id="save-gs-for-wordpress-settings" value="<?php _e( 'Save Settings' ); ?>" />

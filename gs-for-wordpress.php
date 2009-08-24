@@ -4,33 +4,71 @@ Plugin Name: Gigya Socialize - Increase Registration and Engagement using Facebo
 Plugin URI: http://gigya.com
 Description: Integrates a variety of features of the Gigya Socialize service into a WordPress blog.
 Author: Nick Ohrn of Plugin-Developer.com
-Version: 1.1.5
+Version: 1.2.0alpha
 Author URI: http://plugin-developer.com
 */
 
-if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
+if( !class_exists( 'GigyaSocialize' ) ) {
+	require_once ( dirname( __FILE__ ) . '/includes/jsonencode.inc.php' );
 
-	class GigyaSocializeForWordPress {
+	/**
+	 * Holds various information constants about the plugin.
+	 *
+	 */
+	class GigyaInfo {
+		var $version = '1.2.0';
+	}
 
-		// PROVIDER INFORMATION
+	class GigyaNetworks {
 
+		/// NETWORK NAMES
+		var $_network_AOL = 'aol';
+
+		var $_network_Facebook = 'facebook';
+
+		var $_network_Google = 'google';
+
+		var $_network_MySpace = 'myspace';
+
+		var $_network_Twitter = 'twitter';
+
+		var $_network_Yahoo = 'yahoo';
 
 		/**
-		 * An array of login provider names that allow for the invitation of friends.
+		 * Returns the constant names of the networks with which you can send invites.
 		 *
-		 * @var array
+		 * @return array
 		 */
-		var $inviteFriendsValidNetworks = array( 'facebook', 'twitter' );
+		function getInviteValidNetworks() {
+			return array( GigyaNetworks::$_network_Facebook, GigyaNetworks::$_network_Twitter );
+		}
 
 		/**
-		 * An array of login provider names that allow for status updates.
+		 * Returns the constant names of the networks with which you can perform a status update.
 		 *
-		 * @var array
+		 * @return array
 		 */
-		var $updateStatusValidNetworks = array( 'myspace', 'facebook', 'twitter' );
+		function getStatusUpdateValidNetworks() {
+			return array( GigyaNetworks::$_network_Facebook, GigyaNetworks::$_network_MySpace, GigyaNetworks::$_network_Twitter );
+		}
+	}
 
-		// META
+	class GigyaData {
 
+		function getSettings() {
+
+		}
+
+		function saveSettings( $settings ) {
+			if( !is_array( $settings ) ) {
+				return new WP_Error( __( 'Settings must be an associative array.' ) );
+			}
+
+		}
+
+	}
+
+	class GigyaSocialize {
 
 		/**
 		 * Meta name for usermeta boolean indicator showing whether the user connected with Gigya Socialize in the past.
@@ -81,13 +119,22 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 
 
 		/**
-		 * Contains the computed result of the HTTP location of this plugin's folder.  This is a URL like
-		 * http://myblog.com/wp-content/gs-for-wordpress without the trailing slash.  This is computed in
+		 * Contains the computed result of the server location of this plugin's folder.  This is an absolute path
+		 * like /var/www/html/myblog.com/wp-content/plugins/gs-for-wordpress without the trailing slash.  This is computed in
 		 * the plugin constructor
 		 *
 		 * @var string
 		 */
 		var $pluginFolder;
+
+		/**
+		 * Contains the computed result of the HTTP location of this plugin's folder.  This is a URL like
+		 * http://myblog.com/wp-content/plugins/gs-for-wordpress without the trailing slash.  This is computed in
+		 * the plugin constructor
+		 *
+		 * @var string
+		 */
+		var $pluginUrl;
 
 		/**
 		 * The computed value of the jQuery location for the currently active WordPress install.  This is computed in the plugin
@@ -105,13 +152,6 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 		var $socializeJsLocation = 'http://cdn.gigya.com/JS/gigya.js?services=socialize';
 
 		/**
-		 * A string containing the version for this plugin.  Always update this when releaseing a new version.
-		 *
-		 * @var string
-		 */
-		var $version = '1.1.5';
-
-		/**
 		 * Adds all the appropriate actions and filters.
 		 *
 		 * @return GigyaSocializeForWordPress
@@ -125,15 +165,17 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 			add_action( 'admin_head', array( &$this, 'addGigyaScriptToBlog' ) );
 			add_action( 'profile_personal_options', array( &$this, 'inviteFriendsUI' ) );
 			add_action( 'init', array( &$this, 'savePluginSettings' ) );
-			add_action( 'init', array( &$this, 'loginUser' ) );
+			add_action( 'parse_request', array( &$this, 'loginUser' ) );
 			add_action( 'widgets_init', array( &$this, 'registerWidget' ) );
 			add_action( 'wp_logout', array( &$this, 'logoutStorage' ) );
-
+			add_action( 'comment_form', array( &$this, 'includeCommentFormExtra' ) );
 
 			add_filter( 'login_redirect', array( &$this, 'changeLoginRedirect' ) );
 			add_filter( 'get_avatar', array( &$this, 'changeAvatarImage' ), 10, 5 );
 
-			$this->pluginFolder = WP_PLUGIN_URL . '/' . basename( dirname( __FILE__ ) );
+			$name = basename( dirname( __FILE__ ) );
+			$this->pluginFolder = WP_PLUGIN_DIR . "/$name";
+			$this->pluginUrl = WP_PLUGIN_URL . "/$name";
 			$this->jQueryLocation = get_bloginfo( 'wpurl' ) . '/wp-includes/js/jquery/jquery.js';
 		}
 
@@ -158,7 +200,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 			$apiKey = $settings[ 'gs-for-wordpress-api-key' ];
 			echo "<script type='text/javascript' src='{$this->socializeJsLocation}'></script>\n";
 			echo "<script type='text/javascript'>\nvar gsConf = { APIKey: '$apiKey' };\n</script>";
-			echo "<link rel='stylesheet' href='{$this->pluginFolder}/resources/gs-for-wordpress.css?ver={$this->version}' type='text/css' media='' />";
+			echo "<link rel='stylesheet' href='{$this->pluginUrl}/resources/gs-for-wordpress.css?ver={$this->version}' type='text/css' media='' />";
 			if( is_user_logged_in( ) && $this->userHasGigyaConnection( ) ) {
 				$user = wp_get_current_user( );
 				$commentId = get_usermeta( $user->ID, $this->_metaRecentCommentPostedId, true );
@@ -175,7 +217,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 			}
 
 			if( $_GET[ 'just-logged-out' ] == '1' ) {
-				include( 'views/logmeout.php' );
+				include ( 'views/logmeout.php' );
 			}
 		}
 
@@ -202,7 +244,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 		}
 
 		function changeLoginRedirect( $url ) {
-			$settings = $this->getSettings();
+			$settings = $this->getSettings( );
 			if( !empty( $settings[ 'gs-for-wordpress-post-login-redirect' ] ) ) {
 				$url = $settings[ 'gs-for-wordpress-post-login-redirect' ];
 			}
@@ -221,6 +263,20 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 			$approvalStatus = $comment->comment_approved;
 			if( $this->userHasGigyaConnection( $comment->user_id ) && $approvalStatus == 1 || $approval == 'approve' ) {
 				update_usermeta( $comment->user_id, $this->_metaRecentCommentPostedId, $commentId );
+			}
+		}
+
+		function includeCommentFormExtra() {
+			$settings = $this->getSettings( );
+			if( $settings[ 'gs-for-wordpress-comment-extras' ] ) {
+				if( is_user_logged_in( ) && $this->userHasGigyaConnection( ) ) {
+
+				} elseif( !is_user_logged_in( ) ) {
+
+				} else {
+
+				}
+				include ( 'views/comments/not-connected.php' );
 			}
 		}
 
@@ -295,7 +351,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 				}
 				header( 'Content-type: application/json' );
 
-				if( $redirect == admin_url() ) {
+				if( $redirect == admin_url( ) ) {
 					$redirect = apply_filters( 'login_redirect', $redirect );
 				}
 
@@ -309,7 +365,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 		 *
 		 * @param int $userId The unique identifier for a user.
 		 */
-		function logoutStorage( ) {
+		function logoutStorage() {
 			add_filter( 'wp_redirect', create_function( '$x', 'return add_query_arg( "just-logged-out", 1, $x );' ) );
 		}
 
@@ -332,6 +388,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 				$settings[ 'gs-for-wordpress-api-key' ] = trim( htmlentities( strip_tags( stripslashes( $_POST[ 'gs-for-wordpress-api-key' ] ) ) ) );
 				$settings[ 'gs-for-wordpress-secret-key' ] = trim( htmlentities( strip_tags( stripslashes( $_POST[ 'gs-for-wordpress-secret-key' ] ) ) ) );
 				$settings[ 'gs-for-wordpress-post-login-redirect' ] = trim( htmlentities( strip_tags( stripslashes( $_POST[ 'gs-for-wordpress-post-login-redirect' ] ) ) ) );
+				$settings[ 'gs-for-wordpress-comment-extras' ] = $_POST[ 'gs-for-wordpress-comment-extras' ] == 1 ? true : false;
 				$settings[ 'gs-for-wordpress-status-update-via' ] = trim( htmlentities( strip_tags( stripslashes( $_POST[ 'gs-for-wordpress-status-update-via' ] ) ) ) );
 				$settings[ 'gs-for-wordpress-friend-notification-title' ] = htmlentities( strip_tags( stripslashes( $_POST[ 'gs-for-wordpress-friend-notification-title' ] ) ) );
 				$settings[ 'gs-for-wordpress-friend-notification-content' ] = strip_tags( stripslashes( $_POST[ 'gs-for-wordpress-friend-notification-content' ] ), '<a><em><strong>' );
@@ -343,7 +400,7 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 				exit( );
 			}
 			if( !is_admin( ) ) {
-				wp_enqueue_script( 'gs-for-wordpress', $this->pluginFolder . '/resources/gs-for-wordpress.js', array( 'jquery' ), $this->version );
+				wp_enqueue_script( 'gs-for-wordpress', $this->pluginUrl . '/resources/gs-for-wordpress.js', array( 'jquery' ), $this->version );
 			}
 		}
 
@@ -500,6 +557,25 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 			return empty( $settings[ 'gs-for-wordpress-widget-sign-in-component-ui' ] ) ? $default : $settings[ 'gs-for-wordpress-widget-sign-in-component-ui' ];
 		}
 
+		function getCommentsExtraUIComponentCode() {
+			$settings = $this->getSettings( );
+			$default = "
+			var comment_conf = {
+			     'APIKey': '{$settings['gs-for-wordpress-api-key']}',
+			     'enabledProviders': '*'
+			};
+			var comment_params = {
+				showTermsLink:false,
+				headerText:'',
+				height:120,
+				width:240,
+				useFacebookConnect: 'true',
+				UIConfig:'<config><body><controls><snbuttons buttonsize=\"33\"></snbuttons></controls><background frame-color=\"Transparent\"></background></body></config>',
+				containerID:'gigya-comment-social-network-area'
+			};";
+			return empty( $settings[ 'gs-for-wordpress-comments-sign-in-component-ui' ] ) ? $default : $settings[ 'gs-for-wordpress-comments-sign-in-component-ui' ];
+		}
+
 		function getFriendSelectorComponentCode() {
 			$settings = $this->getSettings( );
 			$code = trim( $settings[ 'gs-for-wordpress-friend-selector-component-ui' ] );
@@ -605,10 +681,10 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 		 * @param string $configCode
 		 */
 		function sanitizeCodeForConfig( $configCode ) {
-			$sanitized = preg_replace( array('/<script.*?>/','/<\/script>/'), '', $configCode );
+			$sanitized = preg_replace( array( '/<script.*?>/', '/<\/script>/' ), '', $configCode );
 			$sanitized = str_replace( array( 'gigya.services.socialize.showLoginUI(conf,login_params);', '<div id="componentDiv"></div>' ), '', $sanitized );
 			$sanitized = preg_replace( '/}(\r)/', '};$1', $sanitized );
-			return trim($sanitized);
+			return trim( $sanitized );
 		}
 
 		/**
@@ -677,55 +753,6 @@ if( !class_exists( 'GigyaSocializeForWordPress' ) ) {
 			return get_usermeta( $userId, $this->_metaSocializeLoginProvider, true );
 		}
 	}
-}
 
-if( class_exists( 'GigyaSocializeForWordPress' ) ) {
-	$gsfw = new GigyaSocializeForWordPress( );
-}
-
-if( !function_exists( 'json_encode' ) ) // Required to make this plugin compatible with PHP < 5.2
-{
-
-	function json_encode( $a = false ) {
-		if( is_null( $a ) ) {
-			return 'null';
-		}
-		if( $a === false ) {
-			return 'false';
-		}
-		if( $a === true ) {
-			return 'true';
-		}
-		if( is_scalar( $a ) ) {
-			if( is_float( $a ) ) {
-				// Always use "." for floats.
-				return floatval( str_replace( ",", ".", strval( $a ) ) );
-			}
-
-			if( is_string( $a ) ) {
-				static $jsonReplaces = array( array( "\\", "/", "\n", "\t", "\r", "\b", "\f", '"' ), array( '\\\\', '\\/', '\\n', '\\t', '\\r', '\\b', '\\f', '\"' ) );
-				return '"' . str_replace( $jsonReplaces[ 0 ], $jsonReplaces[ 1 ], $a ) . '"';
-			} else {
-				return $a;
-			}
-		}
-		$isList = true;
-		for( $i = 0, reset( $a ); $i < count( $a ); $i++, next( $a ) ) {
-			if( key( $a ) !== $i ) {
-				$isList = false;
-				break;
-			}
-		}
-		$result = array();
-		if( $isList ) {
-			foreach( $a as $v ) {
-				$result[ ] = json_encode( $v );
-			}
-			return '[' . join( ',', $result ) . ']';
-		} else {
-			foreach( $a as $k => $v )
-				$result[ ] = json_encode( $k ) . ':' . json_encode( $v );
-			return '{' . join( ',', $result ) . '}';
-		}
-	}
+	$gsfw = new GigyaSocialize( );
 }

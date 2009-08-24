@@ -68,3 +68,7 @@ function processLogin(eventObject) {
 		'json'
 	);
 }
+
+function commentLogin(eventObject) {
+	alert( eventObject.toSource() );
+}
