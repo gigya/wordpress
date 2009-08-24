@@ -183,7 +183,7 @@ if (!class_exists('GigyaSocialize')) {
             
             if ($this->data->hashIsValid($data['gigya-timestamp'], $data['gigya-uid'], $data['gigya-signature'])) {
                 if (is_user_logged_in()) {
-                    // Connect current user account
+					// Connect current user account
                     $user = wp_get_current_user();
                     $this->user->editData($data, $user->ID);
                     $this->user->registerData($data, $user->ID);
@@ -191,23 +191,24 @@ if (!class_exists('GigyaSocialize')) {
                     $redirect = $data['redirect-url'];
                 } else {
                     $userId = $this->user->hasPreviouslyConnected($data['gigya-uid'], GigyaData::getMetaNameForNetwork($data['gigya-login-provider']));
-                    if (!$user) {
+                    
+					if ($userId < 1) {
                         $allowRegistration = get_option('users_can_register');
                         if ('0' == $allowRegistration) {
                             $message = __('New user access is currently disabled for this site.');
                             $redirect = '';
                         } else {
-                            $user = $this->user->registerUser($data);
+                        	$user = $this->user->registerUser($data);
                             $userId = $user->ID;
                         }
                     }
                     
-                    if (is_numeric($userId)) {
+                    if (is_numeric($userId) && $userId > 0) {
                         $user = get_userdata($userId);
                         $message = sprintf(__('You are being logged in and will be redirected within 10 seconds.  If you are not redirected, please <a href="%1$s">click here</a>.'), $data['redirect-url']);
                         $redirect = $data['redirect-url'];
                         
-                        $this->setCredentials($user);
+                        $this->user->setCredentials($user);
                     }
                 }
             } else {
@@ -221,11 +222,7 @@ if (!class_exists('GigyaSocialize')) {
             return array('message'=>$message, 'redirect'=>$redirect);
         }
         
-        function setCredentials($user) {
-            set_current_user($user->ID);
-            wp_set_auth_cookie($user->ID, true);
-            do_action('wp_login', $user->user_login);
-        }
+        
         
         /** 
          * Stores an indicator that the users has just logged out and should be logged out of Gigya Socialize.
@@ -259,9 +256,9 @@ if (!class_exists('GigyaSocialize')) {
                 $settings['gs-for-wordpress-status-update-via'] = trim(htmlentities(strip_tags(stripslashes($_POST['gs-for-wordpress-status-update-via']))));
                 $settings['gs-for-wordpress-friend-notification-title'] = htmlentities(strip_tags(stripslashes($_POST['gs-for-wordpress-friend-notification-title'])));
                 $settings['gs-for-wordpress-friend-notification-content'] = strip_tags(stripslashes($_POST['gs-for-wordpress-friend-notification-content']), '<a><em><strong>');
-                $settings['gs-for-wordpress-friend-selector-component-ui'] = $this->sanitizeCodeForFriendSelector(stripslashes($_POST['gs-for-wordpress-friend-selector-component-ui']));
-                $settings['gs-for-wordpress-widget-sign-in-component-ui'] = $this->sanitizeCodeForConfig(stripslashes($_POST['gs-for-wordpress-widget-sign-in-component-ui']));
-                $settings['gs-for-wordpress-sign-in-component-ui'] = $this->sanitizeCodeForConfig(stripslashes($_POST['gs-for-wordpress-sign-in-component-ui']));
+                $settings['gs-for-wordpress-friend-selector-component-ui'] = $this->data->sanitizeConfigurationForFriendSelector(stripslashes($_POST['gs-for-wordpress-friend-selector-component-ui']));
+                $settings['gs-for-wordpress-widget-sign-in-component-ui'] = $this->data->sanitizeConfigurationForConnectWidget(stripslashes($_POST['gs-for-wordpress-widget-sign-in-component-ui']));
+                $settings['gs-for-wordpress-sign-in-component-ui'] = $this->data->sanitizeConfigurationForConnectWidget(stripslashes($_POST['gs-for-wordpress-sign-in-component-ui']));
                 $this->data->saveSettings($settings);
                 wp_redirect('options-general.php?page=gigya-socialize&updated=true');
                 exit();

@@ -46,7 +46,7 @@ class GigyaUser {
      */
     function getLoginProviders($userId) {
         $providers = get_usermeta($userId, $this->_meta_SocializeLoginProviders);
-        if (empty($providers)) {
+        if ( empty($providers)) {
             $providers = array();
         } elseif (!is_array($providers)) {
             $providers = array($providers);
@@ -64,17 +64,17 @@ class GigyaUser {
         $user = wp_get_current_user();
         return $this->getLoginProviders($user->ID);
     }
-	
-	 /**
+    
+    /**
      * Returns a boolean indicating whether the current user has a gigya login provider UID.
      *
      * @param int|bool $userId The unique identifier for a user or false to use the current user.
      * @return bool Whether or not the current user has a gigya login provider UID.
      */
     function hasGigyaConnection($userId = false) {
-    	if( $false === $userId ) {
-    		$user = get_userdata( $userId );
-    	}
+        if ($false === $userId) {
+            $user = get_userdata($userId);
+        }
         $user = wp_get_current_user();
         return get_usermeta($user->ID, $this->_meta_HasConnectedWithGigya, true) == '1';
     }
@@ -101,7 +101,7 @@ class GigyaUser {
     
     function editData($data, $userId) {
         $this->setThumbnailUrl($userId, $data['gigya-thumbnail-url']);
-		
+        
         $_POST['first_name'] = $this->sanitizeNullString($data['gigya-first-name']);
         $_POST['last_name'] = $this->sanitizeNullString($data['gigya-last-name']);
         $_POST['display_name'] = $this->sanitizeNullString($data['gigya-nickname']);
@@ -130,11 +130,12 @@ class GigyaUser {
         $userData['last_name'] = $this->sanitizeNullString($data['gigya-last-name']);
         $userData['display_name'] = $this->sanitizeNullString($data['gigya-nickname']);
         $userData['user_url'] = $this->sanitizeNullString($data['gigya-profile-url']);
+
         
         $userId = wp_insert_user($userData);
         $this->registerData($data, $userId);
-        $this->editData($data,$userId);
-		
+        $this->editData($data, $userId);
+        
         $user = get_userdata($userId);
         return $user;
     }
@@ -150,6 +151,15 @@ class GigyaUser {
             $email = '';
         }
         return $email;
+    }
+    
+    /**
+     * Checks a string to see if it is equal to 'null'.  If it is, then an empty string is returned.  Otherwise, the original string is returned.
+     * @param string $possibleNull The string to check for equality to 'null'.
+     * @return An empty string if the original string was 'null' or the original string.
+     */
+    function sanitizeNullString($possibleNull) {
+        return $possibleNull == 'null' ? '' : $possibleNull;
     }
     
     /**
@@ -170,13 +180,10 @@ class GigyaUser {
         return $toTry;
     }
     
-    /**
-     * Checks a string to see if it is equal to 'null'.  If it is, then an empty string is returned.  Otherwise, the original string is returned.
-     * @param string $possibleNull The string to check for equality to 'null'.
-     * @return An empty string if the original string was 'null' or the original string.
-     */
-    function sanitizeNullString($possibleNull) {
-        return $possibleNull == 'null' ? '' : $possibleNull;
+    function setCredentials($user) {
+        set_current_user($user->ID);
+        wp_set_auth_cookie($user->ID, true);
+        do_action('wp_login', $user->user_login);
     }
 }
 ?>

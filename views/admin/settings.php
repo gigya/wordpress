@@ -1,4 +1,4 @@
-<?php $settings = $this->getSettings(); ?>
+<?php $settings = $this->data->getSettings(); ?>
 <div class="wrap">
 	<h2><?php _e( 'Gigya Socialize' ); ?></h2>
 	<?php
@@ -16,7 +16,6 @@
 					<input type="text" style="width:95%" class="regular-text" id="gs-for-wordpress-api-key" name="gs-for-wordpress-api-key" value="<?php echo attribute_escape( $settings[ 'gs-for-wordpress-api-key' ] ); ?>" />
 				</td>
 			</tr>
-			<tr>
 				<th scope="row"><label for="gs-for-wordpress-secret-key"><?php _e( 'Gigya Socialize Secret Key' ); ?></label></th>
 				<td>
 					<input type="text" style="width:95%" class="regular-text" id="gs-for-wordpress-secret-key" name="gs-for-wordpress-secret-key" value="<?php echo attribute_escape( $settings[ 'gs-for-wordpress-secret-key' ] ); ?>" />
