@@ -21,11 +21,11 @@ if (is_user_logged_in() && $this->user->hasGigyaConnection()) {
             $text .= ' via '.wp_specialchars($settings['gs-for-wordpress-status-update-via']);
         }
         $status = htmlentities(sprintf($text, get_bloginfo(), html_entity_decode(get_comment_link($usersComment)), get_the_title($usersComment->comment_post_ID)));
-        include ('views/comment-notification.php');
+        include ($this->info->pluginFolder . '/views/comment-notification.php');
     }
 }
 
 if ($_GET['just-logged-out'] == '1') {
-    include ('views/logmeout.php');
+    include ($this->info->pluginFolder . '/views/logmeout.php');
 }
 ?>

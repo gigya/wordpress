@@ -129,14 +129,11 @@ if (!class_exists('GigyaSocialize')) {
         function includeCommentFormExtra() {
             $settings = $this->data->getSettings();
             if ($settings['gs-for-wordpress-comment-extras']) {
-                if (is_user_logged_in() && $this->user->hasGigyaConnection()) {
-                
-                } elseif (!is_user_logged_in()) {
-                
+                if (is_user_logged_in()) {
+                	include('views/comments/connected.php');
                 } else {
-                
+                	include('views/comments/not-connected.php');
                 }
-                include ('views/comments/not-connected.php');
             }
         }
         
@@ -167,6 +164,12 @@ if (!class_exists('GigyaSocialize')) {
                 $loginResults = $this->loginViaGigya($_POST);
                 $isCommenting = $_POST['commenting'] == 1;
                 
+				if( $isCommenting ) {
+					ob_start();
+					include('views/comments/connected.php');
+					$loginResults['message'] = ob_get_clean();
+				}
+				
                 header('Content-type: application/json');
                 echo json_encode($loginResults);
                 exit();
@@ -177,7 +180,7 @@ if (!class_exists('GigyaSocialize')) {
             return (1 == $data['gigya-authenticate']) && isset($data['gigya-timestamp']) && isset($data['gigya-uid']);
         }
         
-        function loginViaGigya($data) {
+        function loginViaGigya($data) { 
             $message = __('Unknown Error');
             $redirectUrl = '';
             

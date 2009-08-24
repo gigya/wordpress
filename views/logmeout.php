@@ -1,10 +1,10 @@
 <script type="text/javascript">
 	jQuery(document).ready(function() {
 		if( typeof( gigya ) != 'undefined' ) {
-			if( typeof( gsConf ) == 'undefined' ) {
+			if( typeof( gigyaSocializeGeneralConfiguration ) == 'undefined' ) {
 				gigya.services.socialize.logout(conf,{});
 			} else {
-				gigya.services.socialize.logout(gsConf,{});
+				gigya.services.socialize.logout(gigyaSocializeGeneralConfiguration,{});
 			}
 		}
 	});

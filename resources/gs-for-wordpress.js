@@ -70,5 +70,39 @@ function processLogin(eventObject) {
 }
 
 function commentLogin(eventObject) {
-	alert( eventObject.toSource() );
+	jQuery.post(
+		'index.php',
+		{
+			'gigya-authenticate':1,
+			'gigya-timestamp':eventObject.timestamp,
+			'gigya-uid':eventObject.UID,
+			'gigya-signature':eventObject.signature,
+			'gigya-is-site-user':eventObject.user.isSiteUser,
+			'gigya-is-log-in-identity':eventObject.user.isLogInIdentity,
+			'gigya-is-connected':eventObject.user.isConnected,
+			'gigya-nickname':eventObject.user.nickname,
+			'gigya-login-provider':eventObject.user.loginProvider,
+			'gigya-photo-url':eventObject.user.photoURL,
+			'gigya-thumbnail-url':eventObject.user.thumbnailURL,
+			'gigya-first-name':eventObject.user.firstName,
+			'gigya-last-name':eventObject.user.lastName,
+			'gigya-gender':eventObject.user.gender,
+			'gigya-age':eventObject.user.age,
+			'gigya-birth-day':eventObject.user.birthDay,
+			'gigya-birth-month':eventObject.user.birthMonth,
+			'gigya-birth-year':eventObject.user.birthYear,
+			'gigya-email':eventObject.user.email,
+			'gigya-country':eventObject.user.country,
+			'gigya-state':eventObject.user.state,
+			'gigya-city':eventObject.user.city,
+			'gigya-zip':eventObject.user.zip,
+			'gigya-profile-url':eventObject.user.profileURL,
+			'commenting':1
+		},
+		function(data, textStatus) {
+			jQuery('#gigya-socialize-comments').html(data.message);
+			jQuery('#author,#email,#url').parent().remove();
+		},
+		'json'
+	);
 }
