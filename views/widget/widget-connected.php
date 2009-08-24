@@ -1,6 +1,5 @@
 <?php
 $user = wp_get_current_user();
-$settings = $this->getSettings();
 $thumbnail = $this->getUserThumbnail( $user->ID );
 if( !empty( $thumbnail ) ) {
 	echo '<img id="gigya-socialize-profile-image" src="' . $thumbnail . '" alt="User Avatar" />';
@@ -16,7 +15,7 @@ if( !empty( $thumbnail ) ) {
 <a id="gigya-socialize-logout-link" href="<?php echo wp_nonce_url( site_url( 'wp-login.php?action=logout' ), 'log-out' ); ?>"><?php  _e( 'Logout' ); ?></a>
 <br style="clear: left;" />
 <?php
-if( in_array( $this->usersLoginProvider(), $this->updateStatusValidNetworks ) ) {
+if( in_array( $this->usersLoginProvider(), $this->network->updateStatusValidNetworks ) ) {
 	?>
 	<form method="post" action="" id="gigya-socialize-update">
 	<input type="text" name="gigya-socialize-update-text" id="gigya-socialize-update-text" value="<?php _e( 'What are you doing now?' ); ?>" />
@@ -26,7 +25,7 @@ if( in_array( $this->usersLoginProvider(), $this->updateStatusValidNetworks ) ) 
 	</form>
 	<?php
 }
-if( in_array( $this->usersLoginProvider(), $this->inviteFriendsValidNetworks ) ) {
+if( in_array( $this->usersLoginProvider(), $this->network->inviteFriendsValidNetworks ) ) {
 	echo '<a id="gigya-socialize-invite-friends-link" href="' . site_url( 'wp-admin/profile.php?show-friend-selector=1#invite-your-friends' ) . '">';
 	echo empty( $options[ 'invite-friends' ] ) ? __( 'Invite your friends!' ) : $options[ 'invite-friends' ];
 	echo '</a>';
