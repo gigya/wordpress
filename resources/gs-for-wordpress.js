@@ -100,7 +100,7 @@ function commentLogin(eventObject) {
 			'commenting':1
 		},
 		function(data, textStatus) {
-			jQuery('#gigya-socialize-comments').html(data.message);
+			jQuery('#gigya-socialize-comments').replaceWith(data.message);
 			jQuery('#author,#email,#url').parent().remove();
 		},
 		'json'

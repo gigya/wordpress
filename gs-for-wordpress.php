@@ -62,6 +62,7 @@ if (!class_exists('GigyaSocialize')) {
             add_action('wp_set_comment_status', array(&$this, 'commentPost'), 10, 2);
             
             // OTHER
+            add_action('gs_comment_form', array(&$this, 'includeCommentFormExtra'));
             add_action('comment_form', array(&$this, 'includeCommentFormExtra'));
             add_action('comment_post', array(&$this, 'commentPost'));
             add_action('init', array(&$this, 'enqueueResources'));
@@ -130,9 +131,9 @@ if (!class_exists('GigyaSocialize')) {
             $settings = $this->data->getSettings();
             if ($settings['gs-for-wordpress-comment-extras']) {
                 if (is_user_logged_in()) {
-                	include('views/comments/connected.php');
+                    include ('views/comments/connected.php');
                 } else {
-                	include('views/comments/not-connected.php');
+                    include ('views/comments/not-connected.php');
                 }
             }
         }
@@ -164,12 +165,12 @@ if (!class_exists('GigyaSocialize')) {
                 $loginResults = $this->loginViaGigya($_POST);
                 $isCommenting = $_POST['commenting'] == 1;
                 
-				if( $isCommenting ) {
-					ob_start();
-					include('views/comments/connected.php');
-					$loginResults['message'] = ob_get_clean();
-				}
-				
+                if ($isCommenting) {
+                    ob_start();
+                    include ('views/comments/connected.php');
+                    $loginResults['message'] = ob_get_clean();
+                }
+                
                 header('Content-type: application/json');
                 echo json_encode($loginResults);
                 exit();
@@ -180,13 +181,13 @@ if (!class_exists('GigyaSocialize')) {
             return (1 == $data['gigya-authenticate']) && isset($data['gigya-timestamp']) && isset($data['gigya-uid']);
         }
         
-        function loginViaGigya($data) { 
+        function loginViaGigya($data) {
             $message = __('Unknown Error');
             $redirectUrl = '';
             
             if ($this->data->hashIsValid($data['gigya-timestamp'], $data['gigya-uid'], $data['gigya-signature'])) {
                 if (is_user_logged_in()) {
-					// Connect current user account
+                    // Connect current user account
                     $user = wp_get_current_user();
                     $this->user->editData($data, $user->ID);
                     $this->user->registerData($data, $user->ID);
@@ -195,13 +196,13 @@ if (!class_exists('GigyaSocialize')) {
                 } else {
                     $userId = $this->user->hasPreviouslyConnected($data['gigya-uid'], GigyaData::getMetaNameForNetwork($data['gigya-login-provider']));
                     
-					if ($userId < 1) {
+                    if ($userId < 1) {
                         $allowRegistration = get_option('users_can_register');
                         if ('0' == $allowRegistration) {
                             $message = __('New user access is currently disabled for this site.');
                             $redirect = '';
                         } else {
-                        	$user = $this->user->registerUser($data);
+                            $user = $this->user->registerUser($data);
                             $userId = $user->ID;
                         }
                     }
@@ -224,8 +225,7 @@ if (!class_exists('GigyaSocialize')) {
             }
             return array('message'=>$message, 'redirect'=>$redirect);
         }
-        
-        
+
         
         /** 
          * Stores an indicator that the users has just logged out and should be logged out of Gigya Socialize.
@@ -364,7 +364,7 @@ if (!class_exists('GigyaSocialize')) {
 				showTermsLink:false,
 				headerText:'',
 				height:120,
-				width:240,
+				width:70,
 				useFacebookConnect: 'true',
 				UIConfig:'<config><body><controls><snbuttons buttonsize=\"33\"></snbuttons></controls><background frame-color=\"Transparent\"></background></body></config>',
 				containerID:'gigya-comment-social-network-area'
@@ -383,6 +383,7 @@ if (!class_exists('GigyaSocialize')) {
         }
     }
     $gigyaSocialize = new GigyaSocialize();
+    include ('library/template-tags.php');
 }
 
 
