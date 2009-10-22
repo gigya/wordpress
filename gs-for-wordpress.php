@@ -261,6 +261,7 @@ if (!class_exists('GigyaSocialize')) {
                 $settings['gs-for-wordpress-friend-notification-content'] = strip_tags(stripslashes($_POST['gs-for-wordpress-friend-notification-content']), '<a><em><strong>');
                 $settings['gs-for-wordpress-friend-selector-component-ui'] = $this->data->sanitizeConfigurationForFriendSelector(stripslashes($_POST['gs-for-wordpress-friend-selector-component-ui']));
                 $settings['gs-for-wordpress-widget-sign-in-component-ui'] = $this->data->sanitizeConfigurationForConnectWidget(stripslashes($_POST['gs-for-wordpress-widget-sign-in-component-ui']));
+				$settings['gs-for-wordpress-comments-sign-in-component-ui'] = str_replace('var conf', 'var comment_conf',$this->data->sanitizeConfigurationForConnectWidget(stripslashes($_POST['gs-for-wordpress-comments-sign-in-component-ui'])));
                 $settings['gs-for-wordpress-sign-in-component-ui'] = $this->data->sanitizeConfigurationForConnectWidget(stripslashes($_POST['gs-for-wordpress-sign-in-component-ui']));
                 $this->data->saveSettings($settings);
                 wp_redirect('options-general.php?page=gigya-socialize&updated=true');

@@ -80,6 +80,13 @@
 				</td>
 			</tr>
 			<tr>
+				<th scope="row"><label for="gs-for-wordpress-comments-sign-in-component-ui"><?php _e( 'Comment Sign In Component' ); ?></label> &mdash; <em>Advanced Use Only</em></th>
+				<td>
+					<textarea style="width: 95%;" class="large-text" id="gs-for-wordpress-comments-sign-in-component-ui" rows="10" name="gs-for-wordpress-comments-sign-in-component-ui"><?php echo htmlentities( $settings[ 'gs-for-wordpress-comments-sign-in-component-ui' ] ); ?></textarea>
+					<p><?php echo sprintf( __( 'To customize the look of the sign in component for the comment widget provided by the Gigya Socialize for WordPress plugin, you can provide generated interface code here.  If nothing is provided the default will be used. Please see <a target="_blank"  href="%1$s">here</a> for help on what to put in the text area.' ), "{$helpUrl}#login-ui" ); ?></p>
+				</td>
+			</tr>
+			<tr>
 				<th scope="row"><label for="gs-for-wordpress-friend-selector-component-ui"><?php _e( 'Friend Selector Component' ); ?></label> &mdash; <em>Advanced Use Only</em></th>
 				<td>
 					<textarea style="width: 95%;" class="large-text" id="gs-for-wordpress-friend-selector-component-ui" rows="10" name="gs-for-wordpress-friend-selector-component-ui"><?php echo htmlentities( $settings[ 'gs-for-wordpress-friend-selector-component-ui' ] ); ?></textarea>
