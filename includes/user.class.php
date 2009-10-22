@@ -169,9 +169,9 @@ class GigyaUser {
      */
     function getUnusedUserName($userName, $loginProvider) {
         if ($userName === '') {
-            $userName = ucfirst($loginProvider).'User';
+            $userName = ucfirst(sanitize_user($loginProvider)).'User';
         }
-        $toTry = $userName;
+        $toTry = sanitize_user($userName);
         $counter = 0;
         while (username_exists($toTry)) {
             $toTry = $userName.$counter;
