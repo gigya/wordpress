@@ -5,6 +5,7 @@ $apiKey = $settings['gs-for-wordpress-api-key'];
 <link rel="stylesheet" href="<?php echo $this->info->pluginUrl; ?>/resources/gs-for-wordpress.css?ver=<?php echo $this->info->version; ?>" type="text/css" media="" />
 <script type="text/javascript" src="<?php echo $this->info->socializeUrl; ?>"></script>
 <script type="text/javascript">
+	var gigya_blog_homepage =  '<?php echo site_url('/'); ?>';
 	var gigyaSocializeGeneralConfiguration = { 
 		APIKey: '<?php echo $apiKey; ?>' 
 	};

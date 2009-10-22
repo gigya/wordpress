@@ -123,6 +123,9 @@ class GigyaUser {
         $username = $this->getUnusedUserName(sanitize_user($data['gigya-nickname']), $data['gigya-login-provider']);
         $email = $this->sanitizeEmail($data['gigya-email']);
         $password = wp_generate_password();
+		
+		error_log( "Gigya Data: " . print_r( $data, true ) );
+		error_log( "Username: $username" );
         
         $userData = array('user_login'=>$username, 'user_pass'=>$password, 'user_email'=>$email);
         $userData['user_nickname'] = $username;
@@ -171,7 +174,8 @@ class GigyaUser {
         if ($userName === '') {
             $userName = ucfirst(sanitize_user($loginProvider)).'User';
         }
-        $toTry = sanitize_user($userName);
+		$userName = str_replace(' ', '', sanitize_user($userName));
+        $toTry = $userName;
         $counter = 0;
         while (username_exists($toTry)) {
             $toTry = $userName.$counter;

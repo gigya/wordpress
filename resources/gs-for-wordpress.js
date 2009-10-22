@@ -31,7 +31,7 @@ jQuery(document).ready(function() {
 function processLogin(eventObject) {
 	jQuery('.login #login #nav,.gs-for-wordpress-login-widget').after('<div id="gs-for-wordpress-login-message-container"><p id="gs-for-wordpress-login-message" class="message">Please wait &mdash; logging in...</p></div>')
 	jQuery.post(
-		'',
+		gigya_blog_homepage,
 		{
 			'gigya-authenticate':1,
 			'gigya-timestamp':eventObject.timestamp,

@@ -4,6 +4,7 @@
 <script type="text/javascript" src="<?php echo $this->info->socializeUrl; ?>"></script>
 <script type="text/javascript" src="<?php echo $this->info->pluginUrl; ?>/resources/login.js"></script>
 <script type='text/javascript'>
+	var gigya_blog_homepage =  '<?php echo site_url('/'); ?>';
 	jQuery(document).ready(function() {
 		jQuery('.login #login #nav').after('<a id="gs-for-wordpress-redirect-url" style="display: none;" href="<?php echo admin_url(); ?>"></a>');
 		<?php
