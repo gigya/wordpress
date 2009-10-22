@@ -127,9 +127,9 @@ if (!class_exists('GigyaSocialize')) {
             }
         }
         
-        function includeCommentFormExtra() {
+        function includeCommentFormExtra($force = false) {
             $settings = $this->data->getSettings();
-            if ($settings['gs-for-wordpress-comment-extras']) {
+            if ($settings['gs-for-wordpress-comment-extras'] || true === $force) {
                 if (is_user_logged_in()) {
                     include ('views/comments/connected.php');
                 } else {

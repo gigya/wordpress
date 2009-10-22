@@ -6,6 +6,6 @@ function gigya_socialize_widget() {
 
 function gigya_socialize_comment_widget() {
 	global $gigyaSocialize;
-	$gigyaSocialize->includeCommentFormExtra();
+	$gigyaSocialize->includeCommentFormExtra(true);
 }
 ?>
