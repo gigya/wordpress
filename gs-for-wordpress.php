@@ -8,7 +8,8 @@
  Author URI: http://plugin-developer.com
  */
 
-if (!class_exists('GigyaSocialize')) {
+if (!class_exists('GigyaSocialize')) 
+{
     $thisDir = dirname(__FILE__);
     require_once ("{$thisDir}/includes/jsonencode.inc.php");
     require_once ("{$thisDir}/includes/data.class.php");
