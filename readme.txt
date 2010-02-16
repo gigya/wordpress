@@ -1,19 +1,19 @@
 === Gigya Socialize - Increase Registration and Engagement ===
 Contributors: nickohrn, gigya.com
-Tags: OpenID, Oauth, OpenSocial, FacebookConnect, MySpaceID, Twitter, authentication, newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, blog, start page, Widget, Admin, Sidebar,Facebook, MySpace, community, registration, register
+Tags: OpenID, Oauth, OpenSocial, FacebookConnect, MySpaceID, Twitter, authentication, newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, blog, start page, Widget, Admin, Sidebar,Facebook, MySpace, community, registration, register, LinkedIn
 Requires at least: 2.6
-Tested up to: 2.8.2
+Tested up to: 2.9.1
 Stable tag: 1.1.8
 
 Increase your site registration and Engagement using Facebook Connect, MySpaceID, Twitter and OpenID.
 
 == Description ==
 
-The Gigya Socialize plug-in aggregates authentication and social APIs from Facebook Connect, MySpace ID, Twitter, Google, Yahoo, and AOL, giving sites the ability to:
+The Gigya Socialize plug-in aggregates authentication and social APIs from Facebook Connect, MySpace ID, Twitter, Google, Yahoo, LinkedIn, and AOL, giving sites the ability to:
 
-* Authenticate users via Facebook, MySpace, Twitter and other OpenID providers
-* Promote user activity on social networks by enabling users to invite friends to share content 
-* Increase site traffic by sending user status updates and newsfeed events to social networks
+* Authenticate users via Facebook, MySpace, Twitter, LinkedIn, Yahoo and many other OpenID providers
+* Promote user activity on social networks by enabling users to invite friends to your site 
+* Increase site traffic by sending user status updates and newsfeed updates to Social Networks
 
 The plug-in is configurable; it requires little time and no programming knowledge to install (installations takes less than two minutes). The plug-in is scalable and secure, using a standard authentication techniques to prevent account spoofing and is fully scalable. 
 The plug-in code is also GPL licensed. 
