@@ -3,7 +3,7 @@
 jQuery(document).ready(function() { 
 	var theStatus = '<?php echo $status; ?>';
 	if( typeof( gigya ) != 'undefined' ) {
-		gigya.services.socialize.setStatus(gsConf, {status:theStatus});
+		gigya.services.socialize.setStatus(gigyaSocializeGeneralConfiguration, {status:theStatus});
 	}
 });
 </script>
