@@ -124,7 +124,7 @@ if (!class_exists('GigyaSocialize'))
             $comment = get_comment($commentId);
             $approvalStatus = $comment->comment_approved;
             if ($this->user->hasGigyaConnection($comment->user_id) && $approvalStatus == 1 || $approval == 'approve') {
-                update_usermeta($comment->user_id, $this->_metaRecentCommentPostedId, $commentId);
+                update_usermeta($comment->user_id, $this->user->_meta_RecentCommentPostedId, $commentId);
             }
         }
         
