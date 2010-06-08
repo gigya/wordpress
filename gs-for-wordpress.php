@@ -4,7 +4,7 @@
  Plugin URI: http://gigya.com
  Description: Integrates a variety of features of the Gigya Socialize service into a WordPress blog.
  Author: Nick Ohrn of Plugin-Developer.com
- Version: 1.2.0alpha
+ Version: 1.2.1
  Author URI: http://plugin-developer.com
  */
 
