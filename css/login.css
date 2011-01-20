@@ -1,0 +1,36 @@
+body.login {
+	
+}
+
+#login {
+	width: 910px;
+}
+
+.login-panel {
+	width: 400px;
+}
+
+.login-panel-wp {
+	float: left;
+}
+
+.login-panel-gigya {
+	float: right;
+}
+
+.login-panel form {
+	height: 180px !important;
+}
+
+.login-sep-text {
+	float: left;
+	margin: 100px 20px 20px 30px;
+	padding-left: 10px;
+	font-weight: bold;
+	font-size: 16px;
+}
+
+h1 a {
+	display: block;
+	width: 100%;
+}
