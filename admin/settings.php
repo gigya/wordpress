@@ -2,7 +2,7 @@
 	if(!current_user_can(GIGYA_PERMISSION_LEVEL))
 		wp_die(__('Cheatin&#8217; uh?'));
 	
-	$helpUrl = 'options-general.php?page=gigya/gigya.php&help=1';
+	$helpUrl = 'options-general.php?page=gigya-socialize-for-wordpress/gigya.php&help=1';
 		
 	if(isset($_GET["help"])) {
 		include 'help.php';
