@@ -75,7 +75,7 @@ class WP_Widget_Gigya extends WP_Widget {
             </p>
             <p>
             	<label for="<?php echo $this->get_field_id('enabledProviders'); ?>"><?php _e('Enabled Providers:'); ?> 
-            	<input class="widefat" id="<?php echo $this->get_field_id('enabledProviders'); ?>" name="<?php echo $this->get_field_name('enabledProviders'); ?>" type="text" value="<?php echo $enabledProviders; ?> "/>
+            	<input class="widefat" id="<?php echo $this->get_field_id('enabledProviders'); ?>" name="<?php echo $this->get_field_name('enabledProviders'); ?>" type="text" value="<?php echo $enabledProviders; ?>"/>
             	</label>
             </p>
         <?php 
