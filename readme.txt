@@ -28,7 +28,7 @@ Important Links:
 
 You can read more about the installation steps and other advanced configuration options at Gigya online documentation <a href="http://wiki.gigya.com/030_Gigya_Socialize_API_2.0/050_Socialize_Plugins/Wordpress_plugin" title="Wordpress installation Tutorial">here</a>
 
-1.	After downloading the Gigya Socialize plug-in, unpack and upload the folder to the the / wp-content/plugins/ directory on your blog. 
+1.	After downloading the Gigya plug-in, unpack and upload the folder to the the / wp-content/plugins/ directory on your blog. 
 2.	Go to the Plug-in tab in the WordPress administration panel, find the Gigya plug-in on the list and click Activate.
 3.	Proceed to the plug-in settings page (under Settings > Gigya) to configure your plug-in. The plug-in needs your API information in the Gigya settings menu, so please grab your API key, and secret code from the <a href="http://www.gigya.com" title="gigya">Gigya website</a>.
 
@@ -54,8 +54,8 @@ Existing site users can link their existing Wordpress account to their Social Ne
 Can I configure the design of the Gigya component?
 
 Yes, the design is fully configurable. Please log to your Gigya account (on www.gigya.com) to use our online component designer to modify the design of your components. When you are done designing, you can easily copy the configuration code to your.
-You can read more about configuring the Socialize component design in our online documentation <a href="http://wiki.gigya.com/030_Gigya_Socialize_API_2.0/050_Socialize_Plugins/Wordpress_plugin" title="Wordpress installation Tutorial">here</a>
+You can read more about configuring the Gigya component design in our online documentation <a href="http://wiki.gigya.com/030_Gigya_Socialize_API_2.0/050_Socialize_Plugins/Wordpress_plugin" title="Wordpress installation Tutorial">here</a>
 
-How can I get support for the Socialize?
+How can I get support for the Plugin?
 
-We provide extensive support to partners that implements (or are working on implementing) the Socialize Plug-in. Please contact us at: support@gigya-inc.com 
+We provide extensive support to partners that implements (or are working on implementing) the Gigya Plug-in. Please contact us at: support@gigya-inc.com 
