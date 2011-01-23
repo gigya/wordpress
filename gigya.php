@@ -1,10 +1,10 @@
 <?php
 /*
-Plugin Name: Gigya Social Optimization
+Plugin Name: Make Your Site Social
 Plugin URI: http://wiki.gigya.com/050_Socialize_Plugins/030_Wordpress_Plugin
 DDescription: Increase Registration and Engagement by integrating the Gigya service into your WordPress self hosted blog.
-Author: Gil Noy
-Version: 2.0.1
+Author: Gil Noy for Gigya
+Version: 2.0.2
 Author URI: http://www.gigya.com
 */
 define("GIGYA_VERSION","2.0.1");

@@ -1,4 +1,4 @@
-=== Gigya Make Your Site Social ===
+=== Make Your Site Social ===
 Contributors: gigya.com, gilnoy
 Tags: OpenID, Oauth, OpenSocial, Graph API, Facebook Connect, MySpaceID, Twitter, authentication, newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, blog, start page, Widget, Admin, Sidebar,Facebook, MySpace, community, registration, register, LinkedIn
 Requires at least: 3.0
