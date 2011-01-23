@@ -24,7 +24,7 @@ class GigyaSO_User {
 		if(!empty($this->data->user->isSiteUID)) return 1;
 		// check if user already registered in old version
 		global $wpdb;
-		$loginProvider = '_gsforwordpressuid-'.sanitize_title_with_dashes($this->data->provider);
+		$loginProvider = '_gsforwordpressuid'.sanitize_title_with_dashes($this->data->provider);
 		$user_id = $wpdb->get_var($wpdb->prepare( "SELECT user_id FROM {$wpdb->usermeta} WHERE meta_key = %s AND meta_value = %s",$this->data->UID,$loginProvider));
 		if(!$user_id) return 0;
 		$gigya = GigyaSO_Util::setUID($user_id,$this->data->UID);
