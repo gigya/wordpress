@@ -9,11 +9,10 @@ class GigyaSO_Util {
 		$request = new GSRequest($api_key,$secret_key,"socialize.notifyRegistration");
 		$request->setParam("uid",$uid);
 		$request->setParam("siteUID",$user_id);
-		
 		$response = $request->send();  
 		     
 		if($response->getErrorCode()!=0)
-			return new WP_Error("error","<strong>ERROR: </strong>".$response->getErrorMessage().$uid);         
+			return new WP_Error("error","$user_id<strong>ERROR: </strong>".$response->getErrorMessage().$uid);         
 	
 		return 1;
 	} 

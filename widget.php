@@ -21,8 +21,7 @@ class WP_Widget_Gigya extends WP_Widget {
                 wp_get_current_user();
                 // check logged in
                   if( 0 == $current_user->ID):
-                  	$gigya_widget->render_js();
-					$gigya_widget->render_tmpl();
+                  	$gigya_widget->render_tmpl();
 					$gigya_widget->login();
                   else:
 			 		$gigya_widget->is_logged_in($current_user);

@@ -1,7 +1,4 @@
 <?php
-
-
-
 # get config parameters for gigya, and set it as global
 if(!function_exists('gigya_init_options') ) :
 	function gigya_init_options(){
@@ -28,9 +25,51 @@ if(!function_exists('gigya_init_options') ) :
 		}
 		
 		$GIGYA_OPTIONS = $current_options;
+		
+		
 	}
 endif;
 
+
+
+
+
+# register js files
+if(!function_exists('gigya_enque_js') ) :
+	function gigya_enque_js($use_script){
+		$raw_js_files = array(
+			array("name"=>"jquery","is_enque"=>1,"url"=>"jquery/jquery.js","is_admin"=>0),
+			array("name"=>"jquery.tmpl","is_enque"=>0,"url"=>GIGYA_PLUGIN_URL."/js/jquery.tmpl.js","is_admin"=>0),
+			array("name"=>"json2","is_enque"=>1,"url"=>"json2.js","is_admin"=>0),
+			array("name"=>"jquery-ui-core","is_enque"=>1,"url"=>"jquery/ui.core.js","is_admin"=>0),
+			array("name"=>"jquery-ui-draggable","is_enque"=>1,"url"=>"jquery/ui.draggable.js","is_admin"=>0),
+			array("name"=>"jquery-ui-resizable","is_enque"=>1,"url"=>"jquery/ui.resizable.js","is_admin"=>0),
+			array("name"=>"jquery-ui-dialog","is_enque"=>1,"url"=>"jquery/ui.dialog.js","is_admin"=>0),
+			array("name"=>"gigya","is_enque"=>0,"url"=>GIGYA_PLUGIN_URL."/js/gigya.js","is_admin"=>0),
+			array("name"=>"gigya-socialize","is_enque"=>0,"url"=>"http://cdn.gigya.com/JS/socialize.js?apikey=".gigya_get_option("api_key"),"is_admin"=>1)
+		
+		);
+		
+		$is_admin = is_admin(); 
+		if(!$use_script) {
+			foreach($raw_js_files as $file) {
+				if(($is_admin && $file["is_admin"]) || !$is_admin) {
+					if(!$file["is_enque"]) {
+						wp_register_script($file["name"],$file["url"]);		
+					}
+					wp_enqueue_script($file["name"]);
+				}
+			} 	
+		} else {
+			$wp_js_path = get_bloginfo('wpurl').'/'.WPINC.'/js';
+			foreach($raw_js_files as $file) {
+				$path = $file["is_enque"] ? "$wp_js_path/$file[url]" : $file[url]; 
+				echo "<script type='text/javascript' src='$path'></script>";
+			}
+		}
+			
+	}
+endif;
 # get config params from gogya global options config
 if(!function_exists('gigya_get_option') ) :
 	function gigya_get_option($ns=null){
@@ -111,8 +150,7 @@ if(!function_exists('gigya_delete_account')) :
 endif;
 
 if(!function_exists('gigya_user_profile_extra')) :
-	function gigya_user_profile_extra($user) { 
-		gigya_script_js();
+	function gigya_user_profile_extra($user) {
 	?>
 		<h3><?php _e("Manage social connection", "blank"); ?></h3>
 		<table class="form-table">
@@ -155,11 +193,9 @@ if(!function_exists('gigya_share_plugin')) :
 		global $post;
 		
 		if(gigya_get_option("share_plugin")==1){
-			gigya_script_js();
 			$id = $post->ID;		
 			$permalink = get_permalink($id);
-			$title = get_the_title( $post->ID );
-	
+			$title = wp_specialchars(wp_specialchars($defaultContent,1),1);
 			$content .= "<script type='text/javascript'>";
 			$content .= "var act$id = new gigya.services.socialize.UserAction();";
 			$content .= "act$id.setUserMessage('');";
@@ -200,13 +236,5 @@ if(!function_exists('gigya_update_avatar_image')) :
 		}
 		
 		return $avatar;
-	}
-endif;
-
-if(!function_exists('gigya_script_js')) :
-	function gigya_script_js() { 
-	?>
-		<script type="text/javascript" lang="javascript" src="http://cdn.gigya.com/JS/socialize.js?apikey=<?php echo gigya_get_option("api_key");?>"></script>	
-	<?php 
 	}
 endif;	

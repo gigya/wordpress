@@ -16,24 +16,9 @@ class GigyaSO_Core {
 	}
 	# render all required javascript for plugin
 	public function render_js(){
-		$wp_js_path = get_bloginfo('wpurl').'/'.WPINC.'/js'; 
-		$js_path = GIGYA_PLUGIN_URL."/js";
-	?>
-		
-		<!--  Jquery  -->
-		<script type="text/javascript" src="<?php echo $wp_js_path;?>/jquery/jquery.js"></script>
-		<script  type="text/javascript" src="<?php echo $js_path;?>/jquery.tmpl.js"></script>
-		<!--  JSON2  -->
-		<script type="text/javascript" src="<?php echo $wp_js_path;?>/json2.js"></script>
-		<!--  Dialog  -->
-		<script type="text/javascript" src="<?php echo $wp_js_path;?>/jquery/ui.core.js"></script>
-		<script type="text/javascript" src="<?php echo $wp_js_path;?>/jquery/ui.draggable.js"></script>
-		<script type="text/javascript" src="<?php echo $wp_js_path;?>/jquery/ui.resizable.js"></script>
-		<script  type="text/javascript" src="<?php echo $wp_js_path;?>/jquery/ui.dialog.js"></script>
-		<!--  Gigya  -->
-		<script  type="text/javascript" src="<?php echo "$js_path/gigya.js";?>"></script>
-		<?php gigya_script_js(); ?>
-	<?php 	
+		//include GIGYA_PLUGIN_PATH.
+		require_once "handlers.php";
+		gigya_enque_js(1); 	
 	}
 	
 	public function conf_and_params($params = array()){

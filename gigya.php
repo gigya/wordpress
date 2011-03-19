@@ -4,10 +4,10 @@ Plugin Name: Make Your Site Social
 Plugin URI: http://wiki.gigya.com/050_Socialize_Plugins/030_Wordpress_Plugin
 DDescription: Increase Registration and Engagement by integrating the Gigya service into your WordPress self hosted blog.
 Author: Gil Noy for Gigya
-Version: 2.0.2
+Version: 2.0.4
 Author URI: http://www.gigya.com
 */
-define("GIGYA_VERSION","2.0.2");
+define("GIGYA_VERSION","2.0.4");
 define("GIGYA_SETTINGS_PREFIX","gigya_settings_fields");
 define("GIGYA_PERMISSION_LEVEL","manage_options");
 define("GIGYA_PLUGIN_URL",WP_PLUGIN_URL.'/'.basename(dirname(__FILE__)));
@@ -20,6 +20,7 @@ require_once(dirname(__FILE__).'/resources/msg.php');
 require_once(dirname(__FILE__).'/widget.php');
 require_once(dirname(__FILE__).'/resources/handlers.php');
 
+
 if(!function_exists('gigya_admin_menu') ) :
 	function gigya_admin_menu() {
 		/* Register plugin plugin page */
@@ -28,7 +29,7 @@ if(!function_exists('gigya_admin_menu') ) :
 		$page = add_submenu_page('options-general.php',
 			__( 'Gigya','gigya'),
 			__( 'Gigya', 'gigya' ),
-			"manage_options",
+			GIGYA_PERMISSION_LEVEL,
 			__FILE__,
 			'gigya_manage_menu');
 			//add_action('admin_print_scripts-'. $page, 'gigya_admin_script');
@@ -65,6 +66,7 @@ endif;
 
 
 add_action('init','gigya_init_options');
+add_action('init','gigya_enque_js');
 add_action('admin_init','gigya_admin_init');
 add_action('admin_menu','gigya_admin_menu' );
 add_action('login_head','gigya_login_page');
