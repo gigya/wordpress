@@ -12,7 +12,7 @@ class GigyaSO_Util {
 		$response = $request->send();  
 		     
 		if($response->getErrorCode()!=0)
-			return new WP_Error("error","$user_id<strong>ERROR: </strong>".$response->getErrorMessage().$uid);         
+			return new WP_Error("error","<strong>ERROR: </strong>".$response->getErrorMessage().$uid);         
 	
 		return 1;
 	} 
