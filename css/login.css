@@ -6,7 +6,7 @@ body.login {
 	width: 910px;
 }
 
-.login-panel {
+.login-panel,#registerform {
 	width: 400px;
 }
 

@@ -1,6 +1,15 @@
 <?php
 
 class GigyaSO_Util {
+	public static function validate_user_signature($UID, $timestamp,$signature){
+		require_once(GIGYA_PLUGIN_PATH.'/sdk/GSSDK.php');
+		$secret_key = gigya_get_option("secret_key");
+		$is_valid = SigUtils::validateUserSignature($UID, $timestamp,$secret_key, $signature);
+		if(!$is_valid)
+			return new WP_Error("error","<strong>ERROR: </strong>signature is not valid");         
+		return 1;
+	} 
+	
 	public static function notify_registration($user_id = 0,$uid){
 		require_once(GIGYA_PLUGIN_PATH.'/sdk/GSSDK.php');
 		if(!$user_id) return new WP_Error("error","Error registering to gigya, user id is missing");
