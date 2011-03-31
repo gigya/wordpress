@@ -191,18 +191,19 @@ endif;
 if(!function_exists('gigya_share_plugin')) :
 	function gigya_share_plugin($content){
 		global $post;
-		
 		if(gigya_get_option("share_plugin")==1){
 			$id = $post->ID;		
 			$permalink = get_permalink($id);
-			$title = wp_specialchars(wp_specialchars($defaultContent,1),1);
+			$title =  htmlspecialchars_decode(esc_js($post->post_title));//esc_js($post->post_title);
 			$content .= "<script type='text/javascript'>";
 			$content .= "var act$id = new gigya.services.socialize.UserAction();";
 			$content .= "act$id.setUserMessage('');";
-			$content .= "act$id.setTitle('$title');";
+			$content .= "act$id.setTitle('".$title."');";
 			
-			$defaultContent = 'Read more on ' . get_bloginfo();
-			$content .= 'act'. $id . '.setDescription("'. wp_specialchars($defaultContent,1)  .'");';
+			$defaultContent = htmlspecialchars_decode(esc_js("Read more on ". get_bloginfo("name")));
+			 
+			 
+			$content .= "act$id.setDescription('".$defaultContent."');";
 			$content .= 'act'. $id . '.setLinkBack("'. $permalink .'");';
 			$content .= 'act'. $id . '.addActionLink("Read more" ,"'.  $permalink .'");';	
 			
@@ -217,6 +218,7 @@ if(!function_exists('gigya_share_plugin')) :
 			$content .= "var share_params$id ={userAction: act$id,showEmailButton: true	,showMoreButton: true ,operationMode: 'autoDetect'};";
 			$content .= "function ShowGSShareUI(share_params){gigya.services.socialize.showShareUI({APIKey:'".gigya_get_option("api_key")."'},share_params);}</script>";
 			$content .= "</script>";
+			
 			$content .= '<div><a href="javascript:void(0)" onclick="ShowGSShareUI('. share_params. $id .');" ><img id="gigBtnShare" src="'. GIGYA_PLUGIN_URL . '/resources/ShareButton.png" /></a></div>';
 		}
 		return $content;

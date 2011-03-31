@@ -99,4 +99,9 @@
 	display: none;
 	text-align: left;
 }
+
+#wpadminbar img.avatar {
+	width: 16px;
+	height: 16px;	
+}
 	

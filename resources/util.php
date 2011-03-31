@@ -10,7 +10,8 @@ class GigyaSO_Util {
 		$request->setParam("uid",$uid);
 		$request->setParam("siteUID",$user_id);
 		$response = $request->send();  
-		     
+		
+		//echo date("F j, Y, g:i a",$_SERVER['REQUEST_TIME']);     
 		if($response->getErrorCode()!=0)
 			return new WP_Error("error","<strong>ERROR: </strong>".$response->getErrorMessage().$uid);         
 	

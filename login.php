@@ -1,9 +1,13 @@
 <?php
 	require_once(GIGYA_PLUGIN_PATH.'/resources/login.php');
 	$gigya_login = new GigyaSO_Login();
-	$gigya_login->render_js();
+	if((float) get_bloginfo('version')<3.1) {
+		$gigya_login->render_js();
+	}
+	
 	$gigya_login->render_css();
 	$gigya_login->render_tmpl();
+	
 ?>
 
 <script type="text/javascript">

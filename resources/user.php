@@ -110,25 +110,26 @@ class GigyaSO_User {
 		// check if user has siteUID, if exist user registered to site and gigya and can login
 		if($this->is_gigya) {
 			$signon = $this->signon_gigya_user();  
-			if(is_wp_error($signon))
-				return $signon;
+			if(is_wp_error($signon)) return $signon;
+			return 1;
+		};			
+		
+		// check if email exist in social user obj
+		$email = $this->data->user->email;
+		$is_email_exist = empty($email) ? 0 : email_exists($email);
+		// if exist - need to ask user if already registered - create new account or link account
+		if($is_email_exist) {
+			if($this->force_email) 
+				return new WP_Error('action',self::GIGYA_ACTION_EMAIL_EXIST);	
+			return $this->link_account($email,"",1);
 		} else {
-			// check if email exist in social user obj
-			$email = $this->data->user->email;
-			$is_email_exist = empty($email) ? 0 : email_exists($email);
-			// if exist - need to ask user if already registered - create new account or link account
-			if($is_email_exist) {
-				if($this->force_email) 
-					return new WP_Error('action',self::GIGYA_ACTION_EMAIL_EXIST);	
-				return $this->link_account($email,"",1);
+			if(empty($this->data->user->email) && $this->force_email) {
+				return new WP_Error('action',self::GIGYA_ACTION_EMAIL_REQUIRED);	
 			} else {
-				if(empty($this->data->user->email) && $this->force_email) {
-					return new WP_Error('action',self::GIGYA_ACTION_EMAIL_REQUIRED);	
-				} else {
-					return $this->add_new_user($this->data->user->email);
-				}
+				return $this->add_new_user($this->data->user->email);
 			}
 		}
+		
 		
 		return 1;
 	}
