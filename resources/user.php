@@ -47,15 +47,15 @@ class GigyaSO_User {
 		$this->account_linking = $options["account_linking"] == 1 ;
 		$this->api_key = !empty($options["api_key"]) ?  $options["api_key"] : 0;
 		$this->secret_key = !empty($options["secret_key"]) ?  $options["secret_key"] : 0; 
-		
-		add_filter('is_email','my_function_name',0,3);
-		function my_function_name($valid,$email,$error){
+		function validate_email($valid,$email,$error){
 			if($valid) {
 				return $valid;
 			} else {
 				return new WP_Error('error',"<strong>ERROR: </strong>".$error);
 			} 
 		}
+		add_filter('is_email','validate_email',0,3);
+		
 	}
 	
 	public function __get($key){

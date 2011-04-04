@@ -20,13 +20,14 @@ jQuery(document).ready(function($) {
 		}
 
 		if($("#registerform").length > 0) { 
-			return $("#loginform");
+			return $("#registerform");
 		}
 
 		return $("#lostpasswordform");
 	}();
 	
 	(function(elem){
+		console.log(elem);
 		elem.wrap("<div class='login-panel login-panel-wp'></div>")
 		.after($("#nav")).parent()
 		.after("<div class='login-panel login-panel-gigya'><form id='componentDiv'></form>")
