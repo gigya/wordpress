@@ -91,11 +91,6 @@ if(!function_exists('gigya_user_login')) :
 		if(isset($_POST["userObject"]) && !empty($_POST["userObject"])) {
 			$data = json_decode(stripslashes($_POST["userObject"]));
 			if(is_object($data)) {
-				$valid = GigyaSO_Util::validate_user_signature($data->UID,$data->signatureTimestamp,$data->UIDSignature);
-				if(is_wp_error($valid)) {
-					gigya_msg($valid);
-	   				die();	
-				} 
 				// check if site allows registration of new users 
 				if('0'== get_option( 'users_can_register' )) {
 					gigya_msg(new WP_Error('error',__("New user registration is currently disabled for this site")));
@@ -109,7 +104,12 @@ if(!function_exists('gigya_user_login')) :
 						case "link-account":
 							$login = $user->link_account($_POST["email"],$_POST["password"]);	
 						break;
-						default: 
+						default:
+							$valid = GigyaSO_Util::validate_user_signature($data->UID,$data->signatureTimestamp,$data->UIDSignature);
+							if(is_wp_error($valid)) {
+								gigya_msg($valid);
+	   							die();	
+							} 
 							$login = $user->login();
 					}
 					

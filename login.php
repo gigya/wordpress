@@ -27,7 +27,6 @@ jQuery(document).ready(function($) {
 	}();
 	
 	(function(elem){
-		console.log(elem);
 		elem.wrap("<div class='login-panel login-panel-wp'></div>")
 		.after($("#nav")).parent()
 		.after("<div class='login-panel login-panel-gigya'><form id='componentDiv'></form>")
