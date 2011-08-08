@@ -46,16 +46,25 @@ class GigyaSO_User {
 		$this->force_email = $options["force_email"] == 1 ;
 		$this->account_linking = $options["account_linking"] == 1 ;
 		$this->api_key = !empty($options["api_key"]) ?  $options["api_key"] : 0;
-		$this->secret_key = !empty($options["secret_key"]) ?  $options["secret_key"] : 0; 
-		function validate_email($valid,$email,$error){
+		$this->secret_key = !empty($options["secret_key"]) ?  $options["secret_key"] : 0;
+		$this->is_multisite = is_multisite();
+		$this->user_id = 0;
+		
+		if($this->is_multisite):
+			global $blog_id;
+			$this->blog_id = $blog_id;		
+		else:
+			$this->blog_id = 0;
+		endif;
+		 
+		function gigya_validate_email($valid,$email,$error){
 			if($valid) {
 				return $valid;
 			} else {
 				return new WP_Error('error',"<strong>ERROR: </strong>".$error);
 			} 
 		}
-		add_filter('is_email','validate_email',0,3);
-		
+		add_filter('is_email','gigya_validate_email',0,3);
 	}
 	
 	public function __get($key){
@@ -76,7 +85,8 @@ class GigyaSO_User {
     	// logout user if logged in to site
     	if($this->is_logged_in) $this->signout();	
     	// login
-		$login = wp_signon(array("user_login"=>$user_name,"user_password"=>$password,"remember"=>true),false);
+    	$login = wp_set_current_user($user_id);
+		//$login = wp_signon(array("user_login"=>$user_name,"user_password"=>$password,"remember"=>true),false);
 		if (is_wp_error($login)) 
 			return new WP_Error('error',$login->get_error_message());
 		wp_set_auth_cookie($user_id);		
@@ -105,7 +115,7 @@ class GigyaSO_User {
  	*
  	* @return int|WP_Error Bool 1 if success or a WP_Error object if the user could not be created.
  	*/
-	public function login() {
+    public function login() {
 		require_once (ABSPATH.WPINC.'/registration.php');
 		// check if user has siteUID, if exist user registered to site and gigya and can login
 		if($this->is_gigya) {
@@ -116,8 +126,24 @@ class GigyaSO_User {
 		
 		// check if email exist in social user obj
 		$email = $this->data->user->email;
+		// return user id if exist
 		$is_email_exist = empty($email) ? 0 : email_exists($email);
-		// if exist - need to ask user if already registered - create new account or link account
+		if($this->is_multisite && $is_email_exist) {
+			 $blogs = get_blogs_of_user($is_email_exist);
+			 $is_exist_in_blog = 0;
+			 if($blogs) {
+			 	foreach($blogs as $blog) {
+			 		if($this->blog_id == $blog->userblog_id) {
+			 			$is_exist_in_blog = 1;			
+			 		}
+			 	}
+			 }
+			 if(!$is_exist_in_blog) {
+				$this->user_id = $is_email_exist; 
+			 	$is_email_exist = 0;
+			 }			
+		}
+//		// if exist - need to ask user if already registered - create new account or link account
 		if($is_email_exist) {
 			if($this->force_email) 
 				return new WP_Error('action',self::GIGYA_ACTION_EMAIL_EXIST);	
@@ -126,11 +152,15 @@ class GigyaSO_User {
 			if(empty($this->data->user->email) && $this->force_email) {
 				return new WP_Error('action',self::GIGYA_ACTION_EMAIL_REQUIRED);	
 			} else {
-				return $this->add_new_user($this->data->user->email);
+				// if user id exist add it to current blog if not add a new user
+				if($this->user_id) {
+					return $this->add_user_to_blog();					
+				} else {
+					return $this->add_new_user($this->data->user->email);	
+				}
+				
 			}
 		}
-		
-		
 		return 1;
 	}
 	/**
@@ -193,6 +223,21 @@ class GigyaSO_User {
 		}	
 	}
 	
+	private function add_user_to_blog($notify = 1) {
+		if($this->blog_id && $this->user_id) {
+			switch_to_blog($this->blog_id);
+			$role = get_option("default_role");			
+			if($role)
+				add_user_to_blog($this->blog_id,$this->user_id,$role);
+				//restore_current_blog();
+			# regiter user with gigya
+			if($notify) {
+				$gigya = GigyaSO_Util::notify_registration($this->user_id,$this->uid);	
+				return $gigya;
+			}	
+		}
+	}
+	
 	private function add_new_user($email="") {
 		$user_name = $this->generate_user_name($this->data->user->nickname);
 		if(is_wp_error($user_name)) 
@@ -218,20 +263,21 @@ class GigyaSO_User {
 		);
 		
 		# add new user to db
-		$user_id = wp_insert_user($user_data);
+		$this->user_id = wp_insert_user($user_data);
 		if(is_wp_error($user_id)) 
 			return new WP_Error('error',"<strong>ERROR: </strong>".$user_id->get_error_message());
+		# add user to blog if multisite support
+		$this->add_user_to_blog(0);	
 		# add user meta
 		update_user_meta($user_id,"avatar",$this->data->user->thumbnailURL);	
-		
 		# regiter user with gigya
-		$gigya = GigyaSO_Util::notify_registration($user_id,$this->uid);
+		$gigya = GigyaSO_Util::notify_registration($this->user_id,$this->uid);
 		if(is_wp_error($gigya)) {
-			wp_delete_user($user_id);
+			wp_delete_user($this->user_id);
 			return $gigya;
 		}
 		# login user to site
-		$login = $this->signon($user_id,$user_name,$password);
+		$login = $this->signon($this->user_id,$user_name,$password);
 		if (is_wp_error($login)) 
 			return new WP_Error('error',$login->get_error_message());
 	}

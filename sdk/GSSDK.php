@@ -13,7 +13,7 @@ if (!function_exists('json_decode')) {
 
 
 /**
- * Gigya Socialize Exception
+ * Gigya Socialize Exception  
  * 
  */
 class GSException extends Exception{

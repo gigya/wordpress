@@ -88,43 +88,45 @@ endif;
 #handle request for each user request to login
 if(!function_exists('gigya_user_login')) :
 	function gigya_user_login(){
-		if(isset($_POST["userObject"]) && !empty($_POST["userObject"])) {
-			$data = json_decode(stripslashes($_POST["userObject"]));
-			if(is_object($data)) {
-				// check if site allows registration of new users 
-				if('0'== get_option( 'users_can_register' )) {
-					gigya_msg(new WP_Error('error',__("New user registration is currently disabled for this site")));
-					die();
-				} else {
-					$user = new GigyaSO_User($data);
-					switch($_POST["actionType"]) {
-						case "register-email": 
-							$login = $user->register_email($_POST["email"]);
-						break;
-						case "link-account":
-							$login = $user->link_account($_POST["email"],$_POST["password"]);	
-						break;
-						default:
-							$valid = GigyaSO_Util::validate_user_signature($data->UID,$data->signatureTimestamp,$data->UIDSignature);
-							if(is_wp_error($valid)) {
-								gigya_msg($valid);
-	   							die();	
-							} 
-							$login = $user->login();
-					}
-					
-					if(is_wp_error($login)) {
-	   					gigya_msg($login,array("api_key"=>$user->api_key,"secret_key"=>$user->secret_key,"force_email"=>$user->force_email ? true : false,"account_linking"=>$user->account_linking ? true : false));
-	   					die();
+		if(gigya_get_option("login_plugin") ==1):
+			if(isset($_POST["userObject"]) && !empty($_POST["userObject"])) {
+				$data = json_decode(stripslashes($_POST["userObject"]));
+				if(is_object($data)) {
+					// check if site allows registration of new users 
+					if('0'== get_option( 'users_can_register' )) {
+						gigya_msg(new WP_Error('error',__("New user registration is currently disabled for this site")));
+						die();
 					} else {
-						gigya_msg();		
+						$user = new GigyaSO_User($data);
+						switch($_POST["actionType"]) {
+							case "register-email": 
+								$login = $user->register_email($_POST["email"]);
+							break;
+							case "link-account":
+								$login = $user->link_account($_POST["email"],$_POST["password"]);	
+							break;
+							default:
+								$valid = GigyaSO_Util::validate_user_signature($data->UID,$data->signatureTimestamp,$data->UIDSignature);
+								if(is_wp_error($valid)) {
+									gigya_msg($valid);
+		   							die();	
+								} 
+								$login = $user->login();
+						}
+						
+						if(is_wp_error($login)) {
+		   					gigya_msg($login,array("api_key"=>$user->api_key,"secret_key"=>$user->secret_key,"force_email"=>$user->force_email ? true : false,"account_linking"=>$user->account_linking ? true : false));
+		   					die();
+						} else {
+							gigya_msg();		
+						}
 					}
+				} else {
+					gigya_msg(new WP_Error('error',__("Gigya Error")));
+					die();
 				}
-			} else {
-				gigya_msg(new WP_Error('error',__("Gigya Error")));
-				die();
 			}
-		}
+		endif;
 				
 		die();
 	}
@@ -132,17 +134,21 @@ endif;
 
 if(!function_exists('gigya_notify_user_login')) :
 	function gigya_notify_user_login($user_name){
-		$user = get_userdatabylogin($user_name);
-		GigyaSO_Util::notify_login($user->ID);
+		if(gigya_get_option("login_plugin") ==1):
+			$user = get_userdatabylogin($user_name);
+			GigyaSO_Util::notify_login($user->ID);
+		endif;
 	}
 endif;
 
 
 if(!function_exists('gigya_notify_user_logout')) :
 	function gigya_notify_user_logout($user_id){
-		if($user_id) {
-			GigyaSO_Util::notify_logout($user_id);
-		}
+		if(gigya_get_option("login_plugin") ==1):
+			if($user_id) {
+				GigyaSO_Util::notify_logout($user_id);
+			}
+		endif;
 	}
 endif;
 
@@ -196,36 +202,48 @@ endif;
 if(!function_exists('gigya_share_plugin')) :
 	function gigya_share_plugin($content){
 		global $post;
+		
 		if(gigya_get_option("share_plugin")==1){
 			$id = $post->ID;		
 			$permalink = get_permalink($id);
-			$title =  htmlspecialchars_decode(esc_js($post->post_title));//esc_js($post->post_title);
-			$content .= "<script type='text/javascript'>";
-			$content .= "var act$id = new gigya.services.socialize.UserAction();";
-			$content .= "act$id.setUserMessage('');";
-			$content .= "act$id.setTitle('".$title."');";
-			
-			$defaultContent = htmlspecialchars_decode(esc_js("Read more on ". get_bloginfo("name")));
-			 
-			 
-			$content .= "act$id.setDescription('".$defaultContent."');";
-			$content .= 'act'. $id . '.setLinkBack("'. $permalink .'");';
-			$content .= 'act'. $id . '.addActionLink("Read more" ,"'.  $permalink .'");';	
-			
-			
+			$title =  htmlspecialchars_decode(esc_js($post->post_title));	
 			$first_img_url = gigya_get_first_image($post);
-			
 			if(empty($first_img_url)) $first_img_url = get_bloginfo('wpurl').'/'.WPINC.'/images/blank.gif';
 			
-			$content .= "var image$id = {src:'$first_img_url',href:'$permalink',type:'image'};";
-			$content .= "act$id.addMediaItem(image$id);";	
+		$content .= "<div class='gig-share-button' id='gig-div-buttons-$id'></div>";
+		$content .= "<script language='javascript'>";
+		$content .= 	"var conf_$id = {
+							APIKey: '".gigya_get_option("api_key")."'
+    					};
+						
+    					var image$id = {src:'$first_img_url',href:'$permalink',type:'image'};
+						var ua_$id = new gigya.services.socialize.UserAction(); 
+						ua_$id.setUserMessage('');  
+						ua_$id.setLinkBack('".$permalink."'); 
+						ua_$id.setTitle('".$title."');
+						ua_$id.addMediaItem(image$id);	
+		
+
+						var params_$id ={ 
+							userAction:ua_$id,
+							cssPrefix:'#gig-div-buttons-$id',
+							shareButtons:'share,facebook-like,google-plusone,twitter,email', // list of providers
+							containerID: 'gig-div-buttons-$id',
+        					cid:''
+						};
+						gigya.services.socialize.showShareBarUI(conf_$id,params_$id);
+					</script>
+					";
+
 					
-			$content .= "var share_params$id ={userAction: act$id,showEmailButton: true	,showMoreButton: true ,operationMode: 'autoDetect'};";
-			$content .= "function ShowGSShareUI(share_params){gigya.services.socialize.showShareUI({APIKey:'".gigya_get_option("api_key")."'},share_params);}</script>";
-			$content .= "</script>";
+		
+		
 			
-			$content .= '<div><a href="javascript:void(0)" onclick="ShowGSShareUI('. share_params. $id .');" ><img id="gigBtnShare" src="'. GIGYA_PLUGIN_URL . '/resources/ShareButton.png" /></a></div>';
-		}
+			//description $defaultContent = htmlspecialchars_decode(esc_js("Read more on ". get_bloginfo("name")));
+			//$first_img_url = gigya_get_first_image($post);
+			//if(empty($first_img_url)) $first_img_url = get_bloginfo('wpurl').'/'.WPINC.'/images/blank.gif';
+		} 
+		
 		return $content;
 	}
 endif;

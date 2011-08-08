@@ -7,8 +7,8 @@
 	
 	$gigya_login->render_css();
 	$gigya_login->render_tmpl();
-	
 ?>
+
 
 <script type="text/javascript">
 //<![CDATA[
@@ -31,6 +31,11 @@ jQuery(document).ready(function($) {
 		.after($("#nav")).parent()
 		.after("<div class='login-panel login-panel-gigya'><form id='componentDiv'></form>")
 		.after("<div class='login-sep-text float-left'><h3>OR</h3></div>");
+
+		<?php if(GIGYA_IS_3_2): ?>
+		$("#nav").after($("#backtoblog"));
+		<?php endif;?>
+		
 	}(target));
 	// Set Ajax Url
 	Gigya.Ajax.setUrl("<?php echo admin_url("admin-ajax.php"); ?>");
@@ -41,4 +46,3 @@ jQuery(document).ready(function($) {
 });
 //]]>
 </script>
-

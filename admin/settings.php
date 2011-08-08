@@ -15,7 +15,8 @@
 	$login_ui = gigya_get_option("login_ui");
 	$force_email = gigya_get_option("force_email") == 1 ?  1 : 0;
 	$account_linking = gigya_get_option("account_linking") == 1 ? 1 : 0 ;
-	$share_plugin = gigya_get_option("share_plugin") == 1 ? 1 : 0 ; 
+	$share_plugin = gigya_get_option("share_plugin") == 1 ? 1 : 0 ;
+	$login_plugin = gigya_get_option("login_plugin") == 1 ? 1 : 0 ; 
 ?>  
 
 <input type="hidden" name="wordtour_settings[default_artist]" value="<?php echo $options["default_artist"]?>"></input>
@@ -81,6 +82,24 @@
 					
 					</td>
 				</tr>
+			</tbody>
+			</table>
+			<br>
+			<h3><?php _e( 'Login' ); ?></h3>
+			<table  class="form-table" >
+			<tbody>
+				<tr>	
+					<th scope="row"><label for="gigya_Share_Btn"><?php _e( 'Enable Gigya Login' ); ?></label></th>
+					<td scope="row">
+						<input type="checkbox" <?php echo ($login_plugin ? "checked='true'" : "");?> value="1" id="gigya_login_plugin" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[login_plugin]">					
+						<br/>
+						<span class="description">
+						<?php _e( 'The Login plugin makes it easy for your blog readers to ........'); 
+						?> 
+						</span>
+					</td>
+				</tr>
+				
 			</tbody>
 			</table>
 			<br>
