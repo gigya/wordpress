@@ -43,14 +43,14 @@ class GigyaSO_Util {
 		return 1;
 	}
 	
-	public static function notify_login($user_id){
+	public static function notify_login($user_id,$is_new_user = 0){
 		require_once(GIGYA_PLUGIN_PATH.'/sdk/GSSDK.php');	
 		if($user_id) {
 			$api_key = gigya_get_option("api_key");
 			$secret_key = gigya_get_option("secret_key");
 			$request = new GSRequest($api_key,$secret_key,"socialize.notifyLogin");
-			$request->setParam("uid",$user_id);
 			$request->setParam("siteUID",$user_id);
+			if($is_new_user) $request->setParam("newUser",true);
 			$response = $request->send();
 			if($response->getErrorCode()!=0)
 				return new WP_Error("error","<strong>ERROR: </strong>".$response->getErrorMessage());

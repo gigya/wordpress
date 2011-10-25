@@ -25,6 +25,10 @@ jQuery(document).ready(function($) {
 
 		return $("#lostpasswordform");
 	}();
+
+	if($("#setupform").length>0 && $(".mu_register").length>0) {
+		$("#setupform").after("<div class='gigya-signup-wrap'><div class='or-wrap'><div class='or-text'>OR</div></div><div id='componentDiv'></div></div>");
+	}
 	
 	(function(elem){
 		elem.wrap("<div class='login-panel login-panel-wp'></div>")

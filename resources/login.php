@@ -17,10 +17,13 @@ class GigyaSO_Login extends GigyaSO_Core {
 	}
 	
 	public function logout($params = array()){
-		if(isset($_REQUEST["loggedout"])) { 
+		if(isset($_REQUEST["loggedout"])) {
+			$lang = gigya_get_option("lang");
+			if(empty($lang)) $lang = "en"; 
 	?>
 		gigya.services.socialize.logout({
-			APIKey: '<?php echo gigya_get_option("api_key");?>'
+			APIKey: '<?php echo gigya_get_option("api_key");?>',
+			lang  : '<?php echo $lang;?>'
 		});
 	<?php
 		}

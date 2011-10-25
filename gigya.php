@@ -7,7 +7,7 @@ Author: Gil Noy for Gigya
 Version: 2.0.5
 Author URI: http://www.gigya.com
 */
-define("GIGYA_VERSION","2.0.4");
+define("GIGYA_VERSION","2.0.6");
 define("GIGYA_SETTINGS_PREFIX","gigya_settings_fields");
 define("GIGYA_PERMISSION_LEVEL","manage_options");
 define("GIGYA_PLUGIN_URL",WP_PLUGIN_URL.'/'.basename(dirname(__FILE__)));
@@ -20,7 +20,6 @@ require_once(dirname(__FILE__).'/resources/util.php');
 require_once(dirname(__FILE__).'/resources/msg.php');
 require_once(dirname(__FILE__).'/widget.php');
 require_once(dirname(__FILE__).'/resources/handlers.php');
-
 
 if(!function_exists('gigya_admin_menu') ) :
 	function gigya_admin_menu() {
@@ -67,6 +66,14 @@ if(!function_exists('gigya_login_page') ) :
 	}
 endif;
 
+if(!function_exists('gigya_signup_page') ) :
+	function gigya_signup_page() {
+		if(gigya_get_option("login_plugin") ==1):
+			include("login.php");
+		endif;    
+	}
+endif;
+
 
 add_action('init','gigya_init_options');
 add_action('init','gigya_enque_js');
@@ -75,11 +82,17 @@ add_action('admin_menu','gigya_admin_menu' );
 
 # Login Actions
 add_action('login_head','gigya_login_page');
+add_action('signup_header','gigya_signup_page');
 add_action('wp_ajax_gigya_user_login', 'gigya_user_login');
 add_action('wp_ajax_nopriv_gigya_user_login', 'gigya_user_login');
+add_action('wp_ajax_nopriv_gigya_add_comment', 'gigya_user_login');
+
 add_action('wp_ajax_gigya_user_login','gigya_user_login');
 add_action('wp_login','gigya_notify_user_login');
 add_action('wp_logout','gigya_notify_user_logout');
+
+add_action('user_register','gigya_notify_user_register');
+
 # End
 add_action('delete_user','gigya_delete_account');
 add_action('edit_user_profile','gigya_user_profile_extra' );

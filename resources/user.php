@@ -264,12 +264,13 @@ class GigyaSO_User {
 		
 		# add new user to db
 		$this->user_id = wp_insert_user($user_data);
-		if(is_wp_error($user_id)) 
-			return new WP_Error('error',"<strong>ERROR: </strong>".$user_id->get_error_message());
+		if(is_wp_error($this->user_id)) 
+			return new WP_Error('error',"<strong>ERROR: </strong>".$this->user_id->get_error_message());
 		# add user to blog if multisite support
 		$this->add_user_to_blog(0);	
 		# add user meta
-		update_user_meta($user_id,"avatar",$this->data->user->thumbnailURL);	
+		update_user_meta($this->user_id,"avatar",$this->data->user->thumbnailURL);
+		
 		# regiter user with gigya
 		$gigya = GigyaSO_Util::notify_registration($this->user_id,$this->uid);
 		if(is_wp_error($gigya)) {

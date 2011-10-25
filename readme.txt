@@ -3,7 +3,7 @@ Contributors: gigya.com, gilnoy
 Tags: OpenID, Oauth, OpenSocial, Graph API, Facebook Connect, MySpaceID, Twitter, authentication, newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, blog, start page, Widget, Admin, Sidebar,Facebook, MySpace, community, registration, register, LinkedIn
 Requires at least: 3.0
 Tested up to: 3.2
-Stable tag: 2.0.5
+Stable tag: 2.0.6
 
 Increase your site registration and engagement by integrating Gigyas social optimization service into your WordPress site.
 
@@ -45,19 +45,6 @@ us at support@gigya-inc.com
 4. Add more social network identities to your Wordpress profile.  
 5. Share in posts - non registered user.
 6. Advance share for regsitered users. 
-
-
-== Changelog ==
-
-= 2.0.5 = 
-
-* Support Wordpress networks
-* New customized Share bar including Facebook like button and Google+1.
-* Bug fixes
-
-== Upgrade Notice ==
-
-Support Wordpress networks and new customized Share bar including Facebook like button and Google+1
 
 == FAQ ==
 

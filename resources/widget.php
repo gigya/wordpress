@@ -29,6 +29,8 @@ class GigyaSO_Widget extends GigyaSO_Core {
 			"enabledProviders"=>$enabledProviders
 		);
 		
+		
+		
 		$params["header_text"] = esc_attr($options['header_text']);
 		
 		$width = esc_attr($options['width']);
@@ -55,11 +57,16 @@ class GigyaSO_Widget extends GigyaSO_Core {
 		}
 		$params["enabledProviders"] = $enabledProviders;
 		
+		$bgColor = trim($options["bgColor"]); 
+		if(!empty($bgColor)) $params["bgColor"] = $bgColor; 
+		
+		
 		parent::conf_and_params($params);
 	}
 	
 	public function login(){ 
 	?>
+		
 		<div id="componentDiv"></div>
 		<script type="text/javascript">
 		//<![CDATA[
@@ -82,9 +89,12 @@ class GigyaSO_Widget extends GigyaSO_Core {
 	<?php
 	}	
 	
-	public function is_logged_in($user){ 
+	public function is_logged_in($user){
+		$bgColor = trim($this->options["bgColor"]); 
+		$bgColor = !empty($bgColor) ? $bgColor : "#FFFFFF;"; 
 	?>
-		<div class="widget_gigya_user ui-helper-clearfix">
+		
+		<div class="widget_gigya_user ui-helper-clearfix" style='background-color:<?php echo $bgColor;?>'>
 			<div class="thumbnail"><?php echo get_avatar($user->ID,42,true); ?></div>
 			<div class="text">
 				Hello <?php echo $user->nickname; ?><br/>

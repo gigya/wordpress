@@ -2,6 +2,28 @@ body.login {
 	
 }
 
+.gigya-signup-wrap {
+	margin: 10px 0 10px 0;
+	position: relative;	
+}
+
+.gigya-signup-wrap .or-wrap {
+	line-height: 30px;
+	height: 30px;
+	border-bottom: 1px solid #000000;
+	margin-bottom: 15px;	
+}
+
+.gigya-signup-wrap .or-text {
+	position: absolute;
+	font-weight: bold;
+	font-size: 16px;
+	left: 47%;
+	top: 15px;
+	background-color:#FFFFFF;
+	padding: 0 5px 0 5px;
+}
+
 #login {
 	width: 910px;
 }

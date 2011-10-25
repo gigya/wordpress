@@ -23,13 +23,17 @@ class GigyaSO_Core {
 	
 	public function conf_and_params($params = array()){
 		$api_key = gigya_get_option("api_key");
+		$lang = gigya_get_option("lang");
+		if(empty($lang)) $lang = "en";
 		$header_text = (isset($params["header_text"]) ? $params["header_text"] : __("Sign in with your Social Network:"));
 		$width = $params["width"] ? $params["width"] : 345 ;
 		$height = $params["height"] ? $params["height"] : 145 ;
 		$enabledProviders = $params["enabledProviders"] ? $params["enabledProviders"] : '*' ;
+		$bgColor = isset($params["bgColor"]) && !empty($params["bgColor"])  ? $params["bgColor"] : "#FFFFFF" ;   
 	?>
 		var conf = {
-		     'APIKey': '<?php echo $api_key;?>'
+		     'APIKey': '<?php echo $api_key;?>',
+		     lang  : '<?php echo $lang;?>'
 		};
 		
 		var login_params = {
@@ -40,7 +44,7 @@ class GigyaSO_Core {
 			enabledProviders:'<?php echo $enabledProviders; ?>',
 			context:'GigLogin',
 			pendingRegistration : true,
-			UIConfig:'<config><body><controls><snbuttons buttonsize=\"<?php echo $params["button_size"] ? $params["button_size"] : 42 ;?>\"></snbuttons></controls><background frame-color=\"#FFFFFF\"></background></body></config>',
+			UIConfig:'<config><body><controls><snbuttons buttonsize=\"<?php echo $params["button_size"] ? $params["button_size"] : 42 ;?>\"></snbuttons></controls><background  background-color=\"<?php echo $bgColor?>\"></background></body></config>',
 			containerID:'componentDiv'
 		};
 	<?php 	
@@ -92,8 +96,8 @@ class GigyaSO_Core {
 			<img class='thumbnail' src='${user.thumbnailURL}'/>
 			<p class='text'>
 				<b>Hi ${user.firstName}</b>
-					{{if $isEmailExist=true}}, The email is already used, please provide a new email or link to an existing account.{{/if}}
-					{{if $isNewUser=true}}{{/if}}
+					{{if isEmailExist}}, The email is already used, please provide a new email or link to an existing account.{{/if}}
+					{{if isNewUser}}{{/if}}
 			</p>
 			</div>	
 		</div>

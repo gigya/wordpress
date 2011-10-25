@@ -11,12 +11,19 @@
 		
 	$api_key = gigya_get_option("api_key");
 	$secret_key = gigya_get_option("secret_key");
+	$lang = gigya_get_option("lang");
+	if(empty($lang)) $lang = "en"; 
 	$post_login_redirect = gigya_get_option("post_login_redirect");
 	$login_ui = gigya_get_option("login_ui");
 	$force_email = gigya_get_option("force_email") == 1 ?  1 : 0;
 	$account_linking = gigya_get_option("account_linking") == 1 ? 1 : 0 ;
 	$share_plugin = gigya_get_option("share_plugin") == 1 ? 1 : 0 ;
+	$comments_plugin = gigya_get_option("comments_plugin") == 1 ? 1 : 0 ;
+	$gigya_comments_cat_id = gigya_get_option("gigya_comments_cat_id");
 	$login_plugin = gigya_get_option("login_plugin") == 1 ? 1 : 0 ; 
+	$providers = gigya_get_option("share_providers"); 
+	
+	
 ?>  
 
 <input type="hidden" name="wordtour_settings[default_artist]" value="<?php echo $options["default_artist"]?>"></input>
@@ -44,6 +51,15 @@
 					<th scope="row"><label for="gigya_secret_key"><?php _e( 'Gigya Socialize Secret Key' ); ?></label></th>
 					<td>
 						<input type="text" class="large-text" value="<?php echo $secret_key;?>" id="gigya_secret_key" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[secret_key]">
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="gigya_lang"><?php _e( 'Language' ); ?></label></th>
+					<td>
+						<input type="text" class="large-text" value="<?php echo $lang;?>" id="gigya_lang" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[lang]">
+						<span class="description">
+							en (default),zh-cn,zh-hk,zh-tw,cs,da,nl,fi,fr,de,el,hu,it,ja,ko,no,pl,pt,pt-br,ru,es,es-mx,sv,tl
+						</span>
 					</td>
 				</tr>
 				<tr>
@@ -94,12 +110,10 @@
 						<input type="checkbox" <?php echo ($login_plugin ? "checked='true'" : "");?> value="1" id="gigya_login_plugin" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[login_plugin]">					
 						<br/>
 						<span class="description">
-						<?php _e( 'The Login plugin makes it easy for your blog readers to ........'); 
-						?> 
+						<?php _e('The Plugin displays all the available providers\' logos as login options, enabling the user to login to your site via his social network / webmail account.'); ?> 
 						</span>
 					</td>
 				</tr>
-				
 			</tbody>
 			</table>
 			<br>
@@ -115,6 +129,37 @@
 						<?php _e( 'The Share plugin makes it easy for your blog readers to syndicate content to Social Network by adding a share button at the end of each post.'); 
 						?> 
 						</span>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="gigya_share_providers"><?php _e( 'Share Providers' ); ?></label></th>
+					<td>
+						<input type="text" class="large-text" value="<?php echo $providers;?>" id="gigya_share_providers" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[share_providers]">
+						<p>for example: facebook-like,google-plusone,share,twitter,email</p>
+					</td>
+				</tr>
+				
+			</tbody>
+			</table>
+			<br>
+			<h3><?php _e( 'Comments' ); ?></h3>
+			<table  class="form-table" >
+			<tbody>
+				<tr>	
+					<th scope="row"><label for="gigya_comments_plugin"><?php _e( 'Enable Gigya Comments' ); ?></label></th>
+					<td scope="row">
+						<input type="checkbox" <?php echo ($comments_plugin ? "checked='true'" : "");?> value="1" id="gigya_comments_plugin" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[comments_plugin]">					
+						<br/>
+						<span class="description">
+						<?php _e( 'Gigya\'s Comments Plugin enables site users to post comments and have discussions about published content on the site.'); 
+						?> 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="gigya_comments_cat_id"><?php _e( 'Comments Category ID' ); ?></label></th>
+					<td>
+						<input type="text" class="large-text" value="<?php echo $gigya_comments_cat_id;?>" id="gigya_comments_cat_id" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[gigya_comments_cat_id]">
 					</td>
 				</tr>
 				

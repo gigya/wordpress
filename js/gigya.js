@@ -115,8 +115,9 @@ jQuery(document).ready(function($) {
 							case "new_user_email_required":
 								new Gigya.Dialog().open(function(){
 									new Gigya.Tmpl(this).renderLoginDialog($.extend(userObject,{
-										isNewUser:true,
-										linkAccount     : (r.params.account_linking && r.params.force_email) 
+										isNewUser    :true,
+										isEmailExist :false,
+										linkAccount  : (r.params.account_linking && r.params.force_email) 
 									}));	
 								});	
 							break;

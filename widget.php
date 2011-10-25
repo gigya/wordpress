@@ -44,6 +44,7 @@ class WP_Widget_Gigya extends WP_Widget {
         $button_size = esc_attr($instance['button_size']);
         $header_text = esc_attr($instance['header_text']);
         $enabledProviders = esc_attr($instance['enabledProviders']);
+        $bgColor = esc_attr($instance['bgColor']);
         
         //enabledProviders: 'facebook,twitter,yahoo,messenger,linkedin,myspace,aol,orkut'
         ?>
@@ -75,6 +76,11 @@ class WP_Widget_Gigya extends WP_Widget {
             <p>
             	<label for="<?php echo $this->get_field_id('enabledProviders'); ?>"><?php _e('Enabled Providers:'); ?> 
             	<input class="widefat" id="<?php echo $this->get_field_id('enabledProviders'); ?>" name="<?php echo $this->get_field_name('enabledProviders'); ?>" type="text" value="<?php echo $enabledProviders; ?>"/>
+            	</label>
+            </p>
+             <p>
+            	<label for="<?php echo $this->get_field_id('bgColor'); ?>"><?php _e('Background Color (#FFFFFF): '); ?> <br/>
+            	<input class="widefat" id="<?php echo $this->get_field_id('bgColor'); ?>" name="<?php echo $this->get_field_name('bgColor'); ?>" type="text" value="<?php echo $bgColor; ?>"/>
             	</label>
             </p>
         <?php 
