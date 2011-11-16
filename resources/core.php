@@ -29,7 +29,7 @@ class GigyaSO_Core {
 		$header_text = (isset($params["header_text"]) ? $params["header_text"] : __("Sign in with your Social Network:"));
 		$width = $params["width"] ? $params["width"] : 345 ;
 		$height = $params["height"] ? $params["height"] : 145 ;
-		$enabledProviders = $params["enabledProviders"] ? $params["enabledProviders"] : '' ;
+		$enabledProviders = $params["enabledProviders"] ? $params["enabledProviders"] : '*' ;
 		$bgColor = isset($params["bgColor"]) && !empty($params["bgColor"])  ? $params["bgColor"] : "#FFFFFF" ;   
 	?>
 		var conf = {
@@ -42,9 +42,6 @@ class GigyaSO_Core {
 			headerText:'<label><?php echo $header_text; ?></label>',
 			height:<?php echo $height;?>,
 			width:<?php echo $width; ?>,
-			<?php if ($enabledProviders !=''){ ?>
-			enabledProviders:'<?php echo $enabledProviders; ?>',
-			<?php }?>
 			context:'GigLogin',
 			pendingRegistration : true,
 			UIConfig:'<config><body><controls><snbuttons buttonsize=\"<?php echo $params["button_size"] ? $params["button_size"] : 42 ;?>\"></snbuttons></controls><background  background-color=\"<?php echo $bgColor?>\"></background></body></config>',
@@ -114,6 +111,3 @@ class GigyaSO_Core {
 	<?php 	
 	}
 }
-
-
-
