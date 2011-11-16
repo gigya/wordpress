@@ -22,8 +22,7 @@
 	$gigya_comments_cat_id = gigya_get_option("gigya_comments_cat_id");
 	$login_plugin = gigya_get_option("login_plugin") == 1 ? 1 : 0 ; 
 	$providers = gigya_get_option("share_providers"); 
-	
-	
+	$loginProviders = gigya_get_option("login_providers");
 ?>  
 
 <input type="hidden" name="wordtour_settings[default_artist]" value="<?php echo $options["default_artist"]?>"></input>
@@ -38,6 +37,8 @@
 	<form action="options.php" method="post">
 		<?php wp_nonce_field('update-options'); ?>
 		<?php settings_fields(GIGYA_SETTINGS_PREFIX);?>
+		<input type="hidden" value="1" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[login_plugin_startup]">
+		<input type="hidden" value="1" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[share_providers_startup]">
 		<h3><?php _e( 'General Settings' ); ?></h3>
 		<table class="form-table">
 			<tbody>
@@ -107,11 +108,18 @@
 				<tr>	
 					<th scope="row"><label for="gigya_Share_Btn"><?php _e( 'Enable Gigya Login' ); ?></label></th>
 					<td scope="row">
-						<input type="checkbox" <?php echo ($login_plugin ? "checked='true'" : "");?> value="1" id="gigya_login_plugin" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[login_plugin]">					
+						<input type="checkbox" <?php echo ($login_plugin ? "checked='true'" : "");?> value="1" id="gigya_login_plugin" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[login_plugin]"/>					
 						<br/>
 						<span class="description">
 						<?php _e('The Plugin displays all the available providers\' logos as login options, enabling the user to login to your site via his social network / webmail account.'); ?> 
 						</span>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="gigya_login_providers"><?php _e( 'Login Providers' ); ?></label></th>
+					<td>
+						<input type="text" class="large-text" value="<?php echo $loginProviders;?>" id="gigya_login_providers" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[login_providers]">
+						<p class="description">Leave empty or type * for all providers or define specific providers, for example: facebook,twitter,google,linkedin</p>
 					</td>
 				</tr>
 			</tbody>

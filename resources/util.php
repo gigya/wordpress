@@ -50,11 +50,24 @@ class GigyaSO_Util {
 			$secret_key = gigya_get_option("secret_key");
 			$request = new GSRequest($api_key,$secret_key,"socialize.notifyLogin");
 			$request->setParam("siteUID",$user_id);
-			if($is_new_user) $request->setParam("newUser",true);
+			// user not registered with gigya login widget - with regular wordpress sign up form
+			if($is_new_user) {
+				$request->setParam("newUser",true);
+				$current_user = get_userdata($user_id);;
+				$userInfo = (object) array(
+					"nickname"  => $current_user->user_nicename,
+					"email"     => $current_user->user_email,
+					"firstName" => $current_user->user_firstname,
+					"lastName"  => $current_user->user_lastname
+				);
+				//photoURL,thumbnailURL;
+				$request->setParam("userInfo",json_encode($userInfo));
+			}
 			$response = $request->send();
 			if($response->getErrorCode()!=0)
 				return new WP_Error("error","<strong>ERROR: </strong>".$response->getErrorMessage());
-
+				
+			setcookie($response->getString('cookieName'), $response->getString('cookieValue'), 0, $response->getString('cookiePath'));	
 			return 1;
 		}
 		return 0;

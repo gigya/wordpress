@@ -4,7 +4,7 @@ if(!function_exists('gigya_init_options') ) :
 	function gigya_init_options(){
 		global $GIGYA_OPTIONS,$wpdb;
 		
-		$current_options = get_option(GIGYA_SETTINGS_PREFIX); 
+		$current_options = get_option(GIGYA_SETTINGS_PREFIX);
 		
 		if(!$current_options) {
 			$options = array();
@@ -21,18 +21,24 @@ if(!function_exists('gigya_init_options') ) :
 				"force_email"     => "1",
 				"account_linking" => "1",
 				"login_plugin" => "1",
-				"share_providers" => "facebook-like,google-plusone,share,twitter,email"
+				"login_plugin_startup" => "1",
+				"share_providers" => "facebook-like,google-plusone,share,twitter,email",
+				"share_providers_startup" => "1"
 			));
+			
 			update_option(GIGYA_SETTINGS_PREFIX,$current_options);
+			
 		} else {
 			$update = 0;
-			if(!isset($current_options["login_plugin"])) {
+			if(!isset($current_options["login_plugin_startup"])) {
 				$update = 1;
 				$current_options["login_plugin"] = "1";
+				$current_options["login_plugin_startup"] = "1";
 			}
-			if(!isset($current_options["share_providers"])) {
+			if(!isset($current_options["share_providers_startup"])) {
 				$update = 1;
 				$current_options["share_providers"] = "facebook-like,google-plusone,share,twitter,email";
+				$current_options["share_providers_startup"] = "1";
 			}
 			
 			if($update) update_option(GIGYA_SETTINGS_PREFIX,$current_options);
@@ -183,7 +189,11 @@ endif;
 
 if(!function_exists('gigya_user_profile_extra')) :
 	function gigya_user_profile_extra($user) {
+		$current_user = wp_get_current_user();
+		echo get_avatar($user->ID,96,0);
+		if ($current_user->ID == $user->ID):
 	?>
+		
 		<h3><?php _e("Manage social connection", "blank"); ?></h3>
 		<table class="form-table">
 			<tr>
@@ -205,7 +215,8 @@ if(!function_exists('gigya_user_profile_extra')) :
 		 		containerID: "gigya-div-connect"
 		 	});  
 	 	</script>
-	<?php 
+	<?php
+		endif; 
 	}
 endif;
 
@@ -257,10 +268,6 @@ if(!function_exists('gigya_share_plugin')) :
 						gigya.services.socialize.showShareBarUI(conf_$id,params_$id);
 					</script>
 					";
-			
-			//description $defaultContent = htmlspecialchars_decode(esc_js("Read more on ". get_bloginfo("name")));
-			//$first_img_url = gigya_get_first_image($post);
-			//if(empty($first_img_url)) $first_img_url = get_bloginfo('wpurl').'/'.WPINC.'/images/blank.gif';
 		} 
 		
 		return $content;

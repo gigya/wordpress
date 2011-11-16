@@ -24,16 +24,17 @@ class GigyaSO_Core {
 	public function conf_and_params($params = array()){
 		$api_key = gigya_get_option("api_key");
 		$lang = gigya_get_option("lang");
+		$loginProviders = gigya_get_option("login_providers");
 		if(empty($lang)) $lang = "en";
 		$header_text = (isset($params["header_text"]) ? $params["header_text"] : __("Sign in with your Social Network:"));
 		$width = $params["width"] ? $params["width"] : 345 ;
 		$height = $params["height"] ? $params["height"] : 145 ;
-		$enabledProviders = $params["enabledProviders"] ? $params["enabledProviders"] : '*' ;
+		$enabledProviders = $params["enabledProviders"] ? $params["enabledProviders"] : '' ;
 		$bgColor = isset($params["bgColor"]) && !empty($params["bgColor"])  ? $params["bgColor"] : "#FFFFFF" ;   
 	?>
 		var conf = {
-		     'APIKey': '<?php echo $api_key;?>',
-		     lang  : '<?php echo $lang;?>'
+		     lang : '<?php echo $lang;?>',
+			 enabledProviders: '<?php echo $loginProviders;?>'
 		};
 		
 		var login_params = {
@@ -41,7 +42,9 @@ class GigyaSO_Core {
 			headerText:'<label><?php echo $header_text; ?></label>',
 			height:<?php echo $height;?>,
 			width:<?php echo $width; ?>,
+			<?php if ($enabledProviders !=''){ ?>
 			enabledProviders:'<?php echo $enabledProviders; ?>',
+			<?php }?>
 			context:'GigLogin',
 			pendingRegistration : true,
 			UIConfig:'<config><body><controls><snbuttons buttonsize=\"<?php echo $params["button_size"] ? $params["button_size"] : 42 ;?>\"></snbuttons></controls><background  background-color=\"<?php echo $bgColor?>\"></background></body></config>',
