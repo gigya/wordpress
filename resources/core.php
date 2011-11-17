@@ -25,11 +25,12 @@ class GigyaSO_Core {
 		$api_key = gigya_get_option("api_key");
 		$lang = gigya_get_option("lang");
 		$loginProviders = gigya_get_option("login_providers");
+		if(empty($loginProviders)) $loginProviders = "*";
 		if(empty($lang)) $lang = "en";
 		$header_text = (isset($params["header_text"]) ? $params["header_text"] : __("Sign in with your Social Network:"));
 		$width = $params["width"] ? $params["width"] : 345 ;
 		$height = $params["height"] ? $params["height"] : 145 ;
-		$enabledProviders = $params["enabledProviders"] ? $params["enabledProviders"] : '*' ;
+		//$enabledProviders = $params["enabledProviders"] ? $params["enabledProviders"] : '*' ;
 		$bgColor = isset($params["bgColor"]) && !empty($params["bgColor"])  ? $params["bgColor"] : "#FFFFFF" ;   
 	?>
 		var conf = {

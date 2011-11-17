@@ -3,7 +3,7 @@ Contributors: gigya.com, gilnoy
 Tags: OpenID, Oauth, OpenSocial, Graph API, Facebook Connect, MySpaceID, Twitter, authentication, newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, blog, start page, Widget, Admin, Sidebar,Facebook, MySpace, community, registration, register, LinkedIn
 Requires at least: 3.0
 Tested up to: 3.2
-Stable tag: 2.0.8
+Stable tag: 2.0.9
 
 Increase your site registration and engagement by integrating Gigyas social optimization service into your WordPress site.
 
