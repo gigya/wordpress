@@ -51,23 +51,43 @@ if(!function_exists('gigya_init_options') ) :
 endif;
 
 
-
-
-
 # register js files
 if(!function_exists('gigya_enque_js') ) :
 	function gigya_enque_js($use_script){
-		$raw_js_files = array(
-			array("name"=>"jquery","is_enque"=>1,"url"=>"jquery/jquery.js","is_admin"=>0),
-			array("name"=>"jquery.tmpl","is_enque"=>0,"url"=>GIGYA_PLUGIN_URL."/js/jquery.tmpl.js","is_admin"=>0),
-			array("name"=>"json2","is_enque"=>1,"url"=>"json2.js","is_admin"=>0),
-			array("name"=>"jquery-ui-core","is_enque"=>1,"url"=>"jquery/ui.core.js","is_admin"=>0),
-			array("name"=>"jquery-ui-draggable","is_enque"=>1,"url"=>"jquery/ui.draggable.js","is_admin"=>0),
-			array("name"=>"jquery-ui-resizable","is_enque"=>1,"url"=>"jquery/ui.resizable.js","is_admin"=>0),
-			array("name"=>"jquery-ui-dialog","is_enque"=>1,"url"=>"jquery/ui.dialog.js","is_admin"=>0),
-			array("name"=>"gigya","is_enque"=>0,"url"=>GIGYA_PLUGIN_URL."/js/gigya.js","is_admin"=>0),
-			array("name"=>"gigya-socialize","is_enque"=>0,"url"=>"http://cdn.gigya.com/JS/socialize.js?apikey=".gigya_get_option("api_key"),"is_admin"=>1)
-		);
+		
+		if(gigya_get_option("load_jquery")==1 || gigya_get_option("load_jquery")==2) {
+			wp_deregister_script("jquery");
+			
+			$jquery_path = gigya_get_option("load_jquery")==1 ? GIGYA_PLUGIN_URL."/js/jquery/jquery.1.7.1.min.js" : "https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js";
+			$jquery_ui_path = gigya_get_option("load_jquery")==1 ? GIGYA_PLUGIN_URL."/js/jquery/jquery-ui-1.8.16.min.js" : "https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js";
+			
+			wp_register_script("jquery",$jquery_path,array(),"1.7.1");
+			wp_register_script("jquery-ui",$jquery_ui_path,array("jquery"),"1.8.16");
+			
+			$raw_js_files = array(
+				array("name"=>"jquery","is_enque"=>1,"url"=>$jquery_path,"is_admin"=>0),
+				array("name"=>"jquery-ui","is_enque"=>1,"url"=>$jquery_ui_path,"is_admin"=>0),
+				array("name"=>"jquery.tmpl","is_enque"=>0,"url"=>GIGYA_PLUGIN_URL."/js/jquery.tmpl.js","is_admin"=>0),
+				array("name"=>"json2","is_enque"=>1,"url"=>"json2.js","is_admin"=>0),
+				array("name"=>"gigya","is_enque"=>0,"url"=>GIGYA_PLUGIN_URL."/js/gigya.js","is_admin"=>0),
+				array("name"=>"gigya-socialize","is_enque"=>0,"url"=>"http://cdn.gigya.com/JS/socialize.js?apikey=".gigya_get_option("api_key"),"is_admin"=>1)
+			);	
+			
+		} else {
+			$raw_js_files = array(
+				array("name"=>"jquery","is_enque"=>1,"url"=>"jquery/jquery.js","is_admin"=>0),
+				array("name"=>"jquery.tmpl","is_enque"=>0,"url"=>GIGYA_PLUGIN_URL."/js/jquery.tmpl.js","is_admin"=>0),
+				array("name"=>"json2","is_enque"=>1,"url"=>"json2.js","is_admin"=>0),
+				array("name"=>"jquery-ui-core","is_enque"=>1,"url"=>"jquery/ui.core.js","is_admin"=>0),
+				array("name"=>"jquery-ui-draggable","is_enque"=>1,"url"=>"jquery/ui.draggable.js","is_admin"=>0),
+				array("name"=>"jquery-ui-resizable","is_enque"=>1,"url"=>"jquery/ui.resizable.js","is_admin"=>0),
+				array("name"=>"jquery-ui-dialog","is_enque"=>1,"url"=>"jquery/ui.dialog.js","is_admin"=>0),
+				array("name"=>"gigya","is_enque"=>0,"url"=>GIGYA_PLUGIN_URL."/js/gigya.js","is_admin"=>0),
+				array("name"=>"gigya-socialize","is_enque"=>0,"url"=>"http://cdn.gigya.com/JS/socialize.js?apikey=".gigya_get_option("api_key"),"is_admin"=>1)
+			);	
+		}
+		
+		
 		
 		$is_admin = is_admin(); 
 		if(!$use_script) {
@@ -97,6 +117,7 @@ if(!function_exists('gigya_get_option') ) :
 		return !is_array($GIGYA_OPTIONS) ? array() :  $GIGYA_OPTIONS;
 	}
 endif;
+
 
 if(!function_exists('gigya_msg') ) :
 	function gigya_msg($error = null,$params = array()){
@@ -231,22 +252,22 @@ if(!function_exists('gigya_get_first_image')) :
 	}
 endif;
 
-if(!function_exists('gigya_share_plugin')) :
-	function gigya_share_plugin($content){
+if(!function_exists('gigya_get_share_plugin_')) :
+	function gigya_get_share_plugin($pos = ""){ /* pos = bottom | top*/
 		global $post;
+		$share = "";
 		
-		if(gigya_get_option("share_plugin")==1){
-			$id = $post->ID;		
-			$permalink = get_permalink($id);
-			$title =  htmlspecialchars_decode(esc_js($post->post_title));	
-			$first_img_url = gigya_get_first_image($post);
-			$share_buttons = trim(gigya_get_option("share_providers"));
-			if(empty($share_buttons)) $share_buttons = "share,facebook-like,google-plusone,twitter,email";
-			if(empty($first_img_url)) $first_img_url = get_bloginfo('wpurl').'/'.WPINC.'/images/blank.gif';
+		$id = $post->ID;		
+		$permalink = get_permalink($id);
+		$title =  htmlspecialchars_decode(esc_js($post->post_title));	
+		$first_img_url = gigya_get_first_image($post);
+		$share_buttons = trim(gigya_get_option("share_providers"));
+		if(empty($share_buttons)) $share_buttons = "share,facebook-like,google-plusone,twitter,email";
+		if(empty($first_img_url)) $first_img_url = get_bloginfo('wpurl').'/'.WPINC.'/images/blank.gif';
 			
-		$content .= "<div class='gig-share-button' id='gig-div-buttons-$id' style='margin:10px 0 10px 0;'></div>";
-		$content .= "<script language='javascript'>";
-		$content .= 	"var conf_$id = {
+		$share .= "<div class='gig-share-button gig-share-button-$pos' id='gig-div-buttons-$id-$pos'></div>";
+		$share .= "<script language='javascript'>";
+		$share .= 	"var conf_$id = {
 							APIKey: '".gigya_get_option("api_key")."'
     					};
 						
@@ -260,15 +281,44 @@ if(!function_exists('gigya_share_plugin')) :
 
 						var params_$id ={ 
 							userAction:ua_$id,
-							cssPrefix:'#gig-div-buttons-$id',
+							cssPrefix:'#gig-div-buttons-$id-$pos',
 							shareButtons:'$share_buttons', // list of providers
-							containerID: 'gig-div-buttons-$id',
+							containerID: 'gig-div-buttons-$id-$pos',
         					cid:''
 						};
 						gigya.services.socialize.showShareBarUI(conf_$id,params_$id);
 					</script>
 					";
+		
+		#return string <div id=""></div><script></script>
+		$share = apply_filters("share_plugin",$share,array(
+			"api"=>gigya_get_option("api_key"),
+			"post_id"=>$id,
+			"permalink"=>$permalink,
+			"title"=>$title,
+			"first_img_url"=>$first_img_url
+		));
+		
+		return $share;
+	};
+endif;
+
+if(!function_exists('gigya_share_plugin')) :
+	function gigya_share_plugin($content){
+		$gigya_share = gigya_get_option("share_plugin"); 
+		if(empty($gigya_share) || $gigya_share ==3){
+			$bottomHTML = gigya_get_share_plugin("bottom");
+			$content =  $content.$bottomHTML;
 		} 
+		
+		if($gigya_share==2 || $gigya_share==3){ /* Top */
+			$topHTML = gigya_get_share_plugin("top");
+			$content = $topHTML.$content;
+		} 
+		
+		if(gigya_get_option("share_plugin")==1) { /* No Share Bar */
+				
+		}
 		
 		return $content;
 	}
@@ -292,6 +342,7 @@ if(!function_exists('gigya_add_comment')) :
 				);
 				
 				wp_insert_comment($data);
+				do_action("gigya_add_comment",$data);
 			}
 		endif;
 				
@@ -369,3 +420,141 @@ if(!function_exists('gigya_update_avatar_image')) :
 		return $avatar;
 	}
 endif;	
+
+if ( !function_exists( 'gigya_get_avatar_url' ) ) :
+
+	function gigya_get_avatar_url( $id_or_email, $size = '96', $default = '', $alt = false ) {
+		if ( ! get_option('show_avatars') )
+			return false;
+	
+		if ( false === $alt)
+			$safe_alt = '';
+		else
+			$safe_alt = esc_attr( $alt );
+	
+		if ( !is_numeric($size) )
+			$size = '96';
+	
+		$email = '';
+		if ( is_numeric($id_or_email) ) {
+			$id = (int) $id_or_email;
+			$user = get_userdata($id);
+			if ( $user )
+				$email = $user->user_email;
+		} elseif ( is_object($id_or_email) ) {
+			// No avatar for pingbacks or trackbacks
+			$allowed_comment_types = apply_filters( 'get_avatar_comment_types', array( 'comment' ) );
+			if ( ! empty( $id_or_email->comment_type ) && ! in_array( $id_or_email->comment_type, (array) $allowed_comment_types ) )
+				return false;
+	
+			if ( !empty($id_or_email->user_id) ) {
+				$id = (int) $id_or_email->user_id;
+				$user = get_userdata($id);
+				if ( $user)
+					$email = $user->user_email;
+			} elseif ( !empty($id_or_email->comment_author_email) ) {
+				$email = $id_or_email->comment_author_email;
+			}
+		} else {
+			$email = $id_or_email;
+		}
+	
+		if ( empty($default) ) {
+			$avatar_default = get_option('avatar_default');
+			if ( empty($avatar_default) )
+				$default = 'mystery';
+			else
+				$default = $avatar_default;
+		}
+	
+		if ( !empty($email) )
+			$email_hash = md5( strtolower( $email ) );
+	
+		if ( is_ssl() ) {
+			$host = 'https://secure.gravatar.com';
+		} else {
+			if ( !empty($email) )
+				$host = sprintf( "http://%d.gravatar.com", ( hexdec( $email_hash[0] ) % 2 ) );
+			else
+				$host = 'http://0.gravatar.com';
+		}
+	
+		if ( 'mystery' == $default )
+			$default = "$host/avatar/ad516503a11cd5ca435acc9bb6523536?s={$size}"; // ad516503a11cd5ca435acc9bb6523536 == md5('unknown@gravatar.com')
+		elseif ( 'blank' == $default )
+			$default = includes_url('images/blank.gif');
+		elseif ( !empty($email) && 'gravatar_default' == $default )
+			$default = '';
+		elseif ( 'gravatar_default' == $default )
+			$default = "$host/avatar/s={$size}";
+		elseif ( empty($email) )
+			$default = "$host/avatar/?d=$default&amp;s={$size}";
+		elseif ( strpos($default, 'http://') === 0 )
+			$default = add_query_arg( 's', $size, $default );
+	
+		if ( !empty($email) ) {
+			$out = "$host/avatar/";
+			$out .= $email_hash;
+			$out .= '?s='.$size;
+			$out .= '&amp;d=' . urlencode( $default );
+	
+			$rating = get_option('avatar_rating');
+			if ( !empty( $rating ) )
+				$out .= "&amp;r={$rating}";
+	
+			return $out;
+		} else {
+			return $default;
+		}
+	
+		return apply_filters('get_avatar', $avatar, $id_or_email, $size, $default, $alt);
+	}
+endif;
+
+
+/* width
+   header_text
+   height
+   button_size
+   enabledProviders
+	bgColor
+*/
+
+function render_login_plugin($atts = array()){
+ 	require_once(GIGYA_PLUGIN_PATH.'/resources/widget.php');
+ 	$gigya_widget = new GigyaSO_Widget($atts);
+	$gigya_widget->render_css();
+	global $current_user;
+	wp_get_current_user();
+	// check logged in
+    if( 0 == $current_user->ID):
+    	$gigya_widget->render_tmpl();
+		$gigya_widget->login();
+	else:
+ 		$gigya_widget->is_logged_in($current_user);
+  	endif;
+}
+
+add_shortcode('login_plugin','render_login_plugin');
+
+function generate_random_div_id($length = 6) {
+    $range = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+    $max = strlen($range) - 1;
+
+    // Generates random id of length $length.
+    $id = '';
+    for ($count = 0; $count < $length; $count++)
+    {
+        $id .= $range[rand(0, $max)];
+    }
+    return "cmp-$id";
+} 
+
+/* Load external file for future extensions */
+function gigya_load_external_file() {
+	$path = ((!defined( 'WP_CONTENT_DIR' ) ? ABSPATH . 'wp-content': WP_CONTENT_DIR )) . '/gigya-custom.php';
+	if(file_exists($path)) {
+		load_template($path,1);
+	}
+}
+

@@ -3,12 +3,24 @@
 	$post_id = get_the_ID();
 	$permalink = get_permalink($post_id);
 	$title =  htmlspecialchars_decode(esc_js(get_the_title()));
+	$api = gigya_get_option("api_key");
+	
+	$comments = apply_filters("comments_plugin","",array(
+		"post_id"=>$post_id,
+		"permalink"=>$permalink,
+		"title"=>$title,
+		"api"=>$api
+	));
+	
+	if(!empty($comments)):
+		echo $comments;
+	else:
 ?>
 
 	<div id='comments' class="gigya-comments-wrap"></div>
 	<script type='text/javascript'>
 		var conf_cmnts_<?php echo $post_id;?> = {
-			APIKey: "<?php echo gigya_get_option("api_key");?>"
+			APIKey: "<?php echo $api;?>"
     	};  
     	var params_cmnts_<?php echo $post_id;?> = {  
         	// Required parameters:  
@@ -34,7 +46,9 @@
     	gigya.services.socialize.showCommentsUI(conf_cmnts_<?php echo $post_id;?>,params_cmnts_<?php echo $post_id;?>);
     	
 	</script>
-					
+<?php 
+	endif;
+?>					
 			
 				
 		

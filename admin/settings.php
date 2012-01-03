@@ -2,7 +2,7 @@
 	if(!current_user_can(GIGYA_PERMISSION_LEVEL))
 		wp_die(__('Cheatin&#8217; uh?'));
 	
-	$helpUrl = 'options-general.php?page=gigya-socialize-for-wordpress/gigya.php&help=1';
+	$helpUrl = 'http://developers.gigya.com/';
 		
 	if(isset($_GET["help"])) {
 		include 'help.php';
@@ -17,12 +17,15 @@
 	$login_ui = gigya_get_option("login_ui");
 	$force_email = gigya_get_option("force_email") == 1 ?  1 : 0;
 	$account_linking = gigya_get_option("account_linking") == 1 ? 1 : 0 ;
-	$share_plugin = gigya_get_option("share_plugin") == 1 ? 1 : 0 ;
+	$share_plugin = gigya_get_option("share_plugin");
 	$comments_plugin = gigya_get_option("comments_plugin") == 1 ? 1 : 0 ;
 	$gigya_comments_cat_id = gigya_get_option("gigya_comments_cat_id");
 	$login_plugin = gigya_get_option("login_plugin") == 1 ? 1 : 0 ; 
 	$providers = gigya_get_option("share_providers"); 
 	$loginProviders = gigya_get_option("login_providers");
+	$load_jquery = gigya_get_option("load_jquery");
+	
+	
 ?>  
 
 <input type="hidden" name="wordtour_settings[default_artist]" value="<?php echo $options["default_artist"]?>"></input>
@@ -31,7 +34,7 @@
 	<h2><?php _e( 'gigya'); ?></h2>
 	
 	<?php
-	echo sprintf( __( 'You can receive help for many of these settings by clicking <a target="_blank"  href="%1$s">here</a>.' ), $helpUrl );
+	echo sprintf( __( 'To learn more about gigya & how setup an account, please visit our developer documentation <a target="_blank"  href="%1$s">here</a>.' ), $helpUrl );
 	?>
 	
 	<form action="options.php" method="post">
@@ -60,6 +63,9 @@
 						<input type="text" class="large-text" value="<?php echo $lang;?>" id="gigya_lang" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[lang]">
 						<span class="description">
 							en (default),zh-cn,zh-hk,zh-tw,cs,da,nl,fi,fr,de,el,hu,it,ja,ko,no,pl,pt,pt-br,ru,es,es-mx,sv,tl
+							<p>
+							If not defined, English will be the default language. For the complete list of supported languages, go the <a href="http://developers.gigya.com/020_Client_API/010_Objects/Conf_object" target="_blank">gigya documentation</a>
+							</p>
 						</span>
 					</td>
 				</tr>
@@ -69,10 +75,7 @@
 						<input type="text" class="large-text" value="<?php echo $post_login_redirect;?>" id="gigya_post_login_redirect" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[post_login_redirect]">
 						<br/>
 						<span class="description">
-						<?php _e( 'If you provide a value here, users will be redirect to this paged after logging in via either the Gigya widget on the login page or the regular login form.  To redirect to '); 
-							   echo "your blog home page, enter " . home_url();
-							   echo ", your blog admin page, enter " . admin_url();
-						?> 
+						<?php _e( 'Provide a URL to redirect users after they logged-in via Gigya social login.'); ?> 
 						</span>
 					</td>
 				</tr>
@@ -82,7 +85,7 @@
 						<input type="checkbox" <?php echo ($force_email ? "checked='true'" : "");?> value="1" id="gigya_force_email" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[force_email]">
 						<br/>
 						<span class="description">
-						<?php _e( 'When enabled, new user registering with a social network that does not provide email (such as Twitter, , Linkedin or others), the user will be prompt with a dialog to complete the registration by providing an email.  Otherwise a temporary email will be generated for the user in-order to complete the registration.'); 
+						<?php _e( 'When enabled, new user registering with a social network which does not provide a user email (such as Twitter, Linkedin or others) will be required to provide an Email to complete his registration process to the site. Otherwise a temporary email will be generated for the user in-order to complete the registration.'); 
 						?> 
 						</span>
 					</td>
@@ -131,10 +134,16 @@
 				<tr>	
 					<th scope="row"><label for="gigya_Share_Btn"><?php _e( 'Enable Gigya Share Button' ); ?></label></th>
 					<td scope="row">
-						<input type="checkbox" <?php echo ($share_plugin ? "checked='true'" : "");?> value="1" id="gigya_share_plugin" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[share_plugin]">					
+						<select id="gigya_share_plugin" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[share_plugin]">
+							<option <?php if($share_plugin==1) echo "selected='true'";?> value="1">None</option>
+							<option <?php if(empty($share_plugin)) echo "selected='true'";?> value="">Bottom</option>
+							<option <?php if($share_plugin==2) echo "selected='true'";?> value="2">Top</option>
+							<option <?php if($share_plugin==3) echo "selected='true'";?> value="3">Both</option>
+						</select>
+											
 						<br/>
 						<span class="description">
-						<?php _e( 'The Share plugin makes it easy for your blog readers to syndicate content to Social Network by adding a share button at the end of each post.'); 
+						<?php _e( 'The Share plugin makes it easy for your blog readers to syndicate content to Social Network by adding a share buttons to blog posts.'); 
 						?> 
 						</span>
 					</td>
@@ -182,12 +191,31 @@
 						<textarea rows="10" class="large-text" id="gigya_login_ui" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[login_ui]"><?php echo $login_ui;?></textarea>
 						<br/>
 						<span class="description">
-						To customize the look of the sign in component provided by the Gigya Socialize for WordPress plugin, you can provide generated interface code here.  If nothing is provided the default will be used. Please see <a target="_blank" href="<?php echo $helpUrl;?>#login-ui">here</a> for help on what to put in the text area.
+						To customize the look of the sign in component provided by the Gigya Socialize for WordPress plugin, you can provide generated interface code here.  If nothing is provided the default will be used. Please see <a target="_blank" href=" http://developers.gigya.com/050_CMS_Modules/030_Wordpress_Plugin">here</a> for help on what to put in the text area.
 						</span>
 					</td>
 				</tr>
 			</tbody>
-		</table>
+			</table>
+			<br>
+			<h3><?php _e('Scripts'); ?></h3>
+			<table>
+				<tr>
+					<th scope="row" valign="top"><label><?php _e( 'Update jQuery' ); ?></label></th>
+					<td>
+						<select id="gigya_load_jquery" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[load_jquery]">
+							<option value="">No</option>
+							<option <?php if($load_jquery == "1") echo 'selected="true"';?> value="1">Load From Site</option>
+							<option <?php if($load_jquery == "2") echo 'selected="true"';?> value="2">Load From Google CDN</option>
+						</selev>
+						<span class="description">
+						Load lastest version of jQuery & jQuery UI
+						</span>
+					</td>
+				</tr>
+				
+			</tbody>
+			</table>
 		<p class="submit">
 			<input type="submit" value="<?php _e('Save Changes') ?>" class="button-primary" name="Submit">
 		</p>

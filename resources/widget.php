@@ -3,6 +3,7 @@ class GigyaSO_Widget extends GigyaSO_Core {
 	private $options = null;
 	public function __construct($options = array()){
 		$this->options = $options;
+		$this->cmpId = generate_random_div_id();
 	}
 	
 	public function render_css($css = array()){
@@ -32,6 +33,7 @@ class GigyaSO_Widget extends GigyaSO_Core {
 		
 		
 		$params["header_text"] = esc_attr($options['header_text']);
+		 
 		
 		$width = esc_attr($options['width']);
 		if(empty($width) || !is_numeric($width)) {
@@ -46,6 +48,8 @@ class GigyaSO_Widget extends GigyaSO_Core {
 		$params["height"] = $height;
 	
     	$button_size = esc_attr($options['button_size']);
+    	
+    	
 		if(empty($button_size) || !is_numeric($button_size)) {
 			$button_size = "24";
 		}
@@ -60,6 +64,7 @@ class GigyaSO_Widget extends GigyaSO_Core {
 		$bgColor = trim($options["bgColor"]); 
 		if(!empty($bgColor)) $params["bgColor"] = $bgColor; 
 		
+		$params["container_id"] = $this->cmpId ;
 		
 		parent::conf_and_params($params);
 	}
@@ -67,7 +72,7 @@ class GigyaSO_Widget extends GigyaSO_Core {
 	public function login(){ 
 	?>
 		
-		<div id="componentDiv"></div>
+		<div id="<?php echo $this->cmpId; ?>"></div>
 		<script type="text/javascript">
 		//<![CDATA[
 			jQuery(document).ready(function($) {

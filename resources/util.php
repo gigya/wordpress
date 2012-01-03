@@ -6,7 +6,8 @@ class GigyaSO_Util {
 		$secret_key = gigya_get_option("secret_key");
 		$is_valid = SigUtils::validateUserSignature($UID, $timestamp,$secret_key, $signature);
 		if(!$is_valid)
-			return new WP_Error("error","<strong>ERROR: </strong>signature is not valid");         
+			return new WP_Error("error","<strong>ERROR: </strong>signature is not valid");  
+		       
 		return 1;
 	} 
 	
@@ -23,7 +24,9 @@ class GigyaSO_Util {
 		//echo date("F j, Y, g:i a",$_SERVER['REQUEST_TIME']);     
 		if($response->getErrorCode()!=0)
 			return new WP_Error("error","<strong>ERROR: </strong>".$response->getErrorMessage().$uid);         
-	
+		
+		do_action("notify_registration",$user_id);	
+			
 		return 1;
 	} 
 	
@@ -39,36 +42,56 @@ class GigyaSO_Util {
 		$response = $request->send();  
 		if($response->getErrorCode()!=0)
 			return new WP_Error("error","<strong>ERROR: </strong>".$response->getErrorMessage());         
-	
+		
+		do_action("setUID",$user_id);
+			
 		return 1;
 	}
 	
 	public static function notify_login($user_id,$is_new_user = 0){
-		require_once(GIGYA_PLUGIN_PATH.'/sdk/GSSDK.php');	
+		require_once(GIGYA_PLUGIN_PATH.'/sdk/GSSDK.php');
+		/* Set as global identification in user.php signon & signon_gigya_user */
+		global $is_gigya_user;
 		if($user_id) {
 			$api_key = gigya_get_option("api_key");
 			$secret_key = gigya_get_option("secret_key");
 			$request = new GSRequest($api_key,$secret_key,"socialize.notifyLogin");
 			$request->setParam("siteUID",$user_id);
 			// user not registered with gigya login widget - with regular wordpress sign up form
-			if($is_new_user) {
-				$request->setParam("newUser",true);
-				$current_user = get_userdata($user_id);;
+			if($is_new_user) $request->setParam("newUser",true);
+			
+			if(!$is_gigya_user) {
+				$current_user = get_userdata($user_id);
+			
+			
 				$userInfo = (object) array(
-					"nickname"  => $current_user->user_nicename,
+					"nickname"  => $current_user->user_login,
 					"email"     => $current_user->user_email,
 					"firstName" => $current_user->user_firstname,
-					"lastName"  => $current_user->user_lastname
+					"lastName"  => $current_user->user_lastname,
+					"profileURL"=> $current_user->user_url,
+					"photoURL"  => gigya_get_avatar_url($user_id)
 				);
-				//photoURL,thumbnailURL;
+				
+				$userInfo = apply_filters('notify_login_user_info',$userInfo,$user_id);
+				
+			
 				$request->setParam("userInfo",json_encode($userInfo));
 			}
+			
 			$response = $request->send();
+			
 			if($response->getErrorCode()!=0)
 				return new WP_Error("error","<strong>ERROR: </strong>".$response->getErrorMessage());
-				
-			setcookie($response->getString('cookieName'), $response->getString('cookieValue'), 0, $response->getString('cookiePath'));	
+
+			try {
+				setcookie ($response->getString("cookieName"), $response->getString("cookieValue"),0,$response->getString("cookiePath"),$response->getString("cookieDomain"));
+			} catch (Exception $e) {}
+
+			do_action("notify_login",$user_id);
+			
 			return 1;
+			
 		}
 		return 0;
 	}
@@ -83,6 +106,8 @@ class GigyaSO_Util {
 			$response = $request->send();
 			if($response->getErrorCode()!=0)
 				return new WP_Error("error","<strong>ERROR: </strong>".$response->getErrorMessage());
+			
+			do_action("notify_logout",$user_id);
 			return 1;
 		}
 		return 0;
@@ -99,6 +124,8 @@ class GigyaSO_Util {
 			$response = $request->send();
 			if($response->getErrorCode()!=0)
 				return new WP_Error("error","<strong>ERROR: </strong>".$response->getErrorMessage());
+				
+			do_action("delete_account",$user_id);	
 			return 1;
 		}
 		return 0;

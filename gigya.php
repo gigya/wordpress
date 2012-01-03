@@ -4,10 +4,10 @@ Plugin Name: Make Your Site Social
 Plugin URI: http://wiki.gigya.com/050_Socialize_Plugins/030_Wordpress_Plugin
 DDescription: Increase Registration and Engagement by integrating the Gigya service into your WordPress self hosted blog.
 Author: Gil Noy for Gigya
-Version: 2.0.9
+Version: 3.0.0
 Author URI: http://www.gigya.com
 */
-define("GIGYA_VERSION","2.0.9");
+define("GIGYA_VERSION","3.0.0");
 define("GIGYA_SETTINGS_PREFIX","gigya_settings_fields");
 define("GIGYA_PERMISSION_LEVEL","manage_options");
 define("GIGYA_PLUGIN_URL",WP_PLUGIN_URL.'/'.basename(dirname(__FILE__)));
@@ -20,6 +20,8 @@ require_once(dirname(__FILE__).'/resources/util.php');
 require_once(dirname(__FILE__).'/resources/msg.php');
 require_once(dirname(__FILE__).'/widget.php');
 require_once(dirname(__FILE__).'/resources/handlers.php');
+
+gigya_load_external_file();
 
 if(!function_exists('gigya_admin_menu') ) :
 	function gigya_admin_menu() {
@@ -86,8 +88,7 @@ add_action('signup_header','gigya_signup_page');
 add_action('wp_ajax_gigya_user_login', 'gigya_user_login');
 add_action('wp_ajax_nopriv_gigya_user_login', 'gigya_user_login');
 add_action('wp_ajax_nopriv_gigya_add_comment', 'gigya_user_login');
-
-add_action('wp_ajax_gigya_user_login','gigya_user_login');
+;
 add_action('wp_login','gigya_notify_user_login');
 add_action('wp_logout','gigya_notify_user_logout');
 

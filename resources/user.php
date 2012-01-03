@@ -83,6 +83,8 @@ class GigyaSO_User {
     
     private function signon($user_id,$user_name,$password){
     	// logout user if logged in to site
+    	global $is_gigya_user;
+    	$is_gigya_user = true;
     	if($this->is_logged_in) $this->signout();	
     	// login
     	$login = wp_set_current_user($user_id);
@@ -94,6 +96,8 @@ class GigyaSO_User {
     } 
     
      private function signon_gigya_user(){
+     	global $is_gigya_user;
+    	$is_gigya_user = true;
     	// logout user if logged in to site
     	if($this->is_logged_in) $this->signout();
     	// get user data from site by siteUID

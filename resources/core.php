@@ -27,11 +27,23 @@ class GigyaSO_Core {
 		$loginProviders = gigya_get_option("login_providers");
 		if(empty($loginProviders)) $loginProviders = "*";
 		if(empty($lang)) $lang = "en";
+		
+		# return array("width"=>"","height=>"","header_text"=>"","bgColor"=>"","container_id"=>"","button_siz"=>"")
+		$params = apply_filters("login_params",$params);
+		
+		# return @string
+		$conf_and_params = apply_filters("conf_and_params_vars","");
+		if(!empty($conf_and_params)) {
+			echo $conf_and_params;
+			return false;	
+		}
+		
 		$header_text = (isset($params["header_text"]) ? $params["header_text"] : __("Sign in with your Social Network:"));
 		$width = $params["width"] ? $params["width"] : 345 ;
 		$height = $params["height"] ? $params["height"] : 145 ;
-		//$enabledProviders = $params["enabledProviders"] ? $params["enabledProviders"] : '*' ;
-		$bgColor = isset($params["bgColor"]) && !empty($params["bgColor"])  ? $params["bgColor"] : "#FFFFFF" ;   
+		$bgColor = isset($params["bgColor"]) && !empty($params["bgColor"])  ? $params["bgColor"] : "#FFFFFF" ;
+
+		
 	?>
 		var conf = {
 		     lang : '<?php echo $lang;?>',
@@ -46,7 +58,7 @@ class GigyaSO_Core {
 			context:'GigLogin',
 			pendingRegistration : true,
 			UIConfig:'<config><body><controls><snbuttons buttonsize=\"<?php echo $params["button_size"] ? $params["button_size"] : 42 ;?>\"></snbuttons></controls><background  background-color=\"<?php echo $bgColor?>\"></background></body></config>',
-			containerID:'componentDiv'
+			containerID: '<?php echo isset($params["container_id"]) ? $params["container_id"] : 'componentDiv' ;?>'
 		};
 	<?php 	
 	}
