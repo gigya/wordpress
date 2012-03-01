@@ -52,7 +52,8 @@ class GigyaSO_Util {
 		require_once(GIGYA_PLUGIN_PATH.'/sdk/GSSDK.php');
 		/* Set as global identification in user.php signon & signon_gigya_user */
 		global $is_gigya_user;
-		if($user_id) {
+		//global $is_new_gigya_user;
+		if($user_id && !$is_gigya_user) {
 			$api_key = gigya_get_option("api_key");
 			$secret_key = gigya_get_option("secret_key");
 			$request = new GSRequest($api_key,$secret_key,"socialize.notifyLogin");
@@ -62,7 +63,6 @@ class GigyaSO_Util {
 			
 			if(!$is_gigya_user) {
 				$current_user = get_userdata($user_id);
-			
 			
 				$userInfo = (object) array(
 					"nickname"  => $current_user->user_login,
@@ -74,7 +74,6 @@ class GigyaSO_Util {
 				);
 				
 				$userInfo = apply_filters('notify_login_user_info',$userInfo,$user_id);
-				
 			
 				$request->setParam("userInfo",json_encode($userInfo));
 			}

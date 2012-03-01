@@ -16,7 +16,6 @@
 		echo $comments;
 	else:
 ?>
-
 	<div id='comments' class="gigya-comments-wrap"></div>
 	<script type='text/javascript'>
 		var conf_cmnts_<?php echo $post_id;?> = {

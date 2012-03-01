@@ -4,10 +4,10 @@ Plugin Name: Make Your Site Social
 Plugin URI: http://wiki.gigya.com/050_Socialize_Plugins/030_Wordpress_Plugin
 DDescription: Increase Registration and Engagement by integrating the Gigya service into your WordPress self hosted blog.
 Author: Gil Noy for Gigya
-Version: 3.0.0
+Version: 3.0.1
 Author URI: http://www.gigya.com
 */
-define("GIGYA_VERSION","3.0.0");
+define("GIGYA_VERSION","3.0.1");
 define("GIGYA_SETTINGS_PREFIX","gigya_settings_fields");
 define("GIGYA_PERMISSION_LEVEL","manage_options");
 define("GIGYA_PLUGIN_URL",WP_PLUGIN_URL.'/'.basename(dirname(__FILE__)));
@@ -79,6 +79,8 @@ endif;
 
 add_action('init','gigya_init_options');
 add_action('init','gigya_enque_js');
+add_action('wp_head','gigya_enque_gigya_script');
+add_action('login_head','gigya_enque_gigya_script');
 add_action('admin_init','gigya_admin_init');
 add_action('admin_menu','gigya_admin_menu' );
 
@@ -90,8 +92,8 @@ add_action('wp_ajax_nopriv_gigya_user_login', 'gigya_user_login');
 add_action('wp_ajax_nopriv_gigya_add_comment', 'gigya_user_login');
 ;
 add_action('wp_login','gigya_notify_user_login');
-add_action('wp_logout','gigya_notify_user_logout');
-
+// instead of wp_logout action - in wp_logout cant retrieve user id - neccessary for notifing Gigya api
+add_action('clear_auth_cookie','gigya_notify_user_logout');
 add_action('user_register','gigya_notify_user_register');
 
 # End

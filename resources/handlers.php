@@ -64,27 +64,27 @@ if(!function_exists('gigya_enque_js') ) :
 			wp_register_script("jquery",$jquery_path,array(),"1.7.1");
 			wp_register_script("jquery-ui",$jquery_ui_path,array("jquery"),"1.8.16");
 			
-			$raw_js_files = array(
-				array("name"=>"jquery","is_enque"=>1,"url"=>$jquery_path,"is_admin"=>0),
-				array("name"=>"jquery-ui","is_enque"=>1,"url"=>$jquery_ui_path,"is_admin"=>0),
-				array("name"=>"jquery.tmpl","is_enque"=>0,"url"=>GIGYA_PLUGIN_URL."/js/jquery.tmpl.js","is_admin"=>0),
-				array("name"=>"json2","is_enque"=>1,"url"=>"json2.js","is_admin"=>0),
-				array("name"=>"gigya","is_enque"=>0,"url"=>GIGYA_PLUGIN_URL."/js/gigya.js","is_admin"=>0),
-				array("name"=>"gigya-socialize","is_enque"=>0,"url"=>"http://cdn.gigya.com/JS/socialize.js?apikey=".gigya_get_option("api_key"),"is_admin"=>1)
-			);	
+			$raw_js_files  = array();
+			array_push($raw_js_files,array("name"=>"jquery","is_enque"=>1,"url"=>$jquery_path,"is_admin"=>0));
+			if(!is_user_logged_in() && is_active_widget(false,false,"gigya",false)) {
+				array_push($raw_js_files,array("name"=>"jquery-ui","is_enque"=>1,"url"=>$jquery_ui_path,"is_admin"=>0));
+				array_push($raw_js_files,array("name"=>"jquery.tmpl","is_enque"=>0,"url"=>GIGYA_PLUGIN_URL."/js/jquery.tmpl.js","is_admin"=>0));
+				array_push($raw_js_files,array("name"=>"json2","is_enque"=>1,"url"=>"json2.js","is_admin"=>0));
+			}
+			array_push($raw_js_files,array("name"=>"gigya","is_enque"=>0,"url"=>GIGYA_PLUGIN_URL."/js/gigya.js","is_admin"=>0));
+			//array_push($raw_js_files,array("name"=>"gigya-socialize","is_enque"=>0,"url"=>"http://cdn.gigya.com/JS/socialize.js?apikey=".gigya_get_option("api_key"),"is_admin"=>1));
 			
 		} else {
-			$raw_js_files = array(
-				array("name"=>"jquery","is_enque"=>1,"url"=>"jquery/jquery.js","is_admin"=>0),
-				array("name"=>"jquery.tmpl","is_enque"=>0,"url"=>GIGYA_PLUGIN_URL."/js/jquery.tmpl.js","is_admin"=>0),
-				array("name"=>"json2","is_enque"=>1,"url"=>"json2.js","is_admin"=>0),
-				array("name"=>"jquery-ui-core","is_enque"=>1,"url"=>"jquery/ui.core.js","is_admin"=>0),
-				array("name"=>"jquery-ui-draggable","is_enque"=>1,"url"=>"jquery/ui.draggable.js","is_admin"=>0),
-				array("name"=>"jquery-ui-resizable","is_enque"=>1,"url"=>"jquery/ui.resizable.js","is_admin"=>0),
-				array("name"=>"jquery-ui-dialog","is_enque"=>1,"url"=>"jquery/ui.dialog.js","is_admin"=>0),
-				array("name"=>"gigya","is_enque"=>0,"url"=>GIGYA_PLUGIN_URL."/js/gigya.js","is_admin"=>0),
-				array("name"=>"gigya-socialize","is_enque"=>0,"url"=>"http://cdn.gigya.com/JS/socialize.js?apikey=".gigya_get_option("api_key"),"is_admin"=>1)
-			);	
+			$raw_js_files  = array();
+			array_push($raw_js_files,array("name"=>"jquery","is_enque"=>1,"url"=>"jquery/jquery.js","is_admin"=>0));
+			array_push($raw_js_files,array("name"=>"jquery.tmpl","is_enque"=>0,"url"=>GIGYA_PLUGIN_URL."/js/jquery.tmpl.js","is_admin"=>0));
+			array_push($raw_js_files,array("name"=>"json2","is_enque"=>1,"url"=>"json2.js","is_admin"=>0));
+			array_push($raw_js_files,array("name"=>"jquery-ui-core","is_enque"=>1,"url"=>"jquery/ui.core.js","is_admin"=>0));
+			array_push($raw_js_files,array("name"=>"jquery-ui-draggable","is_enque"=>1,"url"=>"jquery/ui.draggable.js","is_admin"=>0));
+			array_push($raw_js_files,array("name"=>"jquery-ui-resizable","is_enque"=>1,"url"=>"jquery/ui.resizable.js","is_admin"=>0));
+			array_push($raw_js_files,array("name"=>"jquery-ui-dialog","is_enque"=>1,"url"=>"jquery/ui.dialog.js","is_admin"=>0));
+			array_push($raw_js_files,array("name"=>"gigya","is_enque"=>0,"url"=>GIGYA_PLUGIN_URL."/js/gigya.js","is_admin"=>0));
+			//array_push($raw_js_files,array("name"=>"gigya-socialize","is_enque"=>0,"url"=>"http://cdn.gigya.com/JS/socialize.js?apikey=".gigya_get_option("api_key"),"is_admin"=>1));	
 		}
 		
 		
@@ -101,12 +101,33 @@ if(!function_exists('gigya_enque_js') ) :
 			} 	
 		} else {
 			$wp_js_path = get_bloginfo('wpurl').'/'.WPINC.'/js';
+			gigya_enque_gigya_script();
 			foreach($raw_js_files as $file) {
 				$path = $file["is_enque"] ? "$wp_js_path/$file[url]" : $file[url]; 
 				echo "<script type='text/javascript' src='$path'></script>";
 			}
+			
 		}
 			
+	}
+endif;
+
+if(!function_exists('gigya_enque_gigya_script') ) :
+	function gigya_enque_gigya_script(){
+?>
+		<script type='text/javascript' src='http://cdn.gigya.com/js/socialize.js?apiKey=<?php echo gigya_get_option("api_key");?>'>
+		<?php 
+			
+			$loginProviders = gigya_get_option("login_providers");
+			if(empty($loginProviders)) $loginProviders = "*";
+			if(empty($lang)) $lang = "en";
+		?>
+			{
+		    	lang : '<?php echo $lang;?>',
+			 	enabledProviders: '<?php echo $loginProviders;?>'
+			}		
+		</script>
+<?php 
 	}
 endif;
 # get config params from gogya global options config
@@ -184,16 +205,21 @@ endif;
 if(!function_exists('gigya_notify_user_register')) :
 	function gigya_notify_user_register($user_id){
 		if(gigya_get_option("login_plugin") ==1 && $user_id):
-			GigyaSO_Util::notify_login($user_id,1);
+			global $is_gigya_user,$gigya_user_data;
+    		if(!$is_gigya_user) {
+    			GigyaSO_Util::notify_login($user_id,1);
+    		}
 		endif;
 	}
 endif;
 
 
 if(!function_exists('gigya_notify_user_logout')) :
-	function gigya_notify_user_logout($user_id){
+	function gigya_notify_user_logout(){
 		if(gigya_get_option("login_plugin") ==1):
-			if($user_id) {
+			$current_user = wp_get_current_user();
+			$user_id = $current_user->ID;
+			if($user_id > 0) {	
 				GigyaSO_Util::notify_logout($user_id);
 			}
 		endif;
@@ -264,11 +290,16 @@ if(!function_exists('gigya_get_share_plugin_')) :
 		$share_buttons = trim(gigya_get_option("share_providers"));
 		if(empty($share_buttons)) $share_buttons = "share,facebook-like,google-plusone,twitter,email";
 		if(empty($first_img_url)) $first_img_url = get_bloginfo('wpurl').'/'.WPINC.'/images/blank.gif';
+		
+		$lang = gigya_get_option("lang");
+		$loginProviders = gigya_get_option("login_providers");
 			
 		$share .= "<div class='gig-share-button gig-share-button-$pos' id='gig-div-buttons-$id-$pos'></div>";
 		$share .= "<script language='javascript'>";
 		$share .= 	"var conf_$id = {
-							APIKey: '".gigya_get_option("api_key")."'
+							APIKey: '".gigya_get_option("api_key")."',
+							lang  : '$lang',
+							enabledProviders: '$loginProviders'
     					};
 						
     					var image$id = {src:'$first_img_url',href:'$permalink',type:'image'};
@@ -372,35 +403,35 @@ function gigya_comments_can_replace(){
 }
 
 
-function gigya_comments_number($value) {
-    return gigya_get_comments_number($value);
-}
+//function gigya_comments_number($value) {
+//    return gigya_get_comments_number($value);
+//}
 
-add_filter('comments_number', 'gigya_comments_number');
+//add_filter('comments_number', 'gigya_comments_number');
 
-function gigya_get_comments_number($value) {
-	global $post;
-	
-	if(!gigya_comments_can_replace()) return $value;
-    
-	require_once(GIGYA_PLUGIN_PATH.'/sdk/GSSDK.php');
-	$api_key = gigya_get_option("api_key");
-	$secret_key = gigya_get_option("secret_key");
-	$request = new GSRequest($api_key,$secret_key,"comments.getStreamInfo");
-	$request->setParam("categoryID",gigya_get_option("gigya_comments_cat_id"));
-	$request->setParam("streamID","comments-".$post->ID);
-	
-	$response = $request->send();  
-	
-	if($response->getErrorCode()!=0)
-		return 0;
-	
-	$data_array = $response->getArray("streamInfo");
-	
-	return $data_array->getArray("commentCount");
-}
-
-add_filter('get_comments_number', 'gigya_get_comments_number');
+//function gigya_get_comments_number($value) {
+//	global $post;
+//	
+//	if(!gigya_comments_can_replace()) return $value;
+//    
+//	require_once(GIGYA_PLUGIN_PATH.'/sdk/GSSDK.php');
+//	$api_key = gigya_get_option("api_key");
+//	$secret_key = gigya_get_option("secret_key");
+//	$request = new GSRequest($api_key,$secret_key,"comments.getStreamInfo");
+//	$request->setParam("categoryID",gigya_get_option("gigya_comments_cat_id"));
+//	$request->setParam("streamID","comments-".$post->ID);
+//	
+//	$response = $request->send();  
+//	
+//	if($response->getErrorCode()!=0)
+//		return 0;
+//	
+//	$data_array = $response->getArray("streamInfo");
+//	
+//	return $data_array->getArray("commentCount");
+//}
+//
+//add_filter('get_comments_number', 'gigya_get_comments_number');
 
 
 

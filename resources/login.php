@@ -9,6 +9,7 @@ class GigyaSO_Login extends GigyaSO_Core {
 	
 	public function conf_and_params($params = array()){
 		$login_ui = gigya_get_option("login_ui");
+		
 		if(!empty($login_ui)) {
 			echo $login_ui;
 			return;
@@ -32,7 +33,7 @@ class GigyaSO_Login extends GigyaSO_Core {
 	public function login(){ 
 	?>
 		<?php $this->conf_and_params();?>
-		gigya.services.socialize.showLoginUI(conf,login_params);
+		gigya.services.socialize.showLoginUI(login_params);
 		gigya.services.socialize.addEventHandlers(conf,{
 			onLogin:function(userObject){
 				Gigya.Ajax.setUserObject(userObject);

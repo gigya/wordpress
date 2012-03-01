@@ -24,9 +24,6 @@ class GigyaSO_Core {
 	public function conf_and_params($params = array()){
 		$api_key = gigya_get_option("api_key");
 		$lang = gigya_get_option("lang");
-		$loginProviders = gigya_get_option("login_providers");
-		if(empty($loginProviders)) $loginProviders = "*";
-		if(empty($lang)) $lang = "en";
 		
 		# return array("width"=>"","height=>"","header_text"=>"","bgColor"=>"","container_id"=>"","button_siz"=>"")
 		$params = apply_filters("login_params",$params);
@@ -45,11 +42,7 @@ class GigyaSO_Core {
 
 		
 	?>
-		var conf = {
-		     lang : '<?php echo $lang;?>',
-			 enabledProviders: '<?php echo $loginProviders;?>'
-		};
-		
+		var conf = {};
 		var login_params = {
 			showTermsLink:false,
 			headerText:'<label><?php echo $header_text; ?></label>',

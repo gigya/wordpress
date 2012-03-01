@@ -38,6 +38,8 @@ class GigyaSO_User {
 	} 
 	
 	public function __construct($data=null) {
+		global $gigya_user_data;
+				$gigya_user_data = $data;
 		$this->data = $data;
 		$this->is_gigya     = $this->is_user();
 		$this->uid          = $data->UID;
@@ -123,7 +125,7 @@ class GigyaSO_User {
 		require_once (ABSPATH.WPINC.'/registration.php');
 		// check if user has siteUID, if exist user registered to site and gigya and can login
 		if($this->is_gigya) {
-			$signon = $this->signon_gigya_user();  
+			$signon = $this->signon_gigya_user();
 			if(is_wp_error($signon)) return $signon;
 			return 1;
 		};			
@@ -243,6 +245,8 @@ class GigyaSO_User {
 	}
 	
 	private function add_new_user($email="") {
+		global $is_gigya_user;
+    	$is_gigya_user = true;
 		$user_name = $this->generate_user_name($this->data->user->nickname);
 		if(is_wp_error($user_name)) 
 			return $user_name; 

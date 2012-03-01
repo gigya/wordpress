@@ -102,6 +102,13 @@
 					
 					</td>
 				</tr>
+				<tr>
+					<th scope="row"><label for="gigya_login_providers"><?php _e( 'Login Providers' ); ?></label></th>
+					<td>
+						<input type="text" class="large-text" value="<?php echo $loginProviders;?>" id="gigya_login_providers" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[login_providers]">
+						<p class="description">Leave empty or type * for all providers or define specific providers, for example: facebook,twitter,google,linkedin</p>
+					</td>
+				</tr>
 			</tbody>
 			</table>
 			<br>
@@ -118,13 +125,7 @@
 						</span>
 					</td>
 				</tr>
-				<tr>
-					<th scope="row"><label for="gigya_login_providers"><?php _e( 'Login Providers' ); ?></label></th>
-					<td>
-						<input type="text" class="large-text" value="<?php echo $loginProviders;?>" id="gigya_login_providers" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[login_providers]">
-						<p class="description">Leave empty or type * for all providers or define specific providers, for example: facebook,twitter,google,linkedin</p>
-					</td>
-				</tr>
+				
 			</tbody>
 			</table>
 			<br>
