@@ -24,6 +24,7 @@
 	$providers = gigya_get_option("share_providers"); 
 	$loginProviders = gigya_get_option("login_providers");
 	$load_jquery = gigya_get_option("load_jquery");
+	$global_params = gigya_get_option("global_params");
 	
 	
 ?>  
@@ -45,6 +46,10 @@
 		<h3><?php _e( 'General Settings' ); ?></h3>
 		<table class="form-table">
 			<tbody>
+				<tr>
+					<td><?php _e( 'Version' ); ?></td>
+					<td><?php echo GIGYA_VERSION;?></td>
+				</tr>
 				<tr>
 					<th scope="row"><label for="gigya_api_key"><?php _e( 'Gigya Socialize API Key' ); ?></label></th>
 					<td>
@@ -69,6 +74,15 @@
 						</span>
 					</td>
 				</tr>
+				<tr>
+					<th scope="row"><label for="gigya_global_params"><?php _e( 'Global Parameters' ); ?></label></th>
+					<td>
+						<textarea rows="6" class="large-text" id="gigya_global_params" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[global_params]"><?php echo $global_params;?></textarea>
+					</td>
+				</tr>
+				
+				
+				
 				<tr>
 					<th scope="row"><label><?php _e( 'Post Login Redirect' ); ?></label></th>
 					<td>

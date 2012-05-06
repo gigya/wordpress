@@ -112,24 +112,47 @@ if(!function_exists('gigya_enque_js') ) :
 	}
 endif;
 
+//function gigya_localize_script(){
+//	wp_localize_script('gigyaplugin','gigyaPluginGlobals',array(
+//		'version'     => GIGYA_VERSION
+//	));
+//}
+//
+//add_action('wp_enqueue_scripts','gigya_localize_script',1);	
+	
 if(!function_exists('gigya_enque_gigya_script') ) :
 	function gigya_enque_gigya_script(){
 ?>
-		<script type='text/javascript' src='http://cdn.gigya.com/js/socialize.js?apiKey=<?php echo gigya_get_option("api_key");?>'>
+		<script type='text/javascript' src='http://cdn.gigya.com/js/socialize.js?apiKey=<?php echo gigya_get_option("api_key");?>&ver=<?php echo GIGYA_VERSION;?>'>
 		<?php 
 			
 			$loginProviders = gigya_get_option("login_providers");
+			$lang = gigya_get_option("lang");
+			$global_params = gigya_get_option("global_params");
 			if(empty($loginProviders)) $loginProviders = "*";
 			if(empty($lang)) $lang = "en";
+			if(empty($global_params)):
 		?>
-			{
-		    	lang : '<?php echo $lang;?>',
-			 	enabledProviders: '<?php echo $loginProviders;?>'
-			}		
+				{
+		    		lang : '<?php echo $lang;?>',
+			 		enabledProviders: '<?php echo $loginProviders;?>',
+			 		connectWithoutLoginBehavior: 'alwaysLogin'
+				}
+		<?php else: ?>
+			<?php echo $global_params;?>
+		<?php endif; ?>	
 		</script>
 <?php 
 	}
 endif;
+
+function gigya_enque_gigya_script_admin_init() {
+    wp_enqueue_script('gigya-socialize',"http://cdn.gigya.com/js/socialize.js?apiKey=".gigya_get_option("api_key"),array(),GIGYA_VERSION);
+}
+
+add_action('admin_enqueue_scripts','gigya_enque_gigya_script_admin_init');
+
+    
 # get config params from gogya global options config
 if(!function_exists('gigya_get_option') ) :
 	function gigya_get_option($ns=null){
@@ -384,16 +407,46 @@ endif;
 add_action('wp_ajax_gigya_add_comment', 'gigya_add_comment');
 add_action('wp_ajax_nopriv_gigya_add_comment', 'gigya_add_comment');
 
+function gigya_logout_user(){
+	wp_logout();	
+	die();
+}
+
+add_action('wp_ajax_gigya_logout_user','gigya_logout_user');
+add_action('wp_ajax_nopriv_gigya_logout_user','gigya_logout_user');
+
+
+
+
+if(!function_exists('check_if_spider')) {
+	function check_if_spider() {
+		$spiders    = array(
+			'Googlebot', 'Yammybot', 'Openbot', 'Yahoo', 'Slurp', 'msnbot','Rambler','AbachoBOT','Accoona','AcoiRobot','ASPSeek','CrocCrawler',
+            'ia_archiver', 'Lycos', 'Scooter', 'AltaVista', 'Teoma', 'Gigabot','FAST-WebCrawler','GeonaBot','Gigabot','Altavista robot','Googlebot-Mobile');
+                    
+    	foreach ($spiders as $spider) {
+        	if (eregi($spider, $_SERVER['HTTP_USER_AGENT'])) {
+            	return TRUE;
+        	}
+    	}
+    	
+    	return FALSE;
+	}
+}
+
+
 function gigya_comments_template($value) {
     global $post;
     global $comments;
     
-	if(!gigya_comments_can_replace()) {
+	if(!gigya_comments_can_replace() || check_if_spider()) {
         return $value;
     }
     
+    
     return GIGYA_PLUGIN_PATH.'/comments.php';
 }
+
 
 add_filter('comments_template', 'gigya_comments_template');
 

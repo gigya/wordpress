@@ -1,5 +1,6 @@
 // Gigya Namespace
 window.Gigya = {};
+
 jQuery(document).ready(function($) {
 	// Template Manager
 	Gigya.Tmpl = function(target){
@@ -92,6 +93,7 @@ jQuery(document).ready(function($) {
 			},
 			setUserObject: function(obj){
 				userObject = obj;
+				if(userObject.user.firstName == "") userObject.user.firstName = userObject.user.nickname;
 			},
 			login: function(data){
 				var that = this;
