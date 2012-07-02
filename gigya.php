@@ -4,10 +4,10 @@ Plugin Name: Make Your Site Social
 Plugin URI: http://wiki.gigya.com/050_Socialize_Plugins/030_Wordpress_Plugin
 DDescription: Increase Registration and Engagement by integrating the Gigya service into your WordPress self hosted blog.
 Author: Gil Noy for Gigya
-Version: 3.0.2
+Version: 3.0.3
 Author URI: http://www.gigya.com
 */
-define("GIGYA_VERSION","3.0.2");
+define("GIGYA_VERSION","3.0.3");
 define("GIGYA_SETTINGS_PREFIX","gigya_settings_fields");
 define("GIGYA_PERMISSION_LEVEL","manage_options");
 define("GIGYA_PLUGIN_URL",WP_PLUGIN_URL.'/'.basename(dirname(__FILE__)));
@@ -102,4 +102,6 @@ add_action('edit_user_profile','gigya_user_profile_extra' );
 add_action('show_user_profile','gigya_user_profile_extra' );
 add_filter('get_avatar','gigya_update_avatar_image',10,5);
 add_action('widgets_init', create_function('', 'return register_widget("WP_Widget_Gigya");'));
+add_action('widgets_init', create_function('', 'return register_widget("WP_Widget_GigyaFollowBar");'));
+add_action('widgets_init', create_function('', 'return register_widget("WP_Widget_GigyaActivityFeed");'));
 add_filter('the_content','gigya_share_plugin');

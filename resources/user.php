@@ -278,7 +278,6 @@ class GigyaSO_User {
 		$this->add_user_to_blog(0);	
 		# add user meta
 		update_user_meta($this->user_id,"avatar",$this->data->user->thumbnailURL);
-		
 		# regiter user with gigya
 		$gigya = GigyaSO_Util::notify_registration($this->user_id,$this->uid);
 		if(is_wp_error($gigya)) {

@@ -642,3 +642,23 @@ function gigya_load_external_file() {
 	}
 }
 
+
+function get_followbar_default_buttons(){
+	$buttons = array();
+	
+	$defaults_button = array(
+        array("provider"=>"facebook","actionURL"=>"https://www.facebook.com/gigya","action"=>"dialog"),
+        array("provider"=>"twitter","followUsers"=>"gigya, gigyaDev","action"=>"dialog"),
+        array("provider"=>"googleplus","actionURL"=>"https://plus.google.com/107788669599113247501/posts","action"=>"dialog")
+	);
+        
+	foreach($defaults_button as $button_object) {
+        foreach($button_object as $key=>$value) {
+			$button[] = "$key:'$value'\n";	
+        }
+        $buttons[] = "{\n".implode(",",$button)."}\n"; 	
+	}
+        
+    return "[".implode(",",$buttons)."]";
+}
+

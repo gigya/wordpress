@@ -109,3 +109,75 @@ class GigyaSO_Widget extends GigyaSO_Core {
 	<?php
 	}	
 }
+
+class GigyaFollowBar_Widget extends GigyaSO_Core {
+	private $options = null;
+	public function __construct($options = array()){
+		$this->options = $options;
+		$this->cmpId = generate_random_div_id();
+	}
+	
+	public function render(){
+		$options = $this->options;
+		
+		$buttons = empty($options['buttons']) ? get_followbar_default_buttons() : $options['buttons'];
+		$icon_size = $options['iconSize'];
+		$layout = $options['layout'];
+	
+		if(empty($icon_size) || !is_numeric($icon_size)) $icon_size = "32";
+		if(empty($layout) || $layout!="vertical") $layout = "horizontal";
+	
+		?>
+		
+		<div id="<?php echo $this->cmpId; ?>"></div>
+		<script type="text/javascript">
+		//<![CDATA[
+			jQuery(document).ready(function($) {
+				var params = {
+					"containerID": "<?php echo $this->cmpId;?>",
+					"buttons"  : <?php echo $buttons;?>,
+					"iconSize" : <?php echo $icon_size;?>
+				}
+				gigya.services.socialize.showFollowBarUI(params);
+			});
+		//]]>
+	    </script>
+	<?php
+		
+	}	
+}
+
+class GigyaActivityFeed_Widget extends GigyaSO_Core {
+	private $options = null;
+	public function __construct($options = array()){
+		$this->options = $options;
+		$this->cmpId = generate_random_div_id();
+	}
+	
+	public function render(){
+		$options = $this->options;
+		
+		$feed_id = empty($options['feed_id']) ? false : $options['feed_id'];
+		$initial_tab = empty($options['initial_tab']) ? "everyone" : $options['initial_tab'];
+		
+		?>
+		
+		<div id="<?php echo $this->cmpId; ?>"></div>
+		<script type="text/javascript">
+		//<![CDATA[
+			jQuery(document).ready(function($) {
+				var params = {
+					"containerID": "<?php echo $this->cmpId;?>",
+					"initialTab"  : "<?php echo $initial_tab;?>",
+					"feedID" : <?php echo (!$feed_id) ? "false" : "'".$feed_id."'";?>,
+					"width"  : "100%"
+				};
+
+				gigya.socialize.showFeedUI(params);
+			});
+		//]]>
+	    </script>
+	<?php
+		
+	}	
+}
