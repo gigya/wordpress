@@ -96,14 +96,35 @@ class GigyaSO_Widget extends GigyaSO_Core {
 	
 	public function is_logged_in($user){
 		$bgColor = trim($this->options["bgColor"]); 
-		$bgColor = !empty($bgColor) ? $bgColor : "#FFFFFF;"; 
+		$bgColor = !empty($bgColor) ? $bgColor : "#FFFFFF;";
+	 
 	?>
-		
 		<div class="widget_gigya_user ui-helper-clearfix" style='background-color:<?php echo $bgColor;?>'>
 			<div class="thumbnail"><?php echo get_avatar($user->ID,42,true); ?></div>
 			<div class="text">
 				Hello <?php echo $user->nickname; ?><br/>
-				<a class="logout" href="<?php echo wp_logout_url(home_url()); ?>" title="Logout">Logout</a>
+				<a id="gigya-logout" class="logout" href="#" title="Logout">Logout</a>
+				<script type="text/javascript">
+				//<![CDATA[
+				jQuery(document).ready(function($) {
+					$("#gigya-logout").click(function(){
+						var win = window;
+						gigya.socialize.logout({
+							callback: function(){
+								var iframe = $("<iframe src='<?php echo wp_logout_url(); ?>'/>").hide(); 
+								iframe.appendTo("body")
+								iframe.load(function(){
+									win.location.href = "<?php echo home_url()?>";
+									iframe.destroy();									
+								});								 
+							}
+						});
+
+						return false;
+					});
+				});
+				//]]>
+	    		</script>	
 			</div>
 		</div>	
 	<?php
