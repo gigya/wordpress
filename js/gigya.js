@@ -103,13 +103,12 @@ jQuery(document).ready(function($) {
 					action: "gigya_user_login"
 				},data),function(r){
 					try {
-						var r = JSON.parse(r);
-						switch(r.type) {
+						switch(r.data.type) {
 							case "email_exist":
 								new Gigya.Dialog().open(function(){
 									new Gigya.Tmpl(this).renderLoginDialog($.extend(userObject,{
 										isEmailExist  :true,
-										linkAccount   : (r.params.account_linking && r.params.force_email) 
+										linkAccount   : (r.data.params.account_linking && r.data.params.force_email)
 									}));
 										
 								});
@@ -119,16 +118,16 @@ jQuery(document).ready(function($) {
 									new Gigya.Tmpl(this).renderLoginDialog($.extend(userObject,{
 										isNewUser    :true,
 										isEmailExist :false,
-										linkAccount  : (r.params.account_linking && r.params.force_email) 
-									}));	
-								});	
+										linkAccount  : (r.data.params.account_linking && r.data.params.force_email)
+									}));
+								});
 							break;
-	 
+
 							case "error":
-							Gigya.Error.show(r.text);
-							break; 
+							Gigya.Error.show(r.data.text);
+							break;
 							case "signin":
-								that.onSignIn.call(this,r,userObject);
+								that.onSignIn.call(this,r.data,userObject);
 							break;
 						}
 					} catch(e) {

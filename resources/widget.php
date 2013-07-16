@@ -74,7 +74,6 @@ class GigyaSO_Widget extends GigyaSO_Core {
 		
 		<div id="<?php echo $this->cmpId; ?>"></div>
 		<script type="text/javascript">
-		//<![CDATA[
 			jQuery(document).ready(function($) {
 				Gigya.Ajax.setUrl("<?php echo admin_url("admin-ajax.php"); ?>");
 				Gigya.Ajax.onSignIn = function(){
@@ -89,7 +88,6 @@ class GigyaSO_Widget extends GigyaSO_Core {
 					}
 				});
 			});
-		//]]>
 	    </script>
 	<?php
 	}	

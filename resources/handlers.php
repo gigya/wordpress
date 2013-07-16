@@ -199,7 +199,7 @@ if(!function_exists('gigya_user_login')) :
 						}
 						
 						if(is_wp_error($login)) {
-		   					gigya_msg($login,array("api_key"=>$user->api_key,"secret_key"=>$user->secret_key,"force_email"=>$user->force_email ? true : false,"account_linking"=>$user->account_linking ? true : false));
+							gigya_msg($login,array("force_email"=>$user->force_email ? true : false,"account_linking"=>$user->account_linking ? true : false));
 		   					die();
 						} else {
 							gigya_msg();		
@@ -294,7 +294,7 @@ if(!function_exists('gigya_get_first_image')) :
 	function gigya_get_first_image($post) {
 		$first_img = "";
 		$output = preg_match_all('/<img.+src=[\'"]([^\'"]+)[\'"].*>/i',$post->post_content,$matches);
-		$first_img = $matches[1][0];
+		$first_img = !empty($matches[1][0]) ? $matches[1][0] : NULL;
 		if(empty($first_img))
 			$first_img = get_bloginfo('wpurl').'/'.WPINC.'/images/blank.gif';
 		return $first_img;

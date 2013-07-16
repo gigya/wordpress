@@ -35,7 +35,7 @@ class GigyaSO_User {
 			return 1;
 		}
 		return 0;
-	} 
+	}
 	
 	public function __construct($data=null) {
 		global $gigya_user_data;
@@ -43,7 +43,7 @@ class GigyaSO_User {
 		$this->data = $data;
 		$this->is_gigya     = $this->is_user();
 		$this->uid          = $data->UID;
-		$this->is_logged_in = is_user_logged_in(); 
+		$this->is_logged_in = is_user_logged_in();
 		$options = get_option(GIGYA_SETTINGS_PREFIX);
 		$this->force_email = $options["force_email"] == 1 ;
 		$this->account_linking = $options["account_linking"] == 1 ;
@@ -58,13 +58,13 @@ class GigyaSO_User {
 		else:
 			$this->blog_id = 0;
 		endif;
-		 
+		
 		function gigya_validate_email($valid,$email,$error){
 			if($valid) {
 				return $valid;
 			} else {
 				return new WP_Error('error',"<strong>ERROR: </strong>".$error);
-			} 
+			}
 		}
 		add_filter('is_email','gigya_validate_email',0,3);
 	}
@@ -73,8 +73,8 @@ class GigyaSO_User {
 		if(property_exists($this,$key)) {
             return $this->$key;
         }
-    } 
-    
+    }
+
     private function signout(){
     	$user = wp_get_current_user();
     	if($user) {
@@ -82,7 +82,7 @@ class GigyaSO_User {
     		do_action("wp_logout",$user->ID);	
     	}
     }
-    
+
     private function signon($user_id,$user_name,$password){
     	// logout user if logged in to site
     	global $is_gigya_user;
@@ -91,12 +91,13 @@ class GigyaSO_User {
     	// login
     	$login = wp_set_current_user($user_id);
 		//$login = wp_signon(array("user_login"=>$user_name,"user_password"=>$password,"remember"=>true),false);
-		if (is_wp_error($login)) 
-			return new WP_Error('error',$login->get_error_message());
+      if (is_wp_error($login)) {
+        return wp_send_json_error(array('error' => $login->get_error_message()));
+      }
 		wp_set_auth_cookie($user_id);		
 		return $login;
-    } 
-    
+    }
+
      private function signon_gigya_user(){
      	global $is_gigya_user;
     	$is_gigya_user = true;
@@ -106,16 +107,17 @@ class GigyaSO_User {
     	$user = get_userdata($this->uid);
     	if(!$user) {
     		gigya_delete_account($this->uid);
-    		return new WP_Error("error",__("<strong>ERROR: </strong> Can't find user in site, please try again"));
+        return wp_send_json_error(array('type' => 'error', 'text' => 'Can\'t find user in site, please try again'));
     	}
 		$login = wp_set_current_user($user->ID);
-		if(!$login)
-    		return new WP_Error("error",__("<strong>ERROR: </strong> Can't login to site"));
+      if(!$login){
+        return wp_send_json_error(array('type' => 'error', 'text' => 'Can\'t login to site'));
+      }
 		wp_set_auth_cookie($user->ID);
 		do_action('wp_login',$user->user_login);
     	return 1;
-    } 
-    
+    }
+
 	/**
  	* Start the proccess of user registration - validate and execute
  	*
@@ -126,7 +128,9 @@ class GigyaSO_User {
 		// check if user has siteUID, if exist user registered to site and gigya and can login
 		if($this->is_gigya) {
 			$signon = $this->signon_gigya_user();
-			if(is_wp_error($signon)) return $signon;
+      if(is_wp_error($signon)){
+        return wp_send_json_error(array('type' => 'error', 'text' => $signon->get_error_message()));
+      }
 			return 1;
 		};			
 		
@@ -145,18 +149,31 @@ class GigyaSO_User {
 			 	}
 			 }
 			 if(!$is_exist_in_blog) {
-				$this->user_id = $is_email_exist; 
+				$this->user_id = $is_email_exist;
 			 	$is_email_exist = 0;
 			 }			
 		}
 //		// if exist - need to ask user if already registered - create new account or link account
 		if($is_email_exist) {
-			if($this->force_email) 
-				return new WP_Error('action',self::GIGYA_ACTION_EMAIL_EXIST);	
-			return $this->link_account($email,"",1);
+      if($this->force_email){
+        return wp_send_json_success(array(
+          'type' => self::GIGYA_ACTION_EMAIL_EXIST,
+          'params' => array('account_linking' => $this->account_linking,
+          'force_email' => $this->force_email)
+        ));
+      }
+      $link_a = $this->link_account($email,"",1);
+      if (is_wp_error($link_a)){
+        return wp_send_json_error($link_a->get_error_message());
+      }
+      return $link_a;
 		} else {
 			if(empty($this->data->user->email) && $this->force_email) {
-				return new WP_Error('action',self::GIGYA_ACTION_EMAIL_REQUIRED);	
+        return wp_send_json_success(array(
+          'type' => self::GIGYA_ACTION_EMAIL_REQUIRED,
+          'params' => array('account_linking' => $this->account_linking,
+          'force_email' => $this->force_email)
+        ));
 			} else {
 				// if user id exist add it to current blog if not add a new user
 				if($this->user_id) {
@@ -178,17 +195,19 @@ class GigyaSO_User {
 	public function register_email($email){
 		// check if email address is valid
 		$is_email = is_email($email);
-		if(is_wp_error($is_email)) 
-			return $is_email;
+    if(is_wp_error($is_email)) {
+      return wp_send_json_error(array('type' => 'error', 'text' => $is_email->get_error_message()));
+    }
 		// check if email doesnt belong to site user
 		$user_id = email_exists($email);
-		if($user_id) 
-			return new WP_Error('error',"<strong>ERROR: </strong>".__('The email you provided is already used, Please provider a different email or link to an existing account'));
+    if($user_id) {
+      return wp_send_json_error(array('type' => 'error', 'text' => __('The email you provided is already used, Please provider a different email or link to an existing account')));
+    }
 		// add new user to site	
 		$user = $this->add_new_user($email);
-		if(is_wp_error($user)) 
-			return $user;
-				
+    if(is_wp_error($user)) {
+      return wp_send_json_error(array('type' => 'error', 'text' => $user->get_error_message()));
+    }
 		return 1;
 	}
 	/**
@@ -200,29 +219,37 @@ class GigyaSO_User {
  	*/
 	public function link_account($email,$password="",$force_login = 0){
 		# Before account linking validate if email is valid
-		$is_email = is_email($email); 
+		$is_email = is_email($email);
 		if(is_wp_error($is_email)) return $is_email;
 		// after email validation, check if it exist in the DB to retrieve userId
 		$user_id = email_exists($email);
-		if(!$user_id) 
-			return new WP_Error('error',"<strong>ERROR: </strong>".__('That E-mail doesn\'t belong to any registered users on this site'));
+    if(!$user_id){
+      return wp_send_json_error(array('type' => 'error', 'text' => __('That E-mail doesn\'t belong to any registered users on this site')));
+    }
 		// retrive user id
 		$user = get_userdata($user_id);
-		if(!$user) 
-			return new WP_Error('error',"<strong>ERROR: </strong>".__('Username Not In Use!'));
+    if(!$user){
+      return wp_send_json_error(array('type' => 'error', 'text' => __('Username Not In Use!')));
+    }
 		// login user to site
 		$gigya = GigyaSO_Util::setUID($user_id,$this->uid);
-		if(is_wp_error($gigya))
-			return $gigya;
+    if(is_wp_error($gigya)) {
+      return wp_send_json_error(array('type' => 'error', 'text' => $gigya->get_error_message()));
+    }
 		if(!$force_login) {
 			$login = $this->signon($user_id,$user->user_login,$password);	
-			if (is_wp_error($login)) 
-				return new WP_Error('error',$login->get_error_message());
+      if (is_wp_error($login)){
+        return wp_send_json_error(array('type' => 'error', 'text' => $login->get_error_message()));
+      }
 		} else {
 			$login = wp_set_current_user($user->ID);
-			if(!$login)
-    			return new WP_Error("error",__("<strong>ERROR: </strong> Can't login to site"));
-			
+      if(!$login) {
+        return wp_send_json_error(array("error" =>__("<strong>ERROR: </strong> Can't login to site")));
+      }
+    }
+    else {
+    return wp_send_json_error(array('type' => 'error', 'text' => 'Wrong password'));
+    }
     		wp_set_auth_cookie($user->ID);
 			do_action('wp_login',$user->user_login);
     		return 1;	
@@ -248,13 +275,13 @@ class GigyaSO_User {
 		global $is_gigya_user;
     	$is_gigya_user = true;
 		$user_name = $this->generate_user_name($this->data->user->nickname);
-		if(is_wp_error($user_name)) 
-			return $user_name; 
+		if(is_wp_error($user_name))
+			return $user_name;
 		$email = $this->generate_email($email);
-		if(is_wp_error($email)) 
+		if(is_wp_error($email))
 			return $email;
 		$password = $this->generate_password();
-		if(is_wp_error($password)) 
+		if(is_wp_error($password))
 			return $password;
 		//prepere user data
 		$user_data = array(
@@ -272,8 +299,9 @@ class GigyaSO_User {
 		
 		# add new user to db
 		$this->user_id = wp_insert_user($user_data);
-		if(is_wp_error($this->user_id)) 
-			return new WP_Error('error',"<strong>ERROR: </strong>".$this->user_id->get_error_message());
+    if(is_wp_error($this->user_id)){
+      return wp_send_json_error(array('type' => 'error', 'text' => $this->user_id->get_error_message()));
+    }
 		# add user to blog if multisite support
 		$this->add_user_to_blog(0);	
 		# add user meta
@@ -281,13 +309,14 @@ class GigyaSO_User {
 		# regiter user with gigya
 		$gigya = GigyaSO_Util::notify_registration($this->user_id,$this->uid);
 		if(is_wp_error($gigya)) {
-			wp_delete_user($this->user_id);
-			return $gigya;
+      wp_delete_user($this->user_id);
+      wp_send_json_error(array('type' => 'error', 'text' => $gigya->get_error_message()));
 		}
 		# login user to site
 		$login = $this->signon($this->user_id,$user_name,$password);
-		if (is_wp_error($login)) 
-			return new WP_Error('error',$login->get_error_message());
+    if (is_wp_error($login)){
+      return wp_send_json_error(array('error' => $login->get_error_message()));
+    }
 	}
 	
 	private function generate_email($email = "") {
@@ -303,8 +332,8 @@ class GigyaSO_User {
 			//fix email format		
 			$email = sanitize_email($email);
 			//validate email
-			$is_email = is_email($email); 
-			if(is_wp_error($is_email)) 
+			$is_email = is_email($email);
+			if(is_wp_error($is_email))
 				return $is_email;
 			
 			return $this->email = $email;
@@ -315,7 +344,7 @@ class GigyaSO_User {
 	}
 	
 	private function generate_user_name($user_name = "") {
-		try { 
+		try {
 			if(empty($user_name)) $user_name = md5(uniqid(wp_rand(10000,99000)));
 			$user_name = sanitize_user($user_name);	
 			// check if user already exist, if yes change it
@@ -328,7 +357,7 @@ class GigyaSO_User {
 			// validate user name
 			$user_name = $temp_user_name;
 			$is_user = validate_username($user_name);
-			if(!$is_user) 
+			if(!$is_user)
 				throw new Exception();
 			
 			return $this->user_name = $user_name;
