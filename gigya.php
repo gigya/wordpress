@@ -7,7 +7,7 @@ Author: Gil Noy for Gigya
 Version: 3.0.5
 Author URI: http://www.gigya.com
 */
-define("GIGYA_VERSION","3.0.4");
+define("GIGYA_VERSION","3.0.5");
 define("GIGYA_SETTINGS_PREFIX","gigya_settings_fields");
 define("GIGYA_PERMISSION_LEVEL","manage_options");
 define("GIGYA_PLUGIN_URL",WP_PLUGIN_URL.'/'.basename(dirname(__FILE__)));
