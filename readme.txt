@@ -67,6 +67,10 @@ For question about installations or configuration, please contact your account m
 * Suppot gigya login widget as a shortcode - enables site owners to embed to login widget anyhwere on the site tempalte without a sidebar.
 * Bug fixes
 
+= 3.0.5 =
+* Security update
+* Bug fixes
+
 
 == Upgrade Notice ==
 
