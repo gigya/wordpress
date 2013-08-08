@@ -74,6 +74,7 @@ class GigyaSO_Widget extends GigyaSO_Core {
 		
 		<div id="<?php echo $this->cmpId; ?>"></div>
 		<script type="text/javascript">
+		//<![CDATA[
 			jQuery(document).ready(function($) {
 				Gigya.Ajax.setUrl("<?php echo admin_url("admin-ajax.php"); ?>");
 				Gigya.Ajax.onSignIn = function(){
@@ -88,6 +89,7 @@ class GigyaSO_Widget extends GigyaSO_Core {
 					}
 				});
 			});
+		//]]>
 	    </script>
 	<?php
 	}	
@@ -117,7 +119,7 @@ class GigyaSO_Widget extends GigyaSO_Core {
 								});								 
 							}
 						});
-
+						
 						return false;
 					});
 				});
@@ -170,33 +172,30 @@ class GigyaActivityFeed_Widget extends GigyaSO_Core {
 	private $options = null;
 	public function __construct($options = array()){
 		$this->options = $options;
-		$this->cmpId = generate_random_div_id();
+		
 	}
 	
 	public function render(){
 		$options = $this->options;
 		
-		$feed_id = empty($options['feed_id']) ? false : $options['feed_id'];
-		$initial_tab = empty($options['initial_tab']) ? "everyone" : $options['initial_tab'];
+		echo gigya_activity_plugin($options);
+	?>
 		
-		?>
 		
-		<div id="<?php echo $this->cmpId; ?>"></div>
-		<script type="text/javascript">
-		//<![CDATA[
-			jQuery(document).ready(function($) {
-				var params = {
-					"containerID": "<?php echo $this->cmpId;?>",
-					"initialTab"  : "<?php echo $initial_tab;?>",
-					"feedID" : <?php echo (!$feed_id) ? "false" : "'".$feed_id."'";?>,
-					"width"  : "100%"
-				};
-
-				gigya.socialize.showFeedUI(params);
-			});
-		//]]>
-	    </script>
 	<?php
 		
+	}	
+}
+
+class GigyaGamification_Widget extends GigyaSO_Core {
+	private $options = null;
+	public function __construct($options = array()){
+		$this->options = $options;
+	}
+	
+	public function render(){
+		$options = $this->options;
+		echo gigya_gamification_plugin($options);
+				
 	}	
 }

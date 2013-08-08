@@ -116,9 +116,12 @@ class WP_Widget_GigyaActivityFeed extends WP_Widget {
     function form($instance) {				
         $title = esc_attr($instance['title']);
         $feed_id = esc_attr($instance['feed_id']);
-        if(empty($initial_tab)) $feed_id = "";
+        if(empty($initial_tab)) $feed_id = gigya_get_field_default("activity_feed_id");
         $initial_tab = esc_attr($instance['initial_tab']);
-        if(empty($initial_tab)) $initial_tab = "everyone";
+        if(empty($initial_tab)) $initial_tab = gigya_get_field_default("activity_initial_tab");
+        
+        $site_name = esc_attr($instance['site_name']);
+        if(empty($site_name)) $site_name = gigya_get_field_default("activity_site_name");
         
         ?>
             <p>
@@ -142,6 +145,19 @@ class WP_Widget_GigyaActivityFeed extends WP_Widget {
             		<input class="widefat" id="<?php echo $this->get_field_id('feed_id'); ?>" name="<?php echo $this->get_field_name('feed_id'); ?>" type="text" value="<?php echo $feed_id; ?>" />
             	</label>
             </p>
+            
+            <p>
+            	<label for="<?php echo $this->get_field_id('site_name'); ?>"><?php _e('Site Name:'); ?> 
+            		<input class="widefat" id="<?php echo $this->get_field_id('site_name'); ?>" name="<?php echo $this->get_field_name('site_name'); ?>" type="text" value="<?php echo $site_name; ?>" />
+            	</label>
+            </p>
+            
+             <p>
+            	<label for="<?php echo $this->get_field_id('width'); ?>"><?php _e('Width:'); ?> 
+            		<input class="widefat" id="<?php echo $this->get_field_id('width'); ?>" name="<?php echo $this->get_field_name('width'); ?>" type="text" value="<?php echo $width; ?>" />
+            	</label>
+            </p>
+            
         <?php 
     }
 
@@ -215,6 +231,77 @@ class WP_Widget_GigyaFollowBar extends WP_Widget {
             	</label>
             </p>
             
+        <?php 
+    }
+
+}
+
+
+class WP_Widget_GigyaGamification extends WP_Widget {
+    function WP_Widget_GigyaGamification() {
+        parent::WP_Widget(false, $name = 'Gigya Gamification');	
+    }
+
+    /** @see WP_Widget::widget */
+    function widget($args, $instance) {
+    	require_once(GIGYA_PLUGIN_PATH.'/resources/widget.php');
+    	extract($args);
+        $gigya_widget = new GigyaGamification_Widget($instance);
+        $title = apply_filters('widget_title',$instance['title']);
+        
+        ?>
+              <?php echo $before_widget; ?>
+                <?php if ( $title ) echo $before_title . $title . $after_title; ?>
+                <?php $gigya_widget->render(); ?>
+               <?php echo $after_widget; ?>
+        <?php
+    }
+
+    /** @see WP_Widget::update */
+    function update($new_instance, $old_instance) {				
+        return $new_instance;
+    }
+
+    /** @see WP_Widget::form */
+    function form($instance) {				
+        $period = esc_attr($instance['period']);
+        $type = esc_attr($instance['type']);
+        $count = esc_attr($instance['count']);
+        if(empty($count)) $count = gigya_get_field_default("gamification_count");
+        $width = esc_attr($instance['width']);
+        if(empty($width)) $width = gigya_get_field_default("gamification_width");
+        
+        
+        ?>
+            <p>
+            	<label for="<?php echo $this->get_field_id('type'); ?>"><?php _e('Type:'); ?> 
+	            	<select class="widefat" id="<?php echo $this->get_field_id('type'); ?>" name="<?php echo $this->get_field_name('type'); ?>">
+	            		<option <?php if($type == "game") echo "selected='true'" ?> value="game">Game status</option>
+	            		<option <?php if($type == "challenge") echo "selected='true'" ?> value="challenge">Challenge Status</option>
+	            		<option <?php if($type == "leaderboard") echo "selected='true'" ?> value="leaderboard">Leaderboard</option>
+	            		<option <?php if($type == "achievements") echo "selected='true'" ?> value="achievements">Achievements</option>
+	            	</select>	
+            	</label>
+            </p>
+            <p>
+            	<label for="<?php echo $this->get_field_id('period'); ?>"><?php _e('Time Period:'); ?> 
+	            	<select class="widefat" id="<?php echo $this->get_field_id('period'); ?>" name="<?php echo $this->get_field_name('period'); ?>">
+	            		<option <?php if($period == "7") echo "selected='true'" ?> value="7">7 Days</option>
+	            		<option <?php if($period == "all") echo "selected='true'" ?> value="all">All</option>
+	            	</select>	
+            	</label>
+            </p>
+            <p>
+            	<label for="<?php echo $this->get_field_id('count'); ?>"><?php _e('Total Count:'); ?> 
+            		<input class="widefat" id="<?php echo $this->get_field_id('count'); ?>" name="<?php echo $this->get_field_name('count'); ?>" type="text" value="<?php echo $count; ?>" />
+            	</label>
+            </p>
+            
+            <p>
+            	<label for="<?php echo $this->get_field_id('width'); ?>"><?php _e('Width:'); ?> 
+            		<input class="widefat" id="<?php echo $this->get_field_id('width'); ?>" name="<?php echo $this->get_field_name('width'); ?>" type="text" value="<?php echo $width; ?>" />
+            	</label>
+            </p>
         <?php 
     }
 
