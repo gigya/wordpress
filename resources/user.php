@@ -292,6 +292,10 @@ class GigyaSO_User {
     return 1;
   }
 
+  public function add_user_more_info($data, $moreInfo) {
+    $this->add_new_user($moreInfo['user_email'], $moreInfo);
+  }
+
   private function add_user_to_blog($notify = 1) {
     if ($this->blog_id && $this->user_id) {
       switch_to_blog($this->blog_id);
@@ -308,17 +312,17 @@ class GigyaSO_User {
     }
   }
 
-  private function add_new_user($email = "") {
+  private function add_new_user($email = "", $moreInfo = NULL) {
     global $is_gigya_user;
     $is_gigya_user = TRUE;
-    if (gigya_get_option("show_reg")) {
+    if (gigya_get_option("show_reg") && $moreInfo === NULL) {
       $reg_form = $this->gen_reg_form($email);
       do_shortcode($reg_form);
       $res = array(
         'type' => 'reg_form',
         'html' => $reg_form,
       );
-      wp_send_json($res);
+      wp_send_json_success($res);
     }
     $user_name = $this->generate_user_name($this->data->user->nickname);
     if (is_wp_error($user_name)) {
@@ -345,8 +349,19 @@ class GigyaSO_User {
       'first_name' => $this->data->user->firstName,
       'last_name' => $this->data->user->lastName
     );
+    if (!empty($moreInfo)) {
+      // remove required fields
+      unset($moreInfo['user_login'], $moreInfo['user_pass'], $moreInfo['user_email']);
+      foreach ($moreInfo as $field => $val) {
+        $user_data[$field] = $val;
+      }
+    }
 
 
+    // Do action for other plugins to interact
+    do_action('gigya_pre_add_user', $this);
+    // Apply filter for custom plugins to modify user data before adding to db
+    apply_filters('gigya_pre_add_user', $user_data);
     # add new user to db
     $this->user_id = wp_insert_user($user_data);
     if (is_wp_error($this->user_id)) {
@@ -356,7 +371,9 @@ class GigyaSO_User {
     $this->add_user_to_blog(0);
     # add user meta
     update_user_meta($this->user_id, "avatar", $this->data->user->thumbnailURL);
-    # regiter user with gigya
+    // Do action after user added to db
+    do_action('gigya_post_add_user', $this);
+    # register user with gigya
     $gigya = GigyaSO_Util::notify_registration($this->user_id, $this->uid);
     if (is_wp_error($gigya)) {
       wp_delete_user($this->user_id);
