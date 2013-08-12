@@ -104,3 +104,11 @@ $GIGYA_STATIC_DATA["load_jquery"] = array(
     array("v" => "2", "t" => "Load From Google CDN")
   )
 );
+
+$GIGYA_STATIC_DATA['data_center'] = array(
+  'default' => 'us1.gigya.com',
+  'options' => array(
+    array('v' => 'us1.gigya.com', 't' => 'US Data Center'),
+    array('v' => 'eu1.gigya.com', 't' => 'EU Data Center'),
+  )
+);

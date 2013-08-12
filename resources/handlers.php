@@ -266,7 +266,7 @@ function gigya_enque_gigya_script_admin_init() {
 add_action('admin_enqueue_scripts', 'gigya_enque_gigya_script_admin_init');
 
 
-# get config params from gogya global options config
+# get config params from gigya global options config
 if (!function_exists('gigya_get_option')) :
   function gigya_get_option($ns = NULL) {
     global $GIGYA_OPTIONS;
@@ -503,8 +503,9 @@ function gigya_get_share_plugin($pos = "") { /* pos = bottom | top*/
   }
 
   $show_counts = gigya_get_option("share_show_counts");
-  if (empty($show_counts))
+  if (empty($show_counts)) {
     $show_counts = "right";
+  }
 
   $share_buttons = trim(gigya_get_option("share_providers"));
   if (empty($share_buttons))
