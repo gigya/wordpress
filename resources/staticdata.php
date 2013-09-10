@@ -3,9 +3,9 @@ $GIGYA_STATIC_DATA = array();
 $GIGYA_STATIC_DATA["login_button_style"] = array(
   "default" => "fullLogo",
   "options" => array(
-    array("v" => "fullLogo", "t" => "Full Logo", "d" => TRUE),
-    array("v" => "standard", "t" => "Standard"),
-    array("v" => "signInWith", "t" => "Sign In With")
+    "fullLogo" => "Full Logo",
+    "standard" => "Standard",
+    "signInWith" => "Sign In With"
   )
 );
 
@@ -13,18 +13,18 @@ $GIGYA_STATIC_DATA["login_button_style"] = array(
 $GIGYA_STATIC_DATA["short_url"] = array(
   "default" => "never",
   "options" => array(
-    array("v" => "always", "t" => "Always"),
-    array("v" => "whenRequired", "t" => "When Required"),
-    array("v" => "never", "t" => "Never", "d" => TRUE)
+    "always" => "Always",
+    "whenRequired" => "When Required",
+    "never" => "Never"
   )
 );
 
 $GIGYA_STATIC_DATA["connect_without_login_behavior"] = array(
   "default" => "loginExistingUser",
   "options" => array(
-    array("v" => "tempUser", "t" => "Temp User"),
-    array("v" => "alwaysLogin", "t" => "Always Login"),
-    array("v" => "loginExistingUser", "t" => "Login Existing User", "d" => TRUE)
+    "tempUser" => "Temp User",
+    "alwaysLogin" => "Always Login",
+    "loginExistingUser" => "Login Existing User",
   )
 );
 
@@ -33,17 +33,17 @@ $GIGYA_STATIC_DATA["comments_enable_share_providers"] = array("default" => "*");
 $GIGYA_STATIC_DATA["comments_enable_share_activity"] = $GIGYA_STATIC_DATA["reaction_enable_share_activity"] = array(
   "default" => "'external",
   "options" => array(
-    array("v" => "both", "t" => "both"),
-    array("v" => "external", "t" => "External", "d" => TRUE)
+    "both" => "both",
+    "external" => "External"
   )
 );
 
 $GIGYA_STATIC_DATA["share_show_counts"] = $GIGYA_STATIC_DATA["reaction_show_counts"] = array(
   "default" => "right",
   "options" => array(
-    array("v" => "right", "t" => "Right", "d" => TRUE),
-    array("v" => "top", "t" => "Top"),
-    array("v" => "none", "t" => "None")
+    "right" => "Right",
+    "top" => "Top",
+    "none" => "None"
   )
 );
 
@@ -53,25 +53,25 @@ $GIGYA_STATIC_DATA["reaction_plugin"] = array("default" => "0");
 $GIGYA_STATIC_DATA["reaction_layout"] = array(
   "default" => "horizontal",
   "options" => array(
-    array("v" => "horizontal", "t" => "Horizontal", "d" => TRUE),
-    array("v" => "vertical", "t" => "Vertical")
+    "horizontal" => "Horizontal",
+    "vertical" => "Vertical"
   )
 );
 
 $GIGYA_STATIC_DATA["reaction_count_type"] = array(
   "default" => "number",
   "options" => array(
-    array("v" => "number", "t" => "Number", "d" => TRUE),
-    array("v" => "percentage", "t" => "Percentage")
+    "number" => "Number",
+    "percentage" => "Percentage"
   )
 );
 
 $GIGYA_STATIC_DATA["reaction_position"] = array(
   "default" => "bottom",
   "options" => array(
-    array("v" => "bottom", "t" => "Bottom", "d" => TRUE),
-    array("v" => "top", "t" => "Top"),
-    array("v" => "both", "t" => "Both")
+    "bottom" => "Bottom",
+    "top" => "Top",
+    "both" => "Both"
   )
 );
 
@@ -84,9 +84,9 @@ $GIGYA_STATIC_DATA["gamification_width"] = array("default" => "300");
 $GIGYA_STATIC_DATA["activity_privacy"] = array(
   "default" => "private",
   "options" => array(
-    array("v" => "private", "t" => "Private", "d" => TRUE),
-    array("v" => "public", "t" => "Public"),
-    array("v" => "friends", "t" => "Friends")
+    "private" => "Private",
+    "public" => "Public",
+    "friends" => "Friends"
   )
 );
 
@@ -108,7 +108,7 @@ $GIGYA_STATIC_DATA["load_jquery"] = array(
 $GIGYA_STATIC_DATA['data_center'] = array(
   'default' => 'us1.gigya.com',
   'options' => array(
-    array('v' => 'us1.gigya.com', 't' => 'US Data Center'),
-    array('v' => 'eu1.gigya.com', 't' => 'EU Data Center'),
+    'us1.gigya.com' => 'US Data Center',
+    'eu1.gigya.com' => 'EU Data Center',
   )
 );
