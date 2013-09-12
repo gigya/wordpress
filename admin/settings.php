@@ -19,25 +19,21 @@ if (empty($show_counts)) {
   $show_counts = "right";
 }
 
-$share_custom = gigya_get_option("share_custom");
-$login_ui = gigya_get_option("login_ui");
-$account_linking = 1;
-$share_plugin = gigya_get_option("share_plugin");
-$comments_plugin = gigya_get_option("comments_plugin") == 1 ? 1 : 0;
-$gigya_comments_cat_id = gigya_get_option("gigya_comments_cat_id");
-$login_plugin = gigya_get_option("login_plugin") == 1 ? 1 : 0;
-$providers = gigya_get_option("share_providers");
-$loginProviders = gigya_get_option("login_providers");
-$load_jquery = gigya_get_option("load_jquery");
-$global_params = gigya_get_option("global_params");
-$google_analytics = gigya_get_option("google_analytics") == 1 ? 1 : 0;
-$reaction_plugin = gigya_get_option("reaction_plugin") == 1 ? 1 : 0;
-if (isset($_GET['tab'])) {
-  $active_tab = $_GET['tab'];
-}
-
 ?>
 <?php function gigya_admin_page() {
+  $share_custom = gigya_get_option("share_custom");
+  $login_ui = gigya_get_option("login_ui");
+  $account_linking = 1;
+  $share_plugin = gigya_get_option("share_plugin");
+  $comments_plugin = gigya_get_option("comments_plugin") == 1 ? 1 : 0;
+  $gigya_comments_cat_id = gigya_get_option("gigya_comments_cat_id");
+  $login_plugin = gigya_get_option("login_plugin") == 1 ? 1 : 0;
+  $providers = gigya_get_option("share_providers");
+  $loginProviders = gigya_get_option("login_providers");
+  $load_jquery = gigya_get_option("load_jquery");
+  $global_params = gigya_get_option("global_params");
+  $google_analytics = gigya_get_option("google_analytics") == 1 ? 1 : 0;
+  $reaction_plugin = gigya_get_option("reaction_plugin") == 1 ? 1 : 0;
   ob_start();
   $page = $_GET['page'];
   ?>
@@ -65,8 +61,7 @@ if (isset($_GET['tab'])) {
     // TODO: fix link
     echo sprintf(__('To learn more about gigya & how setup an account, please visit our developer documentation <a target="_blank"  href="%1$s">here</a>.'), $helpUrl);
     ?>
-
-
+    <?php settings_errors(); ?>
     <form class="gigya-settings" action="options.php" method="post">
       <?php wp_nonce_field('update-options'); ?>
       <?php settings_fields(GIGYA_SETTINGS_PREFIX); ?>
