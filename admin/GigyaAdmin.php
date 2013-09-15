@@ -93,22 +93,19 @@ class GigyaAdmin {
       <?php gAdminFormElements::gigya_input_field("login_width", "Width", NULL, 'The width of the plugin in px', 'size'); ?>
       <!-- Height -->
       <?php gAdminFormElements::gigya_input_field("login_height", "Height", NULL, 'The height of the plugin in px', 'size'); ?>
-
       <!--  Login Redirect -->
       <?php gAdminFormElements::gigya_input_field("post_login_redirect", "Post Login Redirect", NULL, 'Provide a URL to redirect users after they logged-in via Gigya social login.'); ?>
-      <!--  Force Email remove-->
-      <?php gAdminFormElements::gigya_checkbox_field("force_email", "Email required for registration", NULL, 'When enabled, new user registering with a social network which does not provide a user email (such as Twitter, Linkedin or others) will be required to provide an Email to complete his registration process to the site. Otherwise a temporary email will be generated for the user in-order to complete the registration.'); ?>
       <!--  Login Providers -->
       <?php gAdminFormElements::gigya_input_field("login_providers", "Login Providers", NULL, "Leave empty or type * for all providers or define specific providers, for example: facebook,twitter,google,linkedin"); ?>
       <!--  Show Term Link -->
       <?php gAdminFormElements::gigya_checkbox_field("login_term_link", "Show Terms Link", NULL); ?>
+      <?php gAdminFormElements::gigya_checkbox_field("show_reg", "Show Complete Registration Form", NULL, "Check this checkbox if you have defined required fields in you site registration form. When checked a 'Complete Registration' form will pop up during user social registration, to let the user enter the missing required fields"); ?>
       <!--  Custom Code -->
       <?php gAdminFormElements::gigya_textarea_field("login_custom_code", "Custom Code", NULL, 'Enter values in <strong>key1=value1|key2=value2...keyX=valueX</strong> format'); ?>
       <!--  Custom Code -->
       <?php gAdminFormElements::gigya_textarea_field("login_add_connection_custom", "Custom Code Add Connection", NULL, 'Enter values in <strong>key1=value1,key2=value2,...,keyX=valueX</strong> format'); ?>
       <!--  Custom Deprecated -->
-      <?php gAdminFormElements::gigya_textarea_field("login_ui", "Custom Code (deprecated)", NULL, "To customize the look of the sign in component provided by the Gigya Socialize for WordPress plugin, you can provide generated interface code here.  If nothing is provided the default will be used. Please see <a target='_blank' href='http://developers.gigya.com/050_CMS_Modules/030_Wordpress_Plugin'>here</a> for help on what to put in the text area."); ?>
-      <?php gAdminFormElements::gigya_checkbox_field("show_reg", "Show Complete Registration Form", NULL, "Check this checkbox if you have defined required fields in you site registration form. When checked a 'Complete Registration' form will pop up during user social registration, to let the user enter the missing required fields"); ?>
+      <?php gAdminFormElements::gigya_textarea_field("login_ui", "Custom Code (deprecated)", NULL, "To customize the look of the sign in component provided by the Gigya Socialize for WordPress plugin, you can provide generated interface code here.  If nothing is provided the default will be used. Please see <a target='_blank' href='http://developers.gigya.com/050_CMS_Modules/030_Wordpress_Plugin'>here</a> for help on what to put in the text area.", 'closed'); ?>
     </div>
     <?php
     echo ob_get_clean();
