@@ -68,7 +68,7 @@ if (!function_exists('gigya_init_options')) :
     }
     $GIGYA_OPTIONS = $current_options;
 
-    if (!empty($_POST)) {
+    if (!empty($_POST) && !empty($_POST['option_page'])) {
       if ($_POST['option_page'] == 'gigya_settings_fields' && $_POST['action'] == 'update') {
         $_POST['gigya_settings_fields'] = $_POST['gigya_settings_fields'] + $GIGYA_OPTIONS;
       }
@@ -281,7 +281,7 @@ if (!function_exists('gigya_get_option')) :
     global $GIGYA_OPTIONS;
     if ($ns) {
       //gigya_get_field_default("reaction_position")
-      return $GIGYA_OPTIONS[$ns];
+      return !empty($GIGYA_OPTIONS[$ns]) ? $GIGYA_OPTIONS[$ns] : "";
     }
     return !is_array($GIGYA_OPTIONS) ? array() : $GIGYA_OPTIONS;
   }
@@ -310,7 +310,8 @@ if (!function_exists('gigya_user_login')) :
             $valid = GigyaSO_Util::validate_user_signature($data->UID, $data->signatureTimestamp, $data->UIDSignature);
             if (!is_wp_error($valid)) {
               $user = new GigyaSO_User($data);
-              switch ($_POST["actionType"]) {
+              $action = !empty($_POST['actionType']) ? $_POST['actionType'] : "";
+              switch ($action) {
                 case "register-email":
                   $login = $user->register_email($_POST["email"]);
                   break;
@@ -471,6 +472,7 @@ function gigya_get_first_image($post) {
 
 function get_user_action_embed($id = 0) {
   $permalink = get_permalink($id);
+  $post = get_post($id);
   $title = htmlspecialchars_decode(esc_js($post->post_title));
   $description = htmlspecialchars_decode(esc_js($post->post_excerpt));
   $first_img_url = gigya_get_first_image($post);
@@ -564,9 +566,9 @@ function gigya_get_share_plugin($pos = "") { /* pos = bottom | top*/
   $share = apply_filters("share_plugin", $share, array(
       "api" => gigya_get_option("api_key"),
       "post_id" => $id,
-      "permalink" => $permalink,
-      "title" => $title,
-      "first_img_url" => $first_img_url
+      "permalink" => get_permalink($id),
+      "title" => $post->post_title,
+      "first_img_url" => gigya_get_first_image($post)
     )
   );
 
@@ -578,7 +580,7 @@ function gigya_get_share_plugin($pos = "") { /* pos = bottom | top*/
 
 
 function gigya_share_plugin($content) {
-  $gigya_reaction = gigya_get_option("reaction_plugin");
+  $gigya_share = gigya_get_option("share_plugin");
   if (empty($gigya_share) || $gigya_share == 3) {
     $bottomHTML = gigya_get_share_plugin("bottom");
     $content = $content . $bottomHTML;
@@ -600,16 +602,19 @@ function gigya_reaction_plugin($content) {
   $gigya_reaction = gigya_get_option("reaction_plugin");
   if ($gigya_reaction == 1) {
     $gigya_position = gigya_get_option("reaction_position");
-    if (empty($gigya_position))
+    if (empty($gigya_position)) {
       $gigya_position = gigya_get_field_default("reaction_position");
+    }
     if ($gigya_position == "bottom") {
       $content = $content . gigya_get_reaction_plugin();
     }
-    else if ($gigya_position == "top") {
-      $content = gigya_get_reaction_plugin() . $content;
-    }
     else {
-      $content = gigya_get_reaction_plugin() . $content . gigya_get_reaction_plugin();
+      if ($gigya_position == "top") {
+        $content = gigya_get_reaction_plugin() . $content;
+      }
+      else {
+        $content = gigya_get_reaction_plugin() . $content . gigya_get_reaction_plugin();
+      }
     }
   }
 
@@ -621,40 +626,48 @@ function gigya_get_reaction_plugin() {
   global $post;
 
   $reactions = gigya_get_option("reaction_buttons");
-  if (empty($reactions))
+  if (empty($reactions)) {
     $reactions = "{}";
+  }
 
   $count = gigya_get_option("reaction_count_type");
-  if (empty($count))
+  if (empty($count)) {
     $count = gigya_get_field_default("reaction_count_type");
+  }
 
   $providers = gigya_get_option("reaction_providers");
-  if (empty($providers))
+  if (empty($providers)) {
     $providers = gigya_get_field_default("reaction_providers");
+  }
 
   $layout = gigya_get_option("reaction_layout");
-  if (empty($layout))
+  if (empty($layout)) {
     $layout = gigya_get_field_default("reaction_layout");
+  }
 
   $count_type = gigya_get_option("reaction_count_type");
-  if (empty($count_type))
+  if (empty($count_type)) {
     $count_type = gigya_get_field_default("reaction_count_type");
+  }
 
   $multiple = gigya_get_option("reaction_multiple");
-  if (empty($multiple))
+  if (empty($multiple)) {
     $multiple = gigya_get_field_default("reaction_multiple");
+  }
   $multiple = $multiple == "1" ? "true" : "false";
 
   $scope = gigya_get_option("reaction_enable_share_activity");
-  if (empty($scope))
+  if (empty($scope)) {
     $scope = gigya_get_field_default("reaction_enable_share_activity");
+  }
 
   $advanced = gigya_parse_key_pair(gigya_get_option("reactions_custom_code"));
   $advanced = $advanced ? json_encode($advanced) : 0;
 
   $privacy = gigya_get_option("reaction_privacy");
-  if (empty($privacy))
+  if (empty($privacy)) {
     $privacy = gigya_get_field_default("activity_privacy");
+  }
 
   $id = $post->ID;
   $code = "";
@@ -700,8 +713,9 @@ function gigya_get_reaction_plugin() {
 function gigya_gamification_plugin($params = array()) {
 
   $period = $params['period'];
-  if (empty($period))
+  if (empty($period)) {
     $period = gigya_get_field_default("gamification_period");
+  }
 
   $type = $params['type'];
   if (empty($type))
@@ -740,7 +754,7 @@ function gigya_gamification_plugin($params = array()) {
     $code .= "gigya.gm.showUserStatusUI(params);";
   endif;
 
-  $code .= "console.log(params);
+  $code .= "
 </script>";
 
   return $code;

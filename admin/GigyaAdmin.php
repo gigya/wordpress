@@ -68,8 +68,6 @@ class GigyaAdmin {
       <?php gAdminFormElements::gigya_checkbox_field("google_analytics", "Google's Social Analytics"); ?>
       <!--Debug Log-->
       <?php gAdminFormElements::gigya_checkbox_field("gigya_debug", "Enable Gigya debug log") ?>
-      <!--  Load Jquery -->
-      <?php gAdminFormElements::gigya_select_field("load_jquery", gigya_get_field_options("load_jquery"), "Load Jquery", gigya_get_field_default("load_jquery")); ?>
     </div>
     <?php echo ob_get_clean();
   }
@@ -190,7 +188,7 @@ class GigyaAdmin {
 		iconImgOver:'http://cdn.gigya.com/gs/i/reactions/icons/Amazing_Icon_Down.png',
         tooltip:'This item is amazing',
         feedMessage: 'This is amazing!',
-		headerText:'Your reaction to this post is \'Amazing\''
+		headerText:'Your reaction to this post is Amazing'
 	}
 ,{
 text: 'Geeky',
@@ -199,7 +197,7 @@ iconImgUp:'http://cdn.gigya.com/gs/i/reactions/icons/Geeky_Icon_Up.png',
 iconImgOver:'http://cdn.gigya.com/gs/i/reactions/icons/Geeky_Icon_Down.png',
 tooltip:'This item is geeky',
 feedMessage: 'This is geeky!',
-headerText:'Your reaction to this post is \'Geeky\''
+headerText:'Your reaction to this post is Geeky'
 }"?>
       <?php gAdminFormElements::gigya_textarea_field("reaction_buttons", "Reaction Buttons", $default_reactions, NULL); ?>
       <!--  Providers -->

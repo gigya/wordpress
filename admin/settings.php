@@ -1,10 +1,4 @@
 <?php
-if (!current_user_can(GIGYA_PERMISSION_LEVEL)) {
-  wp_die(__('Cheatin&#8217; uh?'));
-}
-
-$helpUrl = 'http://developers.gigya.com/';
-
 if (isset($_GET["help"])) {
   include 'help.php';
   exit;
@@ -21,6 +15,9 @@ if (empty($show_counts)) {
 
 ?>
 <?php function gigya_admin_page() {
+  if (!current_user_can(GIGYA_PERMISSION_LEVEL)) {
+    wp_die(__('Cheatin&#8217; uh?'));
+  }
   $share_custom = gigya_get_option("share_custom");
   $login_ui = gigya_get_option("login_ui");
   $account_linking = 1;
@@ -59,6 +56,7 @@ if (empty($show_counts)) {
 
     <?php
     // TODO: fix link
+    $helpUrl = 'http://developers.gigya.com/050_Partners/050_CMS_Modules/030_Wordpress_Plugin';
     echo sprintf(__('To learn more about gigya & how setup an account, please visit our developer documentation <a target="_blank"  href="%1$s">here</a>.'), $helpUrl);
     ?>
     <?php settings_errors(); ?>
@@ -86,7 +84,6 @@ function gigya_login_admin() {
 }
 
 ?>
-<!-- END CONTENT-->
 
 	
 	

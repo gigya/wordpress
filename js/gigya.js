@@ -6,7 +6,7 @@ jQuery(document).ready(function (jQuery) {
     onLogin: function (userObject) {
       Gigya.Ajax.setUserObject(userObject);
       Gigya.Ajax.onSignIn = function (r) {
-        window.document.location.href = r.url;
+        window.document.location.href = r.params.url;
       };
       Gigya.Ajax.login();
     }
