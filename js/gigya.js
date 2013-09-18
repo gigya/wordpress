@@ -99,9 +99,14 @@ jQuery(document).ready(function (jQuery) {
             target = jQuery("#login h1");
             markup = "<div id='login_error'>" + text + "<br></div>";
           }
+          if (target.length == 0) {
+            jQuery('.error-message').html(text);
+            return false;
+          }
 
           target.after(markup).parent().find("p.message").fadeIn();
         } catch (e) {
+          console.log(e);
 
         }
 
