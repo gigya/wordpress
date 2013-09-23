@@ -26,6 +26,12 @@ class GigyaSO_Util {
     $request->setParam("uid", $uid);
     $request->setParam("siteUID", $user_id);
     $response = $request->send();
+    if (gigya_get_option("gigya_debug") == true) {
+      self::gigya_log("request: \n");
+      self::gigya_log($request);
+      self::gigya_log("responce: \n");
+      self::gigya_log($response);
+    }
     //echo date("F j, Y, g:i a",$_SERVER['REQUEST_TIME']);
     if ($response->getErrorCode() != 0) {
       return new WP_Error("error", "<strong>ERROR: </strong>" . $response->getErrorMessage() . $uid);
@@ -50,6 +56,12 @@ class GigyaSO_Util {
     $request->setParam("siteUID", $user_id);
 
     $response = $request->send();
+    if (gigya_get_option("gigya_debug") == true) {
+      self::gigya_log("request: \n");
+      self::gigya_log($request);
+      self::gigya_log("responce: \n");
+      self::gigya_log($response);
+    }
     if ($response->getErrorCode() != 0) {
       return new WP_Error("error", "<strong>ERROR: </strong>" . $response->getErrorMessage());
     }
@@ -97,6 +109,12 @@ class GigyaSO_Util {
       }
 
       $response = $request->send();
+      if (gigya_get_option("gigya_debug") == true) {
+        self::gigya_log("request: \n");
+        self::gigya_log($request);
+        self::gigya_log("responce: \n");
+        self::gigya_log($response);
+      }
 
       if ($response->getErrorCode() != 0) {
         return new WP_Error("error", "<strong>ERROR: </strong>" . $response->getErrorMessage());
@@ -126,6 +144,12 @@ class GigyaSO_Util {
       $data_center = gigya_get_option('data_center');
       $request->setAPIDomain($data_center);
       $response = $request->send();
+      if (gigya_get_option("gigya_debug") == true) {
+        self::gigya_log("request: \n");
+        self::gigya_log($request);
+        self::gigya_log("responce: \n");
+        self::gigya_log($response);
+      }
       if ($response->getErrorCode() != 0) {
         return new WP_Error("error", "<strong>ERROR: </strong>" . $response->getErrorMessage());
       }
@@ -147,6 +171,12 @@ class GigyaSO_Util {
       $request->setAPIDomain($data_center);
       $request->setParam("uid", $user_id);
       $response = $request->send();
+      if (gigya_get_option("gigya_debug") == true) {
+        self::gigya_log("request: \n");
+        self::gigya_log($request);
+        self::gigya_log("responce: \n");
+        self::gigya_log($response);
+      }
       if ($response->getErrorCode() != 0) {
         return new WP_Error("error", "<strong>ERROR: </strong>" . $response->getErrorMessage());
       }
@@ -169,6 +199,12 @@ class GigyaSO_Util {
     $request->setAPIDomain($data_center);
     $request->setParam("UID", $uid);
     $response = $request->send();
+    if (gigya_get_option("gigya_debug") == true) {
+      self::gigya_log("request: \n");
+      self::gigya_log($request);
+      self::gigya_log("responce: \n");
+      self::gigya_log($response);
+    }
     if ($response->getErrorCode() != 0) {
       return new WP_Error("error", "<strong>ERROR: </strong>" . $response->getErrorMessage());
     }
@@ -176,5 +212,14 @@ class GigyaSO_Util {
     $response->getData;
   }
 
+  public static function gigya_log($log) {
+    if ( true === WP_DEBUG ) {
+      if ( is_array( $log ) || is_object( $log ) ) {
+        error_log( print_r( $log, true ) );
+      } else {
+        error_log( $log );
+      }
+    }
+  }
 }
 

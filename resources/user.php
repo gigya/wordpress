@@ -207,8 +207,8 @@ class GigyaSO_User {
   public function register_email($email) {
     // check if email address is valid
     $is_email = is_email($email);
-    if (is_wp_error($is_email)) {
-      return wp_send_json_error(array('type' => 'error', 'text' => $is_email->get_error_message()));
+    if ($is_email == false) {
+      return wp_send_json_error(array('type' => 'error', 'text' => 'Email is not valid'));
     }
     // check if email doesnt belong to site user
     $user_id = email_exists($email);

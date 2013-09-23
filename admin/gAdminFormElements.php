@@ -43,7 +43,8 @@ class gAdminFormElements {
     <div class="row checkbox <?php echo $class ?>">
       <div class="span3">
         <label for="gigya_<?php echo $id; ?>">
-          <input type="checkbox" <?php echo($value || $value == "1" ? "checked='true'" : ""); ?> value="1"
+          <input type="hidden" value="0" id="gigya_<?php echo $id; ?>" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[<?php echo $id; ?>]"/>
+          <input type="checkbox" <?php echo($value || $value == "1" ? "checked" : ""); ?> value="1"
                  id="gigya_<?php echo $id; ?>" name="<?php echo GIGYA_SETTINGS_PREFIX ?>[<?php echo $id; ?>]"/>
           <?php _e($label); ?>
         </label>
