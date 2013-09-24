@@ -734,30 +734,36 @@ function gigya_gamification_plugin($params = array()) {
 
   $code = "<div id='$cmp_id'></div>";
 
-  $code .= "<script type='text/javascript'>
+
+  switch ($type) {
+    case 'leaderboard':
+      $code .= "<script type='text/javascript'>
 			var params = {
 				'containerID' : '$cmp_id',
 				'width'       : '$width',
 				'period'      : '$period',
-				'totalCount'  : '$count'
+				'totalCount'  : $count
 			};";
-
-  if ($type == "achievements"):
-    $code .= "gigya.gm.showAchievementsUI(params);";
-  endif;
-  if ($type == "leaderboard"):
-    $code .= "gigya.gm.showLeaderboardUI(params);";
-  endif;
-  if ($type == "challenge"):
-    $code .= "gigya.gm.showChallengeStatusUI(params);";
-  endif;
-  if ($type == "game"):
-    $code .= "gigya.gm.showUserStatusUI(params);";
-  endif;
-
+      $code .= "gigya.gm.showLeaderboardUI(params);";
+        break;
+    default:
+      $code .= "<script type='text/javascript'>
+			var params = {
+				'containerID' : '$cmp_id',
+				'width'       : '$width'
+			};";
+      if ($type == "achievements"):
+        $code .= "gigya.gm.showAchievementsUI(params);";
+      endif;
+      if ($type == "challenge"):
+        $code .= "gigya.gm.showChallengeStatusUI(params);";
+      endif;
+      if ($type == "game"):
+        $code .= "gigya.gm.showUserStatusUI(params);";
+      endif;
+  }
   $code .= "
 </script>";
-
   return $code;
 }
 
@@ -777,11 +783,6 @@ function gamification_shortcode($atts) {
 }
 
 function gigya_activity_plugin($params = array()) {
-
-  $feed_id = $params['feed_id'];
-  if (empty($feed_id))
-    $feed_id = gigya_get_field_default("activity_feed_id");
-
   $site_name = $params['site_name'];
   if (empty($site_name))
     $site_name = gigya_get_field_default("activity_site_name");
@@ -804,7 +805,6 @@ function gigya_activity_plugin($params = array()) {
 				var params = {
 					'containerID' : '$cmp_id',
 					'initialTab'  : '$initial_tab',
-					'feedID'      : '$feed_id',
 					'siteName'    : '$site_name',
 					'width'       : '$width'
 				};
