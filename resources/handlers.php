@@ -281,7 +281,7 @@ if (!function_exists('gigya_get_option')) :
     global $GIGYA_OPTIONS;
     if ($ns) {
       //gigya_get_field_default("reaction_position")
-      return !empty($GIGYA_OPTIONS[$ns]) ? $GIGYA_OPTIONS[$ns] : "";
+      return isset($GIGYA_OPTIONS[$ns]) ? $GIGYA_OPTIONS[$ns] : NULL;
     }
     return !is_array($GIGYA_OPTIONS) ? array() : $GIGYA_OPTIONS;
   }
@@ -536,26 +536,22 @@ function gigya_get_share_plugin($pos = "") { /* pos = bottom | top*/
   $share .= get_user_action_embed($id);
 
   if (empty($custom)):
-    $share .= "     var params ={
+    $share .= "var params ={
 						userAction:ua,
 						layout    : '$layout',
 						showCounts: '$show_counts',
-						cssPrefix:'#gig-div-buttons-$id-$pos',
 						shareButtons:'$share_buttons', // list of providers
 						containerID: 'gig-div-buttons-$id-$pos',
 						privacy: '$privacy',
         				cid:''
 					};";
-
     if ($advanced) {
       $share .= " var adParams = $advanced;
 				  for (var prop in adParams) {
             				params[prop] = adParams[prop];
         		  };";
     };
-
     $share .= "gigya.services.socialize.showShareBarUI(params);";
-
   else:
     $share .= "$custom";
   endif;
@@ -571,8 +567,6 @@ function gigya_get_share_plugin($pos = "") { /* pos = bottom | top*/
       "first_img_url" => gigya_get_first_image($post)
     )
   );
-
-
   return $share;
 }
 
@@ -581,20 +575,23 @@ function gigya_get_share_plugin($pos = "") { /* pos = bottom | top*/
 
 function gigya_share_plugin($content) {
   $gigya_share = gigya_get_option("share_plugin");
-  if (empty($gigya_share) || $gigya_share == 3) {
-    $bottomHTML = gigya_get_share_plugin("bottom");
-    $content = $content . $bottomHTML;
+  switch ($gigya_share) {
+    case 'top':
+      $topHTML = gigya_get_share_plugin("top");
+      $content = $topHTML . $content;
+        break;
+    case 'bottom':
+      $bottomHTML = gigya_get_share_plugin("bottom");
+      $content = $content . $bottomHTML;
+      break;
+    case 'both':
+      $topHTML = gigya_get_share_plugin("top");
+      $bottomHTML = gigya_get_share_plugin("bottom");
+      $content = $topHTML . $content .$bottomHTML;
+      break;
+    case 'none':
+      break;
   }
-
-  if ($gigya_share == 2 || $gigya_share == 3) { /* Top */
-    $topHTML = gigya_get_share_plugin("top");
-    $content = $topHTML . $content;
-  }
-
-  if (gigya_get_option("share_plugin") == 1) { /* No Share Bar */
-
-  }
-
   return $content;
 }
 
@@ -630,9 +627,9 @@ function gigya_get_reaction_plugin() {
     $reactions = "{}";
   }
 
-  $count = gigya_get_option("reaction_count_type");
+  $count = gigya_get_option("reaction_show_counts");
   if (empty($count)) {
-    $count = gigya_get_field_default("reaction_count_type");
+    $count = gigya_get_field_default("reaction_show_counts");
   }
 
   $providers = gigya_get_option("reaction_providers");
@@ -687,7 +684,7 @@ function gigya_get_reaction_plugin() {
 					enabledProviders : '$providers',
 					showCounts       : '$count',
 					layout           : '$layout',
-					multipleReactions: $multiple,
+					multipleReactions:  $multiple,
 					countType        : '$count_type',
 					scope            : '$scope'            
 			   };";
@@ -1163,12 +1160,8 @@ function gigya_get_field_default($field) {
   if ($GIGYA_STATIC_DATA[$field]) {
     return $GIGYA_STATIC_DATA[$field]["default"];
   }
-
   return "";
-}
-
-;
-
+};
 
 function gigya_user_info_shortcode($attrs, $info = NULL) {
   if (NULL == $info) {

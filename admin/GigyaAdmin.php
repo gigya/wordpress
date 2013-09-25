@@ -116,12 +116,12 @@ class GigyaAdmin {
       <?php
       /* Share Plugin */
       $gigya_share_plugin = array(
-        "default" => "1",
+        "default" => "bottom",
         "options" => array(
-          "1" => "None",
-          "" => "Bottom",
-          "2" => "Top",
-          "3" => "Both"
+          "none" => "None",
+          "bottom" => "Bottom",
+          "top" => "Top",
+          "both" => "Both"
         )
       );
       gAdminFormElements::gigya_select_field("share_plugin", $gigya_share_plugin["options"], "Enable Gigya Share Button", $gigya_share_plugin["default"]);

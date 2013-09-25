@@ -109,5 +109,13 @@
     height: 16px;
 }
 
+.gig-bar-container table tr,
+.gig-bar-container table td,
+.gig-bar-container table {
+    width: auto;
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
 
 	
