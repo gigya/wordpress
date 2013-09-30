@@ -118,4 +118,8 @@
     border: 0;
 }
 
+.gig-bar-container iframe {
+    max-width: none;
+}
+
 	
