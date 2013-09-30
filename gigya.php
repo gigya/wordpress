@@ -146,15 +146,3 @@ add_shortcode('gamification_plugin', 'gamification_shortcode');
 // [activity_plugin foo="foo-value"]
 add_shortcode('activity_plugin', 'activity_shortcode');
 
-// Register uninstall hook
-register_uninstall_hook(__FILE__, 'gigya_uninstall');
-
-function gigya_uninstall() {
-  if (defined('WP_UNINSTALL_PLUGIN')) {
-    $options = get_option(GIGYA_SETTINGS_PREFIX);
-    foreach ($options as $opt => $val) {
-      delete_option($opt);
-    }
-  }
-  exit();
-}
