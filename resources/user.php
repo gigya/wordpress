@@ -195,7 +195,7 @@ class GigyaSO_User {
 
       }
     }
-    return 1;
+    wp_send_json_success(array('type' => 'signin', 'params' => array('url' => $this->redirectUrl)));
   }
 
   /**
@@ -224,7 +224,7 @@ class GigyaSO_User {
     if (is_wp_error($user)) {
       return wp_send_json_error(array('type' => 'error', 'text' => $user->get_error_message()));
     }
-    return 1;
+    wp_send_json_success(array('type' => 'signin', 'params' => array('url' => $this->redirectUrl)));
   }
 
   /**

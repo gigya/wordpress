@@ -131,15 +131,10 @@ class WP_Widget_GigyaActivityFeed extends WP_Widget {
   /** @see WP_Widget::form */
   function form($instance) {
     $title = esc_attr($instance['title']);
-    $feed_id = esc_attr($instance['feed_id']);
-    if (empty($initial_tab)) {
-      $feed_id = gigya_get_field_default("activity_feed_id");
-    }
     $initial_tab = esc_attr($instance['initial_tab']);
     if (empty($initial_tab)) {
       $initial_tab = gigya_get_field_default("activity_initial_tab");
     }
-
     $site_name = esc_attr($instance['site_name']);
     if (empty($site_name)) {
       $site_name = gigya_get_field_default("activity_site_name");
@@ -174,12 +169,6 @@ class WP_Widget_GigyaActivityFeed extends WP_Widget {
       </label>
     </p>
 
-    <p>
-      <label for="<?php echo $this->get_field_id('feed_id'); ?>"><?php _e('Feed ID:'); ?>
-        <input class="widefat" id="<?php echo $this->get_field_id('feed_id'); ?>"
-               name="<?php echo $this->get_field_name('feed_id'); ?>" type="text" value="<?php echo $feed_id; ?>"/>
-      </label>
-    </p>
 
     <p>
       <label for="<?php echo $this->get_field_id('site_name'); ?>"><?php _e('Site Name:'); ?>
@@ -327,6 +316,7 @@ class WP_Widget_GigyaGamification extends WP_Widget {
     $period = esc_attr($instance['period']);
     $type = esc_attr($instance['type']);
     $count = esc_attr($instance['count']);
+    $ext_class = $type == 'leaderboard' ? '' : 'hidden';
     if (empty($count)) {
       $count = gigya_get_field_default("gamification_count");
     }
@@ -360,13 +350,13 @@ class WP_Widget_GigyaGamification extends WP_Widget {
         </select>
       </label>
     </p>
-    <p class="gm-period hidden">
+    <p class="gm-period <?php echo $ext_class?>">
       <label for="<?php echo $this->get_field_id('period'); ?>"><?php _e('Time Period:'); ?>
         <select class="widefat" id="<?php echo $this->get_field_id('period'); ?>"
                 name="<?php echo $this->get_field_name('period'); ?>">
           <option <?php if ($period == "7") {
             echo "selected='true'";
-          } ?> value="7">7 Days
+          } ?> value="7days">7 Days
           </option>
           <option <?php if ($period == "all") {
             echo "selected='true'";
@@ -375,7 +365,7 @@ class WP_Widget_GigyaGamification extends WP_Widget {
         </select>
       </label>
     </p>
-    <p class="gm-count hidden">
+    <p class="gm-count <?php echo $ext_class ?>">
       <label for="<?php echo $this->get_field_id('count'); ?>"><?php _e('Total Count:'); ?>
         <input class="widefat" id="<?php echo $this->get_field_id('count'); ?>"
                name="<?php echo $this->get_field_name('count'); ?>" type="text" value="<?php echo $count; ?>"/>
