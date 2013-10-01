@@ -4,7 +4,7 @@ class GigyaSO_Core {
 	# script tag for gigya api
 	public function render_gigya_js(){
 	?>
-		<script type="text/javascript" src="http://cdn.gigya.com/JS/socialize.js?apikey=<?php echo gigya_get_option("api_key");?>"></script>
+		<script type="text/javascript" src="//cdn.gigya.com/JS/socialize.js?apikey=<?php echo gigya_get_option("api_key");?>"></script>
 	<?php 
 	}
 	# render gigya plugin css
@@ -22,9 +22,6 @@ class GigyaSO_Core {
 	}
 	
 	public function conf_and_params($params = array()){
-		$api_key = gigya_get_option("api_key");
-		$lang = gigya_get_option("lang");
-		
 		# return array("width"=>"","height=>"","header_text"=>"","bgColor"=>"","container_id"=>"","button_siz"=>"")
 		$params = apply_filters("login_params",$params);
 		
@@ -36,15 +33,33 @@ class GigyaSO_Core {
 		}
 		
 		$header_text = (isset($params["header_text"]) ? $params["header_text"] : __("Sign in with your Social Network:"));
-		$width = $params["width"] ? $params["width"] : 345 ;
-		$height = $params["height"] ? $params["height"] : 145 ;
+		
+		if($params["width"]) {
+			$width = $params["width"];		
+		} else {
+			$width = is_numeric(gigya_get_option("login_width")) ? gigya_get_option("login_width") : 345;
+		}
+		
+		if($params["height"]) {
+			$height = $params["height"];		
+		} else {
+			$height = is_numeric(gigya_get_option("login_height")) ? gigya_get_option("login_height") : 145;
+		}
+		
+		$button_style = gigya_get_option("login_button_style") ? gigya_get_option("login_button_style") : gigya_get_field_default("login_button_style");
+		
+		$custom = gigya_parse_key_pair(gigya_get_option("login_custom_code"));
+		$custom = $custom ? json_encode($custom) : 0; 
+		
+		
 		$bgColor = isset($params["bgColor"]) && !empty($params["bgColor"])  ? $params["bgColor"] : "#FFFFFF" ;
-
+		$term_link = gigya_get_option("login_term_link") ? gigya_get_option("login_term_link") : gigya_get_field_default("login_term_link");
 		
 	?>
 		var conf = {};
 		var login_params = {
-			showTermsLink:false,
+			showTermsLink: <?php echo $term_link == "0" ? "false" : "true"; ?>,
+			buttonsStyle : '<?php echo $button_style ?>',
 			headerText:'<label><?php echo $header_text; ?></label>',
 			height:<?php echo $height;?>,
 			width:<?php echo $width; ?>,
@@ -53,7 +68,15 @@ class GigyaSO_Core {
 			UIConfig:'<config><body><controls><snbuttons buttonsize=\"<?php echo $params["button_size"] ? $params["button_size"] : 42 ;?>\"></snbuttons></controls><background  background-color=\"<?php echo $bgColor?>\"></background></body></config>',
 			containerID: '<?php echo isset($params["container_id"]) ? $params["container_id"] : 'componentDiv' ;?>'
 		};
+	<?php 
+		if($custom):
+	?>
+		var adParams = <?php echo $custom; ?>;
+		for (var prop in adParams) {
+            	login_params[prop] = adParams[prop];
+        };
 	<?php 	
+		endif;
 	}
 	
 	public function render_tmpl(){

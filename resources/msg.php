@@ -26,7 +26,7 @@ class GigyaSO_Msg {
 				$msg["url"] = $options["post_login_redirect"] == "" ? home_url() : $options["post_login_redirect"];
 			}
 			$msg["params"] = $params;
-			echo wp_send_json_success($msg);
+			echo json_encode($msg);
 		}
 			
 	}

@@ -49,33 +49,54 @@
 			});
 		});
 		
-				
-		var conf_cmnts_<?php echo $post_id;?> = {
-			APIKey: "<?php echo $api;?>"
-    	};
-    	  
-    	var params_cmnts_<?php echo $post_id;?> = {  
-        	// Required parameters:  
-        	categoryID: "<?php echo gigya_get_option("gigya_comments_cat_id")?>",  
-        	containerID: "comments",  
-        	streamTitle: "<?php echo $title;?>",  
-        	streamID: "comments-<?php echo $post_id;?>",  
-        	onCommentSubmitted: function(res){
-          		var data = {
-					action: "gigya_add_comment",
-					nonce : "<?php echo wp_create_nonce('gigya-comment-nonce');?>",
-					comment: res.commentText,
-					post_id: <?php echo $post_id;?>,
-					uid    : res.user.UID
-				};
+		(function(){		
 
-				jQuery.post("<?php echo admin_url( 'admin-ajax.php' );?>",data,function(response) {
-					
-				});
-          	}
-    	};  
+			<?php 
+			$share_providers = gigya_get_option("comments_enable_share_providers");
+			if(empty($share_providers)) $share_providers = gigya_get_field_default("comments_enable_share_providers");
+			$scope = gigya_get_option("comments_enable_share_activity");
+			if(empty($scope)) $scope = gigya_get_field_default("comments_enable_share_activity");
+			$privacy = gigya_get_option("comments_privacy");
+			if(empty($privacy)) $privacy = gigya_get_field_default("activity_privacy");
+			
+			?>
+	    	  
+	    	var params = {  
+	        	// Required parameters:  
+	        	categoryID: "<?php echo gigya_get_option("comments_cat_id")?>",  
+	        	containerID: "comments",  
+	        	streamTitle: "<?php echo $title;?>",
+	        	scope      : "<?php echo $scope;?>",
+	        	enabledShareProviders : "<?php echo $share_providers; ?>",  
+	        	streamID: "comments-<?php echo $post_id;?>",  
+	        	onCommentSubmitted: function(res){
+	          		var data = {
+						action: "gigya_add_comment",
+						privacy: "<?php echo $privacy;?>",
+						nonce : "<?php echo wp_create_nonce('gigya-comment-nonce');?>",
+						comment: res.commentText,
+						post_id: <?php echo $post_id;?>,
+						uid    : res.user.UID
+					};
+	
+					jQuery.post("<?php echo admin_url( 'admin-ajax.php' );?>",data,function(response) {
+						
+					});
+	          	}
+	    	};  
 
-    	gigya.services.socialize.showCommentsUI(conf_cmnts_<?php echo $post_id;?>,params_cmnts_<?php echo $post_id;?>);
+	    	<?php 
+	    	$custom = gigya_parse_key_pair(gigya_get_option("commets_custom_code"));
+			$custom = $custom ? json_encode($custom) : 0;
+			if($custom): 
+	    	?>
+			var adParams = <?php echo $custom; ?>;
+			for (var prop in adParams) {
+				params[prop] = adParams[prop];
+			};
+			<?php endif;?>
+	    	gigya.services.socialize.showCommentsUI(params);
+		})();
     	
 	</script>
 <?php 

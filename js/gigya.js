@@ -3,6 +3,22 @@ window.Gigya = {};
 
 jQuery(document).ready(function($) {
 	// Template Manager
+    $.fn.serializeObject = function()
+{
+   var o = {};
+   var a = this.serializeArray();
+   $.each(a, function() {
+       if (o[this.name]) {
+           if (!o[this.name].push) {
+               o[this.name] = [o[this.name]];
+           }
+           o[this.name].push(this.value || '');
+       } else {
+           o[this.name] = this.value || '';
+       }
+   });
+   return o;
+};
 	Gigya.Tmpl = function(target){
 		this.target = target;
 		return this;
@@ -48,7 +64,16 @@ jQuery(document).ready(function($) {
 		header: function(params){
 			this.tmpl("gigya-header-tmpl",params,$.noop);
 			return this;
-		}
+		},
+        renderForm: function(params){
+            $('#login-dialog').html(params.html);
+            $('#gigya-ajax-submit').click( function(e) {
+                e.preventDefault();
+                var action = 
+                console.log( $(this).parents('form').eq(0).serializeObject() );
+                
+            });
+        } 
 	}
 	// Error Manager
 	Gigya.Error =  function(){
@@ -100,15 +125,17 @@ jQuery(document).ready(function($) {
 				Gigya.Error.hide();
 				$.post(adminurl,$.extend({
 					userObject:JSON.stringify(userObject),
-					action: "gigya_user_login"
+					action: "gigya_user_login",
+                    step: 1
 				},data),function(r){
 					try {
-						switch(r.data.type) {
+						//var r = JSON.parse(r);
+						switch(r.type) {
 							case "email_exist":
 								new Gigya.Dialog().open(function(){
 									new Gigya.Tmpl(this).renderLoginDialog($.extend(userObject,{
 										isEmailExist  :true,
-										linkAccount   : (r.data.params.account_linking && r.data.params.force_email)
+										linkAccount   : (r.params.account_linking && r.params.force_email) 
 									}));
 										
 								});
@@ -118,19 +145,25 @@ jQuery(document).ready(function($) {
 									new Gigya.Tmpl(this).renderLoginDialog($.extend(userObject,{
 										isNewUser    :true,
 										isEmailExist :false,
-										linkAccount  : (r.data.params.account_linking && r.data.params.force_email)
-									}));
-								});
+										linkAccount  : (r.params.account_linking && r.params.force_email) 
+									}));	
+								});	
 							break;
-
+                            case "reg_form":
+                                new Gigya.Dialog().open(function () {
+                                    new Gigya.Tmpl(this).renderForm($.extend({}, r, userObject));
+                                })
+                            
+	 
 							case "error":
-							Gigya.Error.show(r.data.text);
-							break;
+							Gigya.Error.show(r.text);
+							break; 
 							case "signin":
-								that.onSignIn.call(this,r.data,userObject);
+								that.onSignIn.call(this,r,userObject);
 							break;
 						}
 					} catch(e) {
+                        console.log(e);
 			
 					}
 				});
@@ -157,11 +190,19 @@ jQuery(document).ready(function($) {
 				modal: true,
 				width:'auto',
 				resizable: false,
+				zIndex   : 100000,
 				close: function(){
 					that.target.empty();
 					$(this).dialog("destroy");	
-				}
-			},{})).dialog("open");		
+				},
+				buttons: {
+					Cancel: function() {
+			          $( this ).dialog( "close" );
+			        }
+			    }
+			},{})).dialog("open");
+			
+			;
 		}
 	};
 });

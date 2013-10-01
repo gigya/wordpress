@@ -1,5 +1,6 @@
 <?php
 	require_once(GIGYA_PLUGIN_PATH.'/resources/login.php');
+	
 	$gigya_login = new GigyaSO_Login();
 	if((float) get_bloginfo('version')<3.1) {
 		$gigya_login->render_js();
@@ -15,14 +16,8 @@
 jQuery(document).ready(function($) {
 	// Login Dom Manipulation - Add gigya html panel
 	var target = function(){
-		if($("#loginform").length > 0) {
-			return $("#loginform");
-		}
-
-		if($("#registerform").length > 0) { 
-			return $("#registerform");
-		}
-
+		if($("#loginform").length > 0) return $("#loginform");
+		if($("#registerform").length > 0) return $("#registerform");
 		return $("#lostpasswordform");
 	}();
 
