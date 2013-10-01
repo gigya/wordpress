@@ -84,8 +84,3 @@ function gigya_login_admin() {
 }
 
 ?>
-
-	
-	
-	
-  
