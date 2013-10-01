@@ -23,30 +23,18 @@ else:
 
   ?>
   <div id='comments' class="gigya-comments-wrap"></div>
-  <a id="comments-logout-link" href="<?php echo wp_logout_url($permalink); ?>" style="display:dnone;">Logout</a>
+  <a id="comments-logout-link" href="<?php echo wp_logout_url($permalink); ?>" style="display:none;">Logout</a>
   <script type='text/javascript'>
 
     jQuery(function ($) {
       gigya.services.socialize.addEventHandlers({
         onLogout: function (eventObj) {
-          if (eventObj.eventName == "logout" && eventObj.source == "showCommentsUI") {
+          if (eventObj.eventName == "logout") {
             $.post("<?php echo admin_url( 'admin-ajax.php' );?>", {
               "action": "gigya_logout_user"
             }, function (r) {
               window.location = "<?php echo $permalink; ?>";
             });
-          }
-        },
-        onLogin: function (eventObj) {
-          if (eventObj.eventName == "login" && eventObj.source == "showCommentsUI") {
-            Gigya.Ajax.setUserObject(eventObj);
-            Gigya.Ajax.setUrl("<?php echo admin_url( 'admin-ajax.php' );?>");
-            Gigya.Ajax.onSignIn = function (r) {
-              $("#login-dialog").dialog("close");
-              location.reload();
-
-            };
-            Gigya.Ajax.login();
           }
         }
       });
@@ -74,6 +62,8 @@ else:
         streamTitle: "<?php echo $title;?>",
         scope: "<?php echo $scope;?>",
         enabledShareProviders: "<?php echo $share_providers; ?>",
+        version: 2,
+        context: {source: 'comments'},
         streamID: "comments-<?php echo $post_id;?>",
         onCommentSubmitted: function (res) {
           var data = {
@@ -102,7 +92,7 @@ else:
       }
       ;
       <?php endif;?>
-      gigya.services.socialize.showCommentsUI(params);
+      gigya.comments.showCommentsUI(params);
     })();
 
   </script>
