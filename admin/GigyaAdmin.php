@@ -222,10 +222,10 @@ headerText:'Your reaction to this post is \'Geeky\''
   public function gmSectionCallback() {
     ob_start();
     ?>
-    <div class="well hidden">
+    <div class="well">
       <?php gAdminFormElements::gigya_checkbox_field("gamification_notification", "Enable Notifications", gigya_get_field_default("gamification_notification")); ?>
       <br/>
-      <i>Define in Widget area</i>
+      <i>Define in Widget area [change this text]</i>
 
       <hr/>
 
