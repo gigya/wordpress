@@ -186,7 +186,25 @@ class GigyaAdmin {
       <?php gAdminFormElements::gigya_select_field("reaction_layout", gigya_get_field_options("reaction_layout"), "Layout", gigya_get_field_default("reaction_layout")); ?>
 
       <!--  Reaction Array -->
-      <?php gAdminFormElements::gigya_textarea_field("reaction_buttons", "Reaction Buttons", NULL); ?>
+      <?php $default_reactions = "{
+	    text: 'Amazing',
+        ID: 'amazing',
+        iconImgUp:'http://cdn.gigya.com/gs/i/reactions/icons/Amazing_Icon_Up.png',
+		iconImgOver:'http://cdn.gigya.com/gs/i/reactions/icons/Amazing_Icon_Down.png',
+        tooltip:'This item is amazing',
+        feedMessage: 'This is amazing!',
+		headerText:'Your reaction to this post is \'Amazing\''
+	}
+,{
+text: 'Geeky',
+ID: 'geeky',
+iconImgUp:'http://cdn.gigya.com/gs/i/reactions/icons/Geeky_Icon_Up.png',
+iconImgOver:'http://cdn.gigya.com/gs/i/reactions/icons/Geeky_Icon_Down.png',
+tooltip:'This item is geeky',
+feedMessage: 'This is geeky!',
+headerText:'Your reaction to this post is \'Geeky\''
+}"?>
+      <?php gAdminFormElements::gigya_textarea_field("reaction_buttons", "Reaction Buttons", $default_reactions, NULL); ?>
       <!--  Providers -->
       <?php gAdminFormElements::gigya_input_field("reaction_providers", "Providers", NULL, "Leave empty or type * for all providers or define specific providers, for example: facebook,twitter,google,linkedin"); ?>
       <!--  Enable Share Activity -->

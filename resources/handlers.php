@@ -66,10 +66,13 @@ if (!function_exists('gigya_init_options')) :
         update_option(GIGYA_SETTINGS_PREFIX, $current_options);
       }
     }
-
     $GIGYA_OPTIONS = $current_options;
 
-
+    if (!empty($_POST)) {
+      if ($_POST['option_page'] == 'gigya_settings_fields' && $_POST['action'] == 'update') {
+        $_POST['gigya_settings_fields'] = $_POST['gigya_settings_fields'] + $GIGYA_OPTIONS;
+      }
+    }
   }
 endif;
 
@@ -78,121 +81,127 @@ endif;
 if (!function_exists('gigya_enque_js')) :
   function gigya_enque_js($use_script) {
 
-    if (gigya_get_option("load_jquery") == 1 || gigya_get_option("load_jquery") == 2) {
-      wp_deregister_script("jquery");
+    //if (gigya_get_option("load_jquery") == 1 || gigya_get_option("load_jquery") == 2) {
+    /*      wp_deregister_script("jquery");
 
-      $jquery_path = gigya_get_option("load_jquery") == 1 ? GIGYA_PLUGIN_URL . "/js/jquery/jquery.1.7.1.min.js" : "https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js";
-      $jquery_ui_path = gigya_get_option("load_jquery") == 1 ? GIGYA_PLUGIN_URL . "/js/jquery/jquery-ui-1.8.16.min.js" : "https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js";
+          //$jquery_path = gigya_get_option("load_jquery") == 1 ? GIGYA_PLUGIN_URL . "/js/jquery/jquery.1.7.1.min.js" : "https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js";
+          //$jquery_ui_path = gigya_get_option("load_jquery") == 1 ? GIGYA_PLUGIN_URL . "/js/jquery/jquery-ui-1.8.16.min.js" : "https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js";
 
-      wp_register_script("jquery", $jquery_path, array(), "1.7.1");
-      wp_register_script("jquery-ui", $jquery_ui_path, array("jquery"), "1.8.16");
+          wp_register_script("jquery", $jquery_path, array(), "1.7.1");
+          wp_register_script("jquery-ui", $jquery_ui_path, array("jquery"), "1.8.16");
 
-      $raw_js_files = array();
-      array_push($raw_js_files, array("name" => "jquery", "is_enque" => 1, "url" => $jquery_path, "is_admin" => 0));
-      if (!is_user_logged_in() && is_active_widget(FALSE, FALSE, "gigya", FALSE)) {
-        array_push($raw_js_files, array(
-            "name" => "jquery-ui",
-            "is_enque" => 1,
-            "url" => $jquery_ui_path,
-            "is_admin" => 0
-          )
-        );
-        array_push($raw_js_files, array(
-            "name" => "jquery.tmpl",
-            "is_enque" => 0,
-            "url" => GIGYA_PLUGIN_URL . "/js/jquery.tmpl.js",
-            "is_admin" => 0
-          )
-        );
-        array_push($raw_js_files, array("name" => "json2", "is_enque" => 1, "url" => "json2.js", "is_admin" => 0));
-      }
-      array_push($raw_js_files, array(
-          "name" => "gigya",
-          "is_enque" => 0,
-          "url" => GIGYA_PLUGIN_URL . "/js/gigya.js",
-          "is_admin" => 0
-        )
-      );
-      //array_push($raw_js_files,array("name"=>"gigya-socialize","is_enque"=>0,"url"=>"http://cdn.gigya.com/JS/socialize.js?apikey=".gigya_get_option("api_key"),"is_admin"=>1));
-
-    }
-    else {
-      $raw_js_files = array();
-      array_push($raw_js_files, array(
-          "name" => "jquery",
-          "is_enque" => 1,
-          "url" => "jquery/jquery.js",
-          "is_admin" => 0
-        )
-      );
-      array_push($raw_js_files, array(
-          "name" => "jquery.tmpl",
-          "is_enque" => 0,
-          "url" => GIGYA_PLUGIN_URL . "/js/jquery.tmpl.js",
-          "is_admin" => 0
-        )
-      );
-      array_push($raw_js_files, array("name" => "json2", "is_enque" => 1, "url" => "json2.js", "is_admin" => 0));
-      array_push($raw_js_files, array(
-          "name" => "jquery-ui-core",
-          "is_enque" => 1,
-          "url" => "jquery/ui.core.js",
-          "is_admin" => 0
-        )
-      );
-      array_push($raw_js_files, array(
-          "name" => "jquery-ui-draggable",
-          "is_enque" => 1,
-          "url" => "jquery/ui.draggable.js",
-          "is_admin" => 0
-        )
-      );
-      array_push($raw_js_files, array(
-          "name" => "jquery-ui-resizable",
-          "is_enque" => 1,
-          "url" => "jquery/ui.resizable.js",
-          "is_admin" => 0
-        )
-      );
-      array_push($raw_js_files, array(
-          "name" => "jquery-ui-dialog",
-          "is_enque" => 1,
-          "url" => "jquery/ui.dialog.js",
-          "is_admin" => 0
-        )
-      );
-      array_push($raw_js_files, array(
-          "name" => "gigya",
-          "is_enque" => 0,
-          "url" => GIGYA_PLUGIN_URL . "/js/gigya.js",
-          "is_admin" => 0
-        )
-      );
-      //array_push($raw_js_files,array("name"=>"gigya-socialize","is_enque"=>0,"url"=>"http://cdn.gigya.com/JS/socialize.js?apikey=".gigya_get_option("api_key"),"is_admin"=>1));
-    }
-
-
-    $is_admin = is_admin();
-    if (!$use_script) {
-      foreach ($raw_js_files as $file) {
-        if (($is_admin && $file["is_admin"]) || !$is_admin) {
-          if (!$file["is_enque"]) {
-            wp_register_script($file["name"], $file["url"]);
+          $raw_js_files = array();
+          array_push($raw_js_files, array("name" => "jquery", "is_enque" => 1, "url" => $jquery_path, "is_admin" => 0));
+          if (!is_user_logged_in() && is_active_widget(FALSE, FALSE, "gigya", FALSE)) {
+            array_push($raw_js_files, array(
+                "name" => "jquery-ui",
+                "is_enque" => 1,
+                "url" => $jquery_ui_path,
+                "is_admin" => 0
+              )
+            );
+            array_push($raw_js_files, array(
+                "name" => "jquery.tmpl",
+                "is_enque" => 0,
+                "url" => GIGYA_PLUGIN_URL . "/js/jquery.tmpl.js",
+                "is_admin" => 0
+              )
+            );
+            array_push($raw_js_files, array("name" => "json2", "is_enque" => 1, "url" => "json2.js", "is_admin" => 0));
           }
-          wp_enqueue_script($file["name"]);
+          array_push($raw_js_files, array(
+              "name" => "gigya",
+              "is_enque" => 0,
+              "url" => GIGYA_PLUGIN_URL . "/js/gigya.js",
+              "is_admin" => 0
+            )
+          );
+          //array_push($raw_js_files,array("name"=>"gigya-socialize","is_enque"=>0,"url"=>"http://cdn.gigya.com/JS/socialize.js?apikey=".gigya_get_option("api_key"),"is_admin"=>1));
+
         }
-      }
-    }
-    else {
-      $wp_js_path = get_bloginfo('wpurl') . '/' . WPINC . '/js';
-      gigya_enque_gigya_script();
-      foreach ($raw_js_files as $file) {
-        $path = $file["is_enque"] ? "$wp_js_path/$file[url]" : $file[url];
-        echo "<script type='text/javascript' src='$path'></script>";
-      }
+        else {
+          $raw_js_files = array();
+          array_push($raw_js_files, array(
+              "name" => "jquery",
+              "is_enque" => 1,
+              "url" => "jquery/jquery.js",
+              "is_admin" => 0
+            )
+          );
+          array_push($raw_js_files, array(
+              "name" => "jquery.tmpl",
+              "is_enque" => 0,
+              "url" => GIGYA_PLUGIN_URL . "/js/jquery.tmpl.js",
+              "is_admin" => 0
+            )
+          );
+          array_push($raw_js_files, array("name" => "json2", "is_enque" => 1, "url" => "json2.js", "is_admin" => 0));
+          array_push($raw_js_files, array(
+              "name" => "jquery-ui-core",
+              "is_enque" => 1,
+              "url" => "jquery/ui.core.js",
+              "is_admin" => 0
+            )
+          );
+          array_push($raw_js_files, array(
+              "name" => "jquery-ui-draggable",
+              "is_enque" => 1,
+              "url" => "jquery/ui.draggable.js",
+              "is_admin" => 0
+            )
+          );
+          array_push($raw_js_files, array(
+              "name" => "jquery-ui-resizable",
+              "is_enque" => 1,
+              "url" => "jquery/ui.resizable.js",
+              "is_admin" => 0
+            )
+          );
+          array_push($raw_js_files, array(
+              "name" => "jquery-ui-dialog",
+              "is_enque" => 1,
+              "url" => "jquery/ui.dialog.js",
+              "is_admin" => 0
+            )
+          );
+          array_push($raw_js_files, array(
+              "name" => "gigya",
+              "is_enque" => 0,
+              "url" => GIGYA_PLUGIN_URL . "/js/gigya.js",
+              "is_admin" => 0
+            )
+          );
+          //array_push($raw_js_files,array("name"=>"gigya-socialize","is_enque"=>0,"url"=>"http://cdn.gigya.com/JS/socialize.js?apikey=".gigya_get_option("api_key"),"is_admin"=>1));
+        }
 
-    }
 
+        $is_admin = is_admin();
+        if (!$use_script) {
+          foreach ($raw_js_files as $file) {
+            if (($is_admin && $file["is_admin"]) || !$is_admin) {
+              if (!$file["is_enque"]) {
+                wp_register_script($file["name"], $file["url"]);
+              }
+              wp_enqueue_script($file["name"]);
+            }
+          }
+        }
+        else {
+          $wp_js_path = get_bloginfo('wpurl') . '/' . WPINC . '/js';
+          gigya_enque_gigya_script();
+          foreach ($raw_js_files as $file) {
+            $path = $file["is_enque"] ? "$wp_js_path/$file[url]" : $file[url];
+            echo "<script type='text/javascript' src='$path'></script>";
+          }
+
+        }*/
+
+    wp_enqueue_script('gigya_local_script', GIGYA_PLUGIN_URL . '/js/gigya.js', array('jquery', 'jquery-ui-dialog'));
+    wp_enqueue_script('gigya_tmpl_script', GIGYA_PLUGIN_URL . '/js/jquery.tmpl.js');
+    $vars = array(
+      'adminurl' => admin_url("admin-ajax.php")
+    );
+    wp_localize_script('gigya_local_script', 'gigyaVars', $vars);
   }
 endif;
 
@@ -513,8 +522,9 @@ function gigya_get_share_plugin($pos = "") { /* pos = bottom | top*/
   }
 
   $privacy = gigya_get_option("share_privacy");
-  if (empty($privacy))
+  if (empty($privacy)) {
     $privacy = gigya_get_field_default("activity_privacy");
+  }
 
   $custom = gigya_get_option("share_custom");
 
@@ -652,7 +662,7 @@ function gigya_get_reaction_plugin() {
 
   $code .= "<p id='gig-div-reactions-$id'></p>";
   $code .= "<script language='javascript'>";
-  $code .= "(function(){";
+  $code .= "{";
   $code .= get_user_action_embed($id);
 
   $code .= " var params = {
@@ -678,7 +688,7 @@ function gigya_get_reaction_plugin() {
 
   $code .= "gigya.socialize.showReactionsBarUI(params)";
 
-  $code .= "}());";
+  $code .= "}";
   $code .= "</script>";
 
   return $code;
@@ -710,14 +720,12 @@ function gigya_gamification_plugin($params = array()) {
   $code = "<div id='$cmp_id'></div>";
 
   $code .= "<script type='text/javascript'>
-		function(){
 			var params = {
 				'containerID' : '$cmp_id',
 				'width'       : '$width',
 				'period'      : '$period',
 				'totalCount'  : '$count'
-			};)
-}";
+			};";
 
   if ($type == "achievements"):
     $code .= "gigya.gm.showAchievementsUI(params);";
@@ -732,8 +740,8 @@ function gigya_gamification_plugin($params = array()) {
     $code .= "gigya.gm.showUserStatusUI(params);";
   endif;
 
-  $code .= "}());
-	    </script>";
+  $code .= "console.log(params);
+</script>";
 
   return $code;
 }

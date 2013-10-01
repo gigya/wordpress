@@ -22,7 +22,7 @@ class GigyaSO_User {
   private function is_user() {
     // check if already registered with gigya
     if (!empty($this->data->user->isSiteUID)) {
-      return 1;
+      return TRUE;
     }
     // check if user already registered in old version
     global $wpdb;
@@ -64,17 +64,6 @@ class GigyaSO_User {
     else:
       $this->blog_id = 0;
     endif;
-
-    function gigya_validate_email($valid, $email, $error) {
-      if ($valid) {
-        return $valid;
-      }
-      else {
-        return new WP_Error('error', "<strong>ERROR: </strong>" . $error);
-      }
-    }
-
-    add_filter('is_email', 'gigya_validate_email', 0, 3);
   }
 
   public function __get($key) {
@@ -138,18 +127,18 @@ class GigyaSO_User {
   public function login() {
     require_once(ABSPATH . WPINC . '/registration.php');
     // check if user has siteUID, if exist user registered to site and gigya and can login
-    if ($this->is_gigya) {
+    if (!empty($this->is_gigya)) {
       $signon = $this->signon_gigya_user();
       if (is_wp_error($signon)) {
         return wp_send_json_error(array('type' => 'error', 'text' => $signon->get_error_message()));
       }
-      return 1;
+      return TRUE;
     };
 
     // check if email exist in social user obj
     $email = $this->data->user->email;
     // return user id if exist
-    $is_email_exist = empty($email) ? 0 : email_exists($email);
+    $is_email_exist = empty($email) ? FALSE : email_exists($email);
     if ($this->is_multisite && $is_email_exist) {
       $blogs = get_blogs_of_user($is_email_exist);
       $is_exist_in_blog = 0;
@@ -165,32 +154,32 @@ class GigyaSO_User {
         $is_email_exist = 0;
       }
     }
-    //		// if exist - need to ask user if already registered - create new account or link account
+    // if exist - need to ask user if already registered - create new account or link account
+    // TODO: check this flow with Shirly
     if ($is_email_exist) {
-      if ($this->force_email) {
-        return wp_send_json_success(array(
-            'type' => self::GIGYA_ACTION_EMAIL_EXIST,
-            'params' => array(
-              'account_linking' => $this->account_linking,
-              'force_email' => $this->force_email
-            )
-
+      //if ($this->force_email) {
+      return wp_send_json_success(array(
+          'type' => self::GIGYA_ACTION_EMAIL_EXIST,
+          'params' => array(
+            'account_linking' => $this->account_linking,
+            'force_email' => $this->force_email
           )
-        );
-      }
-      $link_a = $this->link_account($email, "", 1);
-      if (is_wp_error($link_a)) {
-        return wp_send_json_error($link_a->get_error_message());
-      }
-      return $link_a;
+        )
+      );
+      //}
+      /*      $link_a = $this->link_account($email, "", 1);
+            if (is_wp_error($link_a)) {
+              return wp_send_json_error($link_a->get_error_message());
+            }
+            return $link_a;*/
     }
     else {
-      if (empty($this->data->user->email) && $this->force_email) {
+      if (empty($this->data->user->email)) {
         return wp_send_json_success(array(
             'type' => self::GIGYA_ACTION_EMAIL_REQUIRED,
             'params' => array(
               'account_linking' => $this->account_linking,
-              'force_email' => $this->force_email
+              'force_email' => TRUE
             )
           )
         );
@@ -324,13 +313,14 @@ class GigyaSO_User {
       );
       wp_send_json_success($res);
     }
-    $user_name = $this->generate_user_name($this->data->user->nickname);
-    if (is_wp_error($user_name)) {
-      return $user_name;
+    $user_name = $this->data->user->nickname;
+    if (!validate_username($user_name)) {
+      wp_send_json_error(array('type' => 'error', 'text' => 'User name is not valid'));
     }
-    $email = $this->generate_email($email);
-    if (is_wp_error($email)) {
-      return $email;
+    //fix email format
+    $email = sanitize_email($email);
+    if (empty($email)) {
+      wp_send_json_error(array('type' => 'error', 'text' => 'Email is not valid'));
     }
     $password = $this->generate_password();
     if (is_wp_error($password)) {
@@ -356,8 +346,6 @@ class GigyaSO_User {
         $user_data[$field] = $val;
       }
     }
-
-
     // Do action for other plugins to interact
     do_action('gigya_pre_add_user', $this);
     // Apply filter for custom plugins to modify user data before adding to db
@@ -394,13 +382,13 @@ class GigyaSO_User {
       <p>
         <label for="user_login"><?php _e('Username') ?><br/>
           <input type="text" name="user_login" id="user_login" class="input"
-                 value="<?php echo $this->generate_user_name($this->data->user->nickname) ?>" size="20"/></label>
+                 value="<?php echo $this->$this->data->user->nickname ?>" size="20"/></label>
       </p>
 
       <p>
         <label for="user_email"><?php _e('E-mail') ?><br/>
           <input type="text" name="user_email" id="user_email" class="input"
-                 value="<?php echo $this->generate_email($email); ?>" size="25"/></label>
+                 value="<?php echo $this->$email; ?>" size="25"/></label>
       </p>
       <?php do_action('register_form'); ?>
       <p id="reg_passmail"><?php _e('A password will be e-mailed to you.') ?></p>
@@ -413,65 +401,11 @@ class GigyaSO_User {
     return ob_get_clean();
   }
 
-  private function generate_email($email = "") {
-    require_once(ABSPATH . WPINC . '/registration.php');
-    try {
-      // user doesnt have an email address and system auto generate email
-      if (empty($email)) {
-        $email = md5(uniqid(wp_rand(10000, 99000))) . "@site.com";
-        while (email_exists($email)) {
-          $email = md5(uniqid(wp_rand(10000, 99000))) . "@site.com";
-        }
-      }
-      //fix email format
-      $email = sanitize_email($email);
-      //validate email
-      $is_email = is_email($email);
-      if (is_wp_error($is_email)) {
-        return $is_email;
-      }
-
-      return $this->email = $email;
-
-    }
-    catch (Exception $e) {
-      return new WP_Error('error', "<strong>ERROR: </strong>" . __('Error creating  random email'));
-    }
-  }
-
-  private function generate_user_name($user_name = "") {
-    try {
-      if (empty($user_name)) {
-        $user_name = md5(uniqid(wp_rand(10000, 99000)));
-      }
-      $user_name = sanitize_user($user_name);
-      // check if user already exist, if yes change it
-      $temp_user_name = $user_name;
-      $counter = 0;
-      while (username_exists($temp_user_name)) {
-        $temp_user_name = $user_name . $counter;
-        $counter++;
-      }
-      // validate user name
-      $user_name = $temp_user_name;
-      $is_user = validate_username($user_name);
-      if (!$is_user) {
-        throw new Exception();
-      }
-
-      return $this->user_name = $user_name;
-    }
-    catch (Exception $e) {
-      return new WP_Error('error', "<strong>ERROR: </strong>" . __('Error creating random user'));
-    }
-  }
-
   private function generate_password() {
     $password = wp_generate_password();
     if (empty($password)) {
       return new WP_Error('error', "<strong>ERROR: </strong>" . __('Error creating random password'));
     }
-
     return $password;
   }
 }

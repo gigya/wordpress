@@ -33,3 +33,7 @@ input[type=checkbox] {
 .size input {
     width: 100px;
 }
+
+#adminmenu .toplevel_page_gigya .wp-menu-image img {
+    padding: 0;
+}

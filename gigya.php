@@ -29,7 +29,7 @@ if (!function_exists('gigya_admin_menu')) :
     if (function_exists('add_menu_page')) {
       require_once("admin/settings.php");
       require_once(dirname(__FILE__) . '/admin/gAdminFormElements.php');
-      add_menu_page('Gigya', 'Gigya', GIGYA_PERMISSION_LEVEL, 'gigya', 'gigya_admin_page', '', '70.1');
+      add_menu_page('Gigya', 'Gigya', GIGYA_PERMISSION_LEVEL, 'gigya', 'gigya_admin_page', plugin_dir_url(__FILE__) . 'admin/favicon_28px.png', '70.1');
     }
     add_submenu_page('gigya', __('Social Login', 'Social Login'), __('Social Login', 'Social Login'), GIGYA_PERMISSION_LEVEL, 'gigya-social-login', 'gigya_admin_page');
     add_submenu_page('gigya', __('Share', 'Share'), __('Share', 'Share'), GIGYA_PERMISSION_LEVEL, 'gigya-share', 'gigya_admin_page');
