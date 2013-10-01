@@ -18,5 +18,13 @@ jQuery(document).ready(function () {
     if (val == 'leaderboard') {
       jQuery(this).parents('.widget-content').find('.hidden').removeClass('hidden');
     }
-  })
+  });
+  jQuery('.gigya-settings .closed').each(function () {
+    jQuery(this).find('.span3').addClass('toggle-label').wrap('<a class="toggle-link" href="#" />').preApp;
+    jQuery(this).find('.span6').addClass('hidden');
+  });
+  jQuery('.toggle-link').click(function (ev) {
+    ev.preventDefault();
+    jQuery(this).next('.span6').slideToggle();
+  });
 });
