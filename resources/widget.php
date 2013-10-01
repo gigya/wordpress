@@ -17,57 +17,39 @@ class GigyaSO_Widget extends GigyaSO_Core {
   public function conf_and_params($params = array()) {
     $options = $this->options;
     $params = array();
-    /*$login_ui = esc_attr($options['login_ui']);
-    if(!empty($login_ui)) {
-        echo $login_ui;
-        return;
-    }*/
-
     $params = array(
-      "button_size" => $button_size,
-      "height" => $height,
-      "width" => $width,
-      "header_text" => $header_text,
-      "enabledProviders" => $enabledProviders
+      "button_size" => $options['button_size'],
+      "height" => $options['height'],
+      "width" => $options['width'],
+      "header_text" => $options['header_text'],
+      "enabledProviders" => $options['enabledProviders']
     );
-
-
     $params["header_text"] = esc_attr($options['header_text']);
-
-
     $width = esc_attr($options['width']);
     if (empty($width) || !is_numeric($width)) {
       $width = "180";
     }
     $params["width"] = $width;
-
     $height = esc_attr($options['height']);
     if (empty($height) || !is_numeric($height)) {
       $height = "50";
     }
     $params["height"] = $height;
-
     $button_size = esc_attr($options['button_size']);
-
-
     if (empty($button_size) || !is_numeric($button_size)) {
       $button_size = "24";
     }
     $params["button_size"] = $button_size;
-
     $enabledProviders = esc_attr($options['enabledProviders']);
     if (empty($enabledProviders)) {
       $enabledProviders = "*";
     }
     $params["enabledProviders"] = $enabledProviders;
-
     $bgColor = trim($options["bgColor"]);
     if (!empty($bgColor)) {
       $params["bgColor"] = $bgColor;
     }
-
     $params["container_id"] = $this->cmpId;
-
     parent::conf_and_params($params);
   }
 
@@ -83,13 +65,7 @@ class GigyaSO_Widget extends GigyaSO_Core {
           window.location.reload(true);
         };
         <?php $this->conf_and_params();?>
-        gigya.services.socialize.showLoginUI(conf, login_params);
-        gigya.services.socialize.addEventHandlers({
-          onLogin: function (userObject) {
-            Gigya.Ajax.setUserObject(userObject);
-            Gigya.Ajax.login();
-          }
-        });
+        gigya.services.socialize.showLoginUI(login_params);
       });
       //]]>
     </script>

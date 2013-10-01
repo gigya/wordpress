@@ -51,12 +51,12 @@ class GigyaSO_User {
     $this->uid = $data->UID;
     $this->is_logged_in = is_user_logged_in();
     $options = get_option(GIGYA_SETTINGS_PREFIX);
-    $this->force_email = $options["force_email"] == 1;
     $this->account_linking = 1;
     $this->api_key = !empty($options["api_key"]) ? $options["api_key"] : 0;
     $this->secret_key = !empty($options["secret_key"]) ? $options["secret_key"] : 0;
     $this->is_multisite = is_multisite();
     $this->user_id = 0;
+    $this->redirectUrl = $options["post_login_redirect"] == "" ? home_url() : $options["post_login_redirect"];
 
     if ($this->is_multisite):
       global $blog_id;
@@ -125,7 +125,6 @@ class GigyaSO_User {
    * @return int|WP_Error Bool 1 if success or a WP_Error object if the user could not be created.
    */
   public function login() {
-    require_once(ABSPATH . WPINC . '/registration.php');
     // check if user has siteUID, if exist user registered to site and gigya and can login
     if (!empty($this->is_gigya)) {
       $signon = $this->signon_gigya_user();
@@ -372,6 +371,9 @@ class GigyaSO_User {
     if (is_wp_error($login)) {
       return wp_send_json_error(array('error' => $login->get_error_message()));
     }
+    else {
+      wp_send_json_success(array('type' => 'signin', 'params' => array('url' => $this->redirectUrl)));
+    }
   }
 
   private function gen_reg_form($email = '') {
@@ -382,7 +384,7 @@ class GigyaSO_User {
       <p>
         <label for="user_login"><?php _e('Username') ?><br/>
           <input type="text" name="user_login" id="user_login" class="input"
-                 value="<?php echo $this->$this->data->user->nickname ?>" size="20"/></label>
+                 value="<?php echo $this->data->user->nickname ?>" size="20"/></label>
       </p>
 
       <p>

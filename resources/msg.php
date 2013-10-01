@@ -23,7 +23,7 @@ class GigyaSO_Msg {
         $is_action = 1;
         $msg["type"] = $this->wp_error->get_error_message();
       }
-      if (!$is_error && !$is_action) {
+      if (!empty($is_error) && !empty($is_action)) {
         $msg["type"] = "signin";
         $options = get_option(GIGYA_SETTINGS_PREFIX);
         $msg["url"] = $options["post_login_redirect"] == "" ? home_url() : $options["post_login_redirect"];
