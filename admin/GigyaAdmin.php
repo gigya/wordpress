@@ -63,7 +63,7 @@ class GigyaAdmin {
       gAdminFormElements::gigya_select_field("short_url", gigya_get_field_options("short_url"), "shortURL", gigya_get_field_default("short_url"));
       ?>
       <!--  GLOBAL PARAMS -->
-      <?php gAdminFormElements::gigya_textarea_field("global_params", "Additional Global Parameters (advanced)", NULL, 'Enter values in <strong>key1=value1|key2=value2...keyX=valueX</strong> format<br /> See list of available <a href="http://developers.gigya.com/030_API_reference/010_Client_API/010_Objects/Conf_object" target="_blank">parameters</a>'); ?>
+      <?php gAdminFormElements::gigya_textarea_field("global_params", "Additional Parameters (advanced)", NULL, 'Enter values in <strong>key1=value1|key2=value2...keyX=valueX</strong> format<br /> See list of available <a href="http://developers.gigya.com/030_API_reference/010_Client_API/010_Objects/Conf_object" target="_blank">parameters</a>'); ?>
       <!--  Google Analytics -->
       <?php gAdminFormElements::gigya_checkbox_field("google_analytics", "Google's Social Analytics"); ?>
       <!--Debug Log-->
@@ -99,9 +99,9 @@ class GigyaAdmin {
       <?php gAdminFormElements::gigya_checkbox_field("login_term_link", "Show Terms Link", NULL); ?>
       <?php gAdminFormElements::gigya_checkbox_field("show_reg", "Show Complete Registration Form", NULL, "Check this checkbox if you have defined required fields in you site registration form. When checked a 'Complete Registration' form will pop up during user social registration, to let the user enter the missing required fields"); ?>
       <!--  Custom Code -->
-      <?php gAdminFormElements::gigya_textarea_field("login_custom_code", "Custom Code", NULL, 'Enter values in <strong>key1=value1|key2=value2...keyX=valueX</strong> format'); ?>
+      <?php gAdminFormElements::gigya_textarea_field("login_custom_code", "Additional Parameters (advanced) LoginUI", NULL, 'Enter values in <strong>key1=value1|key2=value2...keyX=valueX</strong> format'); ?>
       <!--  Custom Code -->
-      <?php gAdminFormElements::gigya_textarea_field("login_add_connection_custom", "Custom Code Add Connection", NULL, 'Enter values in <strong>key1=value1,key2=value2,...,keyX=valueX</strong> format'); ?>
+      <?php gAdminFormElements::gigya_textarea_field("login_add_connection_custom", "Additional Parameters (advanced) AddConnectionsUI", NULL, 'Enter values in <strong>key1=value1,key2=value2,...,keyX=valueX</strong> format'); ?>
       <!--  Custom Deprecated -->
       <?php gAdminFormElements::gigya_textarea_field("login_ui", "Custom Code (deprecated)", NULL, "To customize the look of the sign in component provided by the Gigya Socialize for WordPress plugin, you can provide generated interface code here.  If nothing is provided the default will be used. Please see <a target='_blank' href='http://developers.gigya.com/050_CMS_Modules/030_Wordpress_Plugin'>here</a> for help on what to put in the text area.", 'closed'); ?>
     </div>
@@ -135,7 +135,7 @@ class GigyaAdmin {
       gAdminFormElements::gigya_textarea_field("share_custom", "Custom Code", NULL);
 
       /*  Advanced Params */
-      gAdminFormElements::gigya_textarea_field("share_advanced", "Advanced Parameters", NULL, 'Enter values in <strong>key|value</strong> format');
+      gAdminFormElements::gigya_textarea_field("share_advanced", "Additional Parameters (advanced)", NULL, 'Enter values in <strong>key|value</strong> format');
 
 
       ?>
@@ -159,7 +159,7 @@ class GigyaAdmin {
       gAdminFormElements::gigya_select_field("comments_enable_share_activity", gigya_get_field_options("comments_enable_share_activity"), "Enable Sharing to Activity Feed", gigya_get_field_default("comments_enable_share_activity"), 'When publishing feed items, by default the feed items are published to social networks only and will not appear on the site\'s Activity Feed plugin. To change this behavior, you must change the publish scope to "Both".');
       ?>
       <!--  Custom Code -->
-      <?php gAdminFormElements::gigya_textarea_field("commets_custom_code", "Additional Comments Parameters (advanced)", NULL, 'Enter values in <strong>key1=value1|key2=value2...keyX=valueX</strong> format <br />See list of available <a href="http://developers.gigya.com/020_Client_API/030_Comments/comments.showCommentsUI" target="_blank">parameters</a>.'); ?>
+      <?php gAdminFormElements::gigya_textarea_field("commets_custom_code", "Additional Parameters (advanced)", NULL, 'Enter values in <strong>key1=value1|key2=value2...keyX=valueX</strong> format <br />See list of available <a href="http://developers.gigya.com/020_Client_API/030_Comments/comments.showCommentsUI" target="_blank">parameters</a>.'); ?>
       <!--  Privacy -->
       <?php gAdminFormElements::gigya_select_field("comments_privacy", gigya_get_field_options("activity_privacy"), "Privacy", gigya_get_field_default("activity_privacy")); ?>
     </div>
@@ -209,7 +209,7 @@ headerText:'Your reaction to this post is Geeky'
       <!--  Privacy -->
       <?php gAdminFormElements::gigya_select_field("reaction_privacy", gigya_get_field_options("activity_privacy"), "Privacy", gigya_get_field_default("activity_privacy")); ?>
       <!--  Custom Code -->
-      <?php gAdminFormElements::gigya_textarea_field("reactions_custom_code", "Custom Code", NULL, 'Enter values in <strong>key1=value1|key2=value2...keyX=valueX</strong> format <br />See list of available <a href="http://developers.gigya.com/020_Client_API/010_Socialize/socialize.showReactionsBarUI" target="_blank">parameters</a>.'); ?>
+      <?php gAdminFormElements::gigya_textarea_field("reactions_custom_code", "Additional Parameters (advanced)", NULL, 'Enter values in <strong>key1=value1|key2=value2...keyX=valueX</strong> format <br />See list of available <a href="http://developers.gigya.com/020_Client_API/010_Socialize/socialize.showReactionsBarUI" target="_blank">parameters</a>.'); ?>
       <!--  Multiple Reactions -->
       <?php gAdminFormElements::gigya_checkbox_field("reaction_multiple", "Allow multiple reactions", gigya_get_field_default("reaction_multiple")); ?>
     </div>
