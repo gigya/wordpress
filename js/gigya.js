@@ -68,12 +68,14 @@ jQuery(document).ready(function ($) {
             $('#login-dialog').html(params.html);
             $('#gigya-ajax-submit').click(function (e) {
                 e.preventDefault();
-                var action =
-                    console.log($(this).parents('form').eq(0).serializeObject());
+                Gigya.Ajax.login({
+                    actionType: "moreInfo",
+                    info: $(this).parents('form').eq(0).serializeObject()
+                });
 
             });
         }
-    }
+    };
     // Error Manager
     Gigya.Error = function () {
         return {
@@ -127,43 +129,42 @@ jQuery(document).ready(function ($) {
                     action: "gigya_user_login",
                     step: 1
                 }, data), function (r) {
-                    try {
-                        //var r = JSON.parse(r);
-                        switch (r.data.type) {
-                            case "email_exist":
-                                new Gigya.Dialog().open(function () {
-                                    new Gigya.Tmpl(this).renderLoginDialog($.extend(userObject, {
-                                        isEmailExist: true,
-                                        linkAccount: (r.data.params.account_linking && r.data.params.force_email)
-                                    }));
+                    //try {
+                    //var r = JSON.parse(r);
+                    switch (r.data.type) {
+                        case "email_exist":
+                            new Gigya.Dialog().open(function () {
+                                new Gigya.Tmpl(this).renderLoginDialog($.extend(userObject, {
+                                    isEmailExist: true,
+                                    linkAccount: (r.data.params.account_linking && r.data.params.force_email)
+                                }));
 
-                                });
-                                break;
-                            case "new_user_email_required":
-                                new Gigya.Dialog().open(function () {
-                                    new Gigya.Tmpl(this).renderLoginDialog($.extend(userObject, {
-                                        isNewUser: true,
-                                        isEmailExist: false,
-                                        linkAccount: (r.data.params.account_linking && r.data.params.force_email)
-                                    }));
-                                });
-                                break;
-                            case "reg_form":
-                                new Gigya.Dialog().open(function () {
-                                    new Gigya.Tmpl(this).renderForm($.extend({}, r, userObject));
-                                })
-
-
-                            case "error":
-                                Gigya.Error.show(r.data.text);
-                                break;
-                            case "signin":
-                                that.onSignIn.call(this, r.data, userObject);
-                                break;
-                        }
-                    } catch (e) {
-
+                            });
+                            break;
+                        case "new_user_email_required":
+                            new Gigya.Dialog().open(function () {
+                                new Gigya.Tmpl(this).renderLoginDialog($.extend(userObject, {
+                                    isNewUser: true,
+                                    isEmailExist: false,
+                                    linkAccount: (r.data.params.account_linking && r.data.params.force_email)
+                                }));
+                            });
+                            break;
+                        case "reg_form":
+                            new Gigya.Dialog().open(function () {
+                                new Gigya.Tmpl(this).renderForm($.extend({}, r.data, userObject));
+                            });
+                            break;
+                        case "error":
+                            Gigya.Error.show(r.data.text);
+                            break;
+                        case "signin":
+                            that.onSignIn.call(this, r.data, userObject);
+                            break;
                     }
+                    //} catch (e) {
+
+                    //}
                 });
             }
         }

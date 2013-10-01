@@ -288,7 +288,7 @@ endif;
 #handle request for each user request to login
 if (!function_exists('gigya_user_login')) :
   function gigya_user_login() {
-    if (gigya_get_option("login_plugin") == 1):
+    if (gigya_get_option("login_plugin") == 1) {
       if (isset($_POST["userObject"]) && !empty($_POST["userObject"])) {
         $data = json_decode(stripslashes($_POST["userObject"]));
         if (is_object($data)) {
@@ -298,23 +298,27 @@ if (!function_exists('gigya_user_login')) :
             die();
           }
           else {
-            $user = new GigyaSO_User($data);
-            switch ($_POST["actionType"]) {
-              case "register-email":
-                $login = $user->register_email($_POST["email"]);
-                break;
-              case "link-account":
-                $login = $user->link_account($_POST["email"], $_POST["password"]);
-                break;
-              default:
-                $valid = GigyaSO_Util::validate_user_signature($data->UID, $data->signatureTimestamp, $data->UIDSignature);
-                if (is_wp_error($valid)) {
-                  gigya_msg($valid);
-                  die();
-                }
-                $login = $user->login();
+            $valid = GigyaSO_Util::validate_user_signature($data->UID, $data->signatureTimestamp, $data->UIDSignature);
+            if (!is_wp_error($valid)) {
+              $user = new GigyaSO_User($data);
+              switch ($_POST["actionType"]) {
+                case "register-email":
+                  $login = $user->register_email($_POST["email"]);
+                  break;
+                case "link-account":
+                  $login = $user->link_account($_POST["email"], $_POST["password"]);
+                  break;
+                case "moreInfo":
+                  $login = $user->add_user_more_info($data, $_POST['info']);
+                  break;
+                default:
+                  $login = $user->login();
+              }
             }
-
+            else {
+              gigya_msg($valid);
+              die();
+            }
             if (is_wp_error($login)) {
               gigya_msg($login, array(
                   "force_email" => $user->force_email ? TRUE : FALSE,
@@ -333,8 +337,7 @@ if (!function_exists('gigya_user_login')) :
           die();
         }
       }
-    endif;
-
+    }
     die();
   }
 endif;
@@ -495,8 +498,9 @@ function gigya_get_share_plugin($pos = "") { /* pos = bottom | top*/
   $id = $post->ID;
 
   $layout = gigya_get_option("share_layout");
-  if (empty($layout))
+  if (empty($layout)) {
     $layout = "horizontal";
+  }
 
   $show_counts = gigya_get_option("share_show_counts");
   if (empty($show_counts))
@@ -704,13 +708,14 @@ function gigya_gamification_plugin($params = array()) {
   $code = "<div id='$cmp_id'></div>";
 
   $code .= "<script type='text/javascript'>
-		(function(){
+		function(){
 			var params = {
 				'containerID' : '$cmp_id',
 				'width'       : '$width',
 				'period'      : '$period',
 				'totalCount'  : '$count'
-			};";
+			};)
+}";
 
   if ($type == "achievements"):
     $code .= "gigya.gm.showAchievementsUI(params);";
