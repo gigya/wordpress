@@ -12,7 +12,7 @@
 
   .bs-docs-sidenav > li > a {
     display: block;
-    width: 190px 9;
+    width: 190px;
     margin: 0 0 -1px;
     padding: 8px 14px;
     border: 1px solid #E5E5E5;
@@ -40,7 +40,7 @@
 
   #gigya-settings-wrap .bs-docs-sidenav > li > a {
     display: block;
-    width: 190px  \9;
+    width: 190px   \9;
     margin: 0 0 -1px;
     padding: 8px 14px;
     border: 1px solid #e5e5e5;
@@ -88,6 +88,7 @@
 
   #gigya-settings-wrap .bs-docs-sidenav .active .icon-chevron-right,
   #gigya-settings-wrap .bs-docs-sidenav .active a:hover .icon-chevron-right {
+    background-image: url(../js/bootstrap/img/glyphicons-halflings-white.png);
     opacity: 1;
   }
 
@@ -170,8 +171,9 @@ function gigya_input_field($id = "", $label = "", $default = null, $desc = null)
 
 function gigya_checkbox_field($id = "", $label = "", $default = null, $desc = null) {
   $value = gigya_get_option($id);
-  if ($default && empty($value))
+  if ($default && empty($value)) {
     $value = $default;
+  }
   ?>
   <div class="row">
     <div class="span3">
@@ -278,14 +280,10 @@ $loginProviders = gigya_get_option("login_providers");
 $load_jquery = gigya_get_option("load_jquery");
 $global_params = gigya_get_option("global_params");
 $google_analytics = gigya_get_option("google_analytics") == 1 ? 1 : 0;
-
 $reaction_plugin = gigya_get_option("reaction_plugin") == 1 ? 1 : 0;
-
-
-
 ?>
 
-<input type="hidden" name="wordtour_settings[default_artist]" value="<?php echo $options["default_artist"] ?>"></input>
+<input type="hidden" name="wordtour_settings[default_artist]" value="<?php echo $options["default_artist"] ?>"/>
 
 <div class="wrap">
   <div class="icon32" id="icon-options-general"><br></div>
@@ -310,6 +308,8 @@ $reaction_plugin = gigya_get_option("reaction_plugin") == 1 ? 1 : 0;
         <?php gigya_input_field("api_key", "Gigya Socialize API Key"); ?>
         <!--  SECRET KEY -->
         <?php gigya_input_field("secret_key", "Gigya Socialize Secret Key"); ?>
+        <!-- Data Center -->
+        <?php gigya_select_field('data_center', gigya_get_field_options('data_center'), 'Data Center', gigya_get_field_default('data_center')) ?>
         <!--  LANGUAGE -->
         <?php gigya_input_field("lang", "Language", "en", "en (default),zh-cn,zh-hk,zh-tw,cs,da,nl,fi,fr,de,el,hu,it,ja,ko,no,pl,pt,pt-br,ru,es,es-mx,sv,tl
 							<p>If not defined, English will be the default language. For the complete list of supported languages, go the <a href=\"http://developers.gigya.com/020_Client_API/010_Objects/Conf_object\" target=\"_blank\">gigya documentation</a></p>"
