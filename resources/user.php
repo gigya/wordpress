@@ -70,6 +70,7 @@ class GigyaSO_User {
     if (property_exists($this, $key)) {
       return $this->$key;
     }
+    return "";
   }
 
   private function signout() {
@@ -131,7 +132,7 @@ class GigyaSO_User {
       if (is_wp_error($signon)) {
         return wp_send_json_error(array('type' => 'error', 'text' => $signon->get_error_message()));
       }
-      return TRUE;
+      wp_send_json_success(array('type' => 'signin', 'params' => array('url' => $this->redirectUrl)));
     };
 
     // check if email exist in social user obj
@@ -343,6 +344,18 @@ class GigyaSO_User {
       unset($moreInfo['user_login'], $moreInfo['user_pass'], $moreInfo['user_email']);
       foreach ($moreInfo as $field => $val) {
         $user_data[$field] = $val;
+        // copy info to $_POST for validation
+        $_POST[$field] = $val;
+      }
+
+      $errors = new WP_Error();
+      $errors = apply_filters('registration_errors', $errors, $user_name, $email);
+      if (count($errors->get_error_messages()) > 0) {
+        $msg = "";
+        foreach ($errors->get_error_messages() as $err) {
+          $msg .= $err . '<br />';
+        }
+        return wp_send_json_error(array('type' => 'error', 'text' => $msg));
       }
     }
     // Do action for other plugins to interact
@@ -371,16 +384,18 @@ class GigyaSO_User {
     if (is_wp_error($login)) {
       return wp_send_json_error(array('error' => $login->get_error_message()));
     }
-    else {
-      wp_send_json_success(array('type' => 'signin', 'params' => array('url' => $this->redirectUrl)));
-    }
+    wp_send_json_success(array('type' => 'signin', 'params' => array('url' => $this->redirectUrl)));
   }
 
   private function gen_reg_form($email = '') {
+    if (!empty($email)) {
+      $this->$email = $email;
+    }
     ob_start();
     ?>
     <form name="registerform" class="gigya-reg-form" id="registerform"
           action="<?php echo esc_url(site_url('wp-login.php?action=register', 'login_post')); ?>" method="post">
+      <div class="error-message"></div>
       <p>
         <label for="user_login"><?php _e('Username') ?><br/>
           <input type="text" name="user_login" id="user_login" class="input"

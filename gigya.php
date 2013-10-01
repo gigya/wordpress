@@ -104,7 +104,7 @@ endif;
 // Main section
 
 
-if (!empty($_POST) && 'gigya_user_login' == $_POST['action'] && '1' === $_POST['step']) {
+if (!empty($_POST) && 'gigya_user_login' == @$_POST['action'] && '1' === @$_POST['step']) {
   $_GET['action'] = 'register';
 }
 add_action('init', 'gigya_init_options');

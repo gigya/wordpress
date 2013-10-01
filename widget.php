@@ -144,6 +144,7 @@ class WP_Widget_GigyaActivityFeed extends WP_Widget {
     if (empty($site_name)) {
       $site_name = gigya_get_field_default("activity_site_name");
     }
+    $width = !empty($instance['width']) ? $instance['width'] : "";
 
     ?>
     <p>
@@ -158,16 +159,16 @@ class WP_Widget_GigyaActivityFeed extends WP_Widget {
         <select class="widefat" id="<?php echo $this->get_field_id('initial_tab'); ?>"
                 name="<?php echo $this->get_field_name('initial_tab'); ?>">
           <option <?php if ($initial_tab == "everyone") {
-            echo "selected='true'"
-} ?> value="everyone">Everyone
+            echo "selected='true'";
+          } ?> value="everyone">Everyone
           </option>
           <option <?php if ($initial_tab == "friends") {
-            echo "selected='true'"
-} ?> value="friends">Friends
+            echo "selected='true'";
+          } ?> value="friends">Friends
           </option>
           <option <?php if ($initial_tab == "me") {
-            echo "selected='true'"
-} ?> value="me">Me
+            echo "selected='true'";
+          } ?> value="me">Me
           </option>
         </select>
       </label>
@@ -267,12 +268,12 @@ class WP_Widget_GigyaFollowBar extends WP_Widget {
         <select class="widefat" id="<?php echo $this->get_field_id('layout'); ?>"
                 name="<?php echo $this->get_field_name('layout'); ?>">
           <option <?php if ($layout == "horizontal") {
-            echo "selected='true'"
-} ?> value="horizontal">Horizontal
+            echo "selected='true'";
+          } ?> value="horizontal">Horizontal
           </option>
           <option <?php if ($layout == "vertical") {
-            echo "selected='true'"
-} ?> value="vertical">Vertical
+            echo "selected='true'";
+          } ?> value="vertical">Vertical
           </option>
         </select>
       </label>
@@ -341,20 +342,20 @@ class WP_Widget_GigyaGamification extends WP_Widget {
         <select class="widefat" id="<?php echo $this->get_field_id('type'); ?>"
                 name="<?php echo $this->get_field_name('type'); ?>">
           <option <?php if ($type == "game") {
-            echo "selected='true'"
-} ?> value="game">Game status
+            echo "selected='true'";
+          } ?> value="game">Game status
           </option>
           <option <?php if ($type == "challenge") {
-            echo "selected='true'"
-} ?> value="challenge">Challenge Status
+            echo "selected='true'";
+          } ?> value="challenge">Challenge Status
           </option>
           <option <?php if ($type == "leaderboard") {
-            echo "selected='true'"
-} ?> value="leaderboard">Leaderboard
+            echo "selected='true'";
+          } ?> value="leaderboard">Leaderboard
           </option>
           <option <?php if ($type == "achievements") {
-            echo "selected='true'"
-} ?> value="achievements">Achievements
+            echo "selected='true'";
+          } ?> value="achievements">Achievements
           </option>
         </select>
       </label>
@@ -364,12 +365,12 @@ class WP_Widget_GigyaGamification extends WP_Widget {
         <select class="widefat" id="<?php echo $this->get_field_id('period'); ?>"
                 name="<?php echo $this->get_field_name('period'); ?>">
           <option <?php if ($period == "7") {
-            echo "selected='true'"
-} ?> value="7">7 Days
+            echo "selected='true'";
+          } ?> value="7">7 Days
           </option>
           <option <?php if ($period == "all") {
-            echo "selected='true'"
-} ?> value="all">All
+            echo "selected='true'";
+          } ?> value="all">All
           </option>
         </select>
       </label>

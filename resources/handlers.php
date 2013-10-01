@@ -233,7 +233,7 @@ if (!function_exists('gigya_enque_gigya_script')) :
           if(empty($global_params)):
       ?>
       {
-        lang            : '<?php echo $lang;?>',
+        lang: '<?php echo $lang;?>',
           shortURLs
       :
         '<?php echo $short_url;?>',
@@ -250,7 +250,7 @@ if (!function_exists('gigya_enque_gigya_script')) :
     </script>
 
     <?php if (gigya_get_option("google_analytics") == 1): ?>
-      <script type="text/javascript" src="http://cdn.gigya.com/js/gigyaGAIntegration.js"/>
+      <script type="text/javascript" src="http://cdn.gigya.com/js/gigyaGAIntegration.js"></>
     <?php endif; ?>
 
     <?php
@@ -268,130 +268,6 @@ if (!function_exists('gigya_enque_gigya_script')) :
   }
 endif;
 
-function gigya_enque_gigya_script_admin_init() {
-  wp_enqueue_script('gigya-socialize', "http://cdn.gigya.com/js/socialize.js?apiKey=" . gigya_get_option("api_key"), array(), GIGYA_VERSION);
-}
-
-add_action('admin_enqueue_scripts', 'gigya_enque_gigya_script_admin_init');
-
-
-# get config params from gigya global options config
-if (!function_exists('gigya_get_option')) :
-  function gigya_get_option($ns = NULL) {
-    global $GIGYA_OPTIONS;
-    if ($ns) {
-      //gigya_get_field_default("reaction_position")
-      return !empty($GIGYA_OPTIONS[$ns]) ? $GIGYA_OPTIONS[$ns] : "";
-    }
-    return !is_array($GIGYA_OPTIONS) ? array() : $GIGYA_OPTIONS;
-  }
-endif;
-
-
-if (!function_exists('gigya_msg')) :
-  function gigya_msg($error = NULL, $params = array()) {
-    $error = new GigyaSO_Msg($error);
-    $error->render($params);
-  }
-endif;
-#handle request for each user request to login
-if (!function_exists('gigya_user_login')) :
-  function gigya_user_login() {
-    if (gigya_get_option("login_plugin") == 1) {
-      if (isset($_POST["userObject"]) && !empty($_POST["userObject"])) {
-        $data = json_decode(stripslashes($_POST["userObject"]));
-        if (is_object($data)) {
-          // check if site allows registration of new users
-          if ('0' == get_option('users_can_register')) {
-            gigya_msg(new WP_Error('error', __("New user registration is currently disabled for this site")));
-            die();
-          }
-          else {
-            $valid = GigyaSO_Util::validate_user_signature($data->UID, $data->signatureTimestamp, $data->UIDSignature);
-            if (!is_wp_error($valid)) {
-              $user = new GigyaSO_User($data);
-              $action = !empty($_POST['actionType']) ? $_POST['actionType'] : "";
-              switch ($action) {
-                case "register-email":
-                  $login = $user->register_email($_POST["email"]);
-                  break;
-                case "link-account":
-                  $login = $user->link_account($_POST["email"], $_POST["password"]);
-                  break;
-                case "moreInfo":
-                  $login = $user->add_user_more_info($data, $_POST['info']);
-                  break;
-                default:
-                  $login = $user->login();
-              }
-            }
-            else {
-              gigya_msg($valid);
-              die();
-            }
-            if (is_wp_error($login)) {
-              gigya_msg($login, array(
-                  "force_email" => $user->force_email ? TRUE : FALSE,
-                  "account_linking" => $user->account_linking ? TRUE : FALSE
-                )
-              );
-              die();
-            }
-            else {
-              gigya_msg();
-            }
-          }
-        }
-        else {
-          gigya_msg(new WP_Error('error', __("Gigya Error")));
-          die();
-        }
-      }
-    }
-    die();
-  }
-endif;
-
-if (!function_exists('gigya_notify_user_login')) :
-  function gigya_notify_user_login($user_name) {
-    if (gigya_get_option("login_plugin") == 1):
-      $user = get_userdatabylogin($user_name);
-      GigyaSO_Util::notify_login($user->ID);
-    endif;
-  }
-endif;
-
-if (!function_exists('gigya_notify_user_register')) :
-  function gigya_notify_user_register($user_id) {
-    if (gigya_get_option("login_plugin") == 1 && $user_id):
-      global $is_gigya_user, $gigya_user_data;
-      if (!$is_gigya_user) {
-        GigyaSO_Util::notify_login($user_id, 1);
-      }
-    endif;
-  }
-endif;
-
-
-if (!function_exists('gigya_notify_user_logout')) :
-  function gigya_notify_user_logout() {
-    if (gigya_get_option("login_plugin") == 1):
-      $current_user = wp_get_current_user();
-      $user_id = $current_user->ID;
-      if ($user_id > 0) {
-        GigyaSO_Util::notify_logout($user_id);
-      }
-    endif;
-  }
-endif;
-
-if (!function_exists('gigya_delete_account')) :
-  function gigya_delete_account($user_id) {
-    if ($user_id) {
-      GigyaSO_Util::delete_account($user_id);
-    }
-  }
-endif;
 
 if (!function_exists('gigya_user_profile_extra')) :
   function gigya_user_profile_extra($user) {
@@ -403,35 +279,35 @@ if (!function_exists('gigya_user_profile_extra')) :
       ?>
 
       <h3><?php _e("Manage social connection", "blank"); ?></h3>
-      <table class="form-table">
-        <tr>
-          <th></th>
-          <td>
-            <div id="gigya-div-connect"></div>
-          </td>
-        </tr>
-      </table>
-      <script type="text/javascript" lang="javascript">
-        (function () {
-          var params = {
-            height: 65,
-            width: 175,
-            showEditLink: true,
-            showTermsLink: false,
-            hideGigyaLink: true,
-            useHTML: true,
-            containerID: "gigya-div-connect"
-          };
+       <table class="form-table">
+    <tr>
+    <th></th>
+    <td>
+    <div id="gigya-div-connect"></div>
+    </td>
+    </tr>
+    </table>
+    <script type="text/javascript" lang="javascript">
+    (function () {
+    var params = {
+    height: 65,
+    width: 175,
+    showEditLink: true,
+    showTermsLink: false,
+    hideGigyaLink: true,
+    useHTML: true,
+    containerID: "gigya-div-connect"
+    };
 
-          <?php if($custom):?>
-          var adParams = <?php echo $custom; ?>;
-          for (var prop in adParams) {
-            params[prop] = adParams[prop];
-          }
-          ;
-          <?php endif ?>
-          gigya.services.socialize.showAddConnectionsUI(params);
-        })();
+    <?php if ($custom): ?>
+      var adParams = <?php echo $custom; ?>;
+      for (var prop in adParams) {
+      params[prop] = adParams[prop];
+      }
+      ;
+    <?php endif ?>
+    gigya.services.socialize.showAddConnectionsUI(params);
+    })();
       </script>
     <?php
     endif;
@@ -718,8 +594,9 @@ function gigya_gamification_plugin($params = array()) {
   }
 
   $type = $params['type'];
-  if (empty($type))
+  if (empty($type)) {
     $type = gigya_get_field_default("gamification_type");
+  }
 
   $count = $params['count'];
   if (empty($count))
