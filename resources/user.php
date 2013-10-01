@@ -162,7 +162,7 @@ class GigyaSO_User {
           'type' => self::GIGYA_ACTION_EMAIL_EXIST,
           'params' => array(
             'account_linking' => $this->account_linking,
-            'force_email' => $this->force_email
+            'force_email' => true
           )
         )
       );
