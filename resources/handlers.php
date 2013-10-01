@@ -6,8 +6,8 @@ function gigya_admin_enqueue($hook) {
   if (!strpos($hook, "gigya")) {
     return;
   }
-  wp_enqueue_script('bootstrap', GIGYA_PLUGIN_URL . '/js/bootstrap/js/bootstrap.min.js', array("jquery"));
-  wp_enqueue_style('bootstrap', GIGYA_PLUGIN_URL . '/js/bootstrap/css/bootstrap.css');
+  //wp_enqueue_script('bootstrap', GIGYA_PLUGIN_URL . '/js/bootstrap/js/bootstrap.min.js', array("jquery"));
+  //wp_enqueue_style('bootstrap', GIGYA_PLUGIN_URL . '/js/bootstrap/css/bootstrap.css');
 }
 
 # get config parameters for gigya, and set it as global
@@ -508,8 +508,9 @@ function gigya_get_share_plugin($pos = "") { /* pos = bottom | top*/
   }
 
   $share_buttons = trim(gigya_get_option("share_providers"));
-  if (empty($share_buttons))
+  if (empty($share_buttons)) {
     $share_buttons = "share,facebook-like,google-plusone,twitter,email";
+  }
 
   $privacy = gigya_get_option("share_privacy");
   if (empty($privacy))

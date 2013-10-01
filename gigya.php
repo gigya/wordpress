@@ -26,35 +26,64 @@ gigya_load_external_file();
 
 if (!function_exists('gigya_admin_menu')) :
   function gigya_admin_menu() {
-    $page = add_submenu_page('options-general.php',
-      __('Gigya', 'gigya'),
-      __('Gigya', 'gigya'),
-      GIGYA_PERMISSION_LEVEL,
-      __FILE__,
-      'gigya_manage_menu'
+    if (function_exists('add_menu_page')) {
+      require_once("admin/settings.php");
+      require_once(dirname(__FILE__) . '/admin/gAdminFormElements.php');
+      add_menu_page('Gigya', 'Gigya', GIGYA_PERMISSION_LEVEL, 'gigya', 'gigya_admin_page', '', '70.1');
+    }
+    add_submenu_page('gigya', __('Social Login', 'Social Login'), __('Social Login', 'Social Login'), GIGYA_PERMISSION_LEVEL, 'gigya-social-login', 'gigya_admin_page');
+    add_submenu_page('gigya', __('Share', 'Share'), __('Share', 'Share'), GIGYA_PERMISSION_LEVEL, 'gigya-share', 'gigya_admin_page');
+    add_submenu_page('gigya', __('Comments', 'Comments'), __('Comments', 'Comments'), GIGYA_PERMISSION_LEVEL, 'gigya-comments', 'gigya_admin_page');
+    add_submenu_page('gigya', __('Reactions', 'Reaction'), __('Reactions', 'Reactions'), GIGYA_PERMISSION_LEVEL, 'gigya-reactions', 'gigya_admin_page');
+    add_submenu_page('gigya', __('Gamification', 'Gamification'), __('Gamification', 'Gamification'), GIGYA_PERMISSION_LEVEL, 'gigya-gm', 'gigya_admin_page');
+    add_settings_section(
+      'gigya_global_settings',
+      'Global Settings',
+      '\GigyaAdmin::globalSectionCallback',
+      'gigya'
+    );
+    add_settings_section(
+      'gigya_login_settings',
+      'Social Login Settings',
+      '\GigyaAdmin::loginSectionCallback',
+      'gigya-social-login'
+    );
+    add_settings_section(
+      'gigya_share_settings',
+      'Share Settings',
+      '\GigyaAdmin::shareSectionCallback',
+      'gigya-share'
+    );
+    add_settings_section(
+      'gigya_comments_settings',
+      'Comments Settings',
+      '\GigyaAdmin::commentsSectionCallback',
+      'gigya-comments'
+    );
+    add_settings_section(
+      'gigya_reactions_settings',
+      'Reactions Settings',
+      '\GigyaAdmin::reactionSectionCallback',
+      'gigya-reactions'
+    );
+    add_settings_section(
+      'gigya_gm_settings',
+      'Gamification Settings',
+      '\GigyaAdmin::gmSectionCallback',
+      'gigya-gm'
     );
   }
 endif;
 
 
 function gigya_admin_init() {
+  require_once(dirname(__FILE__) . '/admin/GigyaAdmin.php');
   register_setting('gigya_settings_fields', GIGYA_SETTINGS_PREFIX);
+  // Add Javascript and css to admin page
+  wp_enqueue_style('gigya_admin_css', plugins_url('/css/gigya_admin.css', __FILE__));
+  wp_enqueue_script('gigya_admin_js', plugins_url('/js/gigya_admin.js', __FILE__));
 }
 
-
-function gigya_manage_menu() {
-  include("admin/settings.php");
-}
-
-
-if (!function_exists('gigya_admin_styles')) :
-  function gigya_admin_styles() {
-    /*
-     * It will be called only on your plugin admin page, enqueue our script here
-     */
-    //wp_enqueue_script( 'myPluginScript' );
-  }
-endif;
 
 if (!function_exists('gigya_login_page')) :
   function gigya_login_page() {
@@ -71,6 +100,10 @@ if (!function_exists('gigya_signup_page')) :
     endif;
   }
 endif;
+
+// Main section
+
+
 if (!empty($_POST) && 'gigya_user_login' == $_POST['action'] && '1' === $_POST['step']) {
   $_GET['action'] = 'register';
 }

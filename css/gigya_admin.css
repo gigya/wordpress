@@ -1,0 +1,35 @@
+.hidden {
+    display: none;
+}
+
+.header h1 {
+    display: inline-block;
+}
+
+.gigya-settings h3 {
+    font-size: 1.7em;
+}
+
+.gigya-settings label {
+    cursor: auto;
+}
+
+.span6 textarea {
+    width: 30%;
+}
+
+.span6 {
+    margin-top: 10px;
+}
+
+.row {
+    margin: 10px;
+}
+
+input[type=checkbox] {
+    margin-right: 5px;
+}
+
+.size input {
+    width: 100px;
+}
