@@ -121,5 +121,10 @@
 .gig-bar-container iframe {
     max-width: none;
 }
+.gig-share-bar-container td iframe {
+  vertical-align: bottom;
+}
 
-	
+.gig-button-container-pinterest-pinit a {
+    vertical-align: bottom !important;
+}
