@@ -272,13 +272,13 @@ class GigyaSO_User {
           return wp_send_json_error(array("error" => __("<strong>ERROR: </strong> Can't login to site")));
         }
       }
+      wp_send_json_success(array('type' => 'signin', 'params' => array('url' => $this->redirectUrl)));
     }
     else {
       return wp_send_json_error(array('type' => 'error', 'text' => 'Wrong password'));
     }
     wp_set_auth_cookie($user->ID);
     do_action('wp_login', $user->user_login);
-    return 1;
   }
 
   public function add_user_more_info($data, $moreInfo) {
