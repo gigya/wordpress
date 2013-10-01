@@ -36,7 +36,7 @@ class gAdminFormElements {
 
   public static function gigya_checkbox_field($id = "", $label = "", $default = NULL, $desc = NULL, $class = '') {
     $value = gigya_get_option($id);
-    if ($default && empty($value)) {
+    if ($default && is_null($value)) {
       $value = $default;
     }
     ?>

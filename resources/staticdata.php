@@ -76,7 +76,7 @@ $GIGYA_STATIC_DATA["reaction_position"] = array(
 );
 
 $GIGYA_STATIC_DATA["gamification_notification"] = array("default" => "1");
-$GIGYA_STATIC_DATA["gamification_period"] = array("default" => "7");
+$GIGYA_STATIC_DATA["gamification_period"] = array("default" => "7days");
 $GIGYA_STATIC_DATA["gamification_type"] = array("default" => "game");
 $GIGYA_STATIC_DATA["gamification_count"] = array("default" => "12");
 $GIGYA_STATIC_DATA["gamification_width"] = array("default" => "300");
@@ -95,15 +95,6 @@ $GIGYA_STATIC_DATA["activity_site_name"] = array("default" => get_bloginfo("name
 $GIGYA_STATIC_DATA["activity_initial_tab"] = array("default" => "everyone");
 $GIGYA_STATIC_DATA["activity_width"] = array("default" => "300");
 
-
-$GIGYA_STATIC_DATA["load_jquery"] = array(
-  "default" => "",
-  "options" => array(
-    array("v" => "", "t" => "No", "d" => TRUE),
-    array("v" => "1", "t" => "Load From Site"),
-    array("v" => "2", "t" => "Load From Google CDN")
-  )
-);
 
 $GIGYA_STATIC_DATA['data_center'] = array(
   'default' => 'us1.gigya.com',
