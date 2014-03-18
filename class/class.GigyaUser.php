@@ -37,38 +37,15 @@ class GigyaUser {
           'uid' => $this->uid,
         );
 
-        $api = new GigyaApi($this->uid);
-        return $api->gigyaApiCall('getUserInfo', $params);
+        $api = new GigyaApi( $this->uid );
+        return $api->call( 'getUserInfo', $params );
       }
     }
     return FALSE;
   }
 
   /**
-   * Fetches information about user following a given Gigya account.
-   *
-   * @param mixed $gigya_uid
-   *   The Gigya uid.
-   *
-   * @return array
-   *   The response from Gigya.
-   */
-  function get_user_info( $gigya_uid ) {
-    if (empty( $gigya_uid )) {
-      return FALSE;
-    }
-
-    $params = array(
-      'uid' => $gigya_uid,
-    );
-
-    return _gigya_api('getUserInfo', $params);
-  }
-
-  /**
    * Publishes a user action to the newsfeed stream on all the connected providers that support this feature.
-   * @see gigya_publish_user_action()
-   *
    * @param array $content.
    *   an associative array containing:
    *     - template :  the template.
@@ -76,68 +53,98 @@ class GigyaUser {
    *     - title : the action title.
    *     - path : the path.
    *  @return the array response from gigya if the user has the Actions capability or FALSE if not.
-   *
    */
-  public function publishUserAction($content) {
-    //if the user dont have the Actions capability return FALSE.
-    if (!$this->hasCapability('Actions')) {
+  public function publishUserAction( $content ) {
+    // if the user don't have the Actions capability return FALSE.
+    if ( !$this->hasCapability( 'Actions' ) ) {
       return FALSE;
     }
-    return gigya_publish_user_action($this->uid, $content);
+
+    if ( !empty( $this->uid ) ) {
+      $params = array(
+        'uid' => $this->uid,
+        'userAction' => _gigya_get_useraction_xml( $content ), // @todo this function not exist.
+      );
+
+      $api = new GigyaApi( $this->uid );
+      return $api->call( 'publishUserAction', $params );
+    }
+
+    return FALSE;
   }
 
   /**
    * Attach the Gigya object to the user object.
-   *
    * @param stdClass $account
    *   The user object we need to attache to.
    */
-  public static function load(&$account) {
+  public static function load( &$account ) {
     //Attache to user if the user is logged in.
-    $account->gigya = (isset($account->uid) ? new GigyaUser($account->uid): NULL);
+    $account->gigya = ( isset( $account->uid ) ? new GigyaUser( $account->uid ) : NULL);
   }
 
   /**
    * Redirects to a logout URL where JavaScript will be added to the page.
    */
   public function logout() {
-    gigya_logout_uid($this->uid);
+    if ( !empty( $this->uid ) ) {
+      $params = array(
+        'uid' => $this->uid,
+      );
+
+      $api = new GigyaApi( $this->uid );
+      return $api->call( 'logout', $params );
+    }
+
+    return FALSE;
   }
 
   /**
    * Fetches information about the user friends.
-   *
    * @param array $params.
-   *   an associative array of params to pass to gigya
+   *   an associative array of params to pass to Gigya
    *   @see http://developers.gigya.com/020_Client_API/020_Methods/socialize.getFriends
-   *   @see gigya_get_friends_info()
    * @return array
    *   the response from gigya.
    */
   public function getFriends($params = array()) {
-    return gigya_get_friends_info($this->uid, $params);
+    if ( !empty( $this->uid ) ) {
+      $params += array(
+        'uid' => $this->uid,
+      );
+
+      $api = new GigyaApi( $this->uid );
+      return $api->call( 'logout', $params );
+    }
+
+    return FALSE;
   }
 
   /**
    * Fetches information about the user capabilities.
-   *
    * @return array
    *   the response from gigya if we successfuly get the data from gigya or empty array if not.
    */
   public function getCapabilities() {
-    if ($bio = $this->getUserInfo()) {
-      $capabilities = explode(', ', $bio['capabilities']);
-      array_walk($capabilities, '_gigya_trim_value');
+    if ( $bio = $this->getUserInfo() ) {
+      $capabilities = explode( ', ', $bio['capabilities'] );
+      array_walk($capabilities, array( $this, 'trimValue' ) );
       return $capabilities;
     }
-    else {
-      return array();
-    }
+
+    return array();
+  }
+
+  /**
+   * Callback for array_walk.
+   * Helper function for trimming.
+   */
+  private function trimValue(&$value) {
+    $value = trim($value);
   }
 
   /**
    *  Check if the user has a specific capability.
-   *
    *  @param $capability
    *    the capability we checking.
    *  @return boolean
@@ -149,6 +156,61 @@ class GigyaUser {
       return FALSE;
     }
     return TRUE;
+  }
+
+  /**
+   * Sets the Gigya UID to match the Drupal UID.
+   * @param $uid
+   *   The drupal uid to set.
+   * @return array
+   *   the response from gigya.
+   */
+  public function setUID($uid) {
+    if( !empty( $this->uid ) && !empty( $uid )) {
+      $params = array(
+        'uid' => $this->uid,
+        'siteUID' => $uid,
+      );
+
+      $api = new GigyaApi( $this->uid );
+      return $api->call( 'setUID', $params );
+    }
+
+    return FALSE;
+  }
+
+
+  /**
+   * Informs Gigya that this user has completed site registration
+   */
+  public function notifyRegistration( $uid ) {
+    if( !empty( $this->uid ) && !empty( $uid )) {
+      $params = array(
+        'uid' => $this->uid,
+        'siteUID' => $uid,
+      );
+
+      $api = new GigyaApi( $this->uid );
+      return $api->call( 'notifyRegistration', $params );
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * Delete user from Gigya's DB
+   */
+  public function deleteAccount() {
+    if ( !empty( $this->uid ) ) {
+      $params = array(
+        'uid' => $this->uid,
+      );
+
+      $api = new GigyaApi( $this->uid );
+      $api->call( 'deleteAccount', $params );
+
+      return TRUE;
+    }
   }
 
   /**
@@ -182,41 +244,12 @@ class GigyaUser {
            * probably be replaced by profile_save_profile but I haven't
            * fully investigated it.
            */
-          user_save($account, $temp_edit, $category['name']);
+          user_save($account, $temp_edit, $category['name']); // @todo what account.
         }
       }
     }
   }
 
-  /**
-   * Sets the Gigya UID to match the Drupal UID.
-   * @see gigya_set_uid()
-   *
-   * @param $uid
-   *   The drupal uid to set.
-   * @return array
-   *   the response from gigya.
-  */
-  public function setUID($uid) {
-    return gigya_set_uid($this->uid, $uid);
-  }
-
-
-  /**
-   * Informs Gigya that this user has completed site registration
-   */
-  public function notifyRegistration($uid) {
-    return gigya_notify_registration($this->uid, $uid);
-  }
-
-  /**
-   * Delete user from Gigya's DB
-   * @see gigya_delete_account()
-   */
-  public function deleteAccount() {
-    gigya_delete_account($this->uid);
-    return TRUE;
-  }
 
   /**
    * Get a gigya user object from the url query string.
@@ -229,7 +262,7 @@ class GigyaUser {
       $localkey = _gigya_calculate_signature($_GET['timestamp'], $_GET['UID']);
       if ($localkey != $_GET['signature']) {
         drupal_set_message(t('Unable to authenticate. Gigya signature does not match.'), 'error');
-        if ($user->uid == 1) {
+        if ($user->uid == 1) { //  @todo What user what form_values
           drupal_set_message(t('Signature is %gigya, Site sig is %site.', array('%gigya' => $form_values['signature'], '%site' => $localkey)), 'error');
         }
         return FALSE;

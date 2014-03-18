@@ -34,9 +34,11 @@ class GigyaApi {
    * @return array
    *   The Gigya response.
    */
-  public function gigyaApiCall( $method, $params, $return_code = FALSE ) {
+  public function call( $method, $params, $return_code = FALSE ) {
     $user_key = get_option( 'gigya_user_key', 'AJtmU0HdPU8N' );
     $secret_key = get_option( 'gigya_secret_key', 'V87D7eKWe0R2vukr/rq9/PrKhm24jRtM' );
+
+    // Initialize new request.
     $request = new GSRequest( $user_key, $secret_key, $method );
     $user_info = NULL;
     if (!empty($params)) {
@@ -46,15 +48,32 @@ class GigyaApi {
 
       $user_info = in_array( 'getUserInfo', $params );// @todo check if this is the right check.
     }
+
+    // Set the request path.
     $request->setAPIDomain( get_option( 'gigya_data_center', 'us1.gigya.com' ) );
+
+    // Make the request.
     $response = $request->send();
 
-    $err_code = $this->gigyaApiResponseValidate( $response, $user_info, $return_code);
+    // Check for errors in the response.
+    $err_code = $this->responseValidate( $response, $user_info, $return_code);
     if ( !empty( $err_code ) ) {
       return $err_code;
     }
 
-    return _gigya_convert_json_to_array( $response->getResponseText() );
+    return $this->jsonToArray( $response->getResponseText() );
+  }
+
+  /**
+   * Convert JSON response to a PHP array.
+   * @param $data
+   *   The JSON data.
+   * @param $data
+   * @return array
+   *   The converted array from the JSON.
+   */
+  public static function jsonToArray( $data ) {
+    return json_decode( $data, TRUE );
   }
 
   /**
@@ -69,13 +88,13 @@ class GigyaApi {
    * @return boolean
    *   true if we have errors false if not.
    */
-  private function gigyaApiResponseValidate( $response, $user_info = NULL, $return_error = FALSE ) {
+  private function responseValidate( $response, $user_info = NULL, $return_error = FALSE ) {
     $code = $response->getErrorCode();
 
     switch ( $code ) {
       case '0':
         if ( !empty( $user_info ) ) {
-          if ( $this->gigyaApiSigValidate( $response ) ) {
+          if ( $this->sigValidate( $response ) ) {
             return FALSE;
           }
         }
@@ -97,7 +116,7 @@ class GigyaApi {
    *   The SDK response.
    * @return bool True if response signature is valid false if not.
    */
-  private function gigyaApiSigValidate( $response ) {
+  private function sigValidate( $response ) {
     $secret_key = get_option( 'gigya_secret_key', 'V87D7eKWe0R2vukr/rq9/PrKhm24jRtM' );
     $valid = SigUtils::validateUserSignature(
       $response->getString("UID", ""),
