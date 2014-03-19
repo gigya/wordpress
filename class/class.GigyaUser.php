@@ -2,6 +2,7 @@
 /**
  * @file
  * class.GigyaUser.php
+ * For socialized login user.
  * Provides a GigyaUser object type with associated methods.
  */
 
@@ -54,24 +55,24 @@ class GigyaUser {
    *     - path : the path.
    *  @return the array response from gigya if the user has the Actions capability or FALSE if not.
    */
-  public function publishUserAction( $content ) {
-    // if the user don't have the Actions capability return FALSE.
-    if ( !$this->hasCapability( 'Actions' ) ) {
-      return FALSE;
-    }
-
-    if ( !empty( $this->uid ) ) {
-      $params = array(
-        'uid' => $this->uid,
-        'userAction' => _gigya_get_useraction_xml( $content ), // @todo this function not exist.
-      );
-
-      $api = new GigyaApi( $this->uid );
-      return $api->call( 'publishUserAction', $params );
-    }
-
-    return FALSE;
-  }
+//  public function publishUserAction( $content ) {
+//    // if the user don't have the Actions capability return FALSE.
+//    if ( !$this->hasCapability( 'Actions' ) ) {
+//      return FALSE;
+//    }
+//
+//    if ( !empty( $this->uid ) ) {
+//      $params = array(
+//        'uid' => $this->uid,
+//        'userAction' => _gigya_get_useraction_xml( $content ), // @todo this function not exist.
+//      );
+//
+//      $api = new GigyaApi( $this->uid );
+//      return $api->call( 'publishUserAction', $params );
+//    }
+//
+//    return FALSE;
+//  }
 
   /**
    * Attach the Gigya object to the user object.
@@ -210,69 +211,6 @@ class GigyaUser {
       $api->call( 'deleteAccount', $params );
 
       return TRUE;
-    }
-  }
-
-  /**
-   * Maps extended profile fields that weren't on the registration form.
-   *
-   * @param array $edit
-   *   The array of form values submitted by the user.
-   *   @see gigya_user_insert()
-   */
-  public function mapExtendedProfileFields($edit) {
-    $bio = $this->getUserInfo();
-
-    if (module_exists('profile')) {
-      $temp_edit = array();
-      if ($profile_categories = profile_categories()) {
-
-        foreach ($profile_categories as $category) {
-          $result = _profile_get_fields($category['name']);
-          foreach ($result as $field) {
-            // Only attempt to set this variable if we've mapped it and
-            // it isn't already set elsewhere.
-            if (variable_get('gigya_profile_' . $field->name, '') != '0' && !isset($edit[$field->name])) {
-              $bio_assoc = variable_get('gigya_profile_' . $field->name, '');
-              $temp_edit[$field->name] = $bio[$bio_assoc];
-            }
-          }
-          /*
-           * This could potentially cause conflicts with other modules not
-           * expecting that this will be called. Disable mapping of
-           * extended profile fields if this causes a problem. This could
-           * probably be replaced by profile_save_profile but I haven't
-           * fully investigated it.
-           */
-          user_save($account, $temp_edit, $category['name']); // @todo what account.
-        }
-      }
-    }
-  }
-
-
-  /**
-   * Get a gigya user object from the url query string.
-   * @retrun
-   *   A GigyaUser object if the signature is correct , false if not.
-   */
-  public static function userFromUrl() {
-    if (!empty($_GET['signature']) && !empty($_GET['timestamp']) && !empty($_GET['UID'])) {
-      // First, verify signature.
-      $localkey = _gigya_calculate_signature($_GET['timestamp'], $_GET['UID']);
-      if ($localkey != $_GET['signature']) {
-        drupal_set_message(t('Unable to authenticate. Gigya signature does not match.'), 'error');
-        if ($user->uid == 1) { //  @todo What user what form_values
-          drupal_set_message(t('Signature is %gigya, Site sig is %site.', array('%gigya' => $form_values['signature'], '%site' => $localkey)), 'error');
-        }
-        return FALSE;
-      }
-      else {
-        return new GigyaUser($_GET['UID']);
-      }
-    }
-    else {
-      return FALSE;
     }
   }
 }

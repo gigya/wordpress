@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * class.GigyaAoi.php
+ * class.GigyaApi.php
  * Provides a GigyaApi object type with associated methods.
  */
 
@@ -35,8 +35,8 @@ class GigyaApi {
    *   The Gigya response.
    */
   public function call( $method, $params, $return_code = FALSE ) {
-    $user_key = get_option( 'gigya_user_key', 'AJtmU0HdPU8N' );
-    $secret_key = get_option( 'gigya_secret_key', 'V87D7eKWe0R2vukr/rq9/PrKhm24jRtM' );
+    $user_key = get_option( 'gigya_user_key' );
+    $secret_key = get_option( 'gigya_secret_key' );
 
     // Initialize new request.
     $request = new GSRequest( $user_key, $secret_key, $method );
@@ -117,7 +117,7 @@ class GigyaApi {
    * @return bool True if response signature is valid false if not.
    */
   private function sigValidate( $response ) {
-    $secret_key = get_option( 'gigya_secret_key', 'V87D7eKWe0R2vukr/rq9/PrKhm24jRtM' );
+    $secret_key = get_option( 'gigya_secret_key' );
     $valid = SigUtils::validateUserSignature(
       $response->getString("UID", ""),
       $response->getString("signatureTimestamp", ""),
