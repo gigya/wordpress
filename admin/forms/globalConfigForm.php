@@ -1,7 +1,9 @@
 <?php
+/**
+ * Form builder for 'Global Settings' configuration page.
+ */
 function globalConfigForm() {
 	$values = get_option( GIGYA__SETTINGS_PREFIX );
-	print_r($values );
 	_gigya_formEl(
 			array(
 					'type'  => 'text',

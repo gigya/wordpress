@@ -1,3 +1,9 @@
+<?php
+/**
+ * Template - Checkbox form element for Gigya settings pages.
+ * Render with @see _gigya_render_tpl().
+ */
+?>
 <div class="row checkbox <?php echo $class ?>">
 	<div class="span3">
 		<label for="gigya_<?php echo $id; ?>">

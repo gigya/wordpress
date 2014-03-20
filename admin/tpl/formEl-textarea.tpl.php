@@ -1,3 +1,9 @@
+<?php
+/**
+ * Template - Textarea form element for Gigya settings pages.
+ * Render with @see _gigya_render_tpl().
+ */
+?>
 <div class="row textarea <?php echo $class ?>">
 	<div class="span3">
 		<label for="gigya_<?php echo $id; ?>">

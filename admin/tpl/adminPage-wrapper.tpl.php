@@ -1,3 +1,9 @@
+<?php
+/**
+ * Template - wrapper for Gigya setting pages.
+ * Render with @see _gigya_render_tpl().
+ */
+?>
 <div class="wrap">
 	<div class="header">
 		<span class="icon32" id="icon-options-general"></span>

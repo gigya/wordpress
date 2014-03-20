@@ -1,4 +1,7 @@
 <?php
+/**
+ * Form builder for 'Social Login Settings' configuration page.
+ */
 function loginConfigForm() {
 	$values = get_option( GIGYA__SETTINGS_PREFIX );
 	_gigya_formEl(
@@ -10,8 +13,8 @@ function loginConfigForm() {
 			)
 	);
 	$button_opts = array(
-			'fullLogo'   => __('Full Logo'),
-			'standard'   => __('Standard'),
+			'fullLogo'   => __( 'Full Logo' ),
+			'standard'   => __( 'Standard' ),
 			'signInWith' => __( 'Sign In With' )
 	);
 	_gigya_formEl(
@@ -19,7 +22,7 @@ function loginConfigForm() {
 					'type'    => 'select',
 					'id'      => 'login_button_style',
 					'options' => $button_opts,
-					'value' => ! empty( $values['login_button_style'] ) ? $values['login_button_style'] : $button_opts['fullLogo'],
+					'value'   => ! empty( $values['login_button_style'] ) ? $values['login_button_style'] : $button_opts['fullLogo'],
 					'label'   => __( 'Button Style' )
 			)
 	);
@@ -33,7 +36,7 @@ function loginConfigForm() {
 					'type'    => 'select',
 					'id'      => 'connect_without',
 					'options' => $connect_without_opts,
-					'value' => ! empty( $values['connect_without'] ) ? $values['connect_without'] : $connect_without_opts['loginExistingUser'],
+					'value'   => ! empty( $values['connect_without'] ) ? $values['connect_without'] : $connect_without_opts['loginExistingUser'],
 					'label'   => __( 'Connect Without Login Behavior' ),
 			)
 	);

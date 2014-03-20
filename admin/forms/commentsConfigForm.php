@@ -1,4 +1,7 @@
 <?php
+/**
+ * Form builder for 'Comment Settings' configuration page.
+ */
 function commentsConfigForm() {
 	$values = get_option( GIGYA__SETTINGS_PREFIX );
 	_gigya_formEl(

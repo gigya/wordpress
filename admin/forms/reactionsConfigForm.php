@@ -1,4 +1,7 @@
 <?php
+/**
+ * Form builder for 'Reaction Settings' configuration page.
+ */
 function reactionsConfigForm() {
 	$values = get_option( GIGYA__SETTINGS_PREFIX );
 	_gigya_formEl(

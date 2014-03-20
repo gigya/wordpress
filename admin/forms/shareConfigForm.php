@@ -1,4 +1,7 @@
 <?php
+/**
+ * Form builder for 'Share Settings' configuration page.
+ */
 function shareConfigForm() {
 	$values     = get_option( GIGYA__SETTINGS_PREFIX );
 	$share_opts = array(

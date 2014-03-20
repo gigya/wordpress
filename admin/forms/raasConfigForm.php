@@ -1,4 +1,7 @@
 <?php
+/**
+ * Form builder for 'RAAS Settings' configuration page.
+ */
 function raasConfigForm() {
 	$values = get_option( GIGYA__SETTINGS_PREFIX );
 	_gigya_formEl(

@@ -1,4 +1,7 @@
 <?php
+/**
+ * Form builder for 'Gamification Settings' configuration page.
+ */
 function gmConfigForm() {
 	$values = get_option( GIGYA__SETTINGS_PREFIX );
 	_gigya_formEl(

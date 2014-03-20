@@ -8,12 +8,19 @@
  * Author URI: http://gigya.com
  * License: GPL2+
  */
+
+/**
+ * Global defines.
+ */
 define( 'GIGYA__MINIMUM_WP_VERSION', '3.5' );
 define( 'GIGYA__MINIMUM_PHP_VERSION', '5.2' );
 define( 'GIGYA__VERSION', '5.0' );
 define( 'GIGYA__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GIGYA__SETTINGS_PREFIX', 'gigya_settings_fields' );
 
+/**
+ * Load required files.
+ */
 require_once( GIGYA__PLUGIN_DIR . 'sdk/GSSDK.php' );
 require_once( GIGYA__PLUGIN_DIR . 'class/class.GigyaUser.php' );
 require_once( GIGYA__PLUGIN_DIR . 'class/class.GigyaApi.php' );
