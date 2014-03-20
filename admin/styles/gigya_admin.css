@@ -1,0 +1,44 @@
+.hidden {
+	display: none;
+}
+
+.header h1 {
+	display: inline-block;
+}
+
+.gigya-settings h3 {
+	font-size: 1.7em;
+}
+
+.gigya-settings label {
+	cursor: auto;
+	display: block;
+}
+
+.gigya-settings small {
+	display: block;
+}
+
+.row {
+	margin: 10px;
+}
+
+input[type=checkbox] {
+	margin-right: 5px;
+}
+
+.size input {
+	width: 100px;
+}
+
+.gigya-settings .toggle-link {
+	width: 270px;
+	height: 20px;
+	background: transparent url("/wp-admin/images/arrows.png") no-repeat 0 0;
+	display: inline-block;
+	text-indent: 20px;
+}
+
+#adminmenu .toplevel_page_gigya .wp-menu-image img {
+	padding: 0;
+}

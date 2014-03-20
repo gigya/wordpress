@@ -20,8 +20,7 @@
 	</h2>
 
 	<?php
-	// TODO: fix link
-		$helpUrl = 'http://developers.gigya.com/050_Partners/050_CMS_Modules/030_Wordpress_Plugin';
+		$helpUrl = 'http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin';
 		echo sprintf(__('To learn more about gigya & how setup an account, please visit our developer documentation ' . '<a target="_blank"  href="%1$s">here</a>.'), $helpUrl);
 	?>
 
@@ -33,9 +32,8 @@
 		<input type="hidden" value="1" name="<?php echo GIGYA__SETTINGS_PREFIX ?>[login_plugin_startup]">
 		<input type="hidden" value="1" name="<?php echo GIGYA__SETTINGS_PREFIX ?>[share_providers_startup]">
 		<div class="<?php echo $page ?>">
-			<div class="well">
-				<?php do_settings_sections( $page ); ?>
-			</div>
+			<?php do_settings_sections( $page ); ?>
 			<?php submit_button(); ?>
+		</div>
 	</form>
 </div>

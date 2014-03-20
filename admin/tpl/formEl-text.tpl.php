@@ -5,19 +5,9 @@
  */
 ?>
 <div class="row text-field <?php echo $class ?>">
-	<div class="span3">
-		<label for="gigya_<?php echo $id; ?>">
-			<?php echo $label; ?>
-		</label>
-	</div>
-	<div class="span6">
-		<input type="text" size="80" class="input-xlarge" value="<?php echo $value; ?>" id="gigya_<?php echo $id; ?>"
-					 name="<?php echo GIGYA__SETTINGS_PREFIX ?>[<?php echo $id; ?>]"/>
-		<br/>
+		<label for="gigya_<?php echo $id; ?>"><?php echo $label; ?></label>
+		<input type="text" size="80" class="input-xlarge" value="<?php echo $value; ?>" id="gigya_<?php echo $id; ?>" name="<?php echo GIGYA__SETTINGS_PREFIX ?>[<?php echo $id; ?>]"/>
 		<?php if (!empty($desc)): ?>
-			<i>
-				<small><?php echo $desc; ?></small>
-			</i>
+			<small><?php echo $desc; ?></small>
 		<?php endif; ?>
-	</div>
 </div>

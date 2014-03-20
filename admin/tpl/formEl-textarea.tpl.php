@@ -5,19 +5,13 @@
  */
 ?>
 <div class="row textarea <?php echo $class ?>">
-	<div class="span3">
-		<label for="gigya_<?php echo $id; ?>">
-			<?php echo $label; ?>
-		</label>
-	</div>
-	<div class="span6">
-		<textarea rows="5" cols="20" class="large-text" id="gigya_<?php echo $id; ?>"
-							name="<?php echo GIGYA__SETTINGS_PREFIX ?>[<?php echo $id; ?>]"><?php echo $value; ?></textarea>
-		<?php if ($desc): ?>
-			<br/>
-			<i>
-				<small><?php echo $desc; ?></small>
-			</i>
-		<?php endif; ?>
-	</div>
+	<label for="gigya_<?php echo $id; ?>">
+		<?php echo $label; ?>
+	</label>
+	<textarea rows="5" cols="20" class="large-text" id="gigya_<?php echo $id; ?>"	name="<?php echo GIGYA__SETTINGS_PREFIX ?>[<?php echo $id; ?>]">
+		<?php echo $value; ?>
+	</textarea>
+	<?php if ($desc): ?>
+		<small><?php echo $desc; ?></small>
+	<?php endif; ?>
 </div>
