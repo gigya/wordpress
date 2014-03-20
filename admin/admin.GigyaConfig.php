@@ -1,67 +1,71 @@
 <?php
-define( "GIGYA_PERMISSION_LEVEL", "manage_options" );
+define( "GIGYA__PERMISSION_LEVEL", "manage_options" );
 
 class GigyaConfig {
 	function gigya_admin_menu() {
+		require_once( GIGYA__PLUGIN_DIR . 'admin/forms/globalConfigForm.php' );
+		require_once( GIGYA__PLUGIN_DIR . 'admin/forms/loginConfigForm.php' );
+		require_once( GIGYA__PLUGIN_DIR . 'admin/forms/shareConfigForm.php' );
+		require_once( GIGYA__PLUGIN_DIR . 'admin/forms/commentsConfigForm.php' );
+		require_once( GIGYA__PLUGIN_DIR . 'admin/forms/reactionsConfigForm.php' );
+		require_once( GIGYA__PLUGIN_DIR . 'admin/forms/gmConfigForm.php' );
+		require_once( GIGYA__PLUGIN_DIR . 'admin/forms/raasConfigForm.php' );
 
+		add_menu_page( 'Gigya', 'Gigya', GIGYA__PERMISSION_LEVEL, 'gigya', '_gigya_admin_page', plugin_dir_url( __FILE__ ) . 'images/favicon_28px.png', '70.1' );
 
-		add_menu_page( 'Gigya', 'Gigya', GIGYA_PERMISSION_LEVEL, 'gigya', '_gigya_admin_page', plugin_dir_url( __FILE__ ) . 'images/favicon_28px.png', '70.1' );
-
-		add_submenu_page( 'gigya', __( 'Social Login', 'Social Login' ), __( 'Social Login', 'Social Login' ), GIGYA_PERMISSION_LEVEL, 'gigya-social-login', '_gigya_admin_page' );
-		add_submenu_page( 'gigya', __( 'Share', 'Share' ), __( 'Share', 'Share' ), GIGYA_PERMISSION_LEVEL, 'gigya-share', '_gigya_admin_page' );
-		add_submenu_page( 'gigya', __( 'Comments', 'Comments' ), __( 'Comments', 'Comments' ), GIGYA_PERMISSION_LEVEL, 'gigya-comments', '_gigya_admin_page' );
-		add_submenu_page( 'gigya', __( 'Reactions', 'Reaction' ), __( 'Reactions', 'Reactions' ), GIGYA_PERMISSION_LEVEL, 'gigya-reactions', '_gigya_admin_page' );
-		add_submenu_page( 'gigya', __( 'Gamification', 'Gamification' ), __( 'Gamification', 'Gamification' ), GIGYA_PERMISSION_LEVEL, 'gigya-gm', '_gigya_admin_page' );
-		add_submenu_page( 'gigya', __( 'RAAS Settings', 'RAAS Settings' ), __( 'RAAS Settings', 'RAAS Settings' ), GIGYA_PERMISSION_LEVEL, 'gigya-raas', '_gigya_admin_page' );
+		add_submenu_page( 'gigya', __( 'Social Login', 'Social Login' ), __( 'Social Login', 'Social Login' ), GIGYA__PERMISSION_LEVEL, 'gigya-social-login', '_gigya_admin_page' );
+		add_submenu_page( 'gigya', __( 'Share', 'Share' ), __( 'Share', 'Share' ), GIGYA__PERMISSION_LEVEL, 'gigya-share', '_gigya_admin_page' );
+		add_submenu_page( 'gigya', __( 'Comments', 'Comments' ), __( 'Comments', 'Comments' ), GIGYA__PERMISSION_LEVEL, 'gigya-comments', '_gigya_admin_page' );
+		add_submenu_page( 'gigya', __( 'Reactions', 'Reaction' ), __( 'Reactions', 'Reactions' ), GIGYA__PERMISSION_LEVEL, 'gigya-reactions', '_gigya_admin_page' );
+		add_submenu_page( 'gigya', __( 'Gamification', 'Gamification' ), __( 'Gamification', 'Gamification' ), GIGYA__PERMISSION_LEVEL, 'gigya-gm', '_gigya_admin_page' );
+		add_submenu_page( 'gigya', __( 'RAAS Settings', 'RAAS Settings' ), __( 'RAAS Settings', 'RAAS Settings' ), GIGYA__PERMISSION_LEVEL, 'gigya-raas', '_gigya_admin_page' );
 
 		add_settings_section(
 			'gigya_global_settings',
 			'Global Settings',
-			'globalSectionCallback',
+			'globalConfigForm',
 			'gigya'
 		);
 		add_settings_section(
 				'gigya_login_settings',
 				'Social Login Settings',
-				'\GigyaConfigPages::loginSectionCallback',
+				'loginConfigForm',
 				'gigya-social-login'
 		);
 		add_settings_section(
 				'gigya_share_settings',
 				'Share Settings',
-				'\GigyaConfigPages::shareSectionCallback',
+				'shareConfigForm',
 				'gigya-share'
 		);
 		add_settings_section(
 				'gigya_comments_settings',
 				'Comments Settings',
-				'\GigyaConfigPages::commentsSectionCallback',
+				'commentsConfigForm',
 				'gigya-comments'
 		);
 		add_settings_section(
 				'gigya_reactions_settings',
 				'Reactions Settings',
-				'\GigyaConfigPages::reactionSectionCallback',
+				'reactionsConfigForm',
 				'gigya-reactions'
 		);
 		add_settings_section(
 				'gigya_gm_settings',
 				'Gamification Settings',
-				'\GigyaConfigPages::gmSectionCallback',
+				'gmConfigForm',
 				'gigya-gm'
 		);
 		add_settings_section(
 				'gigya_raas_settings',
 				'RASS Settings',
-				'\GigyaConfigPages::raasSectionCallback',
+				'raasConfigForm',
 				'gigya-raas'
 		);
 	}
 
 	public function gigya_admin_init() {
-		$page = $_GET['page'];
-		require_once( GIGYA__PLUGIN_DIR . 'admin/forms/globalForm.php' );
-		register_setting( $page, 'gigya_settings_fields');
+		register_setting( GIGYA__SETTINGS_PREFIX, GIGYA__SETTINGS_PREFIX);
 
 		// Add Javascript and css to admin page
 		wp_enqueue_style('gigya_admin_css', plugins_url('style/css/gigya_admin.css', __FILE__));

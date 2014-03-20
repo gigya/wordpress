@@ -18,7 +18,6 @@ require_once( GIGYA__PLUGIN_DIR . 'sdk/GSSDK.php' );
 require_once( GIGYA__PLUGIN_DIR . 'class/class.GigyaUser.php' );
 require_once( GIGYA__PLUGIN_DIR . 'class/class.GigyaApi.php' );
 require_once( GIGYA__PLUGIN_DIR . 'admin/admin.GigyaConfig.php' );
-require_once( GIGYA__PLUGIN_DIR . 'admin/admin.GigyaConfigPages.php' );
 
 
 /**
@@ -46,8 +45,6 @@ function _gigya_render_tpl($template_file, $variables) {
 	echo $output;
 }
 
-
-
 /**
  * Render form elements.
  * @param $vars
@@ -55,4 +52,16 @@ function _gigya_render_tpl($template_file, $variables) {
 function _gigya_formEl($vars) {
 	$render = _gigya_render_tpl('admin/tpl/formEl-' . $vars['type'] . '.tpl.php', $vars);
 	return $render;
+}
+
+/**
+ * Loads JSON string from file.
+ * @param $file | relative path from Gigya plugin root.
+ *              DO NOT include filename extension.
+ * @return bool|string
+ */
+function _gigya_get_json($file) {
+	$path = GIGYA__PLUGIN_DIR . $file . '.json';
+	$json = file_get_contents($path);
+	return !empty($json) ? $json : FALSE;
 }

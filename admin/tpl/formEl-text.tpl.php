@@ -1,7 +1,7 @@
 <div class="row text-field <?php echo $class ?>">
 	<div class="span3">
 		<label for="gigya_<?php echo $id; ?>">
-			<?php _e($label); ?>
+			<?php echo $label; ?>
 		</label>
 	</div>
 	<div class="span6">

@@ -1,7 +1,7 @@
 <div class="row select <?php echo $class ?>">
 	<div class="span3">
 		<label for="gigya_<?php echo $id; ?>">
-			<?php _e($label); ?>
+			<?php echo $label; ?>
 			<?php if ($desc): ?>
 				<i class="icon-question-sign" data-html="1" data-content="<?php echo esc_html($desc); ?>"
 					 data-title="<?php echo $label; ?>" rel="popover"></i>

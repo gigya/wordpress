@@ -4,7 +4,7 @@
 			<input type="hidden" value="0" id="gigya_<?php echo $id; ?>" name="<?php echo GIGYA__SETTINGS_PREFIX ?>[<?php echo $id; ?>]"/>
 			<input type="checkbox" <?php echo($value || $value == "1" ? "checked" : ""); ?> value="1"
 						 id="gigya_<?php echo $id; ?>" name="<?php echo GIGYA__SETTINGS_PREFIX ?>[<?php echo $id; ?>]"/>
-			<?php _e($label); ?>
+			<?php echo $label; ?>
 		</label>
 		<?php if ($desc): ?>
 			<br/>
