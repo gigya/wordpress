@@ -19,7 +19,6 @@ require_once( GIGYA__PLUGIN_DIR . 'class/class.GigyaUser.php' );
 require_once( GIGYA__PLUGIN_DIR . 'class/class.GigyaApi.php' );
 require_once( GIGYA__PLUGIN_DIR . 'admin/admin.GigyaConfig.php' );
 
-
 /**
  * Renders a default template.
  *
