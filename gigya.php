@@ -18,7 +18,7 @@ define( 'GIGYA__MINIMUM_WP_VERSION', '3.5' );
 define( 'GIGYA__MINIMUM_PHP_VERSION', '5.2' );
 define( 'GIGYA__VERSION', '5.0' );
 define( 'GIGYA__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'GIGYA__SETTINGS_PREFIX', 'gigya_settings_values1' );
+define( 'GIGYA__SETTINGS_PREFIX', 'gigya_settings_values' );
 
 // --------------------------------------------------------------------
 
@@ -28,8 +28,23 @@ define( 'GIGYA__SETTINGS_PREFIX', 'gigya_settings_values1' );
 require_once( GIGYA__PLUGIN_DIR . 'sdk/GSSDK.php' );
 require_once( GIGYA__PLUGIN_DIR . 'class/class.GigyaUser.php' );
 require_once( GIGYA__PLUGIN_DIR . 'class/class.GigyaApi.php' );
-require_once( GIGYA__PLUGIN_DIR . 'admin/admin.GigyaConfig.php' );
-new GigyaConfig;
+
+
+// --------------------------------------------------------------------
+
+/**
+ * Hook init.
+ */
+add_action( 'init', '_gigya_init_action' );
+function _gigya_init_action() {
+	if ( is_admin() ) {
+
+		// Load the settings.
+		require_once( GIGYA__PLUGIN_DIR . 'admin/admin.GigyaSettings.php' );
+		new GigyaSettings;
+	}
+}
+
 // --------------------------------------------------------------------
 
 /**
@@ -98,15 +113,7 @@ function _gigya_render_tpl( $template_file, $variables ) {
 
 // --------------------------------------------------------------------
 
-/**
- * Render form elements.
- *
- * @param $vars
- */
-function _gigya_formEl( $vars ) {
-	$render = _gigya_render_tpl( 'admin/tpl/formEl-' . $vars['type'] . '.tpl.php', $vars );
-	return $render;
-}
+
 
 // --------------------------------------------------------------------
 
