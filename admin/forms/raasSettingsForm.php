@@ -3,7 +3,7 @@
  * Form builder for 'RAAS Settings' configuration page.
  */
 function raasSettingsForm() {
-	$values = get_option( $_GET['page'] . '-settings' );
+	$values = get_option( GIGYA__SETTINGS_RAAS );
 	$form = array();
 
 	$form['raas_plugin'] = array(

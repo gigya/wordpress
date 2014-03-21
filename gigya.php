@@ -18,27 +18,31 @@ define( 'GIGYA__MINIMUM_WP_VERSION', '3.5' );
 define( 'GIGYA__MINIMUM_PHP_VERSION', '5.2' );
 define( 'GIGYA__VERSION', '5.0' );
 define( 'GIGYA__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'GIGYA__SETTINGS_PREFIX', 'gigya_settings_values' );
-
-// --------------------------------------------------------------------
 
 /**
- * Load required files.
+ * Gigya settings sections.
  */
-require_once( GIGYA__PLUGIN_DIR . 'sdk/GSSDK.php' );
-require_once( GIGYA__PLUGIN_DIR . 'class/class.GigyaUser.php' );
-require_once( GIGYA__PLUGIN_DIR . 'class/class.GigyaApi.php' );
-
+define( 'GIGYA__SETTINGS_GLOBAL', 'gigya_global_settings' );
+define( 'GIGYA__SETTINGS_LOGIN', 'gigya_login_settings' );
+define( 'GIGYA__SETTINGS_SHARE', 'gigya_share_settings' );
+define( 'GIGYA__SETTINGS_COMMENTS', 'gigya_comments_settings' );
+define( 'GIGYA__SETTINGS_REACTIONS', 'gigya_reactions_settings' );
+define( 'GIGYA__SETTINGS_GM', 'gigya_gm_settings' );
+define( 'GIGYA__SETTINGS_RAAS', 'gigya_raas_settings' );
 
 // --------------------------------------------------------------------
+
 
 /**
  * Hook init.
  */
 add_action( 'init', '_gigya_init_action' );
 function _gigya_init_action() {
-	if ( is_admin() ) {
+	require_once( GIGYA__PLUGIN_DIR . 'sdk/GSSDK.php' );
+	require_once( GIGYA__PLUGIN_DIR . 'class/class.GigyaUser.php' );
+	require_once( GIGYA__PLUGIN_DIR . 'class/class.GigyaApi.php' );
 
+	if ( is_admin() ) {
 		// Load the settings.
 		require_once( GIGYA__PLUGIN_DIR . 'admin/admin.GigyaSettings.php' );
 		new GigyaSettings;
@@ -58,12 +62,12 @@ function _gigya_login_form_action() {
 // --------------------------------------------------------------------
 
 /**
- * Hook on script load.
+ * Hook script load.
  */
 add_action( 'wp_enqueue_scripts', '_gigya_wp_enqueue_scripts_action' );
 function _gigya_wp_enqueue_scripts_action() {
 	// Gigya configuration values.
-	$values = get_option( GIGYA__SETTINGS_PREFIX );
+	$values = get_option( GIGYA__SETTINGS_LOGIN );
 	if ( ! empty( $values['login_plugin'] ) && ! empty( $values['global_api_key'] ) ) {
 		// Load Gigya's socialize.js.
 		wp_enqueue_script( 'gigya', 'http://cdn.gigya.com/JS/socialize.js?apiKey=' . $values['global_api_key'] );
@@ -113,9 +117,6 @@ function _gigya_render_tpl( $template_file, $variables ) {
 
 // --------------------------------------------------------------------
 
-
-
-// --------------------------------------------------------------------
 
 /**
  * Loads JSON string from file.

@@ -3,7 +3,7 @@
  * Form builder for 'Share Settings' configuration page.
  */
 function shareSettingsForm() {
-	$values = get_option( $_GET['page'] . '-settings' );
+	$values = get_option( GIGYA__SETTINGS_SHARE );
 	$form   = array();
 
 	$share_opts = array(

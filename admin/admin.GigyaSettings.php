@@ -78,8 +78,8 @@ class GigyaSettings {
 	public function gigya_admin_init() {
 
 		// Add Javascript and css to admin page
-		wp_enqueue_style( 'gigya_admin_css', plugins_url( 'styles/gigya_admin.css', __FILE__ ) );
-		wp_enqueue_script( 'gigya_admin_js', plugins_url( 'scripts/gigya_admin.js', __FILE__ ) );
+		wp_enqueue_style( 'gigya_admin_css', plugins_url( 'assets/styles/gigya_admin.css', __FILE__ ) );
+		wp_enqueue_script( 'gigya_admin_js', plugins_url( 'assets/scripts/gigya_admin.js', __FILE__ ) );
 
 		// Add settings sections.
 		foreach ($this->getSections() as $id => $section) {

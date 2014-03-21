@@ -3,7 +3,7 @@
  * Form builder for 'Reaction Settings' configuration page.
  */
 function reactionsSettingsForm() {
-	$values = get_option( $_GET['page'] . '-settings' );
+	$values = get_option( GIGYA__SETTINGS_REACTIONS );
 	$form   = array();
 
 	$form['reaction_plugin'] = array(

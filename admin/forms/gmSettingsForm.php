@@ -3,7 +3,7 @@
  * Form builder for 'Gamification Settings' configuration page.
  */
 function gmSettingsForm() {
-	$values = get_option( $_GET['page'] . '-settings' );
+	$values = get_option( GIGYA__SETTINGS_GM );
 	$form = array();
 
 	$form['gamification_notification'] = array(

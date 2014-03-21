@@ -3,7 +3,7 @@
  * Form builder for 'Social Login Settings' configuration page.
  */
 function loginSettingsForm() {
-	$values = get_option( $_GET['page'] . '-settings' );
+	$values = get_option( GIGYA__SETTINGS_LOGIN );
 	$form   = array();
 
 	$form['login_plugin'] = array(

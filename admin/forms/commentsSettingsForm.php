@@ -3,7 +3,7 @@
  * Form builder for 'Comment Settings' configuration page.
  */
 function commentsSettingsForm() {
-	$values = get_option( $_GET['page'] . '-settings' );
+	$values = get_option( GIGYA__SETTINGS_COMMENTS );
 	$form   = array();
 
 	$form['comments_plugin'] = array(

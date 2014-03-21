@@ -3,7 +3,7 @@
  * Form builder for 'Global Settings' configuration page.
  */
 function globalSettingsForm() {
-	$values = get_option( $_GET['page'] . '-settings' );
+	$values = get_option( GIGYA__SETTINGS_GLOBAL );
 	$form   = array();
 
 	$form['global_api_key'] = array(
