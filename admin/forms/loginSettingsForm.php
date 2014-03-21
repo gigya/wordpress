@@ -33,11 +33,11 @@ function loginSettingsForm() {
 			'loginExistingUser' => __( 'Login Existing User' ),
 	);
 
-	$form['connect_without'] = array(
+	$form['login_connect_without'] = array(
 			'type'    => 'select',
-			'id'      => 'connect_without',
+			'id'      => 'login_connect_without',
 			'options' => $connect_without_opts,
-			'value'   => ! empty( $values['connect_without'] ) ? $values['connect_without'] : $connect_without_opts['loginExistingUser'],
+			'value'   => ! empty( $values['login_connect_without'] ) ? $values['login_connect_without'] : $connect_without_opts['loginExistingUser'],
 			'label'   => __( 'Connect Without Login Behavior' ),
 	);
 

@@ -35,20 +35,6 @@ function shareSettingsForm() {
 			'label'   => __( 'Show Counts' )
 	);
 
-	$connect_without_opts = array(
-			'tempUser'          => __( 'Temp User' ),
-			'alwaysLogin'       => __( 'Always Login' ),
-			'loginExistingUser' => __( 'Login Existing User' ),
-	);
-
-	$form['connect_without'] = array(
-			'type'    => 'select',
-			'id'      => 'connect_without',
-			'options' => $connect_without_opts,
-			'value'   => ! empty( $values['connect_without'] ) ? $values['connect_without'] : $connect_without_opts['loginExistingUser'],
-			'label'   => __( 'Connect Without Login Behavior' ),
-	);
-
 	$privacy_opts = array(
 			"private" => __( "Private" ),
 			"public"  => __( "Public" ),
