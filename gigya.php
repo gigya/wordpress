@@ -42,6 +42,19 @@ function _gigya_init_action() {
 	require_once( GIGYA__PLUGIN_DIR . 'class/class.GigyaUser.php' );
 	require_once( GIGYA__PLUGIN_DIR . 'class/class.GigyaApi.php' );
 
+	// Load jQuery.
+	wp_enqueue_script( 'jquery' );
+
+	// Gigya configuration values.
+	$login_options = get_option( GIGYA__SETTINGS_LOGIN );
+	$global_options = get_option( GIGYA__SETTINGS_GLOBAL );
+
+	if ( ! empty( $login_options['login_plugin'] ) && ! empty( $global_options['global_api_key'] ) ) {
+
+		// Load Gigya's socialize.js.
+		wp_enqueue_script( 'gigya', 'http://cdn.gigya.com/JS/socialize.js?apiKey=' . $global_options['global_api_key'], 'jquery' );
+	}
+
 	if ( is_admin() ) {
 		// Load the settings.
 		require_once( GIGYA__PLUGIN_DIR . 'admin/admin.GigyaSettings.php' );
@@ -56,7 +69,24 @@ function _gigya_init_action() {
  */
 add_action( 'login_form', '_gigya_login_form_action' );
 function _gigya_login_form_action() {
+
+	// Load custom Gigya login script.
+	wp_enqueue_script( 'gigya_login_js', plugins_url( 'assets/scripts/gigya_login.js', __FILE__ ) );
+	wp_enqueue_style( 'gigya_login_css', plugins_url( 'assets/styles/gigya_login.css', __FILE__ ) );
+
+	// Gigya configuration values.
+	$values = get_option( GIGYA__SETTINGS_LOGIN );
+
+	// Parameters to be sent to DOM.
+	$params = array(
+			'socialLogin' => $values['login_plugin'],
+	);
+
+	// Load params to be available to client-side script.
+	wp_localize_script( 'gigya_login_js', 'gigyaLoginParams', $params );
 	require_once( GIGYA__PLUGIN_DIR . 'class/class.GigyaLoginFormAction.php' );
+
+	echo '<div id="gigya-login"></div>';
 }
 
 // --------------------------------------------------------------------
@@ -66,26 +96,10 @@ function _gigya_login_form_action() {
  */
 add_action( 'wp_enqueue_scripts', '_gigya_wp_enqueue_scripts_action' );
 function _gigya_wp_enqueue_scripts_action() {
-	// Gigya configuration values.
-	$values = get_option( GIGYA__SETTINGS_LOGIN );
-	if ( ! empty( $values['login_plugin'] ) && ! empty( $values['global_api_key'] ) ) {
-		// Load Gigya's socialize.js.
-		wp_enqueue_script( 'gigya', 'http://cdn.gigya.com/JS/socialize.js?apiKey=' . $values['global_api_key'] );
 
-		// Load jQuery.
-		wp_enqueue_script( 'jquery' );
 
-		// Load custom Gigya login script.
-		wp_enqueue_script( 'gigya_login_js', plugins_url( 'assets/scripts/gigya_login.js', __FILE__ ) );
 
-		// Parameters to be sent to DOM.
-		$params = array(
-				'socialLogin' => $values['login_plugin'],
-		);
 
-		// Load params to be available to client-side script.
-		wp_localize_script( 'gigya_login_js', 'gigyaLoginParams', $params );
-	}
 }
 
 // --------------------------------------------------------------------

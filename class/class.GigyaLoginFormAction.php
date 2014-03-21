@@ -8,9 +8,8 @@
  */
 class GigyaLoginFormAction {
 
-
-	public function __construct( $uid ) {
-
+	public function __construct() {
+		echo 'erwrwr';
 	}
 
 
