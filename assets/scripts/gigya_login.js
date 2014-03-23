@@ -19,16 +19,22 @@
 		var options = {
 			url: gigyaLoginParams.ajaxurl,
 			type: 'POST',
-			dataType: 'json',
+//			dataType: 'json',
 			data:  {
 				data: data,
-				nonce: gigyaLoginParams.nonce
+				nonce: gigyaLoginParams.nonce,
+				action: gigyaLoginParams.action
 			}
 		};
 
 		$.ajax(options)
 				.done(function(data) {
-					console.log(data);
+					if (data.success == true) {
+						location.replace(gigyaLoginParams.redirect);
+					}
+				})
+				.fail(function(jqXHR, textStatus, errorThrown) {
+					console.log(errorThrown);
 				});
 	}
 
@@ -38,7 +44,7 @@
 		}
 
 		if ( ( response.user.email.length === 0 ) && ( response.user.isSiteUID !== true ) ) {
-			var email = prompt( "Please fill-in missing details" );
+			var email = prompt( "Please fill-in missing details\nEmail:" );
 
 			if ( email == null ) {
 				// User clicked Cancel.
