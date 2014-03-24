@@ -145,19 +145,19 @@ class GigyaUser {
 	 * @return array
 	 *   the response from gigya.
 	 */
-	public function setUID( $uid ) {
-		if ( ! empty( $this->uid ) && ! empty( $uid ) ) {
-			$params = array(
-					'uid'     => $this->uid,
-					'siteUID' => $uid,
-			);
-
-			$api = new GigyaApi( $this->uid );
-			return $api->call( 'setUID', $params );
-		}
-
-		return FALSE;
-	}
+//	public function setUID( $uid ) {
+//		if ( ! empty( $this->uid ) && ! empty( $uid ) ) {
+//			$params = array(
+//					'uid'     => $this->uid,
+//					'siteUID' => $uid,
+//			);
+//
+//			$api = new GigyaApi( $this->uid );
+//			return $api->call( 'setUID', $params );
+//		}
+//
+//		return FALSE;
+//	}
 
 	/**
 	 * Logs user in to Gigya's service and optionally registers them.
@@ -171,7 +171,7 @@ class GigyaUser {
 	 *
 	 * @return bool|null|string True if the notify login request succeeded or the error message from Gigya
 	 */
-	function serviceNotify( $uid, $is_new_user = FALSE ) {
+	function notifyLogin( $uid, $is_new_user = FALSE ) {
 		$account = get_userdata( $uid );
 
 		$params['siteUID'] = $uid;
@@ -230,10 +230,10 @@ class GigyaUser {
 	/**
 	 * Delete user from Gigya's DB
 	 */
-	public function deleteAccount() {
-		if ( ! empty( $this->uid ) ) {
+	public function deleteAccount( $wp_uid ) {
+		if ( ! empty( $wp_uid ) ) {
 			$params = array(
-					'uid' => $this->uid,
+					'uid' => $wp_uid,
 			);
 
 			$api = new GigyaApi( $this->uid );

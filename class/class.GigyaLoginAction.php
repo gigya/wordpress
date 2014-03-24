@@ -39,7 +39,7 @@ class GigyaLoginAction {
 		$this->gigya_user = $data['user'];
 
 		// Set a session with Gigya's ID.
-		$_SESSION['gigya_login_id'] = $this->gigya_user['UID'];
+		$_SESSION['gigya_uid'] = $this->gigya_user['UID'];
 
 		// Check to see if the Gigya user is a WP user.
 		if ( is_numeric( $this->gigya_user['UID'] ) && $data['isSiteUID'] === 'true' && is_object( $wp_user = get_userdata( $this->gigya_user['UID'] ) ) ) {
@@ -63,9 +63,7 @@ class GigyaLoginAction {
 	/**
 	 * Login existing WP user.
 	 *
-	 * @param $user_id
-	 *
-	 * @internal param $wp_user
+	 * @param $wp_user
 	 */
 	private function login( $wp_user ) {
 

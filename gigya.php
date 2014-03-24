@@ -101,45 +101,71 @@ function _gigya_wp_enqueue_scripts_action() {
 // --------------------------------------------------------------------
 
 /**
- * Hook login.
+ * Hook user login.
  */
 add_action( 'wp_login', '_gigya_wp_login_action', 10, 2 );
 function _gigya_wp_login_action( $user_login, $account ) {
 
 	// Check it logged in by Gigya.
-	if ( empty ( $_SESSION['gigya_login_id'] ) ) {
+	if ( empty ( $_SESSION['gigya_uid'] ) ) {
 
 		// Notify Gigya socialize.notifyLogin for a return user.
-		$gigyaUser = new GigyaUser( $_SESSION['gigya_login_id'] );
-		$gigyaUser->serviceNotify( $account->data->ID );
+		$gigyaUser = new GigyaUser( $_SESSION['gigya_uid'] );
+		$gigyaUser->notifyLogin( $account->data->ID );
 	}
 }
 
 // --------------------------------------------------------------------
 
 /**
- * Hook register.
+ * Hook user register.
  */
 add_action( 'user_register', '_gigya_user_register_action', 10, 1 );
 function _gigya_user_register_action( $uid ) {
 
 	// Check it register by Gigya.
-	if ( $_SESSION['gigya_login_id'] ) {
+	if ( $_SESSION['gigya_uid'] ) {
 
 		// Make a registration notification to Gigya.
-		$gigyaUser = new GigyaUser( $_SESSION['gigya_login_id'] );
+		$gigyaUser = new GigyaUser( $_SESSION['gigya_uid'] );
 		$gigyaUser->notifyRegistration( $uid );
 	}
 	else {
 
 		// Notify Gigya socialize.notifyLogin for a new user.
-		$gigyaUser = new GigyaUser( $_SESSION['gigya_login_id'] );
-		$gigyaUser->serviceNotify( $uid, TRUE );
+		$gigyaUser = new GigyaUser( $_SESSION['gigya_uid'] );
+		$gigyaUser->notifyLogin( $uid, TRUE );
 	}
 }
 
 // --------------------------------------------------------------------
 
+/**
+ * Hook user logout
+ */
+add_action('wp_logout', '_gigya_user_logout_action');
+function _gigya_user_logout_action() {
+	global $current_user;
+	$w = wp_get_current_user();
+	// Check it logged in by Gigya.
+	if ( empty ( $_SESSION['gigya_uid'] ) ) {
+		$gigyaUser = new GigyaUser( $_SESSION['gigya_uid'] );
+		$gigyaUser->logout();
+	}
+}
+
+// --------------------------------------------------------------------
+
+add_action( 'deleted_user', '_gigya_deleted_user_action' );
+function _gigya_deleted_user_action( $user_id ) {
+
+	// Check it logged in by Gigya.
+	if ( empty ( $_SESSION['gigya_uid'] ) ) {
+		$gigyaUser = new GigyaUser( $_SESSION['gigya_uid'] );
+		$gigyaUser->deleteAccount( $user_id );
+	}
+
+}
 
 /**
  * Renders a default template.
