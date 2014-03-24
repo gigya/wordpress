@@ -67,7 +67,7 @@ class GigyaUser {
 			);
 
 			$api = new GigyaApi( $this->uid );
-			return $api->call( 'logout', $params );
+			return $api->call( 'socialize.logout', $params );
 		}
 
 		return FALSE;
@@ -138,6 +138,9 @@ class GigyaUser {
 
 	/**
 	 * Sets the Gigya UID to match the Drupal UID.
+	 * This method is not part of our recommended social registration flow.
+	 * Please use the socialize.notifyRegistration method instead,
+	 * and pass the "siteUID" parameter
 	 *
 	 * @param $uid
 	 *   The drupal uid to set.
@@ -151,10 +154,10 @@ class GigyaUser {
 //					'uid'     => $this->uid,
 //					'siteUID' => $uid,
 //			);
-//
+//This method is not part of our recommended social registration flow. Please use the socialize.notifyRegistration method instead, and pass the "siteUID" parameter
 //			$api = new GigyaApi( $this->uid );
 //			return $api->call( 'setUID', $params );
-//		}
+//		}This method is not part of our recommended social registration flow. Please use the socialize.notifyRegistration method instead, and pass the "siteUID" parameter
 //
 //		return FALSE;
 //	}
@@ -221,7 +224,7 @@ class GigyaUser {
 			);
 
 			$api = new GigyaApi( $this->uid );
-			return $api->call( 'notifyRegistration', $params );
+			return $api->call( 'socialize.notifyRegistration', $params );
 		}
 
 		return FALSE;
@@ -237,7 +240,7 @@ class GigyaUser {
 			);
 
 			$api = new GigyaApi( $this->uid );
-			$api->call( 'deleteAccount', $params );
+			$api->call( 'socialize.deleteAccount', $params );
 
 			return TRUE;
 		}
