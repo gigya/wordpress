@@ -62,12 +62,12 @@ class GigyaSettings {
 	public function gigya_admin_menu() {
 
 		// Register the main Gigya setting route page.
-		add_menu_page( 'Gigya', 'Gigya', GIGYA__PERMISSION_LEVEL, 'gigya_global_settings', array($this, '_gigya_admin_page'), plugin_dir_url( __FILE__ ) . 'assets/images/favicon_28px.png', '70.1' );
+		add_menu_page( 'Gigya', 'Gigya', GIGYA__PERMISSION_LEVEL, 'gigya_global_settings', array( $this, '_gigya_admin_page' ), plugin_dir_url( __FILE__ ) . 'assets/images/favicon_28px.png', '70.1' );
 
 		// Register the sub-menus Gigya setting pages.
-		foreach ($this->getSections() as $section) {
+		foreach ( $this->getSections() as $section ) {
 			require_once( GIGYA__PLUGIN_DIR . 'admin/forms/' . $section['func'] . '.php' );
-			add_submenu_page( 'gigya_global_settings', __( $section['title'], $section['title'] ), __( $section['title'], $section['title'] ), GIGYA__PERMISSION_LEVEL, $section['slug'], array($this, '_gigya_admin_page') );
+			add_submenu_page( 'gigya_global_settings', __( $section['title'], $section['title'] ), __( $section['title'], $section['title'] ), GIGYA__PERMISSION_LEVEL, $section['slug'], array( $this, '_gigya_admin_page' ) );
 		}
 	}
 
@@ -82,7 +82,7 @@ class GigyaSettings {
 		wp_enqueue_script( 'gigya_admin_js', plugins_url( 'assets/scripts/gigya_admin.js', __FILE__ ) );
 
 		// Add settings sections.
-		foreach ($this->getSections() as $id => $section) {
+		foreach ( $this->getSections() as $id => $section ) {
 			add_settings_section( $id, $section['title'], $section['func'], $section['slug'] );
 			register_setting( $section['slug'] . '-group', $section['slug'] );
 		}
@@ -100,10 +100,10 @@ class GigyaSettings {
 
 		echo '<form class="gigya-settings" action="options.php" method="post">';
 
-		 	wp_nonce_field( 'update-options' );
-		 	settings_fields( $page . '-group' );
-		 	do_settings_sections( $page );
-		 	submit_button();
+		wp_nonce_field( 'update-options' );
+		settings_fields( $page . '-group' );
+		do_settings_sections( $page );
+		submit_button();
 
 		echo '</form>';
 

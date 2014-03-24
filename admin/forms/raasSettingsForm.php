@@ -4,7 +4,7 @@
  */
 function raasSettingsForm() {
 	$values = get_option( GIGYA__SETTINGS_RAAS );
-	$form = array();
+	$form   = array();
 
 	$form['raas_plugin'] = array(
 			'type'  => 'checkbox',
@@ -13,5 +13,5 @@ function raasSettingsForm() {
 			'value' => ! empty( $values['raas_plugin'] ) ? $values['raas_plugin'] : 0
 	);
 
-	GigyaSettings::_gigya_form_render($form);
+	GigyaSettings::_gigya_form_render( $form );
 }

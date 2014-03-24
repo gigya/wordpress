@@ -8,6 +8,7 @@
 
 	<div class="header">
 		<span class="icon32" id="icon-options-general"></span>
+
 		<h1>Gigya v:<?php echo GIGYA__VERSION; ?></h1>
 	</div>
 
@@ -22,8 +23,8 @@
 	</div>
 
 	<?php
-		$helpUrl = 'http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin';
-		printf(__('To learn more about gigya & how setup an account, please visit our developer documentation ' . '<a target="_blank"  href="%1$s">here</a>.'), $helpUrl);
+	$helpUrl = 'http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin';
+	printf( __( 'To learn more about gigya & how setup an account, please visit our developer documentation ' . '<a target="_blank"  href="%1$s">here</a>.' ), $helpUrl );
 	?>
 
 </div>

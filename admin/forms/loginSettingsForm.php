@@ -10,6 +10,7 @@ function loginSettingsForm() {
 			'type'  => 'checkbox',
 			'id'    => 'login_plugin',
 			'label' => __( 'Enable Gigya Social Login' ),
+			'desc'  => __( 'By activate Gigya\'s Social Login, you also activate "Membership: Anyone can register" option on Wordpress General Settings page' ),
 			'value' => ! empty( $values['login_plugin'] ) ? $values['login_plugin'] : 0
 	);
 
@@ -123,5 +124,5 @@ function loginSettingsForm() {
 			'class' => 'closed'
 	);
 
-	GigyaSettings::_gigya_form_render($form);
+	GigyaSettings::_gigya_form_render( $form );
 }

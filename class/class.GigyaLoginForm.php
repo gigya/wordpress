@@ -7,7 +7,8 @@
  */
 class GigyaLoginForm {
 
-	public function __construct() {}
+	public function __construct() {
+	}
 
 	/**
 	 * Initialize Gigya login block at Wp login/register.
@@ -30,9 +31,8 @@ class GigyaLoginForm {
 
 			// Parameters to be sent to the DOM.
 			$params = array(
-					'ajaxurl' => admin_url( 'admin-ajax.php' ),
-					'nonce'   => wp_create_nonce( 'gigya-login-ajax-nonce' ),
-					'action'  => 'gigya_login',
+					'ajaxurl'  => admin_url( 'admin-ajax.php' ),
+					'action'   => 'gigya_login',
 					'redirect' => ! empty ( $login_options['login_redirect'] ) ? $login_options['login_redirect'] : user_admin_url()
 			);
 

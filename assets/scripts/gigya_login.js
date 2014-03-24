@@ -1,4 +1,4 @@
-( function ( $ ) {
+(function ($) {
 	var GigyaWp = GigyaWp || {};
 
 // --------------------------------------------------------------------
@@ -17,36 +17,35 @@
 	GigyaWp.login = function (data) {
 
 		var options = {
-			url: gigyaLoginParams.ajaxurl,
+			url : gigyaLoginParams.ajaxurl,
 			type: 'POST',
 //			dataType: 'json',
-			data:  {
-				data: data,
-				nonce: gigyaLoginParams.nonce,
+			data: {
+				data  : data,
 				action: gigyaLoginParams.action
 			}
 		};
 
 		$.ajax(options)
-				.done(function(data) {
+				.done(function (data) {
 					if (data.success == true) {
 						location.replace(gigyaLoginParams.redirect);
 					}
 				})
-				.fail(function(jqXHR, textStatus, errorThrown) {
+				.fail(function (jqXHR, textStatus, errorThrown) {
 					console.log(errorThrown);
 				});
 	}
 
-	GigyaWp.loginCallback = function ( response ) {
-		if ( response.provider === 'site' ) {
+	GigyaWp.loginCallback = function (response) {
+		if (response.provider === 'site') {
 			return false;
 		}
 
-		if ( ( response.user.email.length === 0 ) && ( response.user.isSiteUID !== true ) ) {
-			var email = prompt( "Please fill-in missing details\nEmail:" );
+		if (( response.user.email.length === 0 ) && ( response.user.isSiteUID !== true )) {
+			var email = prompt("Please fill-in missing details\nEmail:");
 
-			if ( email == null ) {
+			if (email == null) {
 				// User clicked Cancel.
 				gigya.socialize.logout();
 			}
@@ -57,7 +56,7 @@
 			}
 		}
 
-		GigyaWp.login( response );
+		GigyaWp.login(response);
 	}
 
 	GigyaWp.logoutCallback = function (response) {

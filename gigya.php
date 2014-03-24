@@ -66,8 +66,10 @@ function _gigya_init_action() {
 
 /**
  * Hook login form.
+ * Hook register form.
  */
 add_action( 'login_form', '_gigya_login_form_action' );
+add_action( 'register_form', '_gigya_login_form_action' );
 function _gigya_login_form_action() {
 	require_once( GIGYA__PLUGIN_DIR . 'class/class.GigyaLoginForm.php' );
 	$gigyaLoginForm = new GigyaLoginForm;
@@ -102,8 +104,15 @@ function _gigya_wp_enqueue_scripts_action() {
  * Hook login.
  */
 add_action( 'wp_login', '_gigya_wp_login_action', 10, 2 );
-function _gigya_wp_login_action( $user_login, $user ) {
+function _gigya_wp_login_action( $user_login, $account ) {
 
+	// Check it logged in by Gigya.
+	if ( empty ( $_SESSION['gigya_login_id'] ) ) {
+
+		// Notify Gigya socialize.notifyLogin for a return user.
+		$gigyaUser = new GigyaUser( $_SESSION['gigya_login_id'] );
+		$gigyaUser->serviceNotify( $account->data->ID );
+	}
 }
 
 // --------------------------------------------------------------------
@@ -113,78 +122,24 @@ function _gigya_wp_login_action( $user_login, $user ) {
  */
 add_action( 'user_register', '_gigya_user_register_action', 10, 1 );
 function _gigya_user_register_action( $uid ) {
+
+	// Check it register by Gigya.
 	if ( $_SESSION['gigya_login_id'] ) {
+
+		// Make a registration notification to Gigya.
 		$gigyaUser = new GigyaUser( $_SESSION['gigya_login_id'] );
 		$gigyaUser->notifyRegistration( $uid );
-	} else {
-		$account   = get_userdata( $uid );
-		$info      = array(
-				'email'    => $account->data->user_email,
-				'nickname' => $account->data->user_nickname,
-		);
-		$user_info = json_encode( $info );
-		backNotify( $uid, TRUE, $user_info );
+	}
+	else {
+
+		// Notify Gigya socialize.notifyLogin for a new user.
+		$gigyaUser = new GigyaUser( $_SESSION['gigya_login_id'] );
+		$gigyaUser->serviceNotify( $uid, TRUE );
 	}
 }
 
 // --------------------------------------------------------------------
 
-/**
- * Logs user in to Gigya's service and optionally registers them.
- *
- * @param string  $uid
- *   The drupal User ID.
- * @param boolean $is_new_user
- *   Tell Gigya if we add a new user.
- * @param mixed   $user_info_json
- *   Extra info for the user.
- *
- * @see gigya_user_login()
- *
- * @return bool|null|string True if the notify login request succeeded or the error message from Gigya
- */
-function backNotify( $uid, $is_new_user = FALSE, $user_info_json = NULL ) {
-
-	// API params
-	$apikey    = $this->global_options['global_api_key'];
-	$secretkey = $this->global_options['global_secret_key'];
-
-	// Gigya Service Request instance.
-	$request = new GSRequest( $apikey, $secretkey, 'socialize.notifyLogin' );
-
-	// Add user id.
-	$request->setParam( "siteUID", $uid );
-
-	// Set a new user flag if true.
-	if ( ! empty( $is_new_user ) ) {
-		$request->setParam( 'newUser', TRUE );
-	}
-
-	// Add user info if available.
-	if ( ! empty( $user_info_json ) ) {
-		$request->setParam( 'userInfo', $user_info_json );
-	}
-
-	// Send request.
-	$response = $request->send();
-
-	// If there an error, return error message.
-	if ( $response->getErrorCode() !== 0 ) {
-		return $response->getErrorMessage();
-	}
-
-	//Set  Gigya cookie.
-	try {
-		setcookie( $response->getString( "cookieName" ), $response->getString( "cookieValue" ), 0, $response->getString( "cookiePath" ), $response->getString( "cookieDomain" ) );
-	} catch ( Exception $e ) {
-		error_log( sprintf( 'error seting gigya cookie' ) );
-		error_log( sprintf( 'error message : @error', array( '@error' => $e->getMessage() ) ) );
-	}
-
-	return TRUE;
-}
-
-// --------------------------------------------------------------------
 
 /**
  * Renders a default template.

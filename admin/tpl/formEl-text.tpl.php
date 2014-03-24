@@ -5,9 +5,9 @@
  */
 ?>
 <div class="row text-field <?php echo $class ?>">
-		<label for="gigya_<?php echo $id; ?>"><?php echo $label; ?></label>
-		<input type="text" size="80" class="input-xlarge" value="<?php echo $value; ?>" id="gigya_<?php echo $id; ?>" name="<?php echo $section ?>[<?php echo $id; ?>]"/>
-		<?php if (!empty($desc)): ?>
-			<small><?php echo $desc; ?></small>
-		<?php endif; ?>
+	<label for="gigya_<?php echo $id; ?>"><?php echo $label; ?></label>
+	<input type="text" size="80" class="input-xlarge" value="<?php echo $value; ?>" id="gigya_<?php echo $id; ?>" name="<?php echo $section ?>[<?php echo $id; ?>]" />
+	<?php if ( ! empty( $desc ) ): ?>
+		<small><?php echo $desc; ?></small>
+	<?php endif; ?>
 </div>

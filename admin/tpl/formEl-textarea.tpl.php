@@ -8,10 +8,10 @@
 	<label for="gigya_<?php echo $id; ?>">
 		<?php echo $label; ?>
 	</label>
-	<textarea rows="5" cols="20" class="large-text" id="gigya_<?php echo $id; ?>"	name="<?php echo $section ?>[<?php echo $id; ?>]">
+	<textarea rows="5" cols="20" class="large-text" id="gigya_<?php echo $id; ?>" name="<?php echo $section ?>[<?php echo $id; ?>]">
 		<?php echo $value; ?>
 	</textarea>
-	<?php if ($desc): ?>
+	<?php if ( $desc ): ?>
 		<small><?php echo $desc; ?></small>
 	<?php endif; ?>
 </div>
