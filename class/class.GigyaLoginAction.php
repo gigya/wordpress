@@ -84,19 +84,20 @@ class GigyaLoginAction {
 
 		if ( $this->login_options['login_show_reg'] ) {
 
+			// Set submit button value.
+			$submit_value = sprintf(__( 'Register %s' ), !empty($this->gigya_user['loginProvider']) ? ' ' . __('with') . ' ' . $this->gigya_user['loginProvider'] : '');
 			$output = '';
 
-			$output .= '<form name="registerform1" class="gigya-register-form1" id="registerform1" action="' . wp_registration_url() . '" method="post">';
+			$output .= '<form name="registerform" class="gigya-register-extra" id="registerform" action="' . wp_registration_url() . '" method="post">';
+			$output .= '<h4 class="title">' . __('Please fill required field') . '</h4>';
 
 			$form = array();
-
 			$form['user_login'] = array(
 					'type'  => 'text',
 					'id'    => 'user_login',
 					'label' => __( 'Username' ),
 					'value' => ! empty( $this->gigya_user['nickname'] ) ? $this->gigya_user['nickname'] : '',
 			);
-
 			$form['user_email'] = array(
 					'type'  => 'text',
 					'id'    => 'user_email',
@@ -105,10 +106,8 @@ class GigyaLoginAction {
 			);
 
 			$output .= GigyaSettings::_gigya_form_render( $form );
-
 			$output .= do_action( 'register_form' );
-
-			$output .= '<input type="submit" name="wp-submit1" id="gigya-ajax-submit1" class="button button-primary button-large" value="' . __( 'Register' ) . '">';
+			$output .= '<input type="submit" name="wp-submit" id="gigya-submit" class="button button-primary button-large" value="' . $submit_value . '">';
 			$output .= '</form>';
 
 			do_shortcode( $output );

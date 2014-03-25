@@ -6,7 +6,7 @@
 // --------------------------------------------------------------------
 
 		// Add an HTML element to attach the Gigya Login UI to.
-		$('#registerform, #loginform').after('<div id="gigya-login"></div>');
+		$('#registerform, #loginform').append('<div id="gigya-login"></div>');
 
 // --------------------------------------------------------------------
 
