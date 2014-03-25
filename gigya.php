@@ -145,11 +145,14 @@ function _gigya_user_register_action( $uid ) {
  */
 add_action('wp_logout', '_gigya_user_logout_action');
 function _gigya_user_logout_action() {
-	global $current_user;
-	$w = wp_get_current_user();
-	// Check it logged in by Gigya.
-	if ( empty ( $_SESSION['gigya_uid'] ) ) {
-		$gigyaUser = new GigyaUser( $_SESSION['gigya_uid'] );
+
+	// Get the current user.
+	$account = wp_get_current_user();
+
+	if ( ! empty ( $account->ID ) ) {
+		// We using Gigya's account-linking (best practice).
+		// So the siteUID is the same as Gigya's UID.
+		$gigyaUser = new GigyaUser( $account->ID );
 		$gigyaUser->logout();
 	}
 }

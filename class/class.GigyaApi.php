@@ -132,6 +132,7 @@ class GigyaApi {
 		$global_options = get_option( GIGYA__SETTINGS_GLOBAL );
 
 		if ( is_array( $response ) ) {
+			// Response came from GigyaJS (client to server).
 			$valid = SigUtils::validateUserSignature(
 					$response['UID'],
 					$response['timestamp'],
@@ -140,6 +141,7 @@ class GigyaApi {
 
 			);
 		} else {
+			// Response came from REST (server to server)
 			$valid = SigUtils::validateUserSignature(
 					$response->getString( "UID", "" ),
 					$response->getString( "signatureTimestamp", "" ),
