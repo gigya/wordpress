@@ -127,7 +127,7 @@ function _gigya_wp_login_action( $user_login, $account ) {
 add_action( 'user_register', '_gigya_user_register_action', 10, 1 );
 function _gigya_user_register_action( $uid ) {
 
-	if ( isset( $_POST['gigyaUID'] ) ) {
+	if ( ! empty( $_POST['gigyaUID'] ) ) {
 
 		// Come from register extra form.
 		// Make a login.
@@ -138,11 +138,12 @@ function _gigya_user_register_action( $uid ) {
 
 	}
 
-	if ( ! empty( $_POST['gigyaUID'] ) || ! empty ( $_SESSION['gigya_uid'] ) ) {
+	if ( ! empty ( $_SESSION['gigya_uid'] ) || ! empty( $_POST['gigyaUID'] ) ) {
 
 		// New user on site came from Gigya.
 		// Make a notifyRegistration (link accounts) to Gigya.
-		$gigyaUser = new GigyaUser( $_SESSION['gigya_uid'] );
+		$gid       = ! empty( $_SESSION['gigya_uid'] ) ? $_SESSION['gigya_uid'] : $_POST['gigyaUID'];
+		$gigyaUser = new GigyaUser( $gid );
 		$gigyaUser->notifyRegistration( $uid );
 
 	} else {

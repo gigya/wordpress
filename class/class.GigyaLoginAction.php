@@ -96,8 +96,6 @@ class GigyaLoginAction {
 		$wp_user = get_userdata( $user_id );
 		$this->login( $wp_user );
 
-		// Do others register Implementations.
-//		do_action( 'user_register', $user_id );
 	}
 
 	/**
@@ -134,9 +132,6 @@ class GigyaLoginAction {
 		// Get other plugins register form implementation.
 		$output .= do_action( 'register_form' );
 		$output .= '<input type="hidden" name="gigyaUID" value="' . $this->gigya_user['UID'] . '">';
-
-		// Add Gigya's data to the form
-//		$output .= '<script id="data-user" type="application/json">' . json_encode( $this->gigya_user['UID'] ) . '</script>';
 
 		// Add submit buttom.
 		$output .= '<input type="submit" name="wp-submit" id="gigya-submit" class="button button-primary button-large" value="' . $submit_value . '">';

@@ -34,16 +34,12 @@
 			};
 
 			$.ajax(options)
-					.done(function (data) {
-						if (data.success == true) {
-							if (data.data.type == 'register_form') {
+					.done(function (res) {
+						if (res.success == true) {
+							if (typeof res.data != 'undefined' && res.data.type == 'register_form') {
 								// The user didn't register, and need more field to fill.
 								$('body').append('<div id="dialog-modal"></div>');
-								$('#dialog-modal').html(data.data.html);
-
-//								var gigyaUser = JSON.parse($('#data-user').text());
-//								$('#dialog-modal').find('input[name=gigyaUser]').val(JSON.stringify(gigyaUser));
-
+								$('#dialog-modal').html(res.data.html);
 								$('#dialog-modal').dialog({ modal: true });
 							}
 							else {
