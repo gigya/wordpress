@@ -131,12 +131,23 @@ class GigyaApi {
 	public static function sigValidate( $response ) {
 		$global_options = get_option( GIGYA__SETTINGS_GLOBAL );
 
-		$valid = SigUtils::validateUserSignature(
-				$response['UID'],
-				$response['timestamp'],
-				$global_options['global_secret_key'],
-				$response['signature']
-		);
+		if ( is_array( $response ) ) {
+			$valid = SigUtils::validateUserSignature(
+					$response['UID'],
+					$response['timestamp'],
+					$global_options['global_secret_key'],
+					$response['signature']
+
+			);
+		} else {
+			$valid = SigUtils::validateUserSignature(
+					$response->getString( "UID", "" ),
+					$response->getString( "signatureTimestamp", "" ),
+					$global_options['global_secret_key'],
+					$response->getString( "UIDSignature", "" )
+			);
+		}
+
 
 		return $valid;
 	}

@@ -196,14 +196,9 @@ class GigyaUser {
 		$api      = new GigyaApi( $this->uid );
 		$response = $api->call( 'socialize.notifyLogin', $params );
 
-		// If there an error, return error message.
-		if ( $response->getErrorCode() !== 0 ) {
-			return $response->getErrorMessage();
-		}
-
 		//Set  Gigya cookie.
 		try {
-			setcookie( $response->getString( "cookieName" ), $response->getString( "cookieValue" ), 0, $response->getString( "cookiePath" ), $response->getString( "cookieDomain" ) );
+			setcookie( $response["cookieName"], $response["cookieValue"], 0, $response["cookiePath"], $response["cookieDomain"] );
 		} catch ( Exception $e ) {
 			error_log( sprintf( 'error seting gigya cookie' ) );
 			error_log( sprintf( 'error message : @error', array( '@error' => $e->getMessage() ) ) );
