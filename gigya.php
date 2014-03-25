@@ -71,7 +71,7 @@ function _gigya_init_action() {
 add_action( 'login_form', '_gigya_login_form_action' );
 add_action( 'register_form', '_gigya_login_form_action' );
 function _gigya_login_form_action() {
-	wp_enqueue_script('jquery-ui-core');
+	wp_enqueue_script( 'jquery-ui-core' );
 	wp_enqueue_script( 'jquery-ui-dialog' );
 
 	require_once( GIGYA__PLUGIN_DIR . 'class/class.GigyaLoginForm.php' );
@@ -109,12 +109,13 @@ function _gigya_wp_enqueue_scripts_action() {
 add_action( 'wp_login', '_gigya_wp_login_action', 10, 2 );
 function _gigya_wp_login_action( $user_login, $account ) {
 
-	// Check it logged in by Gigya.
-	if ( empty ( $_SESSION['gigya_uid'] ) ) {
+	if ( empty ( $_SESSION['gigya_uid'] ) && empty( $_POST['gigyaUID'] ) ) {
 
-		// Notify Gigya socialize.notifyLogin for a return user.
-		$gigyaUser = new GigyaUser( $_SESSION['gigya_uid'] );
-		$gigyaUser->notifyLogin( $account->data->ID );
+		// Notify Gigya socialize.notifyLogin
+		// for a return user logged in from SITE.
+		$gigyaUser = new GigyaUser( $account->ID );
+		$gigyaUser->notifyLogin( $account->ID );
+
 	}
 }
 
@@ -126,18 +127,31 @@ function _gigya_wp_login_action( $user_login, $account ) {
 add_action( 'user_register', '_gigya_user_register_action', 10, 1 );
 function _gigya_user_register_action( $uid ) {
 
-	// Check it register by Gigya.
-	if ( $_SESSION['gigya_uid'] ) {
+	if ( isset( $_POST['gigyaUID'] ) ) {
 
-		// Make a registration notification to Gigya.
+		// Come from register extra form.
+		// Make a login.
+		// @todo: add  possibility to verify email.
+		$wp_user = get_userdata( $uid );
+		require_once( GIGYA__PLUGIN_DIR . 'class/class.GigyaLoginAction.php' );
+		GigyaLoginAction::login( $wp_user );
+
+	}
+
+	if ( ! empty( $_POST['gigyaUID'] ) || ! empty ( $_SESSION['gigya_uid'] ) ) {
+
+		// New user on site came from Gigya.
+		// Make a notifyRegistration (link accounts) to Gigya.
 		$gigyaUser = new GigyaUser( $_SESSION['gigya_uid'] );
 		$gigyaUser->notifyRegistration( $uid );
-	}
-	else {
 
-		// Notify Gigya socialize.notifyLogin for a new user.
+	} else {
+
+		// New user on site came from SITE.
+		// Notify Gigya socialize.notifyLogin with a new user flag.
 		$gigyaUser = new GigyaUser( $_SESSION['gigya_uid'] );
 		$gigyaUser->notifyLogin( $uid, TRUE );
+
 	}
 }
 
@@ -146,17 +160,19 @@ function _gigya_user_register_action( $uid ) {
 /**
  * Hook user logout
  */
-add_action('wp_logout', '_gigya_user_logout_action');
+add_action( 'wp_logout', '_gigya_user_logout_action' );
 function _gigya_user_logout_action() {
 
 	// Get the current user.
 	$account = wp_get_current_user();
 
 	if ( ! empty ( $account->ID ) ) {
+
 		// We using Gigya's account-linking (best practice).
 		// So the siteUID is the same as Gigya's UID.
 		$gigyaUser = new GigyaUser( $account->ID );
 		$gigyaUser->logout();
+
 	}
 }
 
@@ -172,14 +188,30 @@ function _gigya_deleted_user_action( $user_id ) {
 	}
 }
 
+add_filter( 'get_avatar', '_gigya_get_avatar_filter', 10, 5 );
+function _gigya_get_avatar_filter( $avatar, $id_or_email, $size, $default, $alt ) {
+
+	if ( is_object( $id_or_email ) )
+		$id_or_email = $id_or_email->user_id;
+
+	if ( is_numeric( $id_or_email ) ) {
+		$thumb = get_user_meta( $id_or_email, "avatar", 1 );
+		if ( ! empty( $thumb ) ) {
+			$avatar = preg_replace( "/src='*?'/", "src='$thumb'", $avatar );
+		}
+	}
+
+	return $avatar;
+}
+
 // --------------------------------------------------------------------
 
-add_shortcode('gigya_user_info', '_gigya_user_info_shortcode');
-function _gigya_user_info_shortcode($attrs, $info = NULL) {
-	if (NULL == $info) {
+add_shortcode( 'gigya_user_info', '_gigya_user_info_shortcode' );
+function _gigya_user_info_shortcode( $attrs, $info = NULL ) {
+	if ( NULL == $info ) {
 		$user_info = GigyaSO_Util::get_user_info();
 	}
-	return $user_info->getString(key($attrs), current($attrs));
+	return $user_info->getString( key( $attrs ), current( $attrs ) );
 }
 
 // --------------------------------------------------------------------

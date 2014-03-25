@@ -18,7 +18,7 @@ class GigyaLoginAction {
 	 */
 	public function init() {
 
-		// Get the data from the client.
+		// Get the data from the client (AJAX).
 		$data = $_POST['data'];
 
 		// Trap for login users
@@ -66,7 +66,7 @@ class GigyaLoginAction {
 	 *
 	 * @param $wp_user
 	 */
-	private function login( $wp_user ) {
+	public static function login( $wp_user ) {
 
 		// Login procedure.
 		wp_clear_auth_cookie();
@@ -82,45 +82,11 @@ class GigyaLoginAction {
 	 */
 	private function register() {
 
-		if ( $this->login_options['login_show_reg'] ) {
-
-			// Set submit button value.
-			$submit_value = sprintf(__( 'Register %s' ), !empty($this->gigya_user['loginProvider']) ? ' ' . __('with') . ' ' . $this->gigya_user['loginProvider'] : '');
-			$output = '';
-
-			$output .= '<form name="registerform" class="gigya-register-extra" id="registerform" action="' . wp_registration_url() . '" method="post">';
-			$output .= '<h4 class="title">' . __('Please fill required field') . '</h4>';
-
-			$form = array();
-			$form['user_login'] = array(
-					'type'  => 'text',
-					'id'    => 'user_login',
-					'label' => __( 'Username' ),
-					'value' => ! empty( $this->gigya_user['nickname'] ) ? $this->gigya_user['nickname'] : '',
-			);
-			$form['user_email'] = array(
-					'type'  => 'text',
-					'id'    => 'user_email',
-					'label' => __( 'E-mail' ),
-					'value' => ! empty( $this->gigya_user['email'] ) ? $this->gigya_user['email'] : '',
-			);
-
-			$output .= GigyaSettings::_gigya_form_render( $form );
-			$output .= do_action( 'register_form' );
-			$output .= '<input type="submit" name="wp-submit" id="gigya-submit" class="button button-primary button-large" value="' . $submit_value . '">';
-			$output .= '</form>';
-
-			do_shortcode( $output );
-
-			$ret = array(
-					'type' => 'register_form',
-					'html' => $output,
-			);
-
-			wp_send_json_success($ret);
-
+		// When there missing email or the admin check to
+		// show the entire registration form to the user.
+		if ( $this->gigya_user['email'] || $this->login_options['login_show_reg'] ) {
+			$this->registerExtra();
 		}
-
 
 		// Register a new user to WP with params from Gigya.
 		$name    = $this->gigya_user['firstName'] . ' ' . $this->gigya_user['lastName'];
@@ -134,6 +100,62 @@ class GigyaLoginAction {
 //		do_action( 'user_register', $user_id );
 	}
 
+	/**
+	 * Deal with missing fields on registration.
+	 */
+	private function registerExtra() {
+
+		// Set submit button value.
+		$submit_value = sprintf( __( 'Register %s' ), ! empty( $this->gigya_user['loginProvider'] ) ? ' ' . __( 'with' ) . ' ' . $this->gigya_user['loginProvider'] : '' );
+		$output       = '';
+
+		// Set form.
+		$output .= '<form name="registerform" class="gigya-register-extra" id="registerform" action="' . wp_registration_url() . '" method="post">';
+		$output .= '<h4 class="title">' . __( 'Please fill required field' ) . '</h4>';
+
+		// Set form elements.
+		$form               = array();
+		$form['user_login'] = array(
+				'type'  => 'text',
+				'id'    => 'user_login',
+				'label' => __( 'Username' ),
+				'value' => ! empty( $this->gigya_user['nickname'] ) ? $this->gigya_user['nickname'] : '',
+		);
+		$form['user_email'] = array(
+				'type'  => 'text',
+				'id'    => 'user_email',
+				'label' => __( 'E-mail' ),
+				'value' => ! empty( $this->gigya_user['email'] ) ? $this->gigya_user['email'] : '',
+		);
+
+		// Render form elements.
+		$output .= GigyaSettings::_gigya_form_render( $form );
+
+		// Get other plugins register form implementation.
+		$output .= do_action( 'register_form' );
+		$output .= '<input type="hidden" name="gigyaUID" value="' . $this->gigya_user['UID'] . '">';
+
+		// Add Gigya's data to the form
+//		$output .= '<script id="data-user" type="application/json">' . json_encode( $this->gigya_user['UID'] ) . '</script>';
+
+		// Add submit buttom.
+		$output .= '<input type="submit" name="wp-submit" id="gigya-submit" class="button button-primary button-large" value="' . $submit_value . '">';
+		$output .= '</form>';
+
+		// Tokens replace.
+		do_shortcode( $output );
+
+		// Set a return array.
+		$ret = array(
+				'type' => 'register_form',
+				'html' => $output,
+		);
+
+		// Return JSON to client.
+		wp_send_json_success( $ret );
+
+		exit;
+	}
 
 	/**
 	 * Logout Gigya user.

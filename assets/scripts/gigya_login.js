@@ -1,7 +1,7 @@
 (function ($) {
 	var GigyaWp = GigyaWp || {};
 
-	$( document ).ready(function() {
+	$(document).ready(function () {
 
 // --------------------------------------------------------------------
 
@@ -40,7 +40,11 @@
 								// The user didn't register, and need more field to fill.
 								$('body').append('<div id="dialog-modal"></div>');
 								$('#dialog-modal').html(data.data.html);
-								$( "#dialog-modal" ).dialog({ modal: true });
+
+//								var gigyaUser = JSON.parse($('#data-user').text());
+//								$('#dialog-modal').find('input[name=gigyaUser]').val(JSON.stringify(gigyaUser));
+
+								$('#dialog-modal').dialog({ modal: true });
 							}
 							else {
 								location.replace(gigyaLoginParams.redirect);
@@ -57,30 +61,30 @@
 				return false;
 			}
 
-			if (( response.user.email.length === 0 ) && ( response.user.isSiteUID !== true )) {
-				var email = prompt("Please fill-in missing details\nEmail:");
-
-				if (email == null) {
-					// User clicked Cancel.
-					gigya.socialize.logout();
-				}
-				else {
-					// User clicked OK.
-					// TODO add validation: empty string, email chars ...
-					response.user.email = email;
-				}
-			}
+//			if (( response.user.email.length === 0 ) && ( response.user.isSiteUID !== true )) {
+//				var email = prompt("Please fill-in missing details\nEmail:");
+//
+//				if (email == null) {
+//					// User clicked Cancel.
+//					gigya.socialize.logout();
+//				}
+//				else {
+//					// User clicked OK.
+//					// TODO add validation: empty string, email chars ...
+//					response.user.email = email;
+//				}
+//			}
 
 			GigyaWp.login(response);
 		}
 
-		GigyaWp.logoutCallback = function (response) {
-			alert(response.eventName + " event happened");
-		}
+//		GigyaWp.logoutCallback = function (response) {
+//			alert(response.eventName + " event happened");
+//		}
 
 		gigya.socialize.addEventHandlers({
-			onLogin : GigyaWp.loginCallback,
-			onLogout: GigyaWp.logoutCallback
+			onLogin: GigyaWp.loginCallback
+//			onLogout: GigyaWp.logoutCallback
 		});
 	});
 
