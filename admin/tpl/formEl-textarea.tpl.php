@@ -8,7 +8,7 @@
 	<label for="gigya_<?php echo $id; ?>">
 		<?php echo $label; ?>
 	</label>
-	<textarea rows="5" cols="20" class="large-text" id="gigya_<?php echo $id; ?>" name="<?php echo $section ?>[<?php echo $id; ?>]">
+	<textarea rows="5" cols="20" class="large-text" id="gigya_<?php echo $id; ?>" name="<?php echo $name ?>">
 		<?php echo $value; ?>
 	</textarea>
 	<?php if ( $desc ): ?>

@@ -95,7 +95,7 @@ class GigyaSettings {
 		$page   = $_GET['page'];
 		$render = '';
 
-		_gigya_render_tpl( 'admin/tpl/adminPage-wrapper.tpl.php', array( 'page' => $page ) );
+		echo _gigya_render_tpl( 'admin/tpl/adminPage-wrapper.tpl.php', array( 'page' => $page ) );
 		settings_errors();
 
 		echo '<form class="gigya-settings" action="options.php" method="post">';
@@ -113,17 +113,29 @@ class GigyaSettings {
 	/**
 	 * Render a form.
 	 *
-	 * @param $form
+	 * @param        $form
+	 *
+	 * @param string $name_prefix
 	 *
 	 * @return string
 	 */
-	public static function _gigya_form_render( $form ) {
+	public static function _gigya_form_render( $form, $name_prefix = '' ) {
 		$render = '';
 
-		foreach ( $form as $el ) {
-			// Add a section param. to be added to the element attribute NAME.
-			// Tells to WP under which option to save this field.
-			$el['section'] = $_GET['page'];
+		foreach ( $form as $id => $el ) {
+
+			if ( ! empty( $name_prefix ) ) {
+				// In cases like on admin multipage the element
+				// name is build from the section and the ID.
+				// This tells WP under which option to save this field value.
+				$el['name'] = $name_prefix . '[' . $id . ']';
+			} else {
+				// Usually the element name is just the ID.
+				$el['name'] = $id;
+			}
+
+			// Add the ID value to the array.
+			$el['id'] = $id;
 
 			// Render each element.
 			$render .= _gigya_render_tpl( 'admin/tpl/formEl-' . $el['type'] . '.tpl.php', $el );

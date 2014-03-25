@@ -10,6 +10,7 @@ class GigyaLoginAction {
 	public function __construct() {
 		// Get settings variables.
 		$this->global_options = get_option( GIGYA__SETTINGS_GLOBAL );
+		$this->login_options  = get_option( GIGYA__SETTINGS_LOGIN );
 	}
 
 	/**
@@ -80,6 +81,47 @@ class GigyaLoginAction {
 	 * Register new WP user from Gigya user.
 	 */
 	private function register() {
+
+		if ( $this->login_options['login_show_reg'] ) {
+
+			$output = '';
+
+			$output .= '<form name="registerform1" class="gigya-register-form1" id="registerform1" action="' . wp_registration_url() . '" method="post">';
+
+			$form = array();
+
+			$form['user_login'] = array(
+					'type'  => 'text',
+					'id'    => 'user_login',
+					'label' => __( 'Username' ),
+					'value' => ! empty( $this->gigya_user['nickname'] ) ? $this->gigya_user['nickname'] : '',
+			);
+
+			$form['user_email'] = array(
+					'type'  => 'text',
+					'id'    => 'user_email',
+					'label' => __( 'E-mail' ),
+					'value' => ! empty( $this->gigya_user['email'] ) ? $this->gigya_user['email'] : '',
+			);
+
+			$output .= GigyaSettings::_gigya_form_render( $form );
+
+			$output .= do_action( 'register_form' );
+
+			$output .= '<input type="submit" name="wp-submit1" id="gigya-ajax-submit1" class="button button-primary button-large" value="' . __( 'Register' ) . '">';
+			$output .= '</form>';
+
+			do_shortcode( $output );
+
+			$ret = array(
+					'type' => 'register_form',
+					'html' => $output,
+			);
+
+			wp_send_json_success($ret);
+
+		}
+
 
 		// Register a new user to WP with params from Gigya.
 		$name    = $this->gigya_user['firstName'] . ' ' . $this->gigya_user['lastName'];

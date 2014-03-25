@@ -71,6 +71,9 @@ function _gigya_init_action() {
 add_action( 'login_form', '_gigya_login_form_action' );
 add_action( 'register_form', '_gigya_login_form_action' );
 function _gigya_login_form_action() {
+	wp_enqueue_script('jquery-ui-core');
+	wp_enqueue_script( 'jquery-ui-dialog' );
+
 	require_once( GIGYA__PLUGIN_DIR . 'class/class.GigyaLoginForm.php' );
 	$gigyaLoginForm = new GigyaLoginForm;
 	$gigyaLoginForm->init();
@@ -167,8 +170,19 @@ function _gigya_deleted_user_action( $user_id ) {
 		$gigyaUser = new GigyaUser( $_SESSION['gigya_uid'] );
 		$gigyaUser->deleteAccount( $user_id );
 	}
-
 }
+
+// --------------------------------------------------------------------
+
+add_shortcode('gigya_user_info', '_gigya_user_info_shortcode');
+function _gigya_user_info_shortcode($attrs, $info = NULL) {
+	if (NULL == $info) {
+		$user_info = GigyaSO_Util::get_user_info();
+	}
+	return $user_info->getString(key($attrs), current($attrs));
+}
+
+// --------------------------------------------------------------------
 
 /**
  * Renders a default template.
@@ -191,8 +205,7 @@ function _gigya_render_tpl( $template_file, $variables ) {
 	include GIGYA__PLUGIN_DIR . '/' . $template_file;
 
 	// End buffering and return its contents
-	$output = ob_get_clean();
-	echo $output;
+	return ob_get_clean();
 }
 
 // --------------------------------------------------------------------

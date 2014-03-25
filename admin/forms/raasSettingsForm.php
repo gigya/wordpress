@@ -8,10 +8,9 @@ function raasSettingsForm() {
 
 	$form['raas_plugin'] = array(
 			'type'  => 'checkbox',
-			'id'    => 'raas_plugin',
 			'label' => __( 'Enable Gigya RAAS' ),
 			'value' => ! empty( $values['raas_plugin'] ) ? $values['raas_plugin'] : 0
 	);
 
-	GigyaSettings::_gigya_form_render( $form );
+	echo GigyaSettings::_gigya_form_render( $form, GIGYA__SETTINGS_RAAS );
 }

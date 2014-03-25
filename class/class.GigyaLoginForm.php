@@ -23,7 +23,7 @@ class GigyaLoginForm {
 		if ( ! empty( $login_options['login_plugin'] ) && ! empty( $global_options['global_api_key'] ) ) {
 
 			// Add an HTML element to attach the Gigya Login UI to.
-			echo '<div id="gigya-login"></div>';
+//			echo '<div id="gigya-login"></div>';
 
 			// Load custom Gigya login script.
 			wp_enqueue_script( 'gigya_login_js', GIGYA__PLUGIN_URL . 'assets/scripts/gigya_login.js' );

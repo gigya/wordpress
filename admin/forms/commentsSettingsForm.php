@@ -8,21 +8,18 @@ function commentsSettingsForm() {
 
 	$form['comments_plugin'] = array(
 			'type'  => 'checkbox',
-			'id'    => 'comments_plugin',
 			'label' => __( 'Enable Gigya Comments' ),
 			'value' => ! empty( $values['comments_plugin'] ) ? $values['comments_plugin'] : 0
 	);
 
 	$form['comments_cat_id'] = array(
 			'type'  => 'text',
-			'id'    => 'comments_cat_id',
 			'label' => __( 'Category ID' ),
 			'value' => ! empty( $values['comments_cat_id'] ) ? $values['comments_cat_id'] : ''
 	);
 
 	$form['comments_enable_share_providers'] = array(
 			'type'  => 'text',
-			'id'    => 'comments_enable_share_providers',
 			'label' => __( 'Enable Share Providers' ),
 			'value' => ! empty( $values['comments_enable_share_providers'] ) ? $values['comments_enable_share_providers'] : ''
 	);
@@ -34,7 +31,6 @@ function commentsSettingsForm() {
 
 	$form['comments_enable_share_activity'] = array(
 			'type'    => 'select',
-			'id'      => 'comments_enable_share_activity',
 			'options' => $comments_share_opts,
 			'value'   => ! empty( $values['comments_enable_share_activity'] ) ? $values['comments_enable_share_activity'] : $comments_share_opts['external'],
 			'label'   => __( 'Enable Sharing to Activity Feed' ),
@@ -43,7 +39,6 @@ function commentsSettingsForm() {
 
 	$form['comments_custom_code'] = array(
 			'type'  => 'textarea',
-			'id'    => 'comments_custom_code',
 			'label' => __( "Additional Parameters (advanced)" ),
 			'value' => ! empty( $values['comments_custom_code'] ) ? $values['comments_custom_code'] : '',
 			'desc'  => __( 'Enter values in' ) . '<strong>key1=value1|key2=value2...keyX=valueX</strong>' . __( 'format' ) . '<br>' . __( 'See list of available:' ) . '<a href="http://developers.gigya.com/020_Client_API/030_Comments/comments.showCommentsUI" target="_blank">parameters</a>'
@@ -57,11 +52,10 @@ function commentsSettingsForm() {
 
 	$form['comments_privacy'] = array(
 			'type'    => 'select',
-			'id'      => 'comments_privacy',
 			'options' => $privacy_opts,
 			'value'   => ! empty( $values['comments_privacy'] ) ? $values['comments_privacy'] : $privacy_opts['private'],
 			'label'   => __( 'Privacy' ),
 	);
 
-	GigyaSettings::_gigya_form_render( $form );
+	echo GigyaSettings::_gigya_form_render( $form, GIGYA__SETTINGS_COMMENTS );
 }
