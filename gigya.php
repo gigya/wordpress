@@ -29,10 +29,8 @@ define( 'GIGYA__SETTINGS_SHARE', 'gigya_share_settings' );
 define( 'GIGYA__SETTINGS_COMMENTS', 'gigya_comments_settings' );
 define( 'GIGYA__SETTINGS_REACTIONS', 'gigya_reactions_settings' );
 define( 'GIGYA__SETTINGS_GM', 'gigya_gm_settings' );
-define( 'GIGYA__SETTINGS_RAAS', 'gigya_raas_settings' );
 
 // --------------------------------------------------------------------
-
 
 /**
  * Hook init.
@@ -50,7 +48,7 @@ function _gigya_init_action() {
 	$login_options  = get_option( GIGYA__SETTINGS_LOGIN );
 	$global_options = get_option( GIGYA__SETTINGS_GLOBAL );
 
-	if ( ! empty( $login_options['login_plugin'] ) && ! empty( $global_options['global_api_key'] ) ) {
+	if ( ($login_options['login_mode'] == 'wp_sl' || $login_options['login_mode'] == 'sl_only') && ! empty( $global_options['global_api_key'] ) ) {
 		// Load Gigya's socialize.js.
 		wp_enqueue_script( 'gigya', 'http://cdn.gigya.com/JS/socialize.js?apiKey=' . $global_options['global_api_key'], 'jquery' );
 	}
@@ -72,11 +70,11 @@ function _gigya_init_action() {
 add_action( 'admin_action_update', '_gigya_settings_submit_action' );
 function _gigya_settings_submit_action() {
 
-	if (isset($_POST['gigya_login_settings'])) {
+	if ( isset( $_POST['gigya_login_settings'] ) ) {
 
 		// When we turn on the Gigya's social login plugin,
 		// We also turn on the WP 'Membership: Anyone can register' option.
-		if (intval($_POST['gigya_login_settings']['login_plugin']) == 1) {
+		if ( $_POST['gigya_login_settings']['login_mode'] != 'wp_only' ) {
 			update_option( 'users_can_register', 1 );
 		}
 	}
@@ -143,7 +141,8 @@ function _gigya_ajax_raas_login_action() {
  * Hook script load.
  */
 add_action( 'wp_enqueue_scripts', '_gigya_wp_enqueue_scripts_action' );
-function _gigya_wp_enqueue_scripts_action() {}
+function _gigya_wp_enqueue_scripts_action() {
+}
 
 // --------------------------------------------------------------------
 
@@ -291,21 +290,33 @@ function _gigya_form_render( $form, $name_prefix = '' ) {
 
 	foreach ( $form as $id => $el ) {
 
-		if ( ! empty( $name_prefix ) ) {
-			// In cases like on admin multipage the element
-			// name is build from the section and the ID.
-			// This tells WP under which option to save this field value.
-			$el['name'] = $name_prefix . '[' . $id . ']';
+		if ( empty( $el['type'] ) || $el['type'] == 'markup' ) {
+
+			$render .= $el['markup'];
+
 		} else {
-			// Usually the element name is just the ID.
-			$el['name'] = $id;
+
+			if ( ! empty( $name_prefix ) ) {
+
+				// In cases like on admin multipage the element
+				// name is build from the section and the ID.
+				// This tells WP under which option to save this field value.
+				$el['name'] = $name_prefix . '[' . $id . ']';
+
+			} else {
+
+				// Usually the element name is just the ID.
+				$el['name'] = $id;
+
+			}
+
+			// Add the ID value to the array.
+			$el['id'] = $id;
+
+			// Render each element.
+			$render .= _gigya_render_tpl( 'admin/tpl/formEl-' . $el['type'] . '.tpl.php', $el );
+
 		}
-
-		// Add the ID value to the array.
-		$el['id'] = $id;
-
-		// Render each element.
-		$render .= _gigya_render_tpl( 'admin/tpl/formEl-' . $el['type'] . '.tpl.php', $el );
 	}
 
 	return $render;

@@ -10,6 +10,7 @@ class GigyaLoginForm {
 	public function __construct() {
 
 		// Gigya configuration values.
+		$this->raas_options   = get_option( GIGYA__SETTINGS_RAAS );
 		$this->login_options  = get_option( GIGYA__SETTINGS_LOGIN );
 		$this->global_options = get_option( GIGYA__SETTINGS_GLOBAL );
 
@@ -25,7 +26,7 @@ class GigyaLoginForm {
 //		echo '<script id="data-form" type="application/json">' . $this->registerExtra() . '</script>';
 
 		// Check Gigya's social login is turn on and there an API key filled.
-		if ( ! empty( $this->login_options['login_plugin'] ) && ! empty( $this->global_options['global_api_key'] ) ) {
+		if ( ($this->login_options['login_mode'] == 'wp_sl' || $this->login_options['login_mode'] == 'sl_only') && ! empty( $this->global_options['global_api_key'] ) ) {
 
 			// Load custom Gigya login script.
 			wp_enqueue_script( 'gigya_login_js', GIGYA__PLUGIN_URL . 'assets/scripts/gigya_login.js' );
@@ -35,9 +36,10 @@ class GigyaLoginForm {
 			$params = array(
 					'ajaxurl'                     => admin_url( 'admin-ajax.php' ),
 					'actionLogin'                 => 'gigya_login',
-					'actionRassLogin'             => 'gigya_raas_login',
+					'actionRaasLogin'             => 'gigya_raas_login',
 					'redirect'                    => ! empty ( $this->login_options['login_redirect'] ) ? $this->login_options['login_redirect'] : user_admin_url(),
-					'connectWithoutLoginBehavior' => ! empty ( $this->login_options['login_connect_without'] ) ? $this->login_options['login_connect_without'] : 'loginExistingUser'
+					'connectWithoutLoginBehavior' => ! empty ( $this->login_options['login_connect_without'] ) ? $this->login_options['login_connect_without'] : 'loginExistingUser',
+					'loginMode' => ! empty ( $this->raas_options['raas_plugin'] ) ? 'raas_login' : 'social_login'
 			);
 
 			$params['ui']                  = array();

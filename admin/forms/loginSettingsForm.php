@@ -6,11 +6,23 @@ function loginSettingsForm() {
 	$values = get_option( GIGYA__SETTINGS_LOGIN );
 	$form   = array();
 
-	$form['login_plugin'] = array(
-			'type'  => 'checkbox',
-			'label' => __( 'Enable Gigya Social Login' ),
-			'desc'  => __( 'By activate Gigya\'s Social Login, you also activate "Membership: Anyone can register" option on Wordpress General Settings page' ),
-			'value' => ! empty( $values['login_plugin'] ) ? $values['login_plugin'] : 0
+	$form['sl_start'] = array(
+			'markup' => '<div class="social-login-wrapper">'
+	);
+
+	$mode_opts = array(
+			'wp_only' => __( 'Wordpress only' ),
+			'wp_sl'   => __( 'Wordpress + Social Login' ),
+			'sl_only' => __( 'Social Login only' ),
+			'raas'    => __( 'Registration-as-a-Service' )
+	);
+
+	$form['login_mode'] = array(
+			'type'    => 'radio',
+			'label'   => __( 'Login Mode' ),
+			'options' => $mode_opts,
+			'desc'    => __( 'By activate Gigya\'s Social Login, you also activate "Membership: Anyone can register" option on Wordpress General Settings page' ),
+			'value'   => ! empty( $values['login_mode'] ) ? $values['login_mode'] : 'wp_only'
 	);
 
 	$button_opts = array(
@@ -45,7 +57,6 @@ function loginSettingsForm() {
 			'value' => ! empty( $values['login_width'] ) ? $values['login_width'] : '',
 			'desc'  => __( 'The width of the plugin in px' ),
 			'class' => 'size'
-
 	);
 
 	$form['login_height'] = array(
@@ -109,6 +120,63 @@ function loginSettingsForm() {
 			'value' => ! empty( $values['login_ui'] ) ? $values['login_ui'] : '',
 			'desc'  => __( 'To customize the look of the sign in component provided by the Gigya Socialize for WordPress plugin, you can provide generated interface code here.  If nothing is provided the default will be used. Please see' ) . '<a target="_blank" href="http://developers.gigya.com/050_CMS_Modules/030_Wordpress_Plugin">here</a>' . __( 'for help on what to put in the text area' ),
 			'class' => 'closed'
+	);
+
+	$form['sl_end'] = array(
+			'markup' => '</div>'
+	);
+	$form['raas_start'] = array(
+			'markup' => '<div class="raas-login-wrapper">'
+	);
+
+	$form['login_raas_web_screen_id'] = array(
+			'type' => 'text',
+			'label' => __('Web Screen Set ID'),
+			'value' => ! empty( $values['login_raas_web_screen_id'] ) ? $values['login_raas_web_screen_id'] : 'Login-web'
+	);
+	$form['login_raas_mobile_screen_id'] = array(
+			'type' => 'text',
+			'label' => __('Mobile Screen Set ID'),
+			'value' => ! empty( $values['login_raas_mobile_screen_id'] ) ? $values['login_raas_mobile_screen_id'] : 'Mobile-login'
+	);
+	$form['login_raas_login_screen_id'] = array(
+			'type' => 'text',
+			'label' => __('Login Screen ID'),
+			'value' => ! empty( $values['login_raas_login_screen_id'] ) ? $values['login_raas_login_screen_id'] : 'gigya-login-screen'
+	);
+	$form['login_raas_register_screen_id'] = array(
+			'type' => 'text',
+			'label' => __('Register Screen ID'),
+			'value' => ! empty( $values['login_raas_register_screen_id'] ) ? $values['login_raas_register_screen_id'] : 'gigya-register-screen'
+	);
+	$form['login_raas_profile_web_screen_id'] = array(
+			'type' => 'text',
+			'label' => __('Web Screen Set ID'),
+			'value' => ! empty( $values['login_raas_profile_web_screen_id'] ) ? $values['login_raas_profile_web_screen_id'] : 'Profile-web'
+	);
+	$form['login_raas_profile_mobile_screen_id'] = array(
+			'type' => 'text',
+			'label' => __('mobile Screen Set ID'),
+			'value' => ! empty( $values['login_raas_profile_mobile_screen_id'] ) ? $values['login_raas_profile_mobile_screen_id'] : 'Profile-mobile'
+	);
+	$form['login_raas_login_label'] = array(
+			'type' => 'text',
+			'label' => __('Login'),
+			'value' => ! empty( $values['login_raas_login_label'] ) ? $values['login_raas_login_label'] : 'Login'
+	);
+	$form['login_raas_register_label'] = array(
+			'type' => 'text',
+			'label' => __('Register'),
+			'value' => ! empty( $values['login_raas_register_label'] ) ? $values['login_raas_register_label'] : 'Register'
+	);
+	$form['login_raas_profile_label'] = array(
+			'type' => 'text',
+			'label' => __('Profile'),
+			'value' => ! empty( $values['login_raas_profile_label'] ) ? $values['login_raas_profile_label'] : 'Profile'
+	);
+
+	$form['raas_end'] = array(
+			'markup' => '</div>'
 	);
 
 	echo _gigya_form_render( $form, GIGYA__SETTINGS_LOGIN );

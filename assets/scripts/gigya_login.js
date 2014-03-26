@@ -111,7 +111,7 @@
 //		}
 
 		/**
-		 * On SAAS login with Gigya behavior.
+		 * On RaaS login with Gigya behavior.
 		 * @param data
 		 */
 		GigyaWp.raasLogin = function (data) {
@@ -153,8 +153,8 @@
 		 * Gigya's event handlers.
 		 */
 		// Attach event handlers.
-		if (typeof  GigyaWp.regEvents === 'undefined') {
-			if (GigyaWp.loginMode === 'raas') {
+		if (typeof GigyaWp.regEvents === 'undefined') {
+			if (gigyaLoginParams.loginMode === 'raas') {
 				gigya.accounts.addEventHandlers({
 					onLogin: GigyaWp.raasLogin
 				});
