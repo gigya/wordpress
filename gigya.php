@@ -66,7 +66,8 @@ function _gigya_init_action() {
 // --------------------------------------------------------------------
 
 /**
- * admin_action_hook.
+ * admin_action_ hook.
+ * Fires when an 'action' request variable is sent.
  */
 add_action( 'admin_action_update', '_gigya_settings_submit_action' );
 function _gigya_settings_submit_action() {
