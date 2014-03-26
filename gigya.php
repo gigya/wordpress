@@ -72,13 +72,19 @@ add_action( 'login_form', '_gigya_login_form_action' );
 add_action( 'register_form', '_gigya_login_form_action' );
 function _gigya_login_form_action() {
 
-	// Adds jQueryUI.
-	wp_enqueue_script( 'jquery-ui-core' );
-	wp_enqueue_script( 'jquery-ui-dialog' );
+//	static $once = false;
+//	if (empty($once)) {
+//		$once = true;
 
-	require_once( GIGYA__PLUGIN_DIR . 'class/class.GigyaLoginForm.php' );
-	$gigyaLoginForm = new GigyaLoginForm;
-	$gigyaLoginForm->init();
+		// Adds jQueryUI.
+		wp_enqueue_script( 'jquery-ui-core' );
+		wp_enqueue_script( 'jquery-ui-dialog' );
+
+		require_once( GIGYA__PLUGIN_DIR . 'class/class.GigyaLoginForm.php' );
+		$gigyaLoginForm = new GigyaLoginForm;
+		$gigyaLoginForm->init();
+//	}
+
 }
 
 // --------------------------------------------------------------------

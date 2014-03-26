@@ -89,7 +89,7 @@ class GigyaLoginAction {
 		}
 
 		// Register a new user to WP with params from Gigya.
-		$name    = $this->gigya_user['firstName'] . ' ' . $this->gigya_user['lastName'];
+		$name    = $this->gigya_user['nickname'];
 		$user_id = register_new_user( $name, $this->gigya_user['email'] );
 
 		// Login the user.
@@ -133,7 +133,7 @@ class GigyaLoginAction {
 		$output .= do_action( 'register_form' );
 		$output .= '<input type="hidden" name="gigyaUID" value="' . $this->gigya_user['UID'] . '">';
 
-		// Add submit buttom.
+		// Add submit button.
 		$output .= '<input type="submit" name="wp-submit" id="gigya-submit" class="button button-primary button-large" value="' . $submit_value . '">';
 		$output .= '</form>';
 

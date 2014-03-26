@@ -93,16 +93,37 @@
 //				}
 //			}
 
-			// All good, let's do it.
-			GigyaWp.login(response);
+//			var formData = JSON.parse($('#data-form').text());
+//			if (( response.user.email.length === 0 && response.user.isSiteUID !== true ) || formData.type == 'extra_form') {
+//				// There email missing , or the user need more field to fill.
+//				$('body').append('<div id="dialog-modal"></div>');
+//				$('#dialog-modal').html(formData.html);
+//				$('#dialog-modal').dialog({ modal: true });
+//			}
+//			else {
+				// All good, let's do it.
+				GigyaWp.login(response);
+//			}
 		}
 
 		/**
 		 * Gigya's event handlers.
 		 */
-		gigya.socialize.addEventHandlers({
-			onLogin: GigyaWp.loginCallback
-		});
+		// Attach event handlers.
+		if (typeof  GigyaWp.regEvents === 'undefined') {
+			if (GigyaWp.loginMode === 'raas') {
+				gigya.accounts.addEventHandlers({
+					onLogin:GigyaWp.raasRegLogin
+				});
+			}
+			else {
+				gigya.socialize.addEventHandlers({
+					onLogin: GigyaWp.loginCallback
+				});
+			}
+			GigyaWp.regEvents = true;
+		}
+
 	});
 
 })(jQuery);
