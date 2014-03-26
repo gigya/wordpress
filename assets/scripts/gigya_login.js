@@ -13,20 +13,25 @@
 		// Setting Parameters.
 		var params = {};
 		params.containerID = "gigya-login";
-		if (typeof gigyaLoginParams.width != 'undefined')	params.width = gigyaLoginParams.width;
-		if (typeof gigyaLoginParams.height != 'undefined') params.height = gigyaLoginParams.height;
-		if (typeof gigyaLoginParams.showTermsLink != 'undefined') params.showTermsLink = gigyaLoginParams.showTermsLink;
-		if (typeof gigyaLoginParams.enabledProviders != 'undefined') params.enabledProviders = gigyaLoginParams.enabledProviders;
-		if (typeof gigyaLoginParams.loginUI != 'undefined') {
-			var arr = JSON.parse(gigyaLoginParams.loginUI);
-			for(var key in arr) {
-				params[key] = arr[key];
-			}
+
+		if (typeof gigyaLoginParams.ui != 'undefined') {
+			var paramsUI = {};
+			$.each(gigyaLoginParams.ui, function (index, value) {
+				paramsUI[index] = value;
+			});
+
+			$.extend(params, paramsUI);
 		}
 
 		// Attach the Gigya block.
 		gigya.socialize.showLoginUI(params);
 
+// --------------------------------------------------------------------
+
+		// Display ConnectUI if necessary.
+		if (typeof gigyaLoginParams.connectUI !== 'undefined') {
+			gigya.services.socialize.showAddConnectionsUI(gigyaLoginParams.connectUI);
+		}
 // --------------------------------------------------------------------
 
 		/**

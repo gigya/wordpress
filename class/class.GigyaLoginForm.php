@@ -33,79 +33,33 @@ class GigyaLoginForm {
 					'redirect' => ! empty ( $login_options['login_redirect'] ) ? $login_options['login_redirect'] : user_admin_url(),
 			);
 
+			$params['ui'] = array();
+			$params['ui']['showTermsLink'] = false;
+			
 			if ( ! empty ( $login_options['login_width'] ) ) {
-				$params['width'] = $login_options['login_width'];
+				$params['ui']['width'] = $login_options['login_width'];
 			}
 			if ( ! empty ( $login_options['login_height'] ) ) {
-				$params['height'] = $login_options['login_term_link'];
+				$params['ui']['height'] = $login_options['login_height'];
 			}
 			if ( ! empty ( $login_options['login_term_link'] ) ) {
-				$params['showTermsLink'] = $login_options['login_term_link'];
+				$params['ui']['showTermsLink'] = $login_options['login_term_link'];
 			}
 			if ( ! empty ( $login_options['login_providers'] ) ) {
-				$params['enabledProviders'] = $login_options['login_providers'];
+				$params['ui']['enabledProviders'] = $login_options['login_providers'];
 			}
 			if ( ! empty ( $login_options['login_ui'] ) ) {
-				$params['loginUI'] = json_encode( $this->advanced_values_parser( $login_options['login_ui'] ) );
+				$arr = $this->advanced_values_parser( $login_options['login_ui']);
+				if (! empty($arr)) {
+					foreach ( $arr as $key => $val) {
+						$params['ui'][$key] = $val;
+					}
+				}
 			}
 
 			// Load params to be available to client-side script.
 			wp_localize_script( 'gigya_login_js', 'gigyaLoginParams', $params );
 		}
-	}
-
-	/**
-	 * Deal with missing fields on registration.
-	 */
-	private function registerExtra() {
-
-		// Set submit button value.
-		$submit_value = sprintf( __( 'Register %s' ), ! empty( $this->gigya_user['loginProvider'] ) ? ' ' . __( 'with' ) . ' ' . $this->gigya_user['loginProvider'] : '' );
-		$output       = '';
-
-		// Set form.
-		$output .= '<form name="registerform" class="gigya-register-extra" id="registerform" action="' . wp_registration_url() . '" method="post">';
-		$output .= '<h4 class="title">' . __( 'Please fill required field' ) . '</h4>';
-
-		// Set form elements.
-		$form               = array();
-		$form['user_login'] = array(
-				'type'  => 'text',
-				'id'    => 'user_login',
-				'label' => __( 'Username' ),
-				'value' => ! empty( $this->gigya_user['nickname'] ) ? $this->gigya_user['nickname'] : '',
-		);
-		$form['user_email'] = array(
-				'type'  => 'text',
-				'id'    => 'user_email',
-				'label' => __( 'E-mail' ),
-				'value' => ! empty( $this->gigya_user['email'] ) ? $this->gigya_user['email'] : '',
-		);
-
-		// Render form elements.
-		$output .= _gigya_form_render( $form );
-
-		// Get other plugins register form implementation.
-		$output .= do_action( 'register_form' );
-		$output .= '<input type="hidden" name="gigyaUID" value="' . $this->gigya_user['UID'] . '">';
-
-		// Add submit buttom.
-		$output .= '<input type="submit" name="wp-submit" id="gigya-submit" class="button button-primary button-large" value="' . $submit_value . '">';
-		$output .= '</form>';
-
-		// Tokens replace.
-		do_shortcode( $output );
-
-		// Set a return array.
-		$ret = array(
-				'type' => 'register_form',
-				'html' => $output,
-		);
-
-		// Return JSON to client.
-		wp_send_json_success( $ret );
-
-		exit;
 	}
 
 	/**
