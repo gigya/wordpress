@@ -89,21 +89,21 @@ function loginSettingsForm() {
 			'value' => ! empty( $values['login_gigya_debug'] ) ? $values['login_gigya_debug'] : 0
 	);
 
-	$form['login_custom_code'] = array(
+	$form['login_ui'] = array(
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced) LoginUI" ),
 			'value' => ! empty( $values['login_custom_code'] ) ? $values['login_custom_code'] : '',
-			'desc'  => __( 'Enter values in' ) . '<strong>key1=value1|key2=value2...keyX=valueX</strong>' . __( 'format' )
+			'desc'  => __( 'Enter values in' ) . ' <strong>key1=value1|key2=value2...keyX=valueX</strong> ' . __( 'format' )
 	);
 
 	$form['login_add_connection_custom'] = array(
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced) AddConnectionsUI" ),
 			'value' => ! empty( $values['login_add_connection_custom'] ) ? $values['login_add_connection_custom'] : '',
-			'desc'  => __( 'Enter values in' ) . '<strong>key1=value1|key2=value2...keyX=valueX</strong>' . __( 'format' )
+			'desc'  => __( 'Enter values in' ) . ' <strong>key1=value1|key2=value2...keyX=valueX</strong> ' . __( 'format' )
 	);
 
-	$form['login_ui'] = array(
+	$form['login_custom_code'] = array(
 			'type'  => 'textarea',
 			'label' => __( "Custom Code (deprecated)" ),
 			'value' => ! empty( $values['login_ui'] ) ? $values['login_ui'] : '',

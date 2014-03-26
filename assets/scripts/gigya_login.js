@@ -10,17 +10,29 @@
 
 // --------------------------------------------------------------------
 
-		gigya.socialize.showLoginUI({
+		// Setting Parameters.
+		var params = {};
+		params.containerID = "gigya-login";
+		if (typeof gigyaLoginParams.width != 'undefined')	params.width = gigyaLoginParams.width;
+		if (typeof gigyaLoginParams.height != 'undefined') params.height = gigyaLoginParams.height;
+		if (typeof gigyaLoginParams.showTermsLink != 'undefined') params.showTermsLink = gigyaLoginParams.showTermsLink;
+		if (typeof gigyaLoginParams.enabledProviders != 'undefined') params.enabledProviders = gigyaLoginParams.enabledProviders;
+		if (typeof gigyaLoginParams.loginUI != 'undefined') {
+			var arr = JSON.parse(gigyaLoginParams.loginUI);
+			for(var key in arr) {
+				params[key] = arr[key];
+			}
+		}
 
-			// The plugin will embed itself inside the "loginDiv" DIV (will not be a popup)
-			containerID: "gigya-login"
-
-			// After successful login - the user will be redirected to "https://www.MySite.com/welcome.html" :
-			//			redirectURL: "https://www.MySite.com/welcome.html"
-		});
+		// Attach the Gigya block.
+		gigya.socialize.showLoginUI(params);
 
 // --------------------------------------------------------------------
 
+		/**
+		 * On login with Gigya behavior.
+		 * @param data
+		 */
 		GigyaWp.login = function (data) {
 
 			var options = {
@@ -52,6 +64,11 @@
 					});
 		}
 
+		/**
+		 * Login validator.
+		 * @param response
+		 * @returns {boolean}
+		 */
 		GigyaWp.loginCallback = function (response) {
 			if (response.provider === 'site') {
 				return false;
@@ -71,16 +88,15 @@
 //				}
 //			}
 
+			// All good, let's do it.
 			GigyaWp.login(response);
 		}
 
-//		GigyaWp.logoutCallback = function (response) {
-//			alert(response.eventName + " event happened");
-//		}
-
+		/**
+		 * Gigya's event handlers.
+		 */
 		gigya.socialize.addEventHandlers({
 			onLogin: GigyaWp.loginCallback
-//			onLogout: GigyaWp.logoutCallback
 		});
 	});
 

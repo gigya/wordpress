@@ -189,22 +189,6 @@ function _gigya_deleted_user_action( $user_id ) {
 	}
 }
 
-add_filter( 'get_avatar', '_gigya_get_avatar_filter', 10, 5 );
-function _gigya_get_avatar_filter( $avatar, $id_or_email, $size, $default, $alt ) {
-
-	if ( is_object( $id_or_email ) )
-		$id_or_email = $id_or_email->user_id;
-
-	if ( is_numeric( $id_or_email ) ) {
-		$thumb = get_user_meta( $id_or_email, "avatar", 1 );
-		if ( ! empty( $thumb ) ) {
-			$avatar = preg_replace( "/src='*?'/", "src='$thumb'", $avatar );
-		}
-	}
-
-	return $avatar;
-}
-
 // --------------------------------------------------------------------
 
 add_shortcode( 'gigya_user_info', '_gigya_user_info_shortcode' );
