@@ -114,5 +114,5 @@ function reactionsSettingsForm() {
 			'value' => ! empty( $values['reaction_multiple'] ) ? $values['reaction_multiple'] : 1,
 	);
 
-	echo GigyaSettings::_gigya_form_render( $form, GIGYA__SETTINGS_REACTIONS );
+	echo _gigya_form_render( $form, GIGYA__SETTINGS_REACTIONS );
 }

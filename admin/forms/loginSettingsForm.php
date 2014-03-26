@@ -111,5 +111,5 @@ function loginSettingsForm() {
 			'class' => 'closed'
 	);
 
-	echo GigyaSettings::_gigya_form_render( $form, GIGYA__SETTINGS_LOGIN );
+	echo _gigya_form_render( $form, GIGYA__SETTINGS_LOGIN );
 }

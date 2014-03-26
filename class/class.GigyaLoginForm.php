@@ -22,20 +22,10 @@ class GigyaLoginForm {
 		// Check Gigya's social login is turn on and there an API key filled.
 		if ( ! empty( $login_options['login_plugin'] ) && ! empty( $global_options['global_api_key'] ) ) {
 
-			// Add an HTML element to attach the Gigya Login UI to.
-//			echo '<div id="gigya-login"></div>';
-
 			// Load custom Gigya login script.
 			wp_enqueue_script( 'gigya_login_js', GIGYA__PLUGIN_URL . 'assets/scripts/gigya_login.js' );
 			wp_enqueue_style( 'gigya_login_css', GIGYA__PLUGIN_URL . 'assets/styles/gigya_login.css' );
 
-			if ( ! empty ( $login_options['login_ui'] ) ) {
-				$string = str_replace( ' ', '', $login_options['login_ui'] );
-				$vars   = explode( '|', $string );
-				foreach ( $vars as $var ) {
-
-				}
-			}
 			// Parameters to be sent to the DOM.
 			$params = array(
 					'ajaxurl'  => admin_url( 'admin-ajax.php' ),
@@ -64,6 +54,66 @@ class GigyaLoginForm {
 		}
 	}
 
+	/**
+	 * Deal with missing fields on registration.
+	 */
+	private function registerExtra() {
+
+		// Set submit button value.
+		$submit_value = sprintf( __( 'Register %s' ), ! empty( $this->gigya_user['loginProvider'] ) ? ' ' . __( 'with' ) . ' ' . $this->gigya_user['loginProvider'] : '' );
+		$output       = '';
+
+		// Set form.
+		$output .= '<form name="registerform" class="gigya-register-extra" id="registerform" action="' . wp_registration_url() . '" method="post">';
+		$output .= '<h4 class="title">' . __( 'Please fill required field' ) . '</h4>';
+
+		// Set form elements.
+		$form               = array();
+		$form['user_login'] = array(
+				'type'  => 'text',
+				'id'    => 'user_login',
+				'label' => __( 'Username' ),
+				'value' => ! empty( $this->gigya_user['nickname'] ) ? $this->gigya_user['nickname'] : '',
+		);
+		$form['user_email'] = array(
+				'type'  => 'text',
+				'id'    => 'user_email',
+				'label' => __( 'E-mail' ),
+				'value' => ! empty( $this->gigya_user['email'] ) ? $this->gigya_user['email'] : '',
+		);
+
+		// Render form elements.
+		$output .= _gigya_form_render( $form );
+
+		// Get other plugins register form implementation.
+		$output .= do_action( 'register_form' );
+		$output .= '<input type="hidden" name="gigyaUID" value="' . $this->gigya_user['UID'] . '">';
+
+		// Add submit buttom.
+		$output .= '<input type="submit" name="wp-submit" id="gigya-submit" class="button button-primary button-large" value="' . $submit_value . '">';
+		$output .= '</form>';
+
+		// Tokens replace.
+		do_shortcode( $output );
+
+		// Set a return array.
+		$ret = array(
+				'type' => 'register_form',
+				'html' => $output,
+		);
+
+		// Return JSON to client.
+		wp_send_json_success( $ret );
+
+		exit;
+	}
+
+	/**
+	 * Parser for the 'key=value | key=value' format.
+	 * @param $str
+	 *
+	 * @return array|bool
+	 */
 	public static function advanced_values_parser( $str ) {
 		$reg = preg_match_all( "/([^,= ]+)=([^,= ]+)/", $str, $r );
 		if ( $reg ) {

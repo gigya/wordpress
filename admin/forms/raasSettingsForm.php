@@ -12,5 +12,5 @@ function raasSettingsForm() {
 			'value' => ! empty( $values['raas_plugin'] ) ? $values['raas_plugin'] : 0
 	);
 
-	echo GigyaSettings::_gigya_form_render( $form, GIGYA__SETTINGS_RAAS );
+	echo _gigya_form_render( $form, GIGYA__SETTINGS_RAAS );
 }

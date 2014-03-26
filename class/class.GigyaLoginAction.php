@@ -127,7 +127,7 @@ class GigyaLoginAction {
 		);
 
 		// Render form elements.
-		$output .= GigyaSettings::_gigya_form_render( $form );
+		$output .= _gigya_form_render( $form );
 
 		// Get other plugins register form implementation.
 		$output .= do_action( 'register_form' );
@@ -151,12 +151,4 @@ class GigyaLoginAction {
 
 		exit;
 	}
-
-	/**
-	 * Logout Gigya user.
-	 */
-	public function logout() {
-	}
-
-
 }

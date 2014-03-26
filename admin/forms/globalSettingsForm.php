@@ -113,5 +113,5 @@ function globalSettingsForm() {
 			'value' => ! empty( $values['global_gigya_debug'] ) ? $values['global_gigya_debug'] : 0
 	);
 
-	echo GigyaSettings::_gigya_form_render( $form, GIGYA__SETTINGS_GLOBAL );
+	echo _gigya_form_render( $form, GIGYA__SETTINGS_GLOBAL );
 }

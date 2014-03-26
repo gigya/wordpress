@@ -71,6 +71,8 @@ function _gigya_init_action() {
 add_action( 'login_form', '_gigya_login_form_action' );
 add_action( 'register_form', '_gigya_login_form_action' );
 function _gigya_login_form_action() {
+
+	// Adds jQueryUI.
 	wp_enqueue_script( 'jquery-ui-core' );
 	wp_enqueue_script( 'jquery-ui-dialog' );
 
@@ -227,6 +229,41 @@ function _gigya_render_tpl( $template_file, $variables ) {
 
 // --------------------------------------------------------------------
 
+/**
+ * Render a form.
+ *
+ * @param        $form
+ *
+ * @param string $name_prefix
+ *
+ * @return string
+ */
+function _gigya_form_render( $form, $name_prefix = '' ) {
+	$render = '';
+
+	foreach ( $form as $id => $el ) {
+
+		if ( ! empty( $name_prefix ) ) {
+			// In cases like on admin multipage the element
+			// name is build from the section and the ID.
+			// This tells WP under which option to save this field value.
+			$el['name'] = $name_prefix . '[' . $id . ']';
+		} else {
+			// Usually the element name is just the ID.
+			$el['name'] = $id;
+		}
+
+		// Add the ID value to the array.
+		$el['id'] = $id;
+
+		// Render each element.
+		$render .= _gigya_render_tpl( 'admin/tpl/formEl-' . $el['type'] . '.tpl.php', $el );
+	}
+
+	return $render;
+}
+
+// --------------------------------------------------------------------
 
 /**
  * Loads JSON string from file.

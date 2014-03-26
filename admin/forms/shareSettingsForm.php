@@ -66,5 +66,5 @@ function shareSettingsForm() {
 			'desc'  => __( 'Enter values in' ) . '<strong>key|value</strong> ' . __( 'format' )
 	);
 
-	echo GigyaSettings::_gigya_form_render( $form, GIGYA__SETTINGS_SHARE );
+	echo _gigya_form_render( $form, GIGYA__SETTINGS_SHARE );
 }

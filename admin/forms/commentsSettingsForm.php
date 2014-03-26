@@ -57,5 +57,5 @@ function commentsSettingsForm() {
 			'label'   => __( 'Privacy' ),
 	);
 
-	echo GigyaSettings::_gigya_form_render( $form, GIGYA__SETTINGS_COMMENTS );
+	echo _gigya_form_render( $form, GIGYA__SETTINGS_COMMENTS );
 }

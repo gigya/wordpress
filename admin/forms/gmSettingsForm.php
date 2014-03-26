@@ -12,5 +12,5 @@ function gmSettingsForm() {
 			'value' => ! empty( $values['gamification_notification'] ) ? $values['gamification_notification'] : 0
 	);
 
-	echo GigyaSettings::_gigya_form_render( $form, GIGYA__SETTINGS_GM );
+	echo _gigya_form_render( $form, GIGYA__SETTINGS_GM );
 }
