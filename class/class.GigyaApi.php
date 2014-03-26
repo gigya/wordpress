@@ -131,25 +131,12 @@ class GigyaApi {
 	public static function sigValidate( $response ) {
 		$global_options = get_option( GIGYA__SETTINGS_GLOBAL );
 
-		if ( is_array( $response ) ) {
-			// Response came from GigyaJS (client to server).
-			$valid = SigUtils::validateUserSignature(
-					$response['UID'],
-					$response['timestamp'],
-					$global_options['global_secret_key'],
-					$response['signature']
-
-			);
-		} else {
-			// Response came from REST (server to server)
-			$valid = SigUtils::validateUserSignature(
-					$response->getString( "UID", "" ),
-					$response->getString( "signatureTimestamp", "" ),
-					$global_options['global_secret_key'],
-					$response->getString( "UIDSignature", "" )
-			);
-		}
-
+		$valid = SigUtils::validateUserSignature(
+				$response->getString( "UID", "" ),
+				$response->getString( "signatureTimestamp", "" ),
+				$global_options['global_secret_key'],
+				$response->getString( "UIDSignature", "" )
+		);
 
 		return $valid;
 	}

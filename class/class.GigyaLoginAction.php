@@ -28,7 +28,12 @@ class GigyaLoginAction {
 		}
 
 		// Check Gigya's signature validation.
-		$is_sig_validate = GigyaApi::sigValidate( $data );
+		$is_sig_validate = SigUtils::validateUserSignature(
+				$data['UID'],
+				$data['timestamp'],
+				$this->global_options['global_secret_key'],
+				$data['signature']
+		);
 
 		// Gigya user validate trap.
 		if ( empty( $is_sig_validate ) ) {
@@ -89,8 +94,10 @@ class GigyaLoginAction {
 		}
 
 		// Register a new user to WP with params from Gigya.
-		$name    = $this->gigya_user['nickname'];
-		$user_id = register_new_user( $name, $this->gigya_user['email'] );
+		$name  = $this->gigya_user['nickname'];
+		$email = $this->gigya_user['email'];
+
+		$user_id = register_new_user( $name, $email );
 
 		// Login the user.
 		$wp_user = get_userdata( $user_id );

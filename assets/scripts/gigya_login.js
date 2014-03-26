@@ -35,10 +35,14 @@
 // --------------------------------------------------------------------
 
 		/**
-		 * On login with Gigya behavior.
+		 * On Social login with Gigya behavior.
 		 * @param data
 		 */
-		GigyaWp.login = function (data) {
+		GigyaWp.socialLogin = function (data) {
+
+			if (response.provider === 'site') {
+				return false;
+			}
 
 			var options = {
 				url : gigyaLoginParams.ajaxurl,
@@ -46,7 +50,7 @@
 //			dataType: 'json',
 				data: {
 					data  : data,
-					action: gigyaLoginParams.action
+					action: gigyaLoginParams.actionLogin
 				}
 			};
 
@@ -74,11 +78,11 @@
 		 * @param response
 		 * @returns {boolean}
 		 */
-		GigyaWp.loginCallback = function (response) {
-			if (response.provider === 'site') {
-				return false;
-			}
-
+//		GigyaWp.loginCallback = function (response) {
+//			if (response.provider === 'site') {
+//				return false;
+//			}
+//
 //			if (( response.user.email.length === 0 ) && ( response.user.isSiteUID !== true )) {
 //				var email = prompt("Please fill-in missing details\nEmail:");
 //
@@ -101,9 +105,48 @@
 //				$('#dialog-modal').dialog({ modal: true });
 //			}
 //			else {
-				// All good, let's do it.
-				GigyaWp.login(response);
+//				All good, let's do it.
+//				GigyaWp.socialLogin(response);
 //			}
+//		}
+
+		/**
+		 * On SAAS login with Gigya behavior.
+		 * @param data
+		 */
+		GigyaWp.raasLogin = function (data) {
+
+			if (response.provider === 'site') {
+				return false;
+			}
+
+			var options = {
+				url : gigyaLoginParams.ajaxurl,
+				type: 'POST',
+//			dataType: 'json',
+				data: {
+					data  : data,
+					action: gigyaLoginParams.actionRaasLogin
+				}
+			};
+
+			$.ajax(options)
+					.done(function (res) {
+						if (res.success == true) {
+							if (typeof res.data != 'undefined' && res.data.type == 'register_form') {
+								// The user didn't register, and need more field to fill.
+								$('body').append('<div id="dialog-modal"></div>');
+								$('#dialog-modal').html(res.data.html);
+								$('#dialog-modal').dialog({ modal: true });
+							}
+							else {
+								location.replace(gigyaLoginParams.redirect);
+							}
+						}
+					})
+					.fail(function (jqXHR, textStatus, errorThrown) {
+						console.log(errorThrown);
+					});
 		}
 
 		/**
@@ -113,12 +156,12 @@
 		if (typeof  GigyaWp.regEvents === 'undefined') {
 			if (GigyaWp.loginMode === 'raas') {
 				gigya.accounts.addEventHandlers({
-					onLogin:GigyaWp.raasRegLogin
+					onLogin: GigyaWp.raasLogin
 				});
 			}
 			else {
 				gigya.socialize.addEventHandlers({
-					onLogin: GigyaWp.loginCallback
+					onLogin: GigyaWp.socialLogin
 				});
 			}
 			GigyaWp.regEvents = true;

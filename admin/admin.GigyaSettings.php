@@ -22,6 +22,11 @@ class GigyaSettings {
 						'func'  => 'globalSettingsForm',
 						'slug'  => 'gigya_global_settings'
 				),
+				'gigya_raas_settings'      => array(
+						'title' => 'RASS Settings',
+						'func'  => 'raasSettingsForm',
+						'slug'  => 'gigya_raas_settings'
+				),
 				'gigya_login_settings'     => array(
 						'title' => 'Social Login Settings',
 						'func'  => 'loginSettingsForm',
@@ -46,11 +51,6 @@ class GigyaSettings {
 						'title' => 'Gamification Settings',
 						'func'  => 'gmSettingsForm',
 						'slug'  => 'gigya_gm_settings'
-				),
-				'gigya_raas_settings'      => array(
-						'title' => 'RASS Settings',
-						'func'  => 'raasSettingsForm',
-						'slug'  => 'gigya_raas_settings'
 				),
 		);
 	}
@@ -99,8 +99,9 @@ class GigyaSettings {
 		settings_errors();
 
 		echo '<form class="gigya-settings" action="options.php" method="post">';
+		echo '<input type="hidden" name="action" value="add_foobar">';
 
-		wp_nonce_field( 'update-options' );
+//		wp_nonce_field( 'update-options' );
 		settings_fields( $page . '-group' );
 		do_settings_sections( $page );
 		submit_button();

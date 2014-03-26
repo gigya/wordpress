@@ -33,13 +33,14 @@ class GigyaLoginForm {
 
 			// Parameters to be sent to the DOM.
 			$params = array(
-					'ajaxurl'  => admin_url( 'admin-ajax.php' ),
-					'action'   => 'gigya_login',
-					'redirect' => ! empty ( $this->login_options['login_redirect'] ) ? $this->login_options['login_redirect'] : user_admin_url(),
+					'ajaxurl'                     => admin_url( 'admin-ajax.php' ),
+					'actionLogin'                 => 'gigya_login',
+					'actionRassLogin'             => 'gigya_raas_login',
+					'redirect'                    => ! empty ( $this->login_options['login_redirect'] ) ? $this->login_options['login_redirect'] : user_admin_url(),
 					'connectWithoutLoginBehavior' => ! empty ( $this->login_options['login_connect_without'] ) ? $this->login_options['login_connect_without'] : 'loginExistingUser'
 			);
 
-			$params['ui'] = array();
+			$params['ui']                  = array();
 			$params['ui']['showTermsLink'] = false;
 
 			if ( ! empty ( $this->login_options['login_width'] ) ) {
@@ -55,9 +56,9 @@ class GigyaLoginForm {
 				$params['ui']['enabledProviders'] = $this->login_options['login_providers'];
 			}
 			if ( ! empty ( $this->login_options['login_ui'] ) ) {
-				$arr = $this->advanced_values_parser( $this->login_options['login_ui']);
-				if (! empty($arr)) {
-					foreach ( $arr as $key => $val) {
+				$arr = $this->advanced_values_parser( $this->login_options['login_ui'] );
+				if ( ! empty( $arr ) ) {
+					foreach ( $arr as $key => $val ) {
 						$params['ui'][$key] = $val;
 					}
 				}
@@ -123,6 +124,7 @@ class GigyaLoginForm {
 
 	/**
 	 * Parser for the 'key=value | key=value' format.
+	 *
 	 * @param $str
 	 *
 	 * @return array|bool
