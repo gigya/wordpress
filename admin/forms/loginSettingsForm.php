@@ -13,7 +13,6 @@ function loginSettingsForm() {
 	$mode_opts = array(
 			'wp_only' => __( 'Wordpress only' ),
 			'wp_sl'   => __( 'Wordpress + Social Login' ),
-			'sl_only' => __( 'Social Login only' ),
 			'raas'    => __( 'Registration-as-a-Service' )
 	);
 

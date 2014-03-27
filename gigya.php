@@ -48,7 +48,7 @@ function _gigya_init_action() {
 	$login_options  = get_option( GIGYA__SETTINGS_LOGIN );
 	$global_options = get_option( GIGYA__SETTINGS_GLOBAL );
 
-	if ( ($login_options['login_mode'] == 'wp_sl' || $login_options['login_mode'] == 'sl_only') && ! empty( $global_options['global_api_key'] ) ) {
+	if ( $login_options['login_mode'] == 'wp_sl' && ! empty( $global_options['global_api_key'] ) ) {
 		// Load Gigya's socialize.js.
 		wp_enqueue_script( 'gigya', 'http://cdn.gigya.com/JS/socialize.js?apiKey=' . $global_options['global_api_key'], 'jquery' );
 	}
@@ -160,6 +160,19 @@ function _gigya_wp_login_action( $user_login, $account ) {
 		$gigyaUser->notifyLogin( $account->ID );
 
 	}
+
+	// This post is after registration with manually filled email.
+	// And verification by email.
+	if ($_POST['form_name'] == 'loginform-gigya-email-verify') {}
+
+	// This post is when there is a same email on the site,
+	// with the one who try to register and we want to link-accounts
+	// after the user is logged in with password.
+	if ($_POST['form_name'] == 'loginform-gigya-link-account') {
+		$gigyaUser = new GigyaUser( $_POST['gigya_uid'] );
+		$gigyaUser->notifyRegistration( $account->ID );
+	}
+
 }
 
 // --------------------------------------------------------------------
@@ -172,8 +185,8 @@ function _gigya_user_register_action( $uid ) {
 
 	if ( ! empty( $_POST['gigyaUID'] ) ) {
 
-		// Come from register extra form.
-		// Make a login.
+		// New user was register through our custom
+		// extra form. We make a login.
 		// @todo: add  possibility to verify email.
 		$wp_user = get_userdata( $uid );
 		require_once( GIGYA__PLUGIN_DIR . 'class/class.GigyaLoginAction.php' );
@@ -183,16 +196,17 @@ function _gigya_user_register_action( $uid ) {
 
 	if ( ! empty ( $_SESSION['gigya_uid'] ) || ! empty( $_POST['gigyaUID'] ) ) {
 
-		// New user on site came from Gigya.
-		// Make a notifyRegistration (link accounts) to Gigya.
+		// New user was register through Gigya.
+		// We make a notifyRegistration to Gigya.
 		$gid       = ! empty( $_SESSION['gigya_uid'] ) ? $_SESSION['gigya_uid'] : $_POST['gigyaUID'];
 		$gigyaUser = new GigyaUser( $gid );
 		$gigyaUser->notifyRegistration( $uid );
 
 	} else {
 
-		// New user on site came from SITE.
-		// Notify Gigya socialize.notifyLogin with a new user flag.
+		// New user was register through WP form.
+		// We notify to Gigya's 'socialize.notifyLogin'
+		// with a 'is_new_user' flag.
 		$gigyaUser = new GigyaUser( $_SESSION['gigya_uid'] );
 		$gigyaUser->notifyLogin( $uid, TRUE );
 
@@ -227,8 +241,10 @@ function _gigya_deleted_user_action( $user_id ) {
 
 	// Check it logged in by Gigya.
 	if ( empty ( $_SESSION['gigya_uid'] ) ) {
+
 		$gigyaUser = new GigyaUser( $_SESSION['gigya_uid'] );
 		$gigyaUser->deleteAccount( $user_id );
+
 	}
 
 }

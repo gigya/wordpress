@@ -23,8 +23,7 @@ class GigyaLoginAction {
 
 		// Trap for login users
 		if ( is_user_logged_in() ) {
-			$prm = array( 'msg' => __( 'There already a logged in user' ) );
-			wp_send_json_error( $prm );
+			wp_send_json_error( array( 'msg' => __( 'There already a logged in user' ) ) );
 		}
 
 		// Check Gigya's signature validation.
@@ -37,8 +36,7 @@ class GigyaLoginAction {
 
 		// Gigya user validate trap.
 		if ( empty( $is_sig_validate ) ) {
-			$prm = array( 'msg' => __( 'There a problem to validate your user' ) );
-			wp_send_json_error( $prm );
+			wp_send_json_error( array( 'msg' => __( 'There a problem to validate your user' ) ) );
 		}
 
 		// Initialize Gigya user.
@@ -61,7 +59,21 @@ class GigyaLoginAction {
 
 		}
 
-		wp_send_json_success();
+		if ( ! empty( $this->gigya_user['email_not_verified'] ) ) {
+			$prm = array(
+					'type'  => 'message',
+					'email' => 'not_verified',
+					'msg'   => __( 'Please login' )
+			);
+		} else {
+			$prm = array(
+					'type'  => 'message',
+					'email' => 'verified',
+					'msg'   => __( 'Logged in successfully' )
+			);
+		}
+
+		wp_send_json_success( $prm );
 
 		exit;
 	}
@@ -80,6 +92,7 @@ class GigyaLoginAction {
 
 		// Do others login Implementations.
 		do_action( 'wp_login', $wp_user->data->user_login, $wp_user );
+
 	}
 
 	/**
@@ -87,22 +100,101 @@ class GigyaLoginAction {
 	 */
 	private function register() {
 
-		// When there missing email or the admin check to
+		// Before we insert new user to the system, we check
+		// if there a user with the same email in our DB.
+		// When there is we ask the user login in the
+		// previous account and link it to the new one.
+		$email_exists = email_exists( $this->gigya_user['email'] );
+		if ( ! empty( $email_exists ) ) {
+
+			// Return JSON with login form to client.
+			wp_send_json_success( array( 'type' => 'form', 'html' => $this->loginForm( $email_exists, 'loginform-gigya-link-account', $this->gigya_user['UID'] ) ) );
+		}
+
+		// If the name of the new user is already exist in the system,
+		// WP will reject the registration and return an error. to prevent this
+		// we attach an extra value to the name to make it unique.
+		$username_exist = username_exists( $this->gigya_user['nickname'] );
+		if ( ! empty( $username_exist ) ) {
+			$this->gigya_user['nickname'] = $this->gigya_user['nickname'] . ' ' . uniqid();
+		}
+
+		// When there missing email or the admin checked to
 		// show the entire registration form to the user.
-		if ( $this->gigya_user['email'] || $this->login_options['login_show_reg'] ) {
+		if ( $this->login_options['login_show_reg'] ) {
 			$this->registerExtra();
 		}
 
 		// Register a new user to WP with params from Gigya.
-		$name  = $this->gigya_user['nickname'];
-		$email = $this->gigya_user['email'];
-
+		$name    = $this->gigya_user['nickname'];
+		$email   = $this->gigya_user['email'];
 		$user_id = register_new_user( $name, $email );
 
-		// Login the user.
+		// On registration error.
+		if ( ! empty( $user_id->errors ) ) {
+			$msg = '';
+			foreach ( $user_id->errors as $error ) {
+				foreach ( $error as $err ) {
+					$msg .= $err . "\n";
+				}
+			}
+
+			// Return JSON to client.
+			wp_send_json_error( array( 'msg' => $msg ) );
+		}
+
+		// If we got to here, the user is already register.
+		// But if we have the 'email_not_verified' flag turn on,
+		// we can't auto login, and we need to verify the email first.
+		if ( ! empty( $this->gigya_user['email_not_verified'] ) ) {
+
+			// Return JSON with login form to client.
+			wp_send_json_success( array( 'type' => 'form', 'html' => $this->loginForm( $email_exists, 'loginform-gigya-email-verify' ) ) );
+
+		}
+
+		// Finally, let's login the user.
 		$wp_user = get_userdata( $user_id );
 		$this->login( $wp_user );
+	}
 
+	private function loginForm( $account, $form_name = 'loginform-gigya', $gigya_uid = null ) {
+
+		$output = '';
+		$output .= '<form name="loginform" id="loginform" action="' . site_url( 'wp-login.php', 'login_post' ) . '" method="post">';
+
+		// Set form elements.
+		$form            = array();
+		$form['message'] = array(
+				'markup' => __( 'Your Email address' ) . ': ' . $account['email'] . ' ' . __( 'already exists. If you have previously registered, please login with your site credentials to link the accounts. Otherwise, please use a different Email address' )
+		);
+		$form['log']     = array(
+				'type'  => 'text',
+				'label' => __( 'Username' ),
+				'value' => $account['nickname'],
+				'desc'  => __( 'Enter your' ) . ' ' . get_option( 'blogname' ) . ' ' . __( 'username' )
+		);
+
+		$form['pwd']     = array(
+				'type'  => 'text',
+				'label' => __( 'Password' ),
+				'desc'  => __( 'Enter your password.' ),
+		);
+		$form['form_name'] = array(
+				'type'  => 'hidden',
+				'value' => $form_name,
+		);
+		$form['gigya_uid'] = array(
+				'type'  => 'hidden',
+				'value' => $gigya_uid,
+		);
+
+		// Render form elements.
+		$output .= _gigya_form_render( $form );
+		$output .= '<input type="submit" name="wp-submit" id="gigya-submit" class="button button-primary button-large" value="Log In" />';
+		$output .= '</form>';
+
+		return $output;
 	}
 
 	/**
@@ -132,13 +224,16 @@ class GigyaLoginAction {
 				'label' => __( 'E-mail' ),
 				'value' => ! empty( $this->gigya_user['email'] ) ? $this->gigya_user['email'] : '',
 		);
+		$form['gigyaUID']   = array(
+				'type'  => 'hidden',
+				'value' => ! empty( $this->gigya_user['UID'] ) ? $this->gigya_user['UID'] : '',
+		);
 
 		// Render form elements.
 		$output .= _gigya_form_render( $form );
 
 		// Get other plugins register form implementation.
 		$output .= do_action( 'register_form' );
-		$output .= '<input type="hidden" name="gigyaUID" value="' . $this->gigya_user['UID'] . '">';
 
 		// Add submit button.
 		$output .= '<input type="submit" name="wp-submit" id="gigya-submit" class="button button-primary button-large" value="' . $submit_value . '">';
@@ -149,7 +244,7 @@ class GigyaLoginAction {
 
 		// Set a return array.
 		$ret = array(
-				'type' => 'register_form',
+				'type' => 'form',
 				'html' => $output,
 		);
 
@@ -157,5 +252,6 @@ class GigyaLoginAction {
 		wp_send_json_success( $ret );
 
 		exit;
+
 	}
 }

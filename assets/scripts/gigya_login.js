@@ -40,7 +40,7 @@
 		 */
 		GigyaWp.socialLogin = function (data) {
 
-			if (response.provider === 'site') {
+			if (data.provider === 'site') {
 				return false;
 			}
 
@@ -57,14 +57,20 @@
 			$.ajax(options)
 					.done(function (res) {
 						if (res.success == true) {
-							if (typeof res.data != 'undefined' && res.data.type == 'register_form') {
+							if (typeof res.data != 'undefined') {
+
 								// The user didn't register, and need more field to fill.
 								$('body').append('<div id="dialog-modal"></div>');
-								$('#dialog-modal').html(res.data.html);
-								$('#dialog-modal').dialog({ modal: true });
+								$('#dialog-modal').html(res.data.html).dialog({ modal: true });
+
 							}
 							else {
 								location.replace(gigyaLoginParams.redirect);
+							}
+						}
+						else {
+							if (typeof res.data != 'undefined') {
+								alert(res.data.msg);
 							}
 						}
 					})
@@ -78,24 +84,25 @@
 		 * @param response
 		 * @returns {boolean}
 		 */
-//		GigyaWp.loginCallback = function (response) {
-//			if (response.provider === 'site') {
-//				return false;
-//			}
-//
-//			if (( response.user.email.length === 0 ) && ( response.user.isSiteUID !== true )) {
-//				var email = prompt("Please fill-in missing details\nEmail:");
-//
-//				if (email == null) {
-//					// User clicked Cancel.
-//					gigya.socialize.logout();
-//				}
-//				else {
-//					// User clicked OK.
-//					// TODO add validation: empty string, email chars ...
-//					response.user.email = email;
-//				}
-//			}
+		GigyaWp.loginCallback = function (response) {
+			if (response.provider === 'site') {
+				return false;
+			}
+
+			if (( response.user.email.length === 0 ) && ( response.user.isSiteUID !== true )) {
+				var email = prompt("Please fill-in missing details\nEmail:");
+
+				if (email == null) {
+					// User clicked Cancel.
+					gigya.socialize.logout();
+				}
+				else {
+					// User clicked OK.
+					// TODO add validation: empty string, email chars ...
+					response.user.email = email;
+					response.user.email_not_verified = true;
+				}
+			}
 
 //			var formData = JSON.parse($('#data-form').text());
 //			if (( response.user.email.length === 0 && response.user.isSiteUID !== true ) || formData.type == 'extra_form') {
@@ -108,7 +115,9 @@
 //				All good, let's do it.
 //				GigyaWp.socialLogin(response);
 //			}
-//		}
+
+			GigyaWp.socialLogin(response);
+		}
 
 		/**
 		 * On RaaS login with Gigya behavior.
@@ -154,19 +163,18 @@
 		 */
 		// Attach event handlers.
 		if (typeof GigyaWp.regEvents === 'undefined') {
-			if (gigyaLoginParams.loginMode === 'raas') {
+			if (gigyaLoginParams.loginMode == 'raas') {
 				gigya.accounts.addEventHandlers({
 					onLogin: GigyaWp.raasLogin
 				});
 			}
-			else {
+			else if (gigyaLoginParams.loginMode != 'wp_only'){
 				gigya.socialize.addEventHandlers({
-					onLogin: GigyaWp.socialLogin
+					onLogin: GigyaWp.loginCallback
 				});
 			}
 			GigyaWp.regEvents = true;
 		}
-
 	});
 
 })(jQuery);
