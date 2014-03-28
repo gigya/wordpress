@@ -129,70 +129,70 @@ function loginSettingsForm() {
 			'markup' => '<div class="raas-login-wrapper">'
 	);
 
-	$form['login_raas_web_screen_id'] = array(
+	$form['raas_web_screen'] = array(
 			'type'  => 'text',
 			'label' => __( 'Web Screen Set ID' ),
-			'value' => ! empty( $values['login_raas_web_screen_id'] ) ? $values['login_raas_web_screen_id'] : 'Login-web'
+			'value' => ! empty( $values['raas_web_screen'] ) ? $values['raas_web_screen'] : 'Login-web'
 	);
 
-	$form['login_raas_mobile_screen_id'] = array(
+	$form['raas_mobile_screen'] = array(
 			'type'  => 'text',
 			'label' => __( 'Mobile Screen Set ID' ),
-			'value' => ! empty( $values['login_raas_mobile_screen_id'] ) ? $values['login_raas_mobile_screen_id'] : 'Mobile-login'
+			'value' => ! empty( $values['raas_mobile_screen'] ) ? $values['raas_mobile_screen'] : 'Mobile-login'
 	);
 
-	$form['login_raas_login_screen_id'] = array(
+	$form['raas_login_screen'] = array(
 			'type'  => 'text',
 			'label' => __( 'Login Screen ID' ),
-			'value' => ! empty( $values['login_raas_login_screen_id'] ) ? $values['login_raas_login_screen_id'] : 'gigya-login-screen'
+			'value' => ! empty( $values['raas_login_screen'] ) ? $values['raas_login_screen'] : 'gigya-login-screen'
 	);
 
-	$form['login_raas_register_screen_id'] = array(
+	$form['raas_register_screen'] = array(
 			'type'  => 'text',
 			'label' => __( 'Register Screen ID' ),
-			'value' => ! empty( $values['login_raas_register_screen_id'] ) ? $values['login_raas_register_screen_id'] : 'gigya-register-screen'
+			'value' => ! empty( $values['raas_register_screen'] ) ? $values['raas_register_screen'] : 'gigya-register-screen'
 	);
 
-	$form['login_raas_profile_web_screen_id'] = array(
+	$form['raas_profile_web_screen'] = array(
 			'type'  => 'text',
 			'label' => __( 'Web Screen Set ID' ),
-			'value' => ! empty( $values['login_raas_profile_web_screen_id'] ) ? $values['login_raas_profile_web_screen_id'] : 'Profile-web'
+			'value' => ! empty( $values['raas_profile_web_screen'] ) ? $values['raas_profile_web_screen'] : 'Profile-web'
 	);
 
-	$form['login_raas_profile_mobile_screen_id'] = array(
+	$form['raas_profile_mobile_screen'] = array(
 			'type'  => 'text',
 			'label' => __( 'Mobile Screen Set ID' ),
-			'value' => ! empty( $values['login_raas_profile_mobile_screen_id'] ) ? $values['login_raas_profile_mobile_screen_id'] : 'Profile-mobile'
+			'value' => ! empty( $values['login_raas_profile_mobile_screen'] ) ? $values['login_raas_profile_mobile_screen'] : 'Profile-mobile'
 	);
 
-	$form['login_raas_override_links'] = array(
+	$form['raas_override_links'] = array(
 			'type'  => 'checkbox',
 			'label' => __( 'Override Wordpress Links' ),
 			'desc'  => __( "Checking this checkbox, WordPress's default 'Login', 'Registration' and 'Edit Profile' links will pop-up RaaS's respective screens instead of redirecting to the WordPress screens" ),
-			'value' => ! empty( $values['login_raas_profile_mobile_screen_id'] ) ? $values['login_raas_profile_mobile_screen_id'] : 1
+			'value' => ! empty( $values['login_raas_profile_mobile'] ) ? $values['login_raas_profile_mobile'] : 1
 	);
 
-	$form['login_raas_divs'] = array(
+	$form['raas_divs'] = array(
 			'markup' => __( 'DIV IDs' ) . '<br>' .
 					'<small>' . __( 'Specify the DIV IDs in which to embed the screen-sets. If the IDs are empty (default), then the screen-set would show as pop-up dialogs' ) . '<small>'
 	);
 
-	$form['login_raas_login_div'] = array(
+	$form['raas_login_div'] = array(
 			'type'  => 'text',
 			'label' => __( 'Login' ),
-			'value' => ! empty( $values['login_raas_login_label'] ) ? $values['login_raas_login_label'] : ''
+			'value' => ! empty( $values['raas_login_div'] ) ? $values['raas_login_div'] : 'loginform'
 	);
 
-	$form['login_raas_register_div'] = array(
+	$form['raas_register_div'] = array(
 			'type'  => 'text',
 			'label' => __( 'Register' ),
-			'value' => ! empty( $values['login_raas_register_label'] ) ? $values['login_raas_register_label'] : ''
+			'value' => ! empty( $values['raas_register_div'] ) ? $values['raas_register_div'] : 'registerform'
 	);
 
-	$form['login_raas_profile_div'] = array(
+	$form['raas_profile_div'] = array(
 			'type'  => 'text',
 			'label' => __( 'Profile' ),
-			'value' => ! empty( $values['login_raas_profile_label'] ) ? $values['login_raas_profile_label'] : ''
+			'value' => ! empty( $values['raas_profile_div'] ) ? $values['raas_profile_div'] : 'profile-page'
 	);
 
 	$form['raas_end'] = array(

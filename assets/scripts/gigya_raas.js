@@ -4,84 +4,44 @@
 
 // --------------------------------------------------------------------
 
-		$(document).on('click', 'a[href]', function(e) {
-			var path = $(this)[0].pathname;
-			var search = $(this)[0].search;
-			if (path.indexOf('wp-login.php') != -1)	{
-				switch (search) {
-					case '':
+		/**
+		 * Override default WP links to use Gigya's RaaS behavior.
+		 */
+		var overrideLinks = function() {
+			$(document).on('click', 'a[href]', function(e) {
+				var path = $(this)[0].pathname;
+				var search = $(this)[0].search;
+				if (path.indexOf('wp-login.php') != -1)	{
+					switch (search) {
 
+						case '':
 							// Login page
-						gigya.accounts.showScreenSet({screenSet:'Login-web', mobileScreenSet:'Login-mobile', startScreen:'gigya-login-screen', containerID:'login-div'});
-						e.preventDefault();
-						break;
+							gigya.accounts.showScreenSet({screenSet:gigyaRaasParams.raasWebScreen, mobileScreenSet:gigyaRaasParams.raasMobileScreen, startScreen:gigyaRaasParams.raasLoginScreen});
+							e.preventDefault();
+							break;
 
-					case '?action=register':
-
+						case '?action=register':
 							// Register page
-						gigya.accounts.showScreenSet({screenSet:'Login-web', mobileScreenSet:'Login-mobile', startScreen:'gigya-login-screen', containerID:'login-div'});
-						e.preventDefault();
-						break;
+							gigya.accounts.showScreenSet({screenSet:gigyaRaasParams.raasWebScreen, mobileScreenSet:gigyaRaasParams.raasMobileScreen, startScreen:gigyaRaasParams.raasRegisterScreen});
+							e.preventDefault();
+							break;
+					}
 				}
-			}
-			else if (path.indexOf('profile.php') != -1) {
+				else if (path.indexOf('profile.php') != -1) {
 
-				// Profile page
-				gigya.accounts.showScreenSet({screenSet:'Profile-web', mobileScreenSet:'Profile-mobile', containerID:'edit-account-div'});
-				e.preventDefault();
-			}
-		});
-
-// --------------------------------------------------------------------
-
-//		$('.gigya-raas-login').once('gigya-raas').click( function (e) {
-//			e.preventDefault();
-//			gigya.accounts.showScreenSet(Drupal.settings.gigya.raas.login);
-//			Drupal.settings.gigya.raas.linkId = $(this).attr('id');
-//		});
-//
-//// --------------------------------------------------------------------
-//
-//		$('.gigya-raas-reg').once('gigya-raas').click( function (e) {
-//			e.preventDefault();
-//			gigya.accounts.showScreenSet(Drupal.settings.gigya.raas.register);
-//			Drupal.settings.gigya.raas.linkId = $(this).attr('id');
-//		});
-//
-//// --------------------------------------------------------------------
-//
-//		$('.gigya-raas-prof, a:[href="/user"]').once('gigya-raas').click( function (e) {
-//			e.preventDefault();
-//			gigya.accounts.showScreenSet(Drupal.settings.gigya.raas.profile);
-//		});
-//
-//// --------------------------------------------------------------------
-//
-//		var loginDiv = $('#gigya-raas-login-div');
-//		if (loginDiv.size() > 0 && (typeof Drupal.settings.gigya.raas.login !== 'undefined')) {
-//			var id = loginDiv.eq(0).attr('id');
-//			Drupal.settings.gigya.raas.login.containerID = id;
-//			Drupal.settings.gigya.raas.linkId = id;
-//			gigya.accounts.showScreenSet(Drupal.settings.gigya.raas.login);
-//		}
-//
-//// --------------------------------------------------------------------
-//
-//		var regDiv = $('#gigya-raas-register-div');
-//		if (regDiv.size() > 0 && (typeof Drupal.settings.gigya.raas.register !== 'undefined')) {
-//			var id = regDiv.eq(0).attr('id');
-//			Drupal.settings.gigya.raas.register.containerID = id;
-//			Drupal.settings.gigya.raas.linkId = id;
-//			gigya.accounts.showScreenSet(Drupal.settings.gigya.raas.register);
-//		}
-
-// --------------------------------------------------------------------
-
-		var profDiv = $('#gigya-raas-profile-div');
-		if ((profDiv.size() > 0) && (typeof Drupal.settings.gigya.raas.profile !== 'undefined')) {
-			Drupal.settings.gigya.raas.profile.containerID = profDiv.eq(0).attr('id');
-			gigya.accounts.showScreenSet(Drupal.settings.gigya.raas.profile);
+					// Profile page
+					gigya.accounts.showScreenSet({screenSet:gigyaRaasParams.raasProfileWebScreen, mobileScreenSet:gigyaRaasParams.raasProfileMobileScreen});
+					e.preventDefault();
+				}
+			});
 		}
+
+
+// --------------------------------------------------------------------
+		gigya.accounts.showScreenSet({screenSet:gigyaRaasParams.raasWebScreen, mobileScreenSet:gigyaRaasParams.raasMobileScreen, startScreen:gigyaRaasParams.raasLoginScreen, containerID:gigyaRaasParams.raasLoginDiv});
+		gigya.accounts.showScreenSet({screenSet:gigyaRaasParams.raasWebScreen, mobileScreenSet:gigyaRaasParams.raasMobileScreen, startScreen:gigyaRaasParams.raasRegisterScreen, containerID:gigyaRaasParams.raasRegisterDiv});
+		gigya.accounts.showScreenSet({screenSet:gigyaRaasParams.raasProfileWebScreen, mobileScreenSet:gigyaRaasParams.raasProfileMobileScreen, containerID:gigyaRaasParams.raasProfileDiv});
+
 
 // --------------------------------------------------------------------
 
@@ -96,12 +56,12 @@
 			}
 
 			var options = {
-				url : gigyaLoginParams.ajaxurl,
+				url : gigyaRaasParams.ajaxurl,
 				type: 'POST',
 //			dataType: 'json',
 				data: {
 					data  : data,
-					action: gigyaLoginParams.actionRaasLogin
+					action: gigyaRaasParams.actionRaas
 				}
 			};
 
@@ -114,7 +74,7 @@
 								$('#dialog-modal').dialog({ modal: true });
 							}
 							else {
-								location.replace(gigyaLoginParams.redirect);
+								location.replace(gigyaRaasParams.redirect);
 							}
 						}
 					})
@@ -137,11 +97,17 @@
 			});
 
 			GigyaWp.regEvents = true;
-
 		}
-	});
 
 // --------------------------------------------------------------------
 
+		// Override default WP links to use Gigya's RaaS behavior.
+		if (gigyaRaasParams.raasOverrideLinks > 0) {
+			overrideLinks();
+		}
+
+// --------------------------------------------------------------------
+
+	});
 })(jQuery);
 
