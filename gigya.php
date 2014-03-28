@@ -183,7 +183,6 @@ function _gigya_user_register_action( $uid ) {
 
 		// New user was register through our custom
 		// extra form. We make a login.
-		// @todo: add  possibility to verify email.
 		$wp_user = get_userdata( $uid );
 		require_once( GIGYA__PLUGIN_DIR . 'class/class.GigyaLoginAction.php' );
 		GigyaLoginAction::login( $wp_user );
