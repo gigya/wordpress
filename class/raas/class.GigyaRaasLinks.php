@@ -45,8 +45,8 @@ class GigyaRaasLinks {
 				'raasProfileDiv'    => isset( $this->login_options['raas_profile_div'] ) ? $this->login_options['raas_profile_div'] : 'profile-page',
 		);
 
-		// Load params to be available to client-side script.
-		wp_localize_script( 'gigya_rass_js', 'gigyaRaasParams', $params );
+		// Load params to be available on client-side script.
+		wp_localize_script( 'gigya_raas_js', 'gigyaRaasParams', $params );
 
 	}
 }
