@@ -40,10 +40,6 @@
 		 */
 		GigyaWp.socialLogin = function (data) {
 
-			if (data.provider === 'site') {
-				return false;
-			}
-
 			var options = {
 				url : gigyaLoginParams.ajaxurl,
 				type: 'POST',
@@ -54,70 +50,92 @@
 				}
 			};
 
-			$.ajax(options)
-					.done(function (res) {
-						if (res.success == true) {
-							if (typeof res.data != 'undefined') {
+			var req = $.ajax(options);
 
-								// The user didn't register, and need more field to fill.
-								$('body').append('<div id="dialog-modal"></div>');
-								$('#dialog-modal').html(res.data.html).dialog({ modal: true });
+			req.done(function (res) {
+				if (res.success == true) {
+					if (typeof res.data != 'undefined') {
 
-							}
-							else {
-								location.replace(gigyaLoginParams.redirect);
-							}
-						}
-						else {
-							if (typeof res.data != 'undefined') {
-								alert(res.data.msg);
-							}
-						}
-					})
-					.fail(function (jqXHR, textStatus, errorThrown) {
-						console.log(errorThrown);
-					});
+						// The user didn't register, and need more field to fill.
+						$('#dialog-modal').html(res.data.html).dialog({ modal: true });
+
+					}
+					else {
+
+						// Redirect.
+						location.replace(gigyaLoginParams.redirect);
+					}
+				}
+				else {
+					if (typeof res.data != 'undefined') {
+
+						// Message modal.
+						$('#dialog-modal').html(res.data.msg).dialog({ modal: true });
+					}
+				}
+			});
+
+			req.fail(function (jqXHR, textStatus, errorThrown) {
+				console.log(errorThrown);
+			});
 		}
+
+// --------------------------------------------------------------------
 
 		/**
 		 * Login validator.
 		 * @param response
 		 * @returns {boolean}
 		 */
-		GigyaWp.loginCallback = function (response) {
+		GigyaWp.loginValidate = function (response) {
 			if (response.provider === 'site') {
 				return false;
 			}
 
+			// We check there an email field.
+			// Only for the first time.
 			if (( response.user.email.length === 0 ) && ( response.user.isSiteUID !== true )) {
-				var email = prompt("Please fill-in missing details\nEmail:");
 
-				if (email == null) {
-					// User clicked Cancel.
-					gigya.socialize.logout();
-				}
-				else {
-					// User clicked OK.
-					// TODO add validation: empty string, email chars ...
-					response.user.email = email;
-					response.user.email_not_verified = true;
-				}
+				// Building an 'get email' form.
+				var html =
+						'<div class="form-get-email">' +
+								'<div class="description">' +
+									'Additional information is required in order ' +
+									'to complete your registration. ' +
+									'Please fill-in your Email' +
+									'<br><br>' +
+								'</div>' +
+								'<label for="email">Email</label>' +
+								'<input type="text" id="get-email" name="email">' +
+								'<button type="button" class="button button-get-email">Submit</button>' +
+						'</div>';
+
+				// Modal with the email form.
+				$('#dialog-modal').html(html).dialog({ modal: true });
+
+				$(document).on('click', '.button-get-email', function() {
+					var email = $('input#get-email').val();
+					if (email.length > 0) {
+
+						// When we get a value, we update the user object,
+						// And put a flag for 'email not verified'.
+						response.user.email = email;
+						response.user.email_not_verified = true;
+						$('#dialog-modal').dialog( "close" );
+
+						// Go on with register
+						GigyaWp.socialLogin(response);
+					}
+				})
 			}
 
-//			var formData = JSON.parse($('#data-form').text());
-//			if (( response.user.email.length === 0 && response.user.isSiteUID !== true ) || formData.type == 'extra_form') {
-//				// There email missing , or the user need more field to fill.
-//				$('body').append('<div id="dialog-modal"></div>');
-//				$('#dialog-modal').html(formData.html);
-//				$('#dialog-modal').dialog({ modal: true });
-//			}
-//			else {
-//				All good, let's do it.
-//				GigyaWp.socialLogin(response);
-//			}
+			else {
+				GigyaWp.socialLogin(response);
+			}
 
-			GigyaWp.socialLogin(response);
 		}
+
+// --------------------------------------------------------------------
 
 		/**
 		 * On RaaS login with Gigya behavior.
@@ -144,7 +162,6 @@
 						if (res.success == true) {
 							if (typeof res.data != 'undefined' && res.data.type == 'register_form') {
 								// The user didn't register, and need more field to fill.
-								$('body').append('<div id="dialog-modal"></div>');
 								$('#dialog-modal').html(res.data.html);
 								$('#dialog-modal').dialog({ modal: true });
 							}
@@ -158,24 +175,36 @@
 					});
 		}
 
+// --------------------------------------------------------------------
+
 		/**
 		 * Gigya's event handlers.
 		 */
 		// Attach event handlers.
 		if (typeof GigyaWp.regEvents === 'undefined') {
+
 			if (gigyaLoginParams.loginMode == 'raas') {
+
+				// Raas Login.
 				gigya.accounts.addEventHandlers({
 					onLogin: GigyaWp.raasLogin
 				});
 			}
-			else if (gigyaLoginParams.loginMode != 'wp_only'){
+			else if (gigyaLoginParams.loginMode == 'wp_sl'){
+
+				// Social Login.
 				gigya.socialize.addEventHandlers({
-					onLogin: GigyaWp.loginCallback
+					onLogin: GigyaWp.loginValidate
 				});
 			}
 			GigyaWp.regEvents = true;
+
+			// jQuery dialog element.
+			$('body').append('<div id="dialog-modal"></div>');
 		}
 	});
+
+// --------------------------------------------------------------------
 
 })(jQuery);
 

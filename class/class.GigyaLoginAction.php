@@ -24,6 +24,7 @@ class GigyaLoginAction {
 		// Trap for login users
 		if ( is_user_logged_in() ) {
 			wp_send_json_error( array( 'msg' => __( 'There already a logged in user' ) ) );
+			exit;
 		}
 
 		// Check Gigya's signature validation.
@@ -37,6 +38,7 @@ class GigyaLoginAction {
 		// Gigya user validate trap.
 		if ( empty( $is_sig_validate ) ) {
 			wp_send_json_error( array( 'msg' => __( 'There a problem to validate your user' ) ) );
+			exit;
 		}
 
 		// Initialize Gigya user.
@@ -74,7 +76,6 @@ class GigyaLoginAction {
 		}
 
 		wp_send_json_success( $prm );
-
 		exit;
 	}
 
@@ -114,6 +115,7 @@ class GigyaLoginAction {
 									$email_exists,
 									$this->gigya_user['UID']
 							) ) );
+			exit;
 		}
 
 		// If the name of the new user is already exist in the system,
@@ -147,6 +149,7 @@ class GigyaLoginAction {
 
 			// Return JSON to client.
 			wp_send_json_error( array( 'msg' => $msg ) );
+			exit;
 		}
 
 		// If we got to here, the user is already register.
@@ -161,6 +164,7 @@ class GigyaLoginAction {
 							'echo'           => false,
 							'value_username' => $wp_user->data->user_login
 					) ) ) );
+			exit;
 
 		}
 

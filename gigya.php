@@ -161,10 +161,6 @@ function _gigya_wp_login_action( $user_login, $account ) {
 
 	}
 
-	// This post is after registration with manually filled email.
-	// And verification by email.
-	if ($_POST['form_name'] == 'loginform-gigya-email-verify') {}
-
 	// This post is when there is a same email on the site,
 	// with the one who try to register and we want to link-accounts
 	// after the user is logged in with password.
