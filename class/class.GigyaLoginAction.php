@@ -108,7 +108,12 @@ class GigyaLoginAction {
 		if ( ! empty( $email_exists ) ) {
 
 			// Return JSON with login form to client.
-			wp_send_json_success( array( 'type' => 'form', 'html' => $this->loginForm( $email_exists, 'loginform-gigya-link-account', $this->gigya_user['UID'] ) ) );
+			wp_send_json_success( array(
+					'type' => 'form',
+					'html' => $this->linkAccountForm(
+									$email_exists,
+									$this->gigya_user['UID']
+							) ) );
 		}
 
 		// If the name of the new user is already exist in the system,
@@ -129,6 +134,7 @@ class GigyaLoginAction {
 		$name    = $this->gigya_user['nickname'];
 		$email   = $this->gigya_user['email'];
 		$user_id = register_new_user( $name, $email );
+		$wp_user = get_userdata( $user_id );
 
 		// On registration error.
 		if ( ! empty( $user_id->errors ) ) {
@@ -149,16 +155,27 @@ class GigyaLoginAction {
 		if ( ! empty( $this->gigya_user['email_not_verified'] ) ) {
 
 			// Return JSON with login form to client.
-			wp_send_json_success( array( 'type' => 'form', 'html' => $this->loginForm( $email_exists, 'loginform-gigya-email-verify' ) ) );
+			wp_send_json_success( array(
+					'type' => 'form',
+					'html' => wp_login_form( array(
+							'echo'           => false,
+							'value_username' => $wp_user->data->user_login
+					) ) ) );
 
 		}
 
 		// Finally, let's login the user.
-		$wp_user = get_userdata( $user_id );
 		$this->login( $wp_user );
 	}
 
-	private function loginForm( $account, $form_name = 'loginform-gigya', $gigya_uid = null ) {
+	/**
+	 * Generate form for link accounts.
+	 * @param        $account
+	 * @param null   $gigya_uid
+	 *
+	 * @return string
+	 */
+	private function linkAccountForm( $account, $gigya_uid = null ) {
 
 		$output = '';
 		$output .= '<form name="loginform" id="loginform" action="' . site_url( 'wp-login.php', 'login_post' ) . '" method="post">';
@@ -166,7 +183,7 @@ class GigyaLoginAction {
 		// Set form elements.
 		$form            = array();
 		$form['message'] = array(
-				'markup' => __( 'Your Email address' ) . ': ' . $account['email'] . ' ' . __( 'already exists. If you have previously registered, please login with your site credentials to link the accounts. Otherwise, please use a different Email address' )
+				'markup' => __( 'Your Email address' ) . ': ' . $account['email'] . ' ' . __( 'already exists. If you have previously registered, please login with your site credentials to link the accounts. Otherwise, please use a different Email address' ) . '<br><br>'
 		);
 		$form['log']     = array(
 				'type'  => 'text',
@@ -175,14 +192,14 @@ class GigyaLoginAction {
 				'desc'  => __( 'Enter your' ) . ' ' . get_option( 'blogname' ) . ' ' . __( 'username' )
 		);
 
-		$form['pwd']     = array(
+		$form['pwd']       = array(
 				'type'  => 'text',
 				'label' => __( 'Password' ),
 				'desc'  => __( 'Enter your password.' ),
 		);
 		$form['form_name'] = array(
 				'type'  => 'hidden',
-				'value' => $form_name,
+				'value' => 'loginform-gigya-link-account',
 		);
 		$form['gigya_uid'] = array(
 				'type'  => 'hidden',
