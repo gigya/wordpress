@@ -67,6 +67,7 @@ class GigyaAction {
 	 * Initialize hook.
 	 */
 	public function init() {
+
 		require_once( GIGYA__PLUGIN_DIR . 'sdk/GSSDK.php' );
 		require_once( GIGYA__PLUGIN_DIR . 'class/login/class.GigyaUser.php' );
 		require_once( GIGYA__PLUGIN_DIR . 'class/api/class.GigyaApi.php' );
@@ -75,12 +76,30 @@ class GigyaAction {
 		wp_enqueue_script( 'jquery' );
 		wp_enqueue_script( 'jquery-ui-core' );
 		wp_enqueue_script( 'jquery-ui-dialog' );
+		wp_enqueue_script( 'gigya_js', GIGYA__PLUGIN_URL . 'assets/scripts/gigya.js' );
+
 
 		// Checking that we have an API key and Gigya's plugin is turn on.
-		if ( ! empty( $this->global_options['global_api_key'] ) && $this->login_options['login_mode'] == 'wp_only' ) {
+		if ( ! empty( $this->global_options['global_api_key'] ) ) {
 
-			// Load Gigya's socialize.js CDN.
-			wp_enqueue_script( 'gigya', GIGYA__JS_CDN . $this->global_options['global_api_key'] );
+			if ( $this->login_options['login_mode'] != 'wp_only' ) {
+
+				// Load Gigya's socialize.js CDN.
+				wp_enqueue_script( 'gigya', GIGYA__JS_CDN . $this->global_options['global_api_key'] );
+
+			}
+
+			if ( $this->login_options['login_mode'] == 'raas' ) {
+
+				require_once( GIGYA__PLUGIN_DIR . 'class/raas/class.GigyaRaasLinks.php' );
+				$gigyaRaasLinks = new GigyaRaasLinks;
+				$gigyaRaasLinks->init();
+
+//				require_once( GIGYA__PLUGIN_DIR . 'class/raas/class.GigyaRaasAction.php' );
+//				$gigyaRaasAction = new GigyaRaasAction;
+//				$gigyaRaasAction->init();
+
+			}
 
 		}
 
@@ -103,7 +122,9 @@ class GigyaAction {
 			// When we turn on the Gigya's social login plugin,
 			// We also turn on the WP 'Membership: Anyone can register' option.
 			if ( $_POST['gigya_login_settings']['login_mode'] != 'wp_only' ) {
+
 				update_option( 'users_can_register', 1 );
+
 			}
 
 		}

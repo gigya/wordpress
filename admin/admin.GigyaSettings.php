@@ -25,8 +25,10 @@ class GigyaSettings {
 
 		// Add settings sections.
 		foreach ( $this->getSections() as $id => $section ) {
+
 			add_settings_section( $id, $section['title'], $section['func'], $section['slug'] );
 			register_setting( $section['slug'] . '-group', $section['slug'] );
+
 		}
 	}
 
@@ -41,8 +43,10 @@ class GigyaSettings {
 
 		// Register the sub-menus Gigya setting pages.
 		foreach ( $this->getSections() as $section ) {
+
 			require_once( GIGYA__PLUGIN_DIR . 'admin/forms/' . $section['func'] . '.php' );
 			add_submenu_page( 'gigya_global_settings', __( $section['title'], $section['title'] ), __( $section['title'], $section['title'] ), GIGYA__PERMISSION_LEVEL, $section['slug'], array( $this, 'adminPage' ) );
+
 		}
 	}
 

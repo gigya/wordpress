@@ -1,5 +1,4 @@
 (function ($) {
-	var GigyaWp = GigyaWp || {};
 
 	$(document).ready(function () {
 
@@ -43,7 +42,6 @@
 			var options = {
 				url : gigyaLoginParams.ajaxurl,
 				type: 'POST',
-//			dataType: 'json',
 				data: {
 					data  : data,
 					action: gigyaLoginParams.actionLogin
@@ -138,69 +136,18 @@
 // --------------------------------------------------------------------
 
 		/**
-		 * On RaaS login with Gigya behavior.
-		 * @param data
-		 */
-		GigyaWp.raasLogin = function (data) {
-
-			if (response.provider === 'site') {
-				return false;
-			}
-
-			var options = {
-				url : gigyaLoginParams.ajaxurl,
-				type: 'POST',
-//			dataType: 'json',
-				data: {
-					data  : data,
-					action: gigyaLoginParams.actionRaasLogin
-				}
-			};
-
-			$.ajax(options)
-					.done(function (res) {
-						if (res.success == true) {
-							if (typeof res.data != 'undefined' && res.data.type == 'register_form') {
-								// The user didn't register, and need more field to fill.
-								$('#dialog-modal').html(res.data.html);
-								$('#dialog-modal').dialog({ modal: true });
-							}
-							else {
-								location.replace(gigyaLoginParams.redirect);
-							}
-						}
-					})
-					.fail(function (jqXHR, textStatus, errorThrown) {
-						console.log(errorThrown);
-					});
-		}
-
-// --------------------------------------------------------------------
-
-		/**
 		 * Gigya's event handlers.
 		 */
 		// Attach event handlers.
 		if (typeof GigyaWp.regEvents === 'undefined') {
 
-			if (gigyaLoginParams.loginMode == 'raas') {
+			// Social Login.
+			gigya.socialize.addEventHandlers({
+				onLogin: GigyaWp.loginValidate
+			});
 
-				// Raas Login.
-				gigya.accounts.addEventHandlers({
-					onLogin: GigyaWp.raasLogin
-				});
-			}
-			else if (gigyaLoginParams.loginMode == 'wp_sl'){
-
-				// Social Login.
-				gigya.socialize.addEventHandlers({
-					onLogin: GigyaWp.loginValidate
-				});
-			}
 			GigyaWp.regEvents = true;
 
-			// jQuery dialog element.
-			$('body').append('<div id="dialog-modal"></div>');
 		}
 	});
 

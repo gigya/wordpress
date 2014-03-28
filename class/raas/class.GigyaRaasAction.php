@@ -2,12 +2,13 @@
 
 /**
  * @file
- * class.GigyaRaasLoginAction.php
+ * class.GigyaRaasAction.php
  * An AJAX handler for login or register user to WP.
  */
-class GigyaRaasLoginAction {
+class GigyaRaasAction {
 
 	public function __construct() {
+
 		// Get settings variables.
 		$this->global_options = get_option( GIGYA__SETTINGS_GLOBAL );
 		$this->login_options  = get_option( GIGYA__SETTINGS_LOGIN );
@@ -25,6 +26,7 @@ class GigyaRaasLoginAction {
 		if ( is_user_logged_in() ) {
 			$prm = array( 'msg' => __( 'There already a logged in user' ) );
 			wp_send_json_error( $prm );
+			exit;
 		}
 
 		// Check Gigya's signature validation.
@@ -39,6 +41,7 @@ class GigyaRaasLoginAction {
 		if ( empty( $is_sig_validate ) ) {
 			$prm = array( 'msg' => __( 'There a problem to validate your user' ) );
 			wp_send_json_error( $prm );
+			exit;
 		}
 
 		// Initialize Gigya user.
@@ -51,6 +54,7 @@ class GigyaRaasLoginAction {
 		if ( empty( $user_email ) ) {
 			$prm = array( 'msg' => __( 'Email address is required by Drupal and is missing, please contact the site administrator' ) );
 			wp_send_json_error( $prm );
+			exit;
 		}
 
 		$wp_user = get_user_by( 'email', $user_email );
@@ -83,7 +87,6 @@ class GigyaRaasLoginAction {
 
 				$prm = array( 'msg' => $msg );
 				wp_send_json_error( $prm );
-
 				exit;
 			}
 
@@ -99,7 +102,6 @@ class GigyaRaasLoginAction {
 		}
 
 		wp_send_json_success();
-
 		exit;
 	}
 
@@ -185,7 +187,6 @@ class GigyaRaasLoginAction {
 
 		// Return JSON to client.
 		wp_send_json_success( $ret );
-
 		exit;
 	}
 
