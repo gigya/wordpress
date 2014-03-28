@@ -1,23 +1,36 @@
-/**
- * Created with JetBrains PhpStorm.
- * Date: 9/9/13
- * Time: 12:04 PM
- */
+(function ($) {
+	$(document).ready(function () {
 
-jQuery(document).ready(function () {
-	jQuery(".gm-type select").change(function (event) {
-		if (this.value == 'leaderboard') {
-			jQuery(this).parents('.widget-content').find('.hidden').removeClass('hidden');
-		} else {
-			jQuery(this).parents('.widget-content').find('.gm-period,.gm-count').not('hidden').addClass('hidden');
+		/**
+		 * Expose the relevant form element for the login mode selected.
+		 * @param $el
+		 */
+		var userManagementPage = function($el) {
+			if ($el.is(':checked')) {
+				if ($el.val() == 'wp_only') {
+					$('.social-login-wrapper').addClass('hidden');
+					$('.raas-login-wrapper').addClass('hidden');
+				}
+				else if ($el.val() == 'wp_sl') {
+					$('.social-login-wrapper').removeClass('hidden');
+					$('.raas-login-wrapper').addClass('hidden');
+				}
+				else if ($el.val() == 'raas') {
+					$('.social-login-wrapper').addClass('hidden');
+					$('.raas-login-wrapper').removeClass('hidden');
+				}
+			}
 		}
+
+		// Set user management page at page load.
+		$('#gigya_login_mode input').each(function(){
+			userManagementPage($(this));
+		});
+
+		// Set user management page at modes manually change.
+		$('input:radio[name="gigya_login_settings[login_mode]"]').change(function() {
+			userManagementPage($(this));
+		})
+
 	});
-	jQuery('.gigya-settings .closed').each(function () {
-		jQuery(this).find('.span3').addClass('toggle-label').wrap('<a class="toggle-link" href="#" />').preApp;
-		jQuery(this).find('.span6').addClass('hidden');
-	});
-	jQuery('.toggle-link').click(function (ev) {
-		ev.preventDefault();
-		jQuery(this).next('.span6').slideToggle();
-	});
-});
+})(jQuery);

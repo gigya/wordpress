@@ -6,10 +6,6 @@ function loginSettingsForm() {
 	$values = get_option( GIGYA__SETTINGS_LOGIN );
 	$form   = array();
 
-	$form['sl_start'] = array(
-			'markup' => '<div class="social-login-wrapper">'
-	);
-
 	$mode_opts = array(
 			'wp_only' => __( 'Wordpress only' ),
 			'wp_sl'   => __( 'Wordpress + Social Login' ),
@@ -22,6 +18,10 @@ function loginSettingsForm() {
 			'options' => $mode_opts,
 			'desc'    => __( 'By activate Gigya\'s Social Login, you also activate "Membership: Anyone can register" option on Wordpress General Settings page' ),
 			'value'   => ! empty( $values['login_mode'] ) ? $values['login_mode'] : 'wp_only'
+	);
+
+	$form['sl_start'] = array(
+			'markup' => '<div class="social-login-wrapper">'
 	);
 
 	$button_opts = array(
@@ -155,23 +155,33 @@ function loginSettingsForm() {
 	);
 	$form['login_raas_profile_mobile_screen_id'] = array(
 			'type' => 'text',
-			'label' => __('mobile Screen Set ID'),
+			'label' => __('Mobile Screen Set ID'),
 			'value' => ! empty( $values['login_raas_profile_mobile_screen_id'] ) ? $values['login_raas_profile_mobile_screen_id'] : 'Profile-mobile'
+	);
+	$form['login_raas_override_links'] = array(
+			'type' => 'checkbox',
+			'label' => __('Override Wordpress Links'),
+		'desc' => __("Checking this checkbox, WordPress's default 'Login', 'Registration' and 'Edit Profile' links will pop-up RaaS's respective screens instead of redirecting to the WordPress screens"),
+			'value' => ! empty( $values['login_raas_profile_mobile_screen_id'] ) ? $values['login_raas_profile_mobile_screen_id'] : 1
+
+	);
+	$form['login_raas_divs'] = array(
+		'markup' => __('DIV IDs')
 	);
 	$form['login_raas_login_label'] = array(
 			'type' => 'text',
 			'label' => __('Login'),
-			'value' => ! empty( $values['login_raas_login_label'] ) ? $values['login_raas_login_label'] : 'Login'
+			'value' => ! empty( $values['login_raas_login_label'] ) ? $values['login_raas_login_label'] : ''
 	);
 	$form['login_raas_register_label'] = array(
 			'type' => 'text',
 			'label' => __('Register'),
-			'value' => ! empty( $values['login_raas_register_label'] ) ? $values['login_raas_register_label'] : 'Register'
+			'value' => ! empty( $values['login_raas_register_label'] ) ? $values['login_raas_register_label'] : ''
 	);
 	$form['login_raas_profile_label'] = array(
 			'type' => 'text',
 			'label' => __('Profile'),
-			'value' => ! empty( $values['login_raas_profile_label'] ) ? $values['login_raas_profile_label'] : 'Profile'
+			'value' => ! empty( $values['login_raas_profile_label'] ) ? $values['login_raas_profile_label'] : ''
 	);
 
 	$form['raas_end'] = array(
