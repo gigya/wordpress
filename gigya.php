@@ -59,7 +59,7 @@ class GigyaAction {
 		add_action( 'user_register', array( $this, 'userRegister', 10, 1 ) );
 		add_action( 'wp_logout', array( $this, 'wpLogout' ) );
 		add_action( 'deleted_user', array( $this, 'deletedUser' ) );
-		add_shortcode( 'gigya_user_info', array( $this, 'gigyaUserInfo' ) );
+		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 
 	}
 
@@ -69,7 +69,6 @@ class GigyaAction {
 	public function init() {
 
 		require_once( GIGYA__PLUGIN_DIR . 'sdk/GSSDK.php' );
-		require_once( GIGYA__PLUGIN_DIR . 'class/login/class.GigyaUser.php' );
 		require_once( GIGYA__PLUGIN_DIR . 'class/api/class.GigyaApi.php' );
 
 		// Load jQuery and jQueryUI from WP..
@@ -91,20 +90,27 @@ class GigyaAction {
 
 			if ( $this->login_options['login_mode'] != 'wp_only' ) {
 
-				// Load Gigya's socialize.js CDN.
+				// Load Gigya's socialize.js from CDN.
 				wp_enqueue_script( 'gigya', GIGYA__JS_CDN . $this->global_options['global_api_key'] );
+
+			}
+
+			if ( $this->login_options['login_mode'] == 'wp_sl' ) {
+
+				// Loads social login user class.
+				require_once( GIGYA__PLUGIN_DIR . 'class/login/class.GigyaLoginUser.php' );
 
 			}
 
 			if ( $this->login_options['login_mode'] == 'raas' ) {
 
+				// Loads RaaS Account class.
+				require_once( GIGYA__PLUGIN_DIR . 'class/raas/class.GigyaRaasAccount.php' );
+
+				// Loads RaaS links class.
 				require_once( GIGYA__PLUGIN_DIR . 'class/raas/class.GigyaRaasLinks.php' );
 				$gigyaRaasLinks = new GigyaRaasLinks;
 				$gigyaRaasLinks->init();
-
-//				require_once( GIGYA__PLUGIN_DIR . 'class/raas/class.GigyaRaasAction.php' );
-//				$gigyaRaasAction = new GigyaRaasAction;
-//				$gigyaRaasAction->init();
 
 			}
 
@@ -124,6 +130,8 @@ class GigyaAction {
 	 * Fires when an 'action' REQUEST variable is sent.
 	 */
 	public function adminActionUpdate() {
+
+		// When a Gigya's setting page is submitted.
 		if ( isset( $_POST['gigya_login_settings'] ) ) {
 
 			// When we turn on the Gigya's social login plugin,
@@ -133,7 +141,6 @@ class GigyaAction {
 				update_option( 'users_can_register', 1 );
 
 			}
-
 		}
 	}
 
@@ -158,6 +165,7 @@ class GigyaAction {
 	 */
 	public function ajaxLogin() {
 
+		// Loads Gigya's social login class.
 		require_once( GIGYA__PLUGIN_DIR . 'class/login/class.GigyaLoginAction.php' );
 		$gigyaLoginAction = new GigyaLoginAction;
 		$gigyaLoginAction->init();
@@ -169,6 +177,7 @@ class GigyaAction {
 	 */
 	public function ajaxRaasLogin() {
 
+		// Loads Gigya's RaaS class.
 		require_once( GIGYA__PLUGIN_DIR . 'class/raas/class.GigyaRaasAction.php' );
 		$gigyaLoginAction = new GigyaRaasAction;
 		$gigyaLoginAction->init();
@@ -187,7 +196,7 @@ class GigyaAction {
 
 			// Notify Gigya socialize.notifyLogin
 			// for a return user logged in from SITE.
-			$gigyaUser = new GigyaUser( $account->ID );
+			$gigyaUser = new GigyaLoginUser( $account->ID );
 			$gigyaUser->notifyLogin( $account->ID );
 
 		}
@@ -273,7 +282,7 @@ class GigyaAction {
 		}
 	}
 
-	private function gigyaUserInfo( $atts, $info = NULL ) {
+	private function shortcodeUserInfo( $atts, $info = NULL ) {
 
 		$wp_user = wp_get_current_user();
 		if ( $info == NULL ) {

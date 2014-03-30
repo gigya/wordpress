@@ -8,9 +8,11 @@
 class GigyaLoginAction {
 
 	public function __construct() {
+
 		// Get settings variables.
 		$this->global_options = get_option( GIGYA__SETTINGS_GLOBAL );
 		$this->login_options  = get_option( GIGYA__SETTINGS_LOGIN );
+
 	}
 
 	/**
