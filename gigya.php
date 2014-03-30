@@ -60,6 +60,7 @@ class GigyaAction {
 		add_action( 'wp_logout', array( $this, 'wpLogout' ) );
 		add_action( 'deleted_user', array( $this, 'deletedUser' ) );
 		add_shortcode( 'gigya_user_info', array( $this, 'gigyaUserInfo' ) );
+		add_filter( 'get_avatar', 'updateAvatarImage', 10, 5 );
 
 	}
 
@@ -78,6 +79,13 @@ class GigyaAction {
 		wp_enqueue_script( 'jquery-ui-dialog' );
 		wp_enqueue_script( 'gigya_js', GIGYA__PLUGIN_URL . 'assets/scripts/gigya.js' );
 
+// Parameters to be sent to the DOM.
+		$params = array(
+				'ajaxurl'   => admin_url( 'admin-ajax.php' ),
+				'logoutUrl' => wp_logout_url(),
+		);
+		// Load params to be available to client-side script.
+		wp_localize_script( 'gigya_login_js', 'gigyaParams', $params );
 
 		// Checking that we have an API key and Gigya's plugin is turn on.
 		if ( ! empty( $this->global_options['global_api_key'] ) ) {
@@ -160,10 +168,10 @@ class GigyaAction {
 	/**
 	 * Hook AJAX RAAS login.
 	 */
-	function ajaxRaasLogin() {
+	public function ajaxRaasLogin() {
 
-		require_once( GIGYA__PLUGIN_DIR . 'class/raas/class.GigyaRaasLoginAction.php' );
-		$gigyaLoginAction = new GigyaRaasLoginAction;
+		require_once( GIGYA__PLUGIN_DIR . 'class/raas/class.GigyaRaasAction.php' );
+		$gigyaLoginAction = new GigyaRaasAction;
 		$gigyaLoginAction->init();
 
 	}
@@ -174,7 +182,7 @@ class GigyaAction {
 	 * @param $user_login
 	 * @param $account
 	 */
-	function wpLogin( $user_login, $account ) {
+	public function wpLogin( $user_login, $account ) {
 
 		if ( empty ( $_SESSION['gigya_uid'] ) && empty( $_POST['gigyaUID'] ) ) {
 
@@ -201,7 +209,7 @@ class GigyaAction {
 	 *
 	 * @param $uid
 	 */
-	function userRegister( $uid ) {
+	public function userRegister( $uid ) {
 
 		if ( ! empty( $_POST['gigyaUID'] ) ) {
 
@@ -235,7 +243,7 @@ class GigyaAction {
 	/**
 	 * Hook user logout
 	 */
-	function wpLogout() {
+	public function wpLogout() {
 
 		// Get the current user.
 		$account = wp_get_current_user();
@@ -255,7 +263,7 @@ class GigyaAction {
 	 *
 	 * @param $user_id
 	 */
-	function deletedUser( $user_id ) {
+	public function deletedUser( $user_id ) {
 
 		// Check it logged in by Gigya.
 		if ( empty ( $_SESSION['gigya_uid'] ) ) {
@@ -266,7 +274,7 @@ class GigyaAction {
 		}
 	}
 
-	function gigyaUserInfo( $atts, $info = NULL ) {
+	private function gigyaUserInfo( $atts, $info = NULL ) {
 
 		$wp_user = wp_get_current_user();
 		if ( $info == NULL ) {
@@ -277,6 +285,32 @@ class GigyaAction {
 		}
 
 		return $user_info->getString( key( $atts ), current( $atts ) );
+	}
+
+	/**
+	 * @todo needs work.
+	 * @param $avatar
+	 * @param $id_or_email
+	 * @param $size
+	 * @param $default
+	 * @param $alt
+	 *
+	 * @return String
+	 */
+	public function updateAvatarImage( $avatar, $id_or_email, $size, $default, $alt ) {
+
+		if ( is_object( $id_or_email ) ) {
+			$id_or_email = $id_or_email->user_id;
+		}
+
+		if ( is_numeric( $id_or_email ) ) {
+			$thumb = get_user_meta( $id_or_email, "avatar", 1 );
+			if ( ! empty( $thumb ) ) {
+				$avatar = preg_replace( "/src='*?'/", "src='$thumb'", $avatar );
+			}
+		}
+
+		return $avatar;
 	}
 }
 

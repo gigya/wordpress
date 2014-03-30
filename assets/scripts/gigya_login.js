@@ -40,7 +40,7 @@
 		GigyaWp.socialLogin = function (data) {
 
 			var options = {
-				url : gigyaLoginParams.ajaxurl,
+				url : gigyaParams.ajaxurl,
 				type: 'POST',
 				data: {
 					data  : data,
@@ -143,7 +143,8 @@
 
 			// Social Login.
 			gigya.socialize.addEventHandlers({
-				onLogin: GigyaWp.loginValidate
+				onLogin: GigyaWp.loginValidate,
+				onLogout: GigyaWp.logout
 			});
 
 			GigyaWp.regEvents = true;

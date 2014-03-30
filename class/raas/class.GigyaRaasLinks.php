@@ -25,7 +25,6 @@ class GigyaRaasLinks {
 
 		// Parameters to be sent to the DOM.
 		$params = array(
-				'ajaxurl'           => admin_url( 'admin-ajax.php' ),
 				'actionRaas'        => 'gigya_raas',
 
 			// Screen set.

@@ -57,9 +57,9 @@
 			}
 
 			var options = {
-				url : gigyaRaasParams.ajaxurl,
+				url : gigyaParams.ajaxurl,
 				type: 'POST',
-//			dataType: 'json',
+			dataType: 'json',
 				data: {
 					data  : data,
 					action: gigyaRaasParams.actionRaas
@@ -69,7 +69,7 @@
 			$.ajax(options)
 					.done(function (res) {
 						if (res.success == true) {
-							if (typeof res.data != 'undefined' && res.data.type == 'register_form') {
+							if (typeof res.data != 'undefined') {
 								// The user didn't register, and need more field to fill.
 								$('#dialog-modal').html(res.data.html);
 								$('#dialog-modal').dialog({ modal: true });
@@ -84,6 +84,10 @@
 					});
 		}
 
+		GigyaWp.raasLogout = function() {
+
+		}
+
 // --------------------------------------------------------------------
 
 		/**
@@ -94,7 +98,8 @@
 
 			// Raas Login.
 			gigya.accounts.addEventHandlers({
-				onLogin: GigyaWp.raasLogin
+				onLogin: GigyaWp.raasLogin,
+				onLogout: GigyaWp.logout
 			});
 
 			GigyaWp.regEvents = true;
