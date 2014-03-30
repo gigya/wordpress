@@ -44,30 +44,32 @@ class GigyaRaasAction {
 			exit;
 		}
 
+		// Because we can only trust the UID parameter from the origin object,
+		// we got from the client. We'll ask Gigya's API for account info from the server.
+		$req_params = array(
+				'UID'     => $data['UID'],
+				'include' => 'profile, loginIDs'
+		);
+
 		// Initialize Gigya user.
-		$this->gigya_user = $data['user'];
+		$api              = new GigyaApi( $data['UID'] );
+		$res              = $api->call( 'accounts.getAccountInfo', $req_params );
+		$this->gigya_user = $res;
 
-		// Set a session with Gigya's ID.
-		$_SESSION['gigya_uid'] = $this->gigya_user['UID'];
-
-		$user_email = $data['profile']['email'];
-		if ( empty( $user_email ) ) {
+		$gigya_email = $this->gigya_user['profile']['email'];
+		// @todo Do we need this check - Or we can count on what we get from Gigya?
+		if ( empty( $gigya_email ) ) {
 			$prm = array( 'msg' => __( 'Email address is required by Drupal and is missing, please contact the site administrator' ) );
 			wp_send_json_error( $prm );
 			exit;
 		}
 
-		$wp_user = get_user_by( 'email', $user_email );
+		// Check if there already WP user with the same email.
+		$wp_user = get_user_by( 'email', $gigya_email );
 		if ( ! empty( $wp_user ) ) {
-			$req_params = array(
-					'UID'     => $data['UID'],
-					'include' => 'loginIDs'
-			);
 
-			$api = new GigyaApi( $data['UID'] );
-			$res = $api->call( 'accounts.getAccountInfo', $req_params );
-
-			$primary_user = $this->isPrimaryUser( $res, $user_email );
+			// @todo do we need this primery user check?
+			$primary_user = $this->isPrimaryUser( $this->gigya_user['loginIDs']['emails'], $wp_user->data->user_email );
 
 			// If this user is not the primary user account in Gigya
 			// we delete the account (we don't want two different users with the same email)
@@ -76,7 +78,7 @@ class GigyaRaasAction {
 				$api->call( 'accounts.deleteAccount', array( 'UID' => $data['UID'] ) );
 
 				// Get info about the primary account.
-				$query        = 'select loginProvider from accounts where loginIDs.emails = ' . $user_email;
+				$query        = 'select loginProvider from accounts where loginIDs.emails = ' . $gigya_email;
 				$search_res   = $api->call( 'accounts.search', array( 'query' => $query ) );
 				$p_provider   = $search_res['results'][0]['loginProvider'];
 				$sec_provider = $res['loginProvider'];
@@ -90,13 +92,12 @@ class GigyaRaasAction {
 				exit;
 			}
 
-			global $raas_login;
-			$raas_login                 = TRUE;
-			$_SESSION['gigya_raas_uid'] = $data['UID'];
+			// Login this user.
 			$this->login( $wp_user );
 
 		} else {
 
+			// Register new user.
 			$this->register();
 
 		}
@@ -127,8 +128,8 @@ class GigyaRaasAction {
 	private function register() {
 
 		// Register a new user to WP with params from Gigya.
-		$name  = $this->gigya_user['email'];
-		$email = $this->gigya_user['email'];
+		$name  = $this->gigya_user['profile']['firstName'] . ' ' . $this->gigya_user['profile']['lastName'];
+		$email = $this->gigya_user['profile']['email'];
 
 		$user_id = register_new_user( $name, $email );
 
@@ -140,74 +141,71 @@ class GigyaRaasAction {
 	/**
 	 * Deal with missing fields on registration.
 	 */
-	private function registerExtra() {
-
-		// Set submit button value.
-		$submit_value = sprintf( __( 'Register %s' ), ! empty( $this->gigya_user['loginProvider'] ) ? ' ' . __( 'with' ) . ' ' . $this->gigya_user['loginProvider'] : '' );
-		$output       = '';
-
-		// Set form.
-		$output .= '<form name="registerform" class="gigya-register-extra" id="registerform" action="' . wp_registration_url() . '" method="post">';
-		$output .= '<h4 class="title">' . __( 'Please fill required field' ) . '</h4>';
-
-		// Set form elements.
-		$form               = array();
-		$form['user_login'] = array(
-				'type'  => 'text',
-				'id'    => 'user_login',
-				'label' => __( 'Username' ),
-				'value' => ! empty( $this->gigya_user['nickname'] ) ? $this->gigya_user['nickname'] : '',
-		);
-		$form['user_email'] = array(
-				'type'  => 'text',
-				'id'    => 'user_email',
-				'label' => __( 'E-mail' ),
-				'value' => ! empty( $this->gigya_user['email'] ) ? $this->gigya_user['email'] : '',
-		);
-
-		// Render form elements.
-		$output .= _gigya_form_render( $form );
-
-		// Get other plugins register form implementation.
-		$output .= do_action( 'register_form' );
-		$output .= '<input type="hidden" name="gigyaUID" value="' . $this->gigya_user['UID'] . '">';
-
-		// Add submit button.
-		$output .= '<input type="submit" name="wp-submit" id="gigya-submit" class="button button-primary button-large" value="' . $submit_value . '">';
-		$output .= '</form>';
-
-		// Tokens replace.
-		do_shortcode( $output );
-
-		// Set a return array.
-		$ret = array(
-				'type' => 'register_form',
-				'html' => $output,
-		);
-
-		// Return JSON to client.
-		wp_send_json_success( $ret );
-		exit;
-	}
+//	private function registerExtra() {
+//
+//		// Set submit button value.
+//		$submit_value = sprintf( __( 'Register %s' ), ! empty( $this->gigya_user['loginProvider'] ) ? ' ' . __( 'with' ) . ' ' . $this->gigya_user['loginProvider'] : '' );
+//		$output       = '';
+//
+//		// Set form.
+//		$output .= '<form name="registerform" class="gigya-register-extra" id="registerform" action="' . wp_registration_url() . '" method="post">';
+//		$output .= '<h4 class="title">' . __( 'Please fill required field' ) . '</h4>';
+//
+//		// Set form elements.
+//		$form               = array();
+//		$form['user_login'] = array(
+//				'type'  => 'text',
+//				'id'    => 'user_login',
+//				'label' => __( 'Username' ),
+//				'value' => ! empty( $this->gigya_user['nickname'] ) ? $this->gigya_user['nickname'] : '',
+//		);
+//		$form['user_email'] = array(
+//				'type'  => 'text',
+//				'id'    => 'user_email',
+//				'label' => __( 'E-mail' ),
+//				'value' => ! empty( $this->gigya_user['email'] ) ? $this->gigya_user['email'] : '',
+//		);
+//
+//		// Render form elements.
+//		$output .= _gigya_form_render( $form );
+//
+//		// Get other plugins register form implementation.
+//		$output .= do_action( 'register_form' );
+//		$output .= '<input type="hidden" name="gigyaUID" value="' . $this->gigya_user['UID'] . '">';
+//
+//		// Add submit button.
+//		$output .= '<input type="submit" name="wp-submit" id="gigya-submit" class="button button-primary button-large" value="' . $submit_value . '">';
+//		$output .= '</form>';
+//
+//		// Tokens replace.
+//		do_shortcode( $output );
+//
+//		// Set a return array.
+//		$ret = array(
+//				'type' => 'register_form',
+//				'html' => $output,
+//		);
+//
+//		// Return JSON to client.
+//		wp_send_json_success( $ret );
+//		exit;
+//	}
 
 	/**
 	 * Checks if this email is the primary user email
 	 *
-	 * @param $userInfo the user info from accounts.getUserInfo api call
-	 * @param $email
+	 * @param $gigya_emails
+	 * @param $wp_email The email from WP DB.
 	 *
+	 * @internal param \The $userInfo user info from accounts.getUserInfo api call
 	 * @return bool
 	 */
-	public static function isPrimaryUser( $userInfo, $email ) {
+	public static function isPrimaryUser( $gigya_emails, $wp_email ) {
 
-		foreach ( $userInfo['loginIDs'] as $email_array ) {
-			if ( in_array( $email, $email_array ) ) {
-				return TRUE;
-			}
+		if ( in_array( $wp_email, $gigya_emails ) ) {
+			return TRUE;
 		}
 
 		return FALSE;
-
 	}
-
 }

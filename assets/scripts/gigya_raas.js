@@ -25,6 +25,11 @@
 							gigya.accounts.showScreenSet({screenSet: gigyaRaasParams.raasWebScreen, mobileScreenSet: gigyaRaasParams.raasMobileScreen, startScreen: gigyaRaasParams.raasRegisterScreen});
 							e.preventDefault();
 							break;
+
+						case '?action=lostpassword':
+							// Lost Password page
+							e.preventDefault();
+							break;
 					}
 				}
 				else if (path.indexOf('profile.php') != -1) {
@@ -34,6 +39,9 @@
 					e.preventDefault();
 				}
 			});
+
+			// Hide the WP login screens navigation.
+			$('#login #nav').hide();
 		}
 
 
@@ -52,14 +60,14 @@
 		 */
 		GigyaWp.raasLogin = function (data) {
 
-			if (response.provider === 'site') {
+			if (data.provider === 'site') {
 				return false;
 			}
 
 			var options = {
 				url : gigyaParams.ajaxurl,
 				type: 'POST',
-			dataType: 'json',
+				dataType: 'json',
 				data: {
 					data  : data,
 					action: gigyaRaasParams.actionRaas

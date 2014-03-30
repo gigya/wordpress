@@ -53,14 +53,13 @@ class GigyaAction {
 		add_action( 'register_form', array( $this, 'loginForm' ) );
 		add_action( 'wp_ajax_gigya_login', array( $this, 'ajaxLogin' ) );
 		add_action( 'wp_ajax_nopriv_gigya_login', array( $this, 'ajaxLogin' ) );
-		add_action( 'wp_ajax_gigya_raas_login', array( $this, 'ajaxRaasLogin' ) );
-		add_action( 'wp_ajax_nopriv_gigya_raas_login', array( $this, 'ajaxRaasLogin' ) );
+		add_action( 'wp_ajax_gigya_raas', array( $this, 'ajaxRaasLogin' ) );
+		add_action( 'wp_ajax_nopriv_gigya_raas', array( $this, 'ajaxRaasLogin' ) );
 		add_action( 'wp_login', array( $this, 'wpLogin', 10, 2 ) );
 		add_action( 'user_register', array( $this, 'userRegister', 10, 1 ) );
 		add_action( 'wp_logout', array( $this, 'wpLogout' ) );
 		add_action( 'deleted_user', array( $this, 'deletedUser' ) );
 		add_shortcode( 'gigya_user_info', array( $this, 'gigyaUserInfo' ) );
-		add_filter( 'get_avatar', 'updateAvatarImage', 10, 5 );
 
 	}
 
@@ -85,7 +84,7 @@ class GigyaAction {
 				'logoutUrl' => wp_logout_url(),
 		);
 		// Load params to be available to client-side script.
-		wp_localize_script( 'gigya_login_js', 'gigyaParams', $params );
+		wp_localize_script( 'gigya_js', 'gigyaParams', $params );
 
 		// Checking that we have an API key and Gigya's plugin is turn on.
 		if ( ! empty( $this->global_options['global_api_key'] ) ) {
@@ -285,32 +284,6 @@ class GigyaAction {
 		}
 
 		return $user_info->getString( key( $atts ), current( $atts ) );
-	}
-
-	/**
-	 * @todo needs work.
-	 * @param $avatar
-	 * @param $id_or_email
-	 * @param $size
-	 * @param $default
-	 * @param $alt
-	 *
-	 * @return String
-	 */
-	public function updateAvatarImage( $avatar, $id_or_email, $size, $default, $alt ) {
-
-		if ( is_object( $id_or_email ) ) {
-			$id_or_email = $id_or_email->user_id;
-		}
-
-		if ( is_numeric( $id_or_email ) ) {
-			$thumb = get_user_meta( $id_or_email, "avatar", 1 );
-			if ( ! empty( $thumb ) ) {
-				$avatar = preg_replace( "/src='*?'/", "src='$thumb'", $avatar );
-			}
-		}
-
-		return $avatar;
 	}
 }
 

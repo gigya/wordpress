@@ -22,6 +22,7 @@ class GigyaRaasLinks {
 
 		// Load custom Gigya login script.
 		wp_enqueue_script( 'gigya_raas_js', GIGYA__PLUGIN_URL . 'assets/scripts/gigya_raas.js' );
+		wp_enqueue_style( 'gigya_raas_css', GIGYA__PLUGIN_URL . 'assets/styles/gigya_raas.css' );
 
 		// Parameters to be sent to the DOM.
 		$params = array(
