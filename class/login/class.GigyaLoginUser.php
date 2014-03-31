@@ -9,7 +9,7 @@
 /**
  * An object to make the Gigya api calls for a user object(load, delete, get info etc...).
  */
-class GigyaUser {
+class GigyaLoginUser {
 
 	/**
 	 * The gigya user id.

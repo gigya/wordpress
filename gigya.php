@@ -209,7 +209,7 @@ class GigyaAction {
 		// after the user is logged in with password.
 		if ( $_POST['form_name'] == 'loginform-gigya-link-account' ) {
 
-			$gigyaUser = new GigyaUser( $_POST['gigya_uid'] );
+			$gigyaUser = new GigyaLoginUser( $_POST['gigya_uid'] );
 			$gigyaUser->notifyRegistration( $account->ID );
 
 		}
@@ -237,7 +237,7 @@ class GigyaAction {
 			// New user was register through Gigya.
 			// We make a notifyRegistration to Gigya.
 			$gid       = ! empty( $_SESSION['gigya_uid'] ) ? $_SESSION['gigya_uid'] : $_POST['gigyaUID'];
-			$gigyaUser = new GigyaUser( $gid );
+			$gigyaUser = new GigyaLoginUser( $gid );
 			$gigyaUser->notifyRegistration( $uid );
 
 		} else {
@@ -245,7 +245,7 @@ class GigyaAction {
 			// New user was register through WP form.
 			// We notify to Gigya's 'socialize.notifyLogin'
 			// with a 'is_new_user' flag.
-			$gigyaUser = new GigyaUser( $_SESSION['gigya_uid'] );
+			$gigyaUser = new GigyaLoginUser( $_SESSION['gigya_uid'] );
 			$gigyaUser->notifyLogin( $uid, TRUE );
 
 		}
@@ -256,17 +256,20 @@ class GigyaAction {
 	 */
 	public function wpLogout() {
 
-		// Get the current user.
-		$account = wp_get_current_user();
+		if ( $this->login_options['login_mode'] == 'wp_sl' ) {
+			// Get the current user.
+			$account = wp_get_current_user();
 
-		if ( ! empty ( $account->ID ) ) {
+			if ( ! empty ( $account->ID ) ) {
 
-			// We using Gigya's account-linking (best practice).
-			// So the siteUID is the same as Gigya's UID.
-			$gigyaUser = new GigyaUser( $account->ID );
-			$gigyaUser->logout();
+				// We using Gigya's account-linking (best practice).
+				// So the siteUID is the same as Gigya's UID.
+				$gigyaUser = new GigyaLoginUser( $account->ID );
+				$gigyaUser->logout();
 
+			}
 		}
+
 	}
 
 	/**
@@ -276,13 +279,11 @@ class GigyaAction {
 	 */
 	public function deletedUser( $user_id ) {
 
-		// Check it logged in by Gigya.
-		if ( empty ( $_SESSION['gigya_uid'] ) ) {
-
-			$gigyaUser = new GigyaUser( $_SESSION['gigya_uid'] );
+		if ( $this->login_options['login_mode'] == 'wp_sl' ) {
+			$gigyaUser = new GigyaLoginUser( $user_id );
 			$gigyaUser->deleteAccount( $user_id );
-
 		}
+
 	}
 
 	private function shortcodeUserInfo( $atts, $info = NULL ) {
@@ -290,7 +291,7 @@ class GigyaAction {
 		$wp_user = wp_get_current_user();
 		if ( $info == NULL ) {
 
-			$gigyaUser = new GigyaUser( $wp_user->UID );
+			$gigyaUser = new GigyaLoginUser( $wp_user->UID );
 			$user_info = $gigyaUser->getUserInfo();
 
 		}
