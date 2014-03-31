@@ -113,20 +113,20 @@
 				var html =
 						'<div class="form-get-email">' +
 								'<div class="description">' +
-									'Additional information is required in order ' +
-									'to complete your registration. ' +
-									'Please fill-in your Email' +
-									'<br><br>' +
+								'Additional information is required in order ' +
+								'to complete your registration. ' +
+								'Please fill-in your Email' +
+								'<br><br>' +
 								'</div>' +
 								'<label for="email">Email</label>' +
 								'<input type="text" id="get-email" name="email">' +
 								'<button type="button" class="button button-get-email">Submit</button>' +
-						'</div>';
+								'</div>';
 
 				// Modal with the email form.
 				$('#dialog-modal').html(html).dialog({ modal: true });
 
-				$(document).on('click', '.button-get-email', function() {
+				$(document).on('click', '.button-get-email', function () {
 					var email = $('input#get-email').val();
 					if (email.length > 0) {
 
@@ -134,7 +134,7 @@
 						// And put a flag for 'email not verified'.
 						response.user.email = email;
 						response.user.email_not_verified = true;
-						$('#dialog-modal').dialog( "close" );
+						$('#dialog-modal').dialog("close");
 
 						// Go on with register
 						GigyaWp.socialLogin(response);
@@ -158,7 +158,7 @@
 
 			// Social Login.
 			gigya.socialize.addEventHandlers({
-				onLogin: GigyaWp.loginValidate,
+				onLogin : GigyaWp.loginValidate,
 				onLogout: GigyaWp.logout
 			});
 

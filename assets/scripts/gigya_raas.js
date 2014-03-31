@@ -65,10 +65,10 @@
 			}
 
 			var options = {
-				url : gigyaParams.ajaxurl,
-				type: 'POST',
+				url     : gigyaParams.ajaxurl,
+				type    : 'POST',
 				dataType: 'json',
-				data: {
+				data    : {
 					data  : data,
 					action: gigyaRaasParams.actionRaas
 				}
@@ -92,7 +92,7 @@
 					});
 		}
 
-		GigyaWp.raasLogout = function() {
+		GigyaWp.raasLogout = function () {
 
 		}
 
@@ -106,7 +106,7 @@
 
 			// Raas Login.
 			gigya.accounts.addEventHandlers({
-				onLogin: GigyaWp.raasLogin,
+				onLogin : GigyaWp.raasLogin,
 				onLogout: GigyaWp.logout
 			});
 

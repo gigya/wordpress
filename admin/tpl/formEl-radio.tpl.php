@@ -9,7 +9,7 @@
 		<legend><?php echo $label; ?></legend>
 		<?php foreach ( $options as $key => $option ) : ?>
 			<label>
-				<input type="radio" name="<?php echo $name ?>" <?php if ( $value == $key )	echo 'checked="checked"' ?> value="<?php echo $key; ?>">
+				<input type="radio" name="<?php echo $name ?>" <?php if ( $value == $key ) echo 'checked="checked"' ?> value="<?php echo $key; ?>">
 				<span><?php echo $option; ?></span>
 			</label>
 		<?php endforeach ?>

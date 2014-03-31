@@ -16,7 +16,7 @@ class GigyaAccount {
 
 		// Because we can only trust the UID parameter from the origin object,
 		// We'll ask Gigya's API for account-info straight from the server.
-		$api = new GigyaApi( $uid );
+		$api           = new GigyaApi( $uid );
 		$this->account = $api->call( 'accounts.getAccountInfo', $req_params );
 
 	}

@@ -59,7 +59,7 @@ class GigyaAction {
 		add_action( 'user_register', array( $this, 'userRegister' ), 10, 1 );
 		add_action( 'wp_logout', array( $this, 'wpLogout' ) );
 		add_action( 'deleted_user', array( $this, 'deletedUser' ) );
-		add_action('edit_user_profile', 'profileExtra');
+		add_action( 'edit_user_profile', 'profileExtra' );
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 
 	}
@@ -195,7 +195,7 @@ class GigyaAction {
 	 */
 	public function wpLogin( $user_login, $account ) {
 
-		if ( empty ( $_SESSION['gigya_uid'] ) && empty( $_POST['gigyaUID'] ) ) {
+		if ( empty ( $_SESSION['gigya_uid'] ) && empty( $_POST['gigyaUID'] ) && empty( $_POST['action'] ) ) {
 
 			// Notify Gigya socialize.notifyLogin
 			// for a return user logged in from SITE.
@@ -240,7 +240,7 @@ class GigyaAction {
 			$gigyaUser = new GigyaLoginUser( $gid );
 			$gigyaUser->notifyRegistration( $uid );
 
-		} elseif ( empty($_POST['action'])) {
+		} elseif ( empty( $_POST['action'] ) ) {
 
 			// New user was register through WP form.
 			// We notify to Gigya's 'socialize.notifyLogin'

@@ -162,6 +162,7 @@ class GigyaLoginAction {
 
 	/**
 	 * Generate form for link accounts.
+	 *
 	 * @param        $account
 	 * @param null   $gigya_uid
 	 *

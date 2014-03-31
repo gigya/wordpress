@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * class.GigyaLoginForm.php

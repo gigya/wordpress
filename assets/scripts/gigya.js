@@ -8,7 +8,7 @@ var GigyaWp = GigyaWp || {};
 		// jQueryUI dialog element.
 		$('body').append('<div id="dialog-modal"></div>');
 
-		GigyaWp.logout = function() {
+		GigyaWp.logout = function () {
 			document.location = gigyaParams.logouUrl;
 		}
 	});
