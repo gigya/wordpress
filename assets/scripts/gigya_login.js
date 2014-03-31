@@ -9,7 +9,7 @@
 
 // --------------------------------------------------------------------
 
-		// Setting Parameters.
+		// Add the Gigya's social login block to login/register pages.
 		var params = {};
 		params.containerID = "gigya-login";
 
@@ -27,10 +27,25 @@
 
 // --------------------------------------------------------------------
 
-		// Display ConnectUI if necessary.
-		if (typeof gigyaLoginParams.connectUI !== 'undefined') {
-			gigya.services.socialize.showAddConnectionsUI(gigyaLoginParams.connectUI);
+		// Add 'Add Connections UI' block to the profile page.
+		$('body.profile-php form#your-profile').before('<div id="gigya-add-connections"></div>');
+
+		// Setting Parameters.
+		var addConnectionsParams = {};
+		addConnectionsParams.containerID = "gigya-add-connections";
+
+		if (typeof gigyaLoginParams.addConnection != 'undefined') {
+			var addConnectionsParamsUI = {};
+			$.each(gigyaLoginParams.addConnection, function (index, value) {
+				addConnectionsParamsUI[index] = value;
+			});
+
+			$.extend(addConnectionsParams, addConnectionsParamsUI);
 		}
+
+		// Attach the Gigya block.
+		gigya.socialize.showAddConnectionsUI(addConnectionsParams);
+
 // --------------------------------------------------------------------
 
 		/**

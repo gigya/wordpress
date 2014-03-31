@@ -49,8 +49,8 @@ class GigyaAction {
 
 		add_action( 'init', array( $this, 'init' ) );
 		add_action( 'admin_action_update', array( $this, 'adminActionUpdate' ) );
-		add_action( 'login_form', array( $this, 'loginForm' ) );
-		add_action( 'register_form', array( $this, 'loginForm' ) );
+//		add_action( 'login_form', array( $this, 'loginForm' ) );
+//		add_action( 'register_form', array( $this, 'loginForm' ) );
 		add_action( 'wp_ajax_gigya_login', array( $this, 'ajaxLogin' ) );
 		add_action( 'wp_ajax_nopriv_gigya_login', array( $this, 'ajaxLogin' ) );
 		add_action( 'wp_ajax_gigya_raas', array( $this, 'ajaxRaasLogin' ) );
@@ -59,6 +59,7 @@ class GigyaAction {
 		add_action( 'user_register', array( $this, 'userRegister', 10, 1 ) );
 		add_action( 'wp_logout', array( $this, 'wpLogout' ) );
 		add_action( 'deleted_user', array( $this, 'deletedUser' ) );
+		add_action('edit_user_profile', 'profileExtra');
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 
 	}
@@ -96,6 +97,10 @@ class GigyaAction {
 			}
 
 			if ( $this->login_options['login_mode'] == 'wp_sl' ) {
+
+				require_once( GIGYA__PLUGIN_DIR . 'class/login/class.GigyaLoginForm.php' );
+				$gigyaLoginForm = new GigyaLoginForm;
+				$gigyaLoginForm->init();
 
 				// Loads social login user class.
 				require_once( GIGYA__PLUGIN_DIR . 'class/login/class.GigyaLoginUser.php' );
@@ -148,17 +153,15 @@ class GigyaAction {
 	 * Hook login form.
 	 * Hook register form.
 	 */
-	public function loginForm() {
-
-		// Check Gigya's social login is turn on and there an API key filled.
-		if ( $this->login_options['login_mode'] == 'wp_sl' && ! empty( $this->global_options['global_api_key'] ) ) {
-
-			require_once( GIGYA__PLUGIN_DIR . 'class/login/class.GigyaLoginForm.php' );
-			$gigyaLoginForm = new GigyaLoginForm;
-			$gigyaLoginForm->init();
-
-		}
-	}
+//	public function loginForm() {
+//
+//		// Check Gigya's social login is turn on and there an API key filled.
+//		if ( $this->login_options['login_mode'] == 'wp_sl' && ! empty( $this->global_options['global_api_key'] ) ) {
+//
+//
+//
+//		}
+//	}
 
 	/**
 	 * Hook AJAX login.

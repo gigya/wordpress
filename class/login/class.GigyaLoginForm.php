@@ -54,6 +54,14 @@ class GigyaLoginForm {
 				}
 			}
 		}
+		if ( ! empty ( $this->login_options['login_add_connection_custom'] ) ) {
+			$arr = $this->advancedValuesParser( $this->login_options['login_add_connection_custom'] );
+			if ( ! empty( $arr ) ) {
+				foreach ( $arr as $key => $val ) {
+					$params['addConnection'][$key] = $val;
+				}
+			}
+		}
 
 		// Load params to be available to client-side script.
 		wp_localize_script( 'gigya_login_js', 'gigyaLoginParams', $params );
