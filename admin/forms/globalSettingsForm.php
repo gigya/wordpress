@@ -12,10 +12,10 @@ function globalSettingsForm() {
 			'value' => ! empty( $values['global_api_key'] ) ? $values['global_api_key'] : ''
 	);
 
-	$form['global_secret_key'] = array(
+	$form['global_api_secret'] = array(
 			'type'  => 'text',
 			'label' => __( 'Gigya Socialize Secret Key' ),
-			'value' => ! empty( $values['global_secret_key'] ) ? $values['global_secret_key'] : ''
+			'value' => ! empty( $values['global_api_secret'] ) ? $values['global_api_secret'] : ''
 	);
 
 	$data_center_opts = array(

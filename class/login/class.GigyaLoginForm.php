@@ -21,8 +21,8 @@ class GigyaLoginForm {
 	function init() {
 
 		// Load custom Gigya login script.
-		wp_enqueue_script( 'gigya_login_js', GIGYA__PLUGIN_URL . 'assets/scripts/gigya_login.js' );
-		wp_enqueue_style( 'gigya_login_css', GIGYA__PLUGIN_URL . 'assets/styles/gigya_login.css' );
+		wp_enqueue_script( 'gigya_login_js', GIGYA__PLUGIN_URL . 'class/login/gigya_login.js' );
+		wp_enqueue_style( 'gigya_login_css', GIGYA__PLUGIN_URL . 'class/login/gigya_login.css' );
 
 		// Parameters to be sent to the DOM.
 		$params = array(

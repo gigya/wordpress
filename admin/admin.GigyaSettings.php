@@ -20,8 +20,8 @@ class GigyaSettings {
 	public function adminInit() {
 
 		// Add Javascript and css to admin page
-		wp_enqueue_style( 'gigya_admin_css', plugins_url( 'assets/styles/gigya_admin.css', __FILE__ ) );
-		wp_enqueue_script( 'gigya_admin_js', plugins_url( 'assets/scripts/gigya_admin.js', __FILE__ ) );
+		wp_enqueue_style( 'gigya_admin_css', GIGYA__PLUGIN_URL . 'admin/gigya_admin.css' );
+		wp_enqueue_script( 'gigya_admin_js', GIGYA__PLUGIN_URL . 'admin/gigya_admin.js' );
 
 		// Add settings sections.
 		foreach ( $this->getSections() as $id => $section ) {
@@ -39,7 +39,7 @@ class GigyaSettings {
 	public function adminMenu() {
 
 		// Register the main Gigya setting route page.
-		add_menu_page( 'Gigya', 'Gigya', GIGYA__PERMISSION_LEVEL, 'gigya_global_settings', array( $this, 'adminPage' ), plugin_dir_url( __FILE__ ) . 'assets/images/favicon_28px.png', '70.1' );
+		add_menu_page( 'Gigya', 'Gigya', GIGYA__PERMISSION_LEVEL, 'gigya_global_settings', array( $this, 'adminPage' ), GIGYA__PLUGIN_URL . 'admin/images/favicon_28px.png', '70.1' );
 
 		// Register the sub-menus Gigya setting pages.
 		foreach ( $this->getSections() as $section ) {

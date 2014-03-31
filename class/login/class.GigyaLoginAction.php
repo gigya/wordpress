@@ -33,7 +33,7 @@ class GigyaLoginAction {
 		$is_sig_validate = SigUtils::validateUserSignature(
 				$data['UID'],
 				$data['timestamp'],
-				$this->global_options['global_secret_key'],
+				GIGYA__API_SECRET,
 				$data['signature']
 		);
 

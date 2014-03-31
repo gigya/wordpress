@@ -35,7 +35,7 @@ class GigyaRaasAction {
 		$is_sig_validate = SigUtils::validateUserSignature(
 				$data['UID'],
 				$data['signatureTimestamp'],
-				$this->global_options['global_secret_key'],
+				GIGYA__API_SECRET,
 				$data['UIDSignature']
 		);
 
@@ -47,8 +47,11 @@ class GigyaRaasAction {
 		}
 
 		// Initialize Gigya user.
-		$account             = new GigyaAccount( $data['UID'] );
-		$this->gigya_account = $account->getAccount();
+//		$account             = new GigyaAccount( $data['UID'] );
+//		$this->gigya_account = $account->getAccount();
+
+		$gigya = new GigyaCMS( GIGYA__API_KEY, GIGYA__API_SECRET );
+		$this->gigya_account = $gigya->getAccount($data['UID']);
 
 		// @todo Do we need this check - or we can count on what we get from Gigya?
 		if ( empty( $this->gigya_account['profile']['email'] ) ) {
@@ -71,9 +74,9 @@ class GigyaRaasAction {
 
 				$providers = $account->getProviders( $this->gigya_account );
 
-//				$msg = sprintf( __( "We found your email in our system.<br>Please login to your existing account using your <strong>%s</strong> identity.<br>
-//            If you wish to link your account with your <strong>%s</strong> identity - after logging-in, please go to your profile page and click the <strong>%s</strong> button.",
-//						array( $providers['primary'], $providers['secondary'], $providers['secondary'] ) ) );
+				$msg = sprintf( __( "We found your email in our system.<br>Please login to your existing account using your <strong>%s</strong> identity.<br>
+            If you wish to link your account with your <strong>%s</strong> identity - after logging-in, please go to your profile page and click the <strong>%s</strong> button.",
+						array( $providers['primary'], $providers['secondary'], $providers['secondary'] ) ) );
 
 				$prm = array( 'msg' => $msg );
 				wp_send_json_error( $prm );
