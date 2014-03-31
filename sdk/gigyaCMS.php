@@ -13,7 +13,7 @@ class GigyaCMS {
 	 */
 	public function __construct( $api_key, $secret_key ) {
 
-		$this->api_key   = $api_key;
+		$this->api_key    = $api_key;
 		$this->secret_key = $secret_key;
 
 	}
@@ -29,7 +29,7 @@ class GigyaCMS {
 	 * @return array
 	 *   The Gigya response.
 	 */
-	public function call( $method, $params) {
+	public function call( $method, $params ) {
 
 		// Initialize new request.
 		$request   = new GSRequest( $this->api_key, $this->secret_key, $method );
@@ -46,13 +46,23 @@ class GigyaCMS {
 		global $api_domain;
 
 		// Set the request path.
-		$domain = ! empty($api_domain) ? $api_domain : 'us1.gigya.com';
+		$domain = ! empty( $api_domain ) ? $api_domain : 'us1.gigya.com';
 		$request->setAPIDomain( $domain );
 
 		// Make the request.
 		$response = $request->send();
 
-		// Check for errors in the response.
+		// Check for errors
+		if ( $response->getErrorCode() != 0 ) {
+
+			// Set global debug on the CMS
+			global $gigya_debug;
+			if ( ! empty( $gigya_debug ) ) {
+				error_log( $response->getLog() );
+			}
+		}
+
+		// Check validation in the response.
 		$err_code = $this->responseValidate( $response, $this->secret_key, $user_info );
 		if ( ! empty( $err_code ) ) {
 			return $err_code;
@@ -107,7 +117,7 @@ class GigyaCMS {
 					}
 				}
 
-				return  $code;
+				return $code;
 
 				break;
 
@@ -173,9 +183,9 @@ class GigyaCMS {
 	/**
 	 * Fetches information about the user friends.
 	 *
-	 * @param $guid
+	 * @param       $guid
 	 * @param array $params .
-	 *       an associative array of params to pass to Gigya
+	 *                      an associative array of params to pass to Gigya
 	 *
 	 * @see http://developers.gigya.com/020_Client_API/020_Methods/socialize.getFriends
 	 * @return array
@@ -284,7 +294,7 @@ class GigyaCMS {
 	/**
 	 * Informs Gigya that this user has completed site registration
 	 *
-	 * @param $guid
+	 * @param        $guid
 	 * @param string $uid
 	 *   The CMS User ID.
 	 *
@@ -357,6 +367,7 @@ class GigyaCMS {
 	/**
 	 * @param $account
 	 * Gigya's RaaS account as we get from:
+	 *
 	 * @See getAccount
 	 *
 	 * @return array

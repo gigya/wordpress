@@ -38,8 +38,8 @@ class GigyaApi {
 	 *   The Gigya response.
 	 */
 	public function call( $method, $params, $return_code = FALSE ) {
-		$user_key       = GIGYA__API_KEY;
-		$secret_key     = GIGYA__API_SECRET;
+		$user_key   = GIGYA__API_KEY;
+		$secret_key = GIGYA__API_SECRET;
 
 		// Initialize new request.
 		$request   = new GSRequest( $user_key, $secret_key, $method );

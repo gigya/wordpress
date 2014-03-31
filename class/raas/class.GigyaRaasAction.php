@@ -50,8 +50,8 @@ class GigyaRaasAction {
 //		$account             = new GigyaAccount( $data['UID'] );
 //		$this->gigya_account = $account->getAccount();
 
-		$gigya = new GigyaCMS( GIGYA__API_KEY, GIGYA__API_SECRET );
-		$this->gigya_account = $gigya->getAccount($data['UID']);
+		$gigya               = new GigyaCMS( GIGYA__API_KEY, GIGYA__API_SECRET );
+		$this->gigya_account = $gigya->getAccount( $data['UID'] );
 
 		// @todo Do we need this check - or we can count on what we get from Gigya?
 		if ( empty( $this->gigya_account['profile']['email'] ) ) {

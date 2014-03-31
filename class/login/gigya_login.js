@@ -7,7 +7,7 @@
 		/**
 		 * Show Gigya's login block on login/register forms.
 		 */
-		var showLoginUI = function() {
+		var showLoginUI = function () {
 			// Add an HTML element to attach the Gigya Login UI to.
 			$('#registerform, #loginform').append('<div id="gigya-login"></div>');
 
@@ -34,7 +34,7 @@
 		/**
 		 * Show Gigya's add connections block on profile page.
 		 */
-		var showAddConnectionsUI = function() {
+		var showAddConnectionsUI = function () {
 			// Add 'Add Connections UI' block to the profile page.
 			$('form#your-profile').before('<div id="gigya-add-connections"></div>');
 
@@ -161,27 +161,29 @@
 
 // --------------------------------------------------------------------
 
-	var loginInit = function() {
-		{connectWithoutLoginBehavior: gigyaLoginParams.connectWithoutLoginBehavior}
-		showLoginUI();
-		showAddConnectionsUI();
+		var loginInit = function () {
+			{
+				connectWithoutLoginBehavior: gigyaLoginParams.connectWithoutLoginBehavior
+			}
+			showLoginUI();
+			showAddConnectionsUI();
 
-		// Attach event handlers.
-		if (typeof GigyaWp.regEvents === 'undefined') {
+			// Attach event handlers.
+			if (typeof GigyaWp.regEvents === 'undefined') {
 
-			// Social Login.
-			gigya.socialize.addEventHandlers({
-				onLogin : loginValidate,
-			});
+				// Social Login.
+				gigya.socialize.addEventHandlers({
+					onLogin: loginValidate,
+				});
 
-			GigyaWp.regEvents = true;
+				GigyaWp.regEvents = true;
 
+			}
 		}
-	}
 
 // --------------------------------------------------------------------
 
-	loginInit();
+		loginInit();
 
 // --------------------------------------------------------------------
 

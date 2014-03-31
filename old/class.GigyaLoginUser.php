@@ -197,21 +197,15 @@ class GigyaLoginUser {
 		$response = $api->call( 'socialize.notifyLogin', $params );
 
 		//Set  Gigya cookie.
-		try {
-			setcookie( $response["cookieName"], $response["cookieValue"], 0, $response["cookiePath"], $response["cookieDomain"] );
-		} catch ( Exception $e ) {
-			error_log( sprintf( 'error seting gigya cookie' ) );
-			error_log( sprintf( 'error message : @error', array( '@error' => $e->getMessage() ) ) );
-		}
+		return setcookie( $response["cookieName"], $response["cookieValue"], 0, $response["cookiePath"], $response["cookieDomain"] );
 
-		return TRUE;
 	}
 
 
 	/**
 	 * Informs Gigya that this user has completed site registration
 	 */
-	public function 	vxnotifyRegistration( $uid ) {
+	public function  vxnotifyRegistration( $uid ) {
 		if ( ! empty( $this->uid ) && ! empty( $uid ) ) {
 			$params = array(
 					'uid'     => $this->uid,

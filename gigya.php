@@ -21,6 +21,7 @@ define( 'GIGYA__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GIGYA__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'GIGYA__JS_CDN', 'http://cdn.gigya.com/JS/socialize.js?apiKey=' );
 
+
 /**
  * Gigya constants for admin settings sections.
  */
@@ -48,11 +49,20 @@ class GigyaAction {
 		$this->global_options = get_option( GIGYA__SETTINGS_GLOBAL );
 
 		// GIGYA__API_KEY, GIGYA__API_SECRET
-		define('GIGYA__API_KEY',    $this->global_options['global_api_key']);
-		define('GIGYA__API_SECRET', $this->global_options['global_api_secret']);
+		define( 'GIGYA__API_KEY', $this->global_options['global_api_key'] );
+		define( 'GIGYA__API_SECRET', $this->global_options['global_api_secret'] );
 
-		global $api_domain;
-		$api_domain = $this->global_options['global_data_center'];
+		// Set data center domain.
+		if (!empty($this->global_options['global_data_center'])) {
+			global $api_domain;
+			$api_domain = $this->global_options['global_data_center'];
+		}
+
+		// Set DEBUG state.
+		if (!empty($this->login_options['login_gigya_debug'])) {
+			global $gigya_debug;
+			$gigya_debug = $this->global_options['login_gigya_debug'];
+		}
 
 		add_action( 'init', array( $this, 'init' ) );
 		add_action( 'admin_action_update', array( $this, 'adminActionUpdate' ) );
@@ -204,7 +214,7 @@ class GigyaAction {
 	public function wpLogin( $user_login, $account ) {
 
 		// Login through WP form.
-		if (isset($_POST['log']) && isset($_POST['pwd'])) {
+		if ( isset( $_POST['log'] ) && isset( $_POST['pwd'] ) ) {
 //		if ( empty ( $_SESSION['gigya_uid'] ) && empty( $_POST['gigyaUID'] ) && empty( $_POST['action'] ) ) {
 
 			// Notify Gigya socialize.notifyLogin
@@ -253,7 +263,7 @@ class GigyaAction {
 		if ( ! empty ( $_SESSION['gigya_uid'] ) || ! empty( $_POST['gigyaUID'] ) ) {
 
 			// We make a notifyRegistration to Gigya.
-			$guid       = ! empty( $_SESSION['gigya_uid'] ) ? $_SESSION['gigya_uid'] : $_POST['gigyaUID'];
+			$guid = ! empty( $_SESSION['gigya_uid'] ) ? $_SESSION['gigya_uid'] : $_POST['gigyaUID'];
 //			$gigyaUser = new GigyaLoginUser( $gid );
 //			$gigyaUser->notifyRegistration( $uid );
 
@@ -263,7 +273,7 @@ class GigyaAction {
 		}
 
 		// New user was register through WP form.
-		if (isset($_POST['user_login']) && isset($_POST['user_email'])) {
+		if ( isset( $_POST['user_login'] ) && isset( $_POST['user_email'] ) ) {
 
 			// We notify to Gigya's 'socialize.notifyLogin'
 			// with a 'is_new_user' flag.
@@ -324,7 +334,7 @@ class GigyaAction {
 //			$gigyaUser = new GigyaLoginUser( $wp_user->UID );
 //			$user_info = $gigyaUser->getUserInfo();
 
-			$gigya = new GigyaCMS( GIGYA__API_KEY, GIGYA__API_SECRET );
+			$gigya     = new GigyaCMS( GIGYA__API_KEY, GIGYA__API_SECRET );
 			$user_info = $gigya->getUserInfo( $wp_user->UID );
 
 		}

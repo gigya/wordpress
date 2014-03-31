@@ -90,7 +90,7 @@
 
 // --------------------------------------------------------------------
 
-		var raasInit = function() {
+		var raasInit = function () {
 			// Override default WP links to use Gigya's RaaS behavior.
 			if (gigyaRaasParams.raasOverrideLinks > 0) {
 				overrideLinks();
