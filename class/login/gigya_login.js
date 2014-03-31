@@ -162,6 +162,7 @@
 // --------------------------------------------------------------------
 
 	var loginInit = function() {
+		{connectWithoutLoginBehavior: gigyaLoginParams.connectWithoutLoginBehavior}
 		showLoginUI();
 		showAddConnectionsUI();
 

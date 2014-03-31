@@ -42,7 +42,9 @@ class GigyaCMS {
 			$user_info = in_array( 'getUserInfo', $params );
 		}
 
+		// To be define on CMS code (or not).
 		global $api_domain;
+
 		// Set the request path.
 		$domain = ! empty($api_domain) ? $api_domain : 'us1.gigya.com';
 		$request->setAPIDomain( $domain );

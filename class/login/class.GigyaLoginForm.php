@@ -29,7 +29,6 @@ class GigyaLoginForm {
 				'actionLogin'                 => 'gigya_login',
 				'redirect'                    => ! empty ( $this->login_options['login_redirect'] ) ? $this->login_options['login_redirect'] : user_admin_url(),
 				'connectWithoutLoginBehavior' => ! empty ( $this->login_options['login_connect_without'] ) ? $this->login_options['login_connect_without'] : 'loginExistingUser',
-//				'loginMode'                   => ! empty ( $this->login_options['login_mode'] ) ? $this->login_options['login_mode'] : 'wp_only'
 		);
 
 		$params['ui']                  = array();
@@ -46,6 +45,9 @@ class GigyaLoginForm {
 		}
 		if ( ! empty ( $this->login_options['login_providers'] ) ) {
 			$params['ui']['enabledProviders'] = $this->login_options['login_providers'];
+		}
+		if ( ! empty ( $this->login_options['login_button_style'] ) ) {
+			$params['ui']['buttonsStyle'] = $this->login_options['login_button_style'];
 		}
 		if ( ! empty ( $this->login_options['login_ui'] ) ) {
 			$arr = $this->advancedValuesParser( $this->login_options['login_ui'] );
