@@ -55,8 +55,8 @@ class GigyaAction {
 		add_action( 'wp_ajax_nopriv_gigya_login', array( $this, 'ajaxLogin' ) );
 		add_action( 'wp_ajax_gigya_raas', array( $this, 'ajaxRaasLogin' ) );
 		add_action( 'wp_ajax_nopriv_gigya_raas', array( $this, 'ajaxRaasLogin' ) );
-		add_action( 'wp_login', array( $this, 'wpLogin', 10, 2 ) );
-		add_action( 'user_register', array( $this, 'userRegister', 10, 1 ) );
+		add_action( 'wp_login', array( $this, 'wpLogin' ), 10, 2 );
+		add_action( 'user_register', array( $this, 'userRegister' ), 10, 1 );
 		add_action( 'wp_logout', array( $this, 'wpLogout' ) );
 		add_action( 'deleted_user', array( $this, 'deletedUser' ) );
 		add_action('edit_user_profile', 'profileExtra');
@@ -204,7 +204,7 @@ class GigyaAction {
 
 		}
 
-		// This post is when there is a same email on the site,
+		// This post is when there is the same email on the site,
 		// with the one who try to register and we want to link-accounts
 		// after the user is logged in with password.
 		if ( $_POST['form_name'] == 'loginform-gigya-link-account' ) {
@@ -234,13 +234,13 @@ class GigyaAction {
 
 		if ( ! empty ( $_SESSION['gigya_uid'] ) || ! empty( $_POST['gigyaUID'] ) ) {
 
-			// New user was register through Gigya.
+			// New user was register through Gigya social login.
 			// We make a notifyRegistration to Gigya.
 			$gid       = ! empty( $_SESSION['gigya_uid'] ) ? $_SESSION['gigya_uid'] : $_POST['gigyaUID'];
 			$gigyaUser = new GigyaLoginUser( $gid );
 			$gigyaUser->notifyRegistration( $uid );
 
-		} else {
+		} elseif ( empty($_POST['action'])) {
 
 			// New user was register through WP form.
 			// We notify to Gigya's 'socialize.notifyLogin'

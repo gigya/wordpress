@@ -63,21 +63,7 @@ class GigyaLoginAction {
 
 		}
 
-		if ( ! empty( $this->gigya_user['email_not_verified'] ) ) {
-			$prm = array(
-					'type'  => 'message',
-					'email' => 'not_verified',
-					'msg'   => __( 'Please login' )
-			);
-		} else {
-			$prm = array(
-					'type'  => 'message',
-					'email' => 'verified',
-					'msg'   => __( 'Logged in successfully' )
-			);
-		}
-
-		wp_send_json_success( $prm );
+		wp_send_json_success();
 		exit;
 	}
 

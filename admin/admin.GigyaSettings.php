@@ -63,7 +63,7 @@ class GigyaSettings {
 						'slug'  => 'gigya_global_settings'
 				),
 				'gigya_login_settings'     => array(
-						'title' => 'Social Login Settings',
+						'title' => 'User Management',
 						'func'  => 'loginSettingsForm',
 						'slug'  => 'gigya_login_settings'
 				),
