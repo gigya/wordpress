@@ -361,11 +361,32 @@ class GigyaCMS {
 	public static function isPrimaryUser( $gigya_emails, $wp_email ) {
 
 		if ( in_array( $wp_email, $gigya_emails ) ) {
-
 			return TRUE;
-
 		}
 
 		return FALSE;
+	}
+
+	/**
+	 * Helper function to convert a text field key|value to an array.
+	 *
+	 * @param string $values
+	 *
+	 * @return array
+	 */
+	public static function advancedValuesParser($values) {
+		$lines = array();
+		$values = explode("\n", $values);
+
+		// Clean up values.
+		$values = array_map('trim', $values);
+		$values = array_filter($values, 'strlen');
+
+		foreach ($values as $value) {
+			preg_match('/(.*)\|(.*)/', $value, $matches);
+			$lines[$matches[1]] = $matches[2];
+		}
+
+		return $lines;
 	}
 }

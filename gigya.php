@@ -95,17 +95,21 @@ class GigyaAction {
 		// Checking that we have an API key and Gigya's plugin is turn on.
 		$api_key = GIGYA__API_KEY;
 		if ( ! empty( $api_key ) ) {
+
+			// Loads requirements for any Gigya's login.
 			if ( $this->login_options['login_mode'] != 'wp_only' ) {
 				// Load Gigya's socialize.js from CDN.
 				wp_enqueue_script( 'gigya', GIGYA__JS_CDN . GIGYA__API_KEY );
 			}
 
+			// Loads requirements for any Gigya's social login.
 			if ( $this->login_options['login_mode'] == 'wp_sl' ) {
 				require_once( GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginForm.php' );
 				$gigyaLoginForm = new GigyaLoginForm;
 				$gigyaLoginForm->init();
 			}
 
+			// Loads requirements for any Gigya's RaaS login.
 			if ( $this->login_options['login_mode'] == 'raas' ) {
 				// Loads RaaS links class.
 				require_once( GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasLinks.php' );
@@ -113,10 +117,15 @@ class GigyaAction {
 				$gigyaRaasLinks->init();
 			}
 
+			// Loads requirements for any Gigya's Google-Analytics integration.
+			if (!empty($this->global_options['global_google_analytics'])) {
+				$uri_prefix = !empty($_SERVER['HTTPS']) ? 'https://cdns' : 'http://cdn';
+				wp_enqueue_script( 'gigya', $uri_prefix . '.gigya.com/js/gigyaGAIntegration.js' );
+			}
 		}
 
 		if ( is_admin() ) {
-			// Load the settings.
+			// Loads requirements for the admin settings section.
 			require_once( GIGYA__PLUGIN_DIR . 'admin/admin.GigyaSettings.php' );
 			new GigyaSettings;
 		}

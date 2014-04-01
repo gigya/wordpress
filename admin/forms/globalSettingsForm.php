@@ -98,7 +98,7 @@ function globalSettingsForm() {
 			'type'  => 'textarea',
 			'value' => ! empty( $values['global_params'] ) ? $values['global_params'] : '',
 			'label' => __( 'Additional Parameters (advanced)' ),
-			'desc'  => __( 'Enter values in' ) . ' <strong>key1=value1|key2=value2...keyX=valueX</strong> format<br /> ' . __( 'See list of available' ) . ' <a href="http://developers.gigya.com/030_API_reference/010_Client_API/010_Objects/Conf_object" target="_blank">parameters</a>'
+			'desc'  => __( 'Enter one value per line, in the format' ) . ' <strong>key|value</strong> ' . __( 'See list of available' ) . ' <a href="http://developers.gigya.com/030_API_reference/010_Client_API/010_Objects/Conf_object" target="_blank">parameters</a>'
 	);
 
 	$form['global_google_analytics'] = array(

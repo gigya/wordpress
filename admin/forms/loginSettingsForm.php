@@ -93,33 +93,27 @@ function loginSettingsForm() {
 			'desc'  => __( "Check this checkbox if you have defined required fields in you site registration form. When checked a 'Complete Registration' form will pop up during user social registration, to let the user enter the missing required fields" )
 	);
 
-	$form['login_gigya_debug'] = array(
-			'type'  => 'checkbox',
-			'label' => __( "Enable Gigya debug log" ),
-			'value' => ! empty( $values['login_gigya_debug'] ) ? $values['login_gigya_debug'] : 0
-	);
-
 	$form['login_ui'] = array(
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced) LoginUI" ),
 			'value' => ! empty( $values['login_custom_code'] ) ? $values['login_custom_code'] : '',
-			'desc'  => __( 'Enter values in' ) . ' <strong>key1=value1|key2=value2...keyX=valueX</strong> ' . __( 'format' )
+			'desc'  => __( 'Enter one value per line, in the format' ) . ' <strong>key|value</strong> ' . __( 'format' )
 	);
 
 	$form['login_add_connection_custom'] = array(
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced) AddConnectionsUI" ),
 			'value' => ! empty( $values['login_add_connection_custom'] ) ? $values['login_add_connection_custom'] : '',
-			'desc'  => __( 'Enter values in' ) . ' <strong>key1=value1|key2=value2...keyX=valueX</strong> ' . __( 'format' )
+			'desc'  => __( 'Enter one value per line, in the format' ) . ' <strong>key|value</strong>'
 	);
 
-	$form['login_custom_code'] = array(
-			'type'  => 'textarea',
-			'label' => __( "Custom Code (deprecated)" ),
-			'value' => ! empty( $values['login_ui'] ) ? $values['login_ui'] : '',
-			'desc'  => __( 'To customize the look of the sign in component provided by the Gigya Socialize for WordPress plugin, you can provide generated interface code here.  If nothing is provided the default will be used. Please see' ) . '<a target="_blank" href="http://developers.gigya.com/050_CMS_Modules/030_Wordpress_Plugin">here</a>' . __( 'for help on what to put in the text area' ),
-			'class' => 'closed'
-	);
+//	$form['login_custom_code'] = array(
+//			'type'  => 'textarea',
+//			'label' => __( "Custom Code (deprecated)" ),
+//			'value' => ! empty( $values['login_ui'] ) ? $values['login_ui'] : '',
+//			'desc'  => __( 'To customize the look of the sign in component provided by the Gigya Socialize for WordPress plugin, you can provide generated interface code here.  If nothing is provided the default will be used. Please see' ) . '<a target="_blank" href="http://developers.gigya.com/050_CMS_Modules/030_Wordpress_Plugin">here</a>' . __( 'for help on what to put in the text area' ),
+//			'class' => 'closed'
+//	);
 
 	$form['sl_end'] = array(
 			'markup' => '</div>'

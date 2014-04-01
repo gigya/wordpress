@@ -63,7 +63,7 @@ function shareSettingsForm() {
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced)" ),
 			'value' => ! empty( $values['share_advanced'] ) ? $values['share_advanced'] : '',
-			'desc'  => __( 'Enter values in' ) . '<strong>key|value</strong> ' . __( 'format' )
+			'desc'  => __( 'Enter one value per line, in the format' ) . ' <strong>key|value</strong>'
 	);
 
 	echo _gigya_form_render( $form, GIGYA__SETTINGS_SHARE );

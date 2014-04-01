@@ -1,0 +1,22 @@
+#gigya-login {
+	margin: 20px auto;
+}
+
+.gigya-register-extra .title {
+	margin-bottom: 10px;
+}
+
+.ui-dialog {
+	padding: 20px;
+	background: #f8f8f8;
+	border: 1px solid #888;
+}
+
+.ui-widget-overlay {
+	background: rgba(0, 0, 0, 0.8);
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
