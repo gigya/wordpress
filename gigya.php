@@ -83,7 +83,10 @@ class GigyaAction {
 		wp_enqueue_script( 'jquery-ui-core' );
 		wp_enqueue_script( 'jquery-ui-dialog' );
 		wp_enqueue_script( 'gigya_js', GIGYA__PLUGIN_URL . 'gigya.js' );
-
+// Share widget.
+		require_once( GIGYA__PLUGIN_DIR . 'features/share/GigyaShareAction.php' );
+		$w = new GigyaShareAction();
+		$w->init();
 		// Parameters to be sent to the DOM.
 		$params = array(
 				'ajaxurl'   => admin_url( 'admin-ajax.php' ),
@@ -285,7 +288,6 @@ class GigyaAction {
 	 */
 	public function widgetsInit() {
 
-		// Share widget.
 		require_once( GIGYA__PLUGIN_DIR . 'features/share/GigyaShareWidget.php' );
 		register_widget( 'GigyaShare_Widget' );
 	}

@@ -32,7 +32,7 @@ function commentsSettingsForm() {
 	$form['comments_enable_share_activity'] = array(
 			'type'    => 'select',
 			'options' => $comments_share_opts,
-			'value'   => getParam( $values['comments_enable_share_activity'], $comments_share_opts['external'] ),
+			'value'   => getParam( $values['comments_enable_share_activity'], 'external' ),
 			'label'   => __( 'Enable Sharing to Activity Feed' ),
 			'desc'    => 'When publishing feed items, by default the feed items are published to social networks only and will not appear on the site\'s Activity Feed plugin. To change this behavior, you must change the publish scope to "Both"'
 	);
@@ -53,7 +53,7 @@ function commentsSettingsForm() {
 	$form['comments_privacy'] = array(
 			'type'    => 'select',
 			'options' => $privacy_opts,
-			'value'   => getParam( $values['comments_privacy'], $privacy_opts['private'] ),
+			'value'   => getParam( $values['comments_privacy'], 'private' ),
 			'label'   => __( 'Privacy' ),
 	);
 

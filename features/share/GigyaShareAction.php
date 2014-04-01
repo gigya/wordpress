@@ -19,79 +19,33 @@ class GigyaShareAction {
 	 */
 	public function init() {
 
+		// Load custom Gigya login script.
+		wp_enqueue_script( 'gigya_share_js', GIGYA__PLUGIN_URL . 'features/share/gigya_share.js' );
+
 		$params = array(
-				'layout' => getParam()
+				'containerID'  => 'gigya-share',
+				'postId'       => get_the_ID(),
+				'layout'       => getParam( $this->share_options['share_layout'], 'horizontal' ),
+				'showCounts'   => getParam( $this->share_options['share_show_counts'], 'right' ),
+				'shareButtons' => getParam( $this->share_options['share_providers'], 'share,facebook-like,google-plusone,twitter,email' ),
+				'shortURLs'    => !empty($this->share_options['share_short_url']) ? 'always' : 'never',
+
+				'ua' => array(
+						'linkBack'     => the_permalink(),
+						'postTitle'    => get_the_title(),
+						'postDesc'     => the_excerpt(),
+						'imageBy'      => getParam( $this->share_options['share_image'], 'default' ),
+						'imageURL'     => getParam( $this->share_options['share_image_url'], '' )
+				),
 		);
 
-		global $post;
-		$share = "";
-
-
-		$advanced = gigya_parse_key_pair( gigya_get_option( "share_advanced" ) );
-		$advanced = $advanced ? json_encode( $advanced ) : 0;
-
-		$id = $post->ID;
-
-		$layout = gigya_get_option( "share_layout" );
-		if ( empty( $layout ) ) {
-			$layout = "horizontal";
+		if (!empty($this->share_options['share_advanced'])) {
+			$advanced = gigyaCMS::advancedValuesParser( getParam( $this->share_options['share_advanced'], '' ) );
+			$params = array_merge($params, $advanced);
 		}
 
-		$show_counts = gigya_get_option( "share_show_counts" );
-		if ( empty( $show_counts ) ) {
-			$show_counts = "right";
-		}
-
-		$share_buttons = trim( gigya_get_option( "share_providers" ) );
-		if ( empty( $share_buttons ) ) {
-			$share_buttons = "share,facebook-like,google-plusone,twitter,email";
-		}
-
-		$privacy = gigya_get_option( "share_privacy" );
-		if ( empty( $privacy ) ) {
-			$privacy = gigya_get_field_default( "activity_privacy" );
-		}
-
-		$custom = gigya_get_option( "share_custom" );
-
-		$share .= "<p class='gig-share-button gig-share-button-$pos' id='gig-div-buttons-$id-$pos'></p>";
-		$share .= "<script language='javascript'>";
-		$share .= "(function(){";
-		$share .= get_user_action_embed( $id );
-
-		if ( empty( $custom ) ):
-			$share .= "var params ={
-						userAction:ua,
-						layout    : '$layout',
-						showCounts: '$show_counts',
-						shareButtons:'$share_buttons', // list of providers
-						containerID: 'gig-div-buttons-$id-$pos',
-						privacy: '$privacy',
-        				cid:''
-					};";
-			if ( $advanced ) {
-				$share .= " var adParams = $advanced;
-				  for (var prop in adParams) {
-            				params[prop] = adParams[prop];
-        		  };";
-			};
-			$share .= "gigya.services.socialize.showShareBarUI(params);";
-		else:
-			$share .= "$custom";
-		endif;
-
-		$share .= "}());";
-		$share .= "</script>";
-
-		$share = apply_filters( "share_plugin", $share, array(
-						"api"           => gigya_get_option( "api_key" ),
-						"post_id"       => $id,
-						"permalink"     => get_permalink( $id ),
-						"title"         => $post->post_title,
-						"first_img_url" => gigya_get_first_image( $post )
-				)
-		);
-		return $share;
+		// Load params to be available on client-side script.
+		wp_localize_script( 'gigya_share_js', 'gigyaShareParams', $params );
 
 	}
 }

@@ -22,7 +22,7 @@ function reactionsSettingsForm() {
 			'type'    => 'select',
 			'label'   => __( 'Position' ),
 			'options' => $reaction_position_opts,
-			'value'   => getParam( $values['reaction_position'], $reaction_position_opts['bottom'] )
+			'value'   => getParam( $values['reaction_position'], 'bottom' )
 	);
 
 	$reaction_counts_opts = array(
@@ -35,7 +35,7 @@ function reactionsSettingsForm() {
 			'type'    => 'select',
 			'label'   => __( 'Show Counts' ),
 			'options' => $reaction_counts_opts,
-			'value'   => getParam( $values['reaction_position'], $reaction_counts_opts['right'] )
+			'value'   => getParam( $values['reaction_position'], 'right' )
 	);
 
 	$reaction_layout_opts = array(
@@ -47,7 +47,7 @@ function reactionsSettingsForm() {
 			'type'    => 'select',
 			'label'   => __( 'Layout' ),
 			'options' => $reaction_layout_opts,
-			'value'   => getParam( $values['reaction_layout'], $reaction_layout_opts['horizontal'] )
+			'value'   => getParam( $values['reaction_layout'], 'horizontal' )
 	);
 
 	$form['reaction_buttons'] = array(
@@ -72,7 +72,7 @@ function reactionsSettingsForm() {
 			'type'    => 'select',
 			'options' => $reaction_share_opts,
 			'label'   => __( 'Enable Sharing to Activity Feed' ),
-			'value'   => getParam( $values['reaction_enable_share_activity'], $reaction_share_opts['external'] ),
+			'value'   => getParam( $values['reaction_enable_share_activity'], 'external' ),
 			'desc'    => 'When publishing feed items, by default the feed items are published to social networks only and will not appear on the site\'s Activity Feed plugin. To change this behavior, you must change the publish scope to "Both"'
 	);
 
@@ -84,7 +84,7 @@ function reactionsSettingsForm() {
 	$form['reaction_count_type'] = array(
 			'type'    => 'select',
 			'options' => $reaction_count_opts,
-			'value'   => getParam( $values['reaction_count_type'], $reaction_count_opts['number'] ),
+			'value'   => getParam( $values['reaction_count_type'], 'number' ),
 			'label'   => __( 'Count Type' ),
 	);
 
@@ -97,7 +97,7 @@ function reactionsSettingsForm() {
 	$form['reaction_privacy'] = array(
 			'type'    => 'select',
 			'options' => $reaction_privacy_opts,
-			'value'   => getParam( $values['reaction_privacy'], $reaction_privacy_opts['private'] ),
+			'value'   => getParam( $values['reaction_privacy'], 'private' ),
 			'label'   => __( 'Privacy' ),
 	);
 

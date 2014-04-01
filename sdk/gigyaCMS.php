@@ -374,18 +374,24 @@ class GigyaCMS {
 	 * @return array
 	 */
 	public static function advancedValuesParser( $values ) {
-		$lines  = array();
-		$values = explode( "\n", $values );
 
-		// Clean up values.
-		$values = array_map( 'trim', $values );
-		$values = array_filter( $values, 'strlen' );
+		if (!empty($values)) {
+			$lines  = array();
+			$values = explode( "\n", $values );
 
-		foreach ( $values as $value ) {
-			preg_match( '/(.*)\|(.*)/', $value, $matches );
-			$lines[$matches[1]] = $matches[2];
+			// Clean up values.
+			$values = array_map( 'trim', $values );
+			$values = array_filter( $values, 'strlen' );
+
+			foreach ( $values as $value ) {
+				preg_match( '/(.*)\|(.*)/', $value, $matches );
+				$lines[$matches[1]] = $matches[2];
+			}
+
+			return $lines;
 		}
 
-		return $lines;
+		return false;
 	}
+
 }

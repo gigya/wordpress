@@ -6,18 +6,25 @@ function shareSettingsForm() {
 	$values = get_option( GIGYA__SETTINGS_SHARE );
 	$form   = array();
 
-	$share_opts = array(
-			"none"   => __( "None" ),
-			"bottom" => __( "Bottom" ),
-			"top"    => __( "Top" ),
-			"both"   => __( "Both" )
-	);
+//	$share_opts = array(
+//			"none"   => __( "None" ),
+//			"bottom" => __( "Bottom" ),
+//			"top"    => __( "Top" ),
+//			"both"   => __( "Both" )
+//	);
+//
+//	$form['share_plugin'] = array(
+//			'type'    => 'select',
+//			'options' => $share_opts,
+//			'label'   => __( 'Enable Gigya Share Button' ),
+//			'value'   => getParam( $values['share_plugin'], 'bottom' )
+//	);
 
-	$form['share_plugin'] = array(
-			'type'    => 'select',
-			'options' => $share_opts,
-			'label'   => __( 'Enable Gigya Share Button' ),
-			'value'   => getParam( $values['share_plugin'], $share_opts['bottom'] )
+	$form['share_providers'] = array(
+			'type'  => 'text',
+			'label' => __( 'Share Providers' ),
+			'value' => getParam( $values['share_providers'], 'share,facebook-like,google-plusone,twitter,email' ),
+			'desc'  => __( 'for example: share,email,pinterest,twitter-tweet,google-plusone,facebook-like' )
 	);
 
 	$share_counts_opts = array(
@@ -26,38 +33,48 @@ function shareSettingsForm() {
 			"none"  => __( "None" )
 	);
 
-	$form['share_show_counts'] = array(
+	$form['share_counts'] = array(
 			'type'    => 'select',
 			'options' => $share_counts_opts,
-			'value'   => getParam( $values['share_show_counts'], $share_counts_opts['right'] ),
+			'value'   => getParam( $values['share_counts'], 'right' ),
 			'label'   => __( 'Show Counts' )
 	);
 
-	$privacy_opts = array(
-			"private" => __( "Private" ),
-			"public"  => __( "Public" ),
-			"friends" => __( "Friends" )
+	$layout_opts = array(
+			"horizontal" => __( "Horizontal" ),
+			"vertical"  => __( "Vertical" ),
 	);
 
-	$form['share_privacy'] = array(
+	$form['share_layout'] = array(
 			'type'    => 'select',
-			'options' => $privacy_opts,
-			'value'   => ! empty( $values['share_privacy'] ) ? $values['share_privacy'] : $privacy_opts['private'],
-			'value'   => getParam( $values['reaction_multiple'], 1 ),
+			'options' => $layout_opts,
+			'value'   => getParam( $values['share_layout'], 'horizontal' ),
 			'label'   => __( 'Privacy' ),
 	);
 
-	$form['share_providers'] = array(
-			'type'  => 'text',
-			'label' => __( 'Share Providers' ),
-			'value' => getParam( $values['share_providers'], '' ),
-			'desc'  => __( 'for example: share,email,pinterest,twitter-tweet,google-plusone,facebook-like' )
+	$image_opts = array(
+			"default" => __( "Use image tag if exists, first image on post otherwise" ),
+			"first"  => __( "Use first image on the post" ),
+			"url"  => __( "Specify an image URL" )
 	);
 
-	$form['share_custom'] = array(
-			'type'  => 'textarea',
-			'label' => __( "Custom Code" ),
-			'value' => getParam( $values['share_custom'], '' )
+	$form['share_image'] = array(
+			'type'    => 'radio',
+			'options' => $image_opts,
+			'value'   => getParam( $values['share_image'], 'default' ),
+			'label'   => __( 'Image' ),
+	);
+
+	$form['share_image_url'] = array(
+			'type'  => 'text',
+			'label' => __( "Default URL of the image to share" ),
+			'value' => getParam( $values['share_image_url'], '' ),
+	);
+
+	$form['share_short_url'] = array(
+			'type'  => 'checkbox',
+			'label' => __( "Share using short URLs" ),
+			'value' => getParam( $values['share_short_url'], 0 )
 	);
 
 	$form['share_advanced'] = array(

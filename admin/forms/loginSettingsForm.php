@@ -33,7 +33,7 @@ function loginSettingsForm() {
 	$form['login_button_style'] = array(
 			'type'    => 'select',
 			'options' => $button_opts,
-			'value'   => getParam( $values['login_button_style'], $button_opts['fullLogo'] ),
+			'value'   => getParam( $values['login_button_style'], 'fullLogo' ),
 			'label'   => __( 'Button Style' )
 	);
 
@@ -46,7 +46,7 @@ function loginSettingsForm() {
 	$form['login_connect_without'] = array(
 			'type'    => 'select',
 			'options' => $connect_without_opts,
-			'value'   => getParam( $values['login_connect_without'], $connect_without_opts['loginExistingUser'] ),
+			'value'   => getParam( $values['login_connect_without'], 'loginExistingUser' ),
 			'label'   => __( 'Connect Without Login Behavior' ),
 	);
 
