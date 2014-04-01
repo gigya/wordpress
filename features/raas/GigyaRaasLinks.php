@@ -31,20 +31,20 @@ class GigyaRaasLinks {
 				'actionRaas'              => 'gigya_raas',
 
 			// Screen set.
-				'raasWebScreen'           => isset( $this->login_options['raas_web_screen'] ) ? $this->login_options['raas_web_screen'] : 'Login-web',
-				'raasMobileScreen'        => isset( $this->login_options['raas_mobile_screen'] ) ? $this->login_options['raas_mobile_screen'] : 'Mobile-login',
-				'raasLoginScreen'         => isset( $this->login_options['raas_login_screen'] ) ? $this->login_options['raas_login_screen'] : 'gigya-login-screen',
-				'raasRegisterScreen'      => isset( $this->login_options['raas_register_screen'] ) ? $this->login_options['raas_register_screen'] : 'gigya-register-screen',
-				'raasProfileWebScreen'    => isset( $this->login_options['raas_profile_web_screen'] ) ? $this->login_options['raas_profile_web_screen'] : 'Profile-web',
-				'raasProfileMobileScreen' => isset( $this->login_options['raas_profile_mobile_screen'] ) ? $this->login_options['raas_profile_mobile_screen'] : 'Profile-mobile',
+				'raasWebScreen'           => getParam( $this->login_options['raas_web_screen'], 'Login-web' ),
+				'raasMobileScreen'        => getParam( $this->login_options['raas_mobile_screen'], 'Mobile-login' ),
+				'raasLoginScreen'         => getParam( $this->login_options['raas_login_screen'], 'gigya-login-screen' ),
+				'raasRegisterScreen'      => getParam( $this->login_options['raas_register_screen'], 'gigya-register-screen' ),
+				'raasProfileWebScreen'    => getParam( $this->login_options['raas_profile_web_screen'], 'Profile-web' ),
+				'raasProfileMobileScreen' => getParam( $this->login_options['raas_profile_mobile_screen'], 'Profile-mobile' ),
 
 			// Override links.
-				'raasOverrideLinks'       => isset( $this->login_options['raas_override_links'] ) ? $this->login_options['raas_override_links'] : 1,
+				'raasOverrideLinks'       => getParam( $this->login_options['raas_override_links'], 1 ),
 
 			// Embed DIVs.
-				'raasLoginDiv'            => isset( $this->login_options['raas_login_div'] ) ? $this->login_options['raas_login_div'] : 'loginform',
-				'raasRegisterDiv'         => isset( $this->login_options['raas_register_div'] ) ? $this->login_options['raas_register_div'] : 'registerform',
-				'raasProfileDiv'          => isset( $this->login_options['raas_profile_div'] ) ? $this->login_options['raas_profile_div'] : 'profile-page',
+				'raasLoginDiv'            => getParam( $this->login_options['raas_login_div'], 'loginform' ),
+				'raasRegisterDiv'         => getParam( $this->login_options['raas_register_div'], 'registerform' ),
+				'raasProfileDiv'          => getParam( $this->login_options['raas_profile_div'], 'profile-page' )
 		);
 
 		// Load params to be available on client-side script.

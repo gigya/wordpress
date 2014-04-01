@@ -226,17 +226,17 @@ class GigyaLoginAction {
 				'type'  => 'text',
 				'id'    => 'user_login',
 				'label' => __( 'Username' ),
-				'value' => ! empty( $this->gigya_user['nickname'] ) ? $this->gigya_user['nickname'] : '',
+				'value' => getParam( $this->gigya_user['nickname'], '' )
 		);
 		$form['user_email'] = array(
 				'type'  => 'text',
 				'id'    => 'user_email',
 				'label' => __( 'E-mail' ),
-				'value' => ! empty( $this->gigya_user['email'] ) ? $this->gigya_user['email'] : '',
+				'value' => getParam( $this->gigya_user['email'], '' )
 		);
 		$form['gigyaUID']   = array(
 				'type'  => 'hidden',
-				'value' => ! empty( $this->gigya_user['UID'] ) ? $this->gigya_user['UID'] : '',
+				'value' => getParam( $this->gigya_user['UID'], '' )
 		);
 
 		// Render form elements.

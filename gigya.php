@@ -64,8 +64,9 @@ class GigyaAction {
 		add_action( 'user_register', array( $this, 'userRegister' ), 10, 1 );
 		add_action( 'wp_logout', array( $this, 'wpLogout' ) );
 		add_action( 'deleted_user', array( $this, 'deletedUser' ) );
+		add_action( 'widgets_init', array( $this, 'widgetsInit' ) );
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
-		add_filter( 'the_content', array( $this, 'theContent' ) );
+//		add_filter( 'the_content', array( $this, 'theContent' ) );
 
 	}
 
@@ -99,7 +100,8 @@ class GigyaAction {
 			// Loads requirements for any Gigya's login.
 			if ( $this->login_options['login_mode'] != 'wp_only' ) {
 				// Load Gigya's socialize.js from CDN.
-				wp_enqueue_script( 'gigya', GIGYA__JS_CDN . GIGYA__API_KEY );
+				$lang = getParam($this->global_options['global_lang'], 'en');
+				wp_enqueue_script( 'gigya', GIGYA__JS_CDN . GIGYA__API_KEY . '&lang=' . $lang);
 			}
 
 			// Loads requirements for any Gigya's social login.
@@ -118,8 +120,8 @@ class GigyaAction {
 			}
 
 			// Loads requirements for any Gigya's Google-Analytics integration.
-			if (!empty($this->global_options['global_google_analytics'])) {
-				$uri_prefix = !empty($_SERVER['HTTPS']) ? 'https://cdns' : 'http://cdn';
+			if ( ! empty( $this->global_options['global_google_analytics'] ) ) {
+				$uri_prefix = ! empty( $_SERVER['HTTPS'] ) ? 'https://cdns' : 'http://cdn';
 				wp_enqueue_script( 'gigya', $uri_prefix . '.gigya.com/js/gigyaGAIntegration.js' );
 			}
 		}
@@ -263,6 +265,9 @@ class GigyaAction {
 
 	}
 
+	/**
+	 * shortcode for UserInfo.
+	 */
 	private function shortcodeUserInfo( $atts, $info = NULL ) {
 
 		$wp_user = wp_get_current_user();
@@ -275,28 +280,39 @@ class GigyaAction {
 		return $user_info->getString( key( $atts ), current( $atts ) );
 	}
 
-	public function theContent() {
-		function gigya_share_plugin($content) {
-			$gigya_share = gigya_get_option("share_plugin");
-			switch ($gigya_share) {
-				case 'top':
-					$topHTML = gigya_get_share_plugin("top");
-					$content = $topHTML . $content;
-					break;
-				case 'bottom':
-					$bottomHTML = gigya_get_share_plugin("bottom");
-					$content = $content . $bottomHTML;
-					break;
-				case 'both':
-					$topHTML = gigya_get_share_plugin("top");
-					$bottomHTML = gigya_get_share_plugin("bottom");
-					$content = $topHTML . $content .$bottomHTML;
-					break;
-				case 'none':
-					break;
-			}
-			return $content;
+	/**
+	 * Register widgets.
+	 */
+	public function widgetsInit() {
+
+		// Share widget.
+		require_once( GIGYA__PLUGIN_DIR . 'features/share/GigyaShareWidget.php' );
+		register_widget( 'GigyaShare_Widget' );
+	}
+
+	/**
+	 * Hook content alter.
+	 */
+	public function theContent( $content ) {
+		$share_options = get_option( GIGYA__SETTINGS_SHARE );
+		switch ( $share_options['share_plugin'] ) {
+			case 'top':
+				$topHTML = gigya_get_share_plugin( "top" );
+				$content = $topHTML . $content;
+				break;
+			case 'bottom':
+				$bottomHTML = gigya_get_share_plugin( "bottom" );
+				$content    = $content . $bottomHTML;
+				break;
+			case 'both':
+				$topHTML    = gigya_get_share_plugin( "top" );
+				$bottomHTML = gigya_get_share_plugin( "bottom" );
+				$content    = $topHTML . $content . $bottomHTML;
+				break;
+			case 'none':
+				break;
 		}
+		return $content;
 	}
 }
 
@@ -394,4 +410,10 @@ function _gigya_get_json( $file ) {
 
 }
 
+/**
+ * Helper
+ */
+function getParam( $param, $default = null ) {
+	return ! empty( $param ) ? $param : $default;
+}
 // --------------------------------------------------------------------

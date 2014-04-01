@@ -17,7 +17,7 @@ function shareSettingsForm() {
 			'type'    => 'select',
 			'options' => $share_opts,
 			'label'   => __( 'Enable Gigya Share Button' ),
-			'value'   => ! empty( $values['share_plugin'] ) ? $values['share_plugin'] : $share_opts['bottom']
+			'value'   => getParam( $values['share_plugin'], $share_opts['bottom'] )
 	);
 
 	$share_counts_opts = array(
@@ -29,7 +29,7 @@ function shareSettingsForm() {
 	$form['share_show_counts'] = array(
 			'type'    => 'select',
 			'options' => $share_counts_opts,
-			'value'   => ! empty( $values['share_show_counts'] ) ? $values['share_show_counts'] : $share_counts_opts['right'],
+			'value'   => getParam( $values['share_show_counts'], $share_counts_opts['right'] ),
 			'label'   => __( 'Show Counts' )
 	);
 
@@ -43,26 +43,27 @@ function shareSettingsForm() {
 			'type'    => 'select',
 			'options' => $privacy_opts,
 			'value'   => ! empty( $values['share_privacy'] ) ? $values['share_privacy'] : $privacy_opts['private'],
+			'value'   => getParam( $values['reaction_multiple'], 1 ),
 			'label'   => __( 'Privacy' ),
 	);
 
 	$form['share_providers'] = array(
 			'type'  => 'text',
 			'label' => __( 'Share Providers' ),
-			'value' => ! empty( $values['share_providers'] ) ? $values['share_providers'] : '',
+			'value' => getParam( $values['share_providers'], '' ),
 			'desc'  => __( 'for example: share,email,pinterest,twitter-tweet,google-plusone,facebook-like' )
 	);
 
 	$form['share_custom'] = array(
 			'type'  => 'textarea',
 			'label' => __( "Custom Code" ),
-			'value' => ! empty( $values['share_custom'] ) ? $values['share_custom'] : ''
+			'value' => getParam( $values['share_custom'], '' )
 	);
 
 	$form['share_advanced'] = array(
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced)" ),
-			'value' => ! empty( $values['share_advanced'] ) ? $values['share_advanced'] : '',
+			'value' => getParam( $values['share_advanced'], '' ),
 			'desc'  => __( 'Enter one value per line, in the format' ) . ' <strong>key|value</strong>'
 	);
 

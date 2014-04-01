@@ -9,13 +9,13 @@ function globalSettingsForm() {
 	$form['global_api_key'] = array(
 			'type'  => 'text',
 			'label' => __( 'Gigya Socialize API Key' ),
-			'value' => ! empty( $values['global_api_key'] ) ? $values['global_api_key'] : ''
+			'value' => getParam( $values['global_api_key'], '' )
 	);
 
 	$form['global_api_secret'] = array(
 			'type'  => 'text',
 			'label' => __( 'Gigya Socialize Secret Key' ),
-			'value' => ! empty( $values['global_api_secret'] ) ? $values['global_api_secret'] : ''
+			'value' => getParam( $values['global_api_secret'], '' )
 	);
 
 	$data_center_opts = array(
@@ -28,13 +28,13 @@ function globalSettingsForm() {
 			'options' => $data_center_opts,
 			'label'   => __( 'Data Center' ),
 			'class'   => 'data_center',
-			'value'   => ! empty( $values['global_data_center'] ) ? $values['global_data_center'] : 'us1.gigya.com'
+			'value'   => getParam( $values['global_data_center'], 'us1.gigya.com' )
 	);
 
 	$form['global_providers'] = array(
 			'type'  => 'text',
 			'label' => __( 'List of providers' ),
-			'value' => ! empty( $values['global_providers'] ) ? $values['global_providers'] : '*',
+			'value' => getParam( $values['global_providers'], '*' ),
 			'desc'  => __( 'Comma separated list of networks that would be included. For example: Facebook, Twitter, Yahoo means all networks. See list of available' ) . '<a href="http://developers.gigya.com/020_Client_API/020_Methods/Socialize.showLoginUI">Providers</a>'
 	);
 
@@ -75,28 +75,14 @@ function globalSettingsForm() {
 	$form['global_lang'] = array(
 			'type'    => 'select',
 			'options' => $lang_opts,
-			'value'   => ! empty( $values['global_lang'] ) ? $values['global_lang'] : 'en',
+			'value'   => getParam( $values['global_lang'], 'en' ),
 			'label'   => __( 'Language' ),
-			'desc'    => __( 'Please select the interface language' )
-	);
-
-	$short_url_opts = array(
-			'always'       => __( 'Always' ),
-			'whenRequired' => __( 'When Required' ),
-			'never'        => __( 'Never' )
-	);
-
-	$form['global_short_url'] = array(
-			'type'    => 'select',
-			'options' => $short_url_opts,
-			'value'   => ! empty( $values['global_short_url'] ) ? $values['global_short_url'] : $short_url_opts['never'],
-			'label'   => __( 'shortURL' ),
 			'desc'    => __( 'Please select the interface language' )
 	);
 
 	$form['global_params'] = array(
 			'type'  => 'textarea',
-			'value' => ! empty( $values['global_params'] ) ? $values['global_params'] : '',
+			'value' => getParam( $values['global_params'], '' ),
 			'label' => __( 'Additional Parameters (advanced)' ),
 			'desc'  => __( 'Enter one value per line, in the format' ) . ' <strong>key|value</strong> ' . __( 'See list of available' ) . ' <a href="http://developers.gigya.com/030_API_reference/010_Client_API/010_Objects/Conf_object" target="_blank">parameters</a>'
 	);
@@ -104,13 +90,13 @@ function globalSettingsForm() {
 	$form['global_google_analytics'] = array(
 			'type'  => 'checkbox',
 			'label' => __( "Google's Social Analytics" ),
-			'value' => ! empty( $values['global_google_analytics'] ) ? $values['global_google_analytics'] : 0
+			'value' => getParam( $values['global_google_analytics'], 0 )
 	);
 
 	$form['global_gigya_debug'] = array(
 			'type'  => 'checkbox',
 			'label' => __( 'Enable Gigya debug log' ),
-			'value' => ! empty( $values['global_gigya_debug'] ) ? $values['global_gigya_debug'] : 0
+			'value' => getParam( $values['global_gigya_debug'], 0 )
 	);
 
 	echo _gigya_form_render( $form, GIGYA__SETTINGS_GLOBAL );

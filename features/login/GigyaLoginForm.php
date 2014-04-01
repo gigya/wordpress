@@ -27,8 +27,8 @@ class GigyaLoginForm {
 		// Parameters to be sent to the DOM.
 		$params = array(
 				'actionLogin'                 => 'gigya_login',
-				'redirect'                    => ! empty ( $this->login_options['login_redirect'] ) ? $this->login_options['login_redirect'] : user_admin_url(),
-				'connectWithoutLoginBehavior' => ! empty ( $this->login_options['login_connect_without'] ) ? $this->login_options['login_connect_without'] : 'loginExistingUser',
+				'redirect'                    => getParam( $this->login_options['login_redirect'], user_admin_url() ),
+				'connectWithoutLoginBehavior' => getParam( $this->login_options['login_connect_without'], 'loginExistingUser' )
 		);
 
 		$params['ui']                  = array();

@@ -59,8 +59,7 @@ class GigyaCMS {
 			if ( ! empty( $gigya_debug ) ) {
 				error_log( $response->getLog() );
 			}
-		}
-		else {
+		} else {
 			if ( ! empty( $user_info ) ) {
 
 				// Check validation in the response.
@@ -374,16 +373,16 @@ class GigyaCMS {
 	 *
 	 * @return array
 	 */
-	public static function advancedValuesParser($values) {
-		$lines = array();
-		$values = explode("\n", $values);
+	public static function advancedValuesParser( $values ) {
+		$lines  = array();
+		$values = explode( "\n", $values );
 
 		// Clean up values.
-		$values = array_map('trim', $values);
-		$values = array_filter($values, 'strlen');
+		$values = array_map( 'trim', $values );
+		$values = array_filter( $values, 'strlen' );
 
-		foreach ($values as $value) {
-			preg_match('/(.*)\|(.*)/', $value, $matches);
+		foreach ( $values as $value ) {
+			preg_match( '/(.*)\|(.*)/', $value, $matches );
 			$lines[$matches[1]] = $matches[2];
 		}
 

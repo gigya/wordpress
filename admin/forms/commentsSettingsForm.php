@@ -9,19 +9,19 @@ function commentsSettingsForm() {
 	$form['comments_plugin'] = array(
 			'type'  => 'checkbox',
 			'label' => __( 'Enable Gigya Comments' ),
-			'value' => ! empty( $values['comments_plugin'] ) ? $values['comments_plugin'] : 0
+			'value' => getParam( $values['comments_plugin'], 0 )
 	);
 
 	$form['comments_cat_id'] = array(
 			'type'  => 'text',
 			'label' => __( 'Category ID' ),
-			'value' => ! empty( $values['comments_cat_id'] ) ? $values['comments_cat_id'] : ''
+			'value' => getParam( $values['comments_cat_id'], '' )
 	);
 
 	$form['comments_enable_share_providers'] = array(
 			'type'  => 'text',
 			'label' => __( 'Enable Share Providers' ),
-			'value' => ! empty( $values['comments_enable_share_providers'] ) ? $values['comments_enable_share_providers'] : ''
+			'value' => getParam( $values['comments_enable_share_providers'], '' )
 	);
 
 	$comments_share_opts = array(
@@ -32,7 +32,7 @@ function commentsSettingsForm() {
 	$form['comments_enable_share_activity'] = array(
 			'type'    => 'select',
 			'options' => $comments_share_opts,
-			'value'   => ! empty( $values['comments_enable_share_activity'] ) ? $values['comments_enable_share_activity'] : $comments_share_opts['external'],
+			'value'   => getParam( $values['comments_enable_share_activity'], $comments_share_opts['external'] ),
 			'label'   => __( 'Enable Sharing to Activity Feed' ),
 			'desc'    => 'When publishing feed items, by default the feed items are published to social networks only and will not appear on the site\'s Activity Feed plugin. To change this behavior, you must change the publish scope to "Both"'
 	);
@@ -40,7 +40,7 @@ function commentsSettingsForm() {
 	$form['comments_custom_code'] = array(
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced)" ),
-			'value' => ! empty( $values['comments_custom_code'] ) ? $values['comments_custom_code'] : '',
+			'value' => getParam( $values['comments_custom_code'], '' ),
 			'desc'  => __( 'Enter one value per line, in the format' ) . ' <strong>key|value</strong>' . __( 'format' ) . '<br>' . __( 'See list of available:' ) . '<a href="http://developers.gigya.com/020_Client_API/030_Comments/comments.showCommentsUI" target="_blank">parameters</a>'
 	);
 
@@ -53,7 +53,7 @@ function commentsSettingsForm() {
 	$form['comments_privacy'] = array(
 			'type'    => 'select',
 			'options' => $privacy_opts,
-			'value'   => ! empty( $values['comments_privacy'] ) ? $values['comments_privacy'] : $privacy_opts['private'],
+			'value'   => getParam( $values['comments_privacy'], $privacy_opts['private'] ),
 			'label'   => __( 'Privacy' ),
 	);
 
