@@ -46,12 +46,9 @@ class GigyaRaasAction {
 			exit;
 		}
 
-		// Initialize Gigya user.
-//		$account             = new GigyaAccount( $data['UID'] );
-//		$this->gigya_account = $account->getAccount();
-
-		$gigya               = new GigyaCMS( GIGYA__API_KEY, GIGYA__API_SECRET );
-		$this->gigya_account = $gigya->getAccount( $data['UID'] );
+		// Initialize Gigya account.
+		$gigyaCMS            = new GigyaCMS();
+		$this->gigya_account = $gigyaCMS->getAccount( $data['UID'] );
 
 		// @todo Do we need this check - or we can count on what we get from Gigya?
 		if ( empty( $this->gigya_account['profile']['email'] ) ) {
@@ -64,15 +61,15 @@ class GigyaRaasAction {
 		$wp_user = get_user_by( 'email', $this->gigya_account['profile']['email'] );
 		if ( ! empty( $wp_user ) ) {
 
-			$primary_user = $account->isPrimaryUser( $this->gigya_account['loginIDs']['emails'], $wp_user->data->user_email );
+			$primary_user = $gigyaCMS->isPrimaryUser( $this->gigya_account['loginIDs']['emails'], $wp_user->data->user_email );
 
 			// If this user is not the primary user account in Gigya
 			// we delete the account (we don't want two different users with the same email)
 			if ( empty( $primary_user ) ) {
 
-				$account->delete( $this->gigya_account['UID'] );
+				$gigyaCMS->deleteAccount( $this->gigya_account['UID'] );
 
-				$providers = $account->getProviders( $this->gigya_account );
+				$providers = $gigyaCMS->getProviders( $this->gigya_account );
 
 				$msg = sprintf( __( "We found your email in our system.<br>Please login to your existing account using your <strong>%s</strong> identity.<br>
             If you wish to link your account with your <strong>%s</strong> identity - after logging-in, please go to your profile page and click the <strong>%s</strong> button.",

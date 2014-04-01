@@ -7,14 +7,11 @@ class GigyaCMS {
 
 	/**
 	 * Constructs a GigyaApi object.
-	 *
-	 * @param $api_key
-	 * @param $secret_key
 	 */
-	public function __construct( $api_key, $secret_key ) {
+	public function __construct() {
 
-		$this->api_key    = $api_key;
-		$this->secret_key = $secret_key;
+		$this->api_key    = GIGYA__API_KEY;
+		$this->secret_key = GIGYA__API_SECRET;
 
 	}
 
@@ -43,7 +40,7 @@ class GigyaCMS {
 		}
 
 		// To be define on CMS code (or not).
-		global $api_domain;
+		$api_domain = GIGYA__API_DOMAIN;
 
 		// Set the request path.
 		$domain = ! empty( $api_domain ) ? $api_domain : 'us1.gigya.com';
@@ -56,7 +53,8 @@ class GigyaCMS {
 		if ( $response->getErrorCode() != 0 ) {
 
 			// Set global debug on the CMS
-			global $gigya_debug;
+			$gigya_debug = GIGYA__API_DEBUG;
+
 			if ( ! empty( $gigya_debug ) ) {
 				error_log( $response->getLog() );
 			}

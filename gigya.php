@@ -48,26 +48,14 @@ class GigyaAction {
 		$this->login_options  = get_option( GIGYA__SETTINGS_LOGIN );
 		$this->global_options = get_option( GIGYA__SETTINGS_GLOBAL );
 
-		// GIGYA__API_KEY, GIGYA__API_SECRET
+		// Gigya CMS
 		define( 'GIGYA__API_KEY', $this->global_options['global_api_key'] );
 		define( 'GIGYA__API_SECRET', $this->global_options['global_api_secret'] );
-
-		// Set data center domain.
-		if (!empty($this->global_options['global_data_center'])) {
-			global $api_domain;
-			$api_domain = $this->global_options['global_data_center'];
-		}
-
-		// Set DEBUG state.
-		if (!empty($this->login_options['login_gigya_debug'])) {
-			global $gigya_debug;
-			$gigya_debug = $this->global_options['login_gigya_debug'];
-		}
+		define( 'GIGYA__API_DOMAIN', $this->global_options['global_data_center'] );
+		define( 'GIGYA__API_DEBUG', $this->global_options['login_gigya_debug'] );
 
 		add_action( 'init', array( $this, 'init' ) );
 		add_action( 'admin_action_update', array( $this, 'adminActionUpdate' ) );
-//		add_action( 'login_form', array( $this, 'loginForm' ) );
-//		add_action( 'register_form', array( $this, 'loginForm' ) );
 		add_action( 'wp_ajax_gigya_login', array( $this, 'ajaxLogin' ) );
 		add_action( 'wp_ajax_nopriv_gigya_login', array( $this, 'ajaxLogin' ) );
 		add_action( 'wp_ajax_gigya_raas', array( $this, 'ajaxRaasLogin' ) );
@@ -86,7 +74,6 @@ class GigyaAction {
 	public function init() {
 
 		require_once( GIGYA__PLUGIN_DIR . 'sdk/GSSDK.php' );
-//		require_once( GIGYA__PLUGIN_DIR . 'class/api/class.GigyaApi.php' );
 		require_once( GIGYA__PLUGIN_DIR . 'sdk/gigyaCMS.php' );
 
 		// Load jQuery and jQueryUI from WP..
@@ -95,56 +82,42 @@ class GigyaAction {
 		wp_enqueue_script( 'jquery-ui-dialog' );
 		wp_enqueue_script( 'gigya_js', GIGYA__PLUGIN_URL . 'gigya.js' );
 
-// Parameters to be sent to the DOM.
+		// Parameters to be sent to the DOM.
 		$params = array(
 				'ajaxurl'   => admin_url( 'admin-ajax.php' ),
 				'logoutUrl' => wp_logout_url(),
 		);
+
 		// Load params to be available to client-side script.
 		wp_localize_script( 'gigya_js', 'gigyaParams', $params );
 
 		// Checking that we have an API key and Gigya's plugin is turn on.
 		$api_key = GIGYA__API_KEY;
 		if ( ! empty( $api_key ) ) {
-
 			if ( $this->login_options['login_mode'] != 'wp_only' ) {
-
 				// Load Gigya's socialize.js from CDN.
 				wp_enqueue_script( 'gigya', GIGYA__JS_CDN . GIGYA__API_KEY );
-
 			}
 
 			if ( $this->login_options['login_mode'] == 'wp_sl' ) {
-
 				require_once( GIGYA__PLUGIN_DIR . 'class/login/class.GigyaLoginForm.php' );
 				$gigyaLoginForm = new GigyaLoginForm;
 				$gigyaLoginForm->init();
-
-				// Loads social login user class.
-//				require_once( GIGYA__PLUGIN_DIR . 'class/login/class.GigyaLoginUser.php' );
-
 			}
 
 			if ( $this->login_options['login_mode'] == 'raas' ) {
-
-				// Loads RaaS Account class.
-//				require_once( GIGYA__PLUGIN_DIR . 'class/raas/class.GigyaRaasAccount.php' );
-
 				// Loads RaaS links class.
 				require_once( GIGYA__PLUGIN_DIR . 'class/raas/class.GigyaRaasLinks.php' );
 				$gigyaRaasLinks = new GigyaRaasLinks;
 				$gigyaRaasLinks->init();
-
 			}
 
 		}
 
 		if ( is_admin() ) {
-
 			// Load the settings.
 			require_once( GIGYA__PLUGIN_DIR . 'admin/admin.GigyaSettings.php' );
 			new GigyaSettings;
-
 		}
 	}
 
@@ -156,30 +129,13 @@ class GigyaAction {
 
 		// When a Gigya's setting page is submitted.
 		if ( isset( $_POST['gigya_login_settings'] ) ) {
-
 			// When we turn on the Gigya's social login plugin,
 			// We also turn on the WP 'Membership: Anyone can register' option.
 			if ( $_POST['gigya_login_settings']['login_mode'] != 'wp_only' ) {
-
 				update_option( 'users_can_register', 1 );
-
 			}
 		}
 	}
-
-	/**
-	 * Hook login form.
-	 * Hook register form.
-	 */
-//	public function loginForm() {
-//
-//		// Check Gigya's social login is turn on and there an API key filled.
-//		if ( $this->login_options['login_mode'] == 'wp_sl' && ! empty( $this->global_options['global_api_key'] ) ) {
-//
-//
-//
-//		}
-//	}
 
 	/**
 	 * Hook AJAX login.
@@ -215,29 +171,18 @@ class GigyaAction {
 
 		// Login through WP form.
 		if ( isset( $_POST['log'] ) && isset( $_POST['pwd'] ) ) {
-//		if ( empty ( $_SESSION['gigya_uid'] ) && empty( $_POST['gigyaUID'] ) && empty( $_POST['action'] ) ) {
-
 			// Notify Gigya socialize.notifyLogin
 			// for a return user logged in from SITE.
-//			$gigyaUser = new GigyaLoginUser( $account->ID );
-//			$gigyaUser->notifyLogin( $account->ID );
-
-			$gigya = new GigyaCMS( GIGYA__API_KEY, GIGYA__API_SECRET );
-			$gigya->notifyLogin( $account->ID );
-
+			$gigyaCMS = new GigyaCMS();
+			$gigyaCMS->notifyLogin( $account->ID );
 		}
 
 		// This post is when there is the same email on the site,
 		// with the one who try to register and we want to link-accounts
 		// after the user is logged in with password.
 		if ( $_POST['form_name'] == 'loginform-gigya-link-account' ) {
-
-//			$gigyaUser = new GigyaLoginUser( $_POST['gigya_uid'] );
-//			$gigyaUser->notifyRegistration( $account->ID );
-
-			$gigya = new GigyaCMS( GIGYA__API_KEY, GIGYA__API_SECRET );
-			$gigya->notifyRegistration( $_POST['gigya_uid'], $account->ID );
-
+			$gigyaCMS = new GigyaCMS();
+			$gigyaCMS->notifyRegistration( $_POST['gigya_uid'], $account->ID );
 		}
 	}
 
@@ -250,12 +195,10 @@ class GigyaAction {
 
 		// New user was register through our custom extra details form.
 		if ( ! empty( $_POST['gigyaUID'] ) ) {
-
 			// We make a login.
 			$wp_user = get_userdata( $uid );
 			require_once( GIGYA__PLUGIN_DIR . 'class/login/class.GigyaLoginAction.php' );
 			GigyaLoginAction::login( $wp_user );
-
 		}
 
 		// New user was register through Gigya social login.
@@ -264,24 +207,17 @@ class GigyaAction {
 
 			// We make a notifyRegistration to Gigya.
 			$guid = ! empty( $_SESSION['gigya_uid'] ) ? $_SESSION['gigya_uid'] : $_POST['gigyaUID'];
-//			$gigyaUser = new GigyaLoginUser( $gid );
-//			$gigyaUser->notifyRegistration( $uid );
-
-			$gigya = new GigyaCMS( GIGYA__API_KEY, GIGYA__API_SECRET );
-			$gigya->notifyRegistration( $guid, $uid );
+			$gigyaCMS = new GigyaCMS();
+			$gigyaCMS->notifyRegistration( $guid, $uid );
 
 		}
 
 		// New user was register through WP form.
 		if ( isset( $_POST['user_login'] ) && isset( $_POST['user_email'] ) ) {
-
 			// We notify to Gigya's 'socialize.notifyLogin'
 			// with a 'is_new_user' flag.
-//			$gigyaUser = new GigyaLoginUser( $_SESSION['gigya_uid'] );
-//			$gigyaUser->notifyLogin( $uid, TRUE );
-
-			$gigya = new GigyaCMS( GIGYA__API_KEY, GIGYA__API_SECRET );
-			$gigya->notifyLogin( $uid, TRUE );
+			$gigyaCMS = new GigyaCMS();
+			$gigyaCMS->notifyLogin( $uid, TRUE );
 		}
 	}
 
@@ -295,18 +231,12 @@ class GigyaAction {
 			$account = wp_get_current_user();
 
 			if ( ! empty ( $account->ID ) ) {
-
 				// We using Gigya's account-linking (best practice).
 				// So the siteUID is the same as Gigya's UID.
-//				$gigyaUser = new GigyaLoginUser( $account->ID );
-//				$gigyaUser->logout();
-
-				$gigya = new GigyaCMS( GIGYA__API_KEY, GIGYA__API_SECRET );
-				$gigya->logout( $account->ID );
-
+				$gigyaCMS = new GigyaCMS();
+				$gigyaCMS->logout( $account->ID );
 			}
 		}
-
 	}
 
 	/**
@@ -317,11 +247,8 @@ class GigyaAction {
 	public function deletedUser( $user_id ) {
 
 		if ( $this->login_options['login_mode'] == 'wp_sl' ) {
-//			$gigyaUser = new GigyaLoginUser( $user_id );
-//			$gigyaUser->deleteAccount( $user_id );
-
-			$gigya = new GigyaCMS( GIGYA__API_KEY, GIGYA__API_SECRET );
-			$gigya->deleteUser( $user_id );
+			$gigyaCMS = new GigyaCMS();
+			$gigyaCMS->deleteUser( $user_id );
 		}
 
 	}
@@ -329,14 +256,10 @@ class GigyaAction {
 	private function shortcodeUserInfo( $atts, $info = NULL ) {
 
 		$wp_user = wp_get_current_user();
+
 		if ( $info == NULL ) {
-
-//			$gigyaUser = new GigyaLoginUser( $wp_user->UID );
-//			$user_info = $gigyaUser->getUserInfo();
-
-			$gigya     = new GigyaCMS( GIGYA__API_KEY, GIGYA__API_SECRET );
-			$user_info = $gigya->getUserInfo( $wp_user->UID );
-
+			$gigyaCMS     = new GigyaCMS();
+			$user_info = $gigyaCMS->getUserInfo( $wp_user->UID );
 		}
 
 		return $user_info->getString( key( $atts ), current( $atts ) );
