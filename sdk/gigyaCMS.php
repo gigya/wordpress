@@ -11,7 +11,7 @@ class GigyaCMS {
 	public function __construct() {
 
 		$this->api_key    = GIGYA__API_KEY;
-		$this->secret_key = GIGYA__API_SECRET;
+		$this->api_secret = GIGYA__API_SECRET;
 
 	}
 
@@ -29,7 +29,7 @@ class GigyaCMS {
 	public function call( $method, $params ) {
 
 		// Initialize new request.
-		$request   = new GSRequest( $this->api_key, $this->secret_key, $method );
+		$request   = new GSRequest( $this->api_key, $this->api_secret, $method );
 		$user_info = NULL;
 		if ( ! empty( $params ) ) {
 			foreach ( $params as $param => $val ) {
@@ -50,7 +50,8 @@ class GigyaCMS {
 		$response = $request->send();
 
 		// Check for errors
-		if ( $response->getErrorCode() != 0 ) {
+		$err_code = $response->getErrorCode();
+		if ( $err_code != 0 ) {
 
 			// Set global debug on the CMS
 			$gigya_debug = GIGYA__API_DEBUG;
@@ -59,11 +60,21 @@ class GigyaCMS {
 				error_log( $response->getLog() );
 			}
 		}
+		else {
+			if ( ! empty( $user_info ) ) {
 
-		// Check validation in the response.
-		$err_code = $this->responseValidate( $response, $this->secret_key, $user_info );
-		if ( ! empty( $err_code ) ) {
-			return $err_code;
+				// Check validation in the response.
+				$valid = SigUtils::validateUserSignature(
+						$response->getString( "UID", "" ),
+						$response->getString( "signatureTimestamp", "" ),
+						$this->api_secret,
+						$response->getString( "UIDSignature", "" )
+				);
+
+				if ( ! empty( $valid ) ) {
+					return $err_code;
+				}
+			}
 		}
 
 		return $this->jsonToArray( $response->getResponseText() );
@@ -81,52 +92,6 @@ class GigyaCMS {
 	 */
 	public static function jsonToArray( $data ) {
 		return json_decode( $data, TRUE );
-	}
-
-	/**
-	 * Internal helper function to deal cleanly with various HTTP response codes.
-	 *
-	 * @param mixed   $response
-	 *   the Gigya response.
-	 * @param         $secret_key
-	 * @param boolean $user_info
-	 *   tell if the request has the user info param.
-	 *
-	 * @internal param bool $return_error
-	 *
-	 * @return boolean
-	 *   true if we have errors false if not.
-	 */
-	private function responseValidate( $response, $secret_key, $user_info = NULL ) {
-		$code = $response->getErrorCode();
-
-		switch ( $code ) {
-			case '0':
-				if ( ! empty( $user_info ) ) {
-					$valid = SigUtils::validateUserSignature(
-							$response->getString( "UID", "" ),
-							$response->getString( "signatureTimestamp", "" ),
-							$secret_key,
-							$response->getString( "UIDSignature", "" )
-					);
-
-					if ( ! empty( $valid ) ) {
-						return FALSE;
-					}
-				}
-
-				return $code;
-
-				break;
-
-			case '403005':
-				if ( get_option( 'gigya_validate', FALSE ) ) {
-					return FALSE;
-				}
-				break;
-		}
-
-		return $code;
 	}
 
 	/**

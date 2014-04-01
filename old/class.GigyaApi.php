@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * class.GigyaApi.php
+ * GigyaApi.php
  * Provides a GigyaApi object type with associated methods.
  */
 

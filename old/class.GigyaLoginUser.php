@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * class.GigyaUser.php
+ * GigyaUser.php
  * For socialized login user.
  * Provides a GigyaUser object type with associated methods.
  */

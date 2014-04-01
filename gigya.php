@@ -65,6 +65,7 @@ class GigyaAction {
 		add_action( 'wp_logout', array( $this, 'wpLogout' ) );
 		add_action( 'deleted_user', array( $this, 'deletedUser' ) );
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
+		add_filter( 'the_content', array( $this, 'theContent' ) );
 
 	}
 
@@ -100,14 +101,14 @@ class GigyaAction {
 			}
 
 			if ( $this->login_options['login_mode'] == 'wp_sl' ) {
-				require_once( GIGYA__PLUGIN_DIR . 'class/login/class.GigyaLoginForm.php' );
+				require_once( GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginForm.php' );
 				$gigyaLoginForm = new GigyaLoginForm;
 				$gigyaLoginForm->init();
 			}
 
 			if ( $this->login_options['login_mode'] == 'raas' ) {
 				// Loads RaaS links class.
-				require_once( GIGYA__PLUGIN_DIR . 'class/raas/class.GigyaRaasLinks.php' );
+				require_once( GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasLinks.php' );
 				$gigyaRaasLinks = new GigyaRaasLinks;
 				$gigyaRaasLinks->init();
 			}
@@ -143,7 +144,7 @@ class GigyaAction {
 	public function ajaxLogin() {
 
 		// Loads Gigya's social login class.
-		require_once( GIGYA__PLUGIN_DIR . 'class/login/class.GigyaLoginAction.php' );
+		require_once( GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginAction.php' );
 		$gigyaLoginAction = new GigyaLoginAction;
 		$gigyaLoginAction->init();
 
@@ -155,7 +156,7 @@ class GigyaAction {
 	public function ajaxRaasLogin() {
 
 		// Loads Gigya's RaaS class.
-		require_once( GIGYA__PLUGIN_DIR . 'class/raas/class.GigyaRaasAction.php' );
+		require_once( GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasAction.php' );
 		$gigyaLoginAction = new GigyaRaasAction;
 		$gigyaLoginAction->init();
 
@@ -197,7 +198,7 @@ class GigyaAction {
 		if ( ! empty( $_POST['gigyaUID'] ) ) {
 			// We make a login.
 			$wp_user = get_userdata( $uid );
-			require_once( GIGYA__PLUGIN_DIR . 'class/login/class.GigyaLoginAction.php' );
+			require_once( GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginAction.php' );
 			GigyaLoginAction::login( $wp_user );
 		}
 
@@ -206,7 +207,7 @@ class GigyaAction {
 		if ( ! empty ( $_SESSION['gigya_uid'] ) || ! empty( $_POST['gigyaUID'] ) ) {
 
 			// We make a notifyRegistration to Gigya.
-			$guid = ! empty( $_SESSION['gigya_uid'] ) ? $_SESSION['gigya_uid'] : $_POST['gigyaUID'];
+			$guid     = ! empty( $_SESSION['gigya_uid'] ) ? $_SESSION['gigya_uid'] : $_POST['gigyaUID'];
 			$gigyaCMS = new GigyaCMS();
 			$gigyaCMS->notifyRegistration( $guid, $uid );
 
@@ -258,11 +259,35 @@ class GigyaAction {
 		$wp_user = wp_get_current_user();
 
 		if ( $info == NULL ) {
-			$gigyaCMS     = new GigyaCMS();
+			$gigyaCMS  = new GigyaCMS();
 			$user_info = $gigyaCMS->getUserInfo( $wp_user->UID );
 		}
 
 		return $user_info->getString( key( $atts ), current( $atts ) );
+	}
+
+	public function theContent() {
+		function gigya_share_plugin($content) {
+			$gigya_share = gigya_get_option("share_plugin");
+			switch ($gigya_share) {
+				case 'top':
+					$topHTML = gigya_get_share_plugin("top");
+					$content = $topHTML . $content;
+					break;
+				case 'bottom':
+					$bottomHTML = gigya_get_share_plugin("bottom");
+					$content = $content . $bottomHTML;
+					break;
+				case 'both':
+					$topHTML = gigya_get_share_plugin("top");
+					$bottomHTML = gigya_get_share_plugin("bottom");
+					$content = $topHTML . $content .$bottomHTML;
+					break;
+				case 'none':
+					break;
+			}
+			return $content;
+		}
 	}
 }
 
