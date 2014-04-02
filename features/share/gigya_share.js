@@ -94,5 +94,16 @@
 
 // --------------------------------------------------------------------
 
+		// Conditional settings image url field.
+		var img_url = $('input#gigya_share_image_url').parent('.text-field ');
+		img_url.hide();
+		$('input:radio[name="gigya_share_settings[share_image]"]').change(function () {
+			if ($(this).is(':checked')) {
+				$(this).val() == 'url' ? img_url.show() : img_url.hide();
+			}
+		})
+
+// --------------------------------------------------------------------
+
 	});
 })(jQuery);

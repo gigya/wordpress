@@ -21,12 +21,13 @@ class GigyaShareSet {
 
 		// Load custom Gigya login script.
 		wp_enqueue_script( 'gigya_share_js', GIGYA__PLUGIN_URL . 'features/share/gigya_share.js' );
+		wp_enqueue_style( 'gigya_share_css', GIGYA__PLUGIN_URL . 'features/share/gigya_share.css' );
 
 		$params = array(
 				'containerID'  => 'gigya-share',
 				'postId'       => get_the_ID(),
 				'layout'       => getParam( $this->share_options['share_layout'], 'horizontal' ),
-				'showCounts'   => getParam( $this->share_options['share_show_counts'], 'right' ),
+				'showCounts'   => getParam( $this->share_options['share_counts'], 'right' ),
 				'shareButtons' => getParam( $this->share_options['share_providers'], 'share,facebook-like,google-plusone,twitter,email' ),
 				'shortURLs'    => !empty($this->share_options['share_short_url']) ? 'always' : 'never',
 

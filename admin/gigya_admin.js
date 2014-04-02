@@ -30,7 +30,7 @@
 		// Set user management page at modes manually change.
 		$('input:radio[name="gigya_login_settings[login_mode]"]').change(function () {
 			userManagementPage($(this));
-		})
+		});
 
 	});
 })(jQuery);
