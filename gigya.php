@@ -261,9 +261,14 @@ class GigyaAction {
 	 */
 	public function deletedUser( $user_id ) {
 
+		$gigyaCMS = new GigyaCMS();
+
 		if ( $this->login_options['login_mode'] == 'wp_sl' ) {
-			$gigyaCMS = new GigyaCMS();
 			$gigyaCMS->deleteUser( $user_id );
+		}
+
+		elseif ( $this->login_options['login_mode'] == 'raas' ) {
+			$gigyaCMS->deleteAccount( $user_id );
 		}
 
 	}
