@@ -2,10 +2,10 @@
 
 /**
  * @file
- * GigyaRaasAction.php
+ * GigyaRaasAjax.php
  * An AJAX handler for login or register user to WP.
  */
-class GigyaRaasAction {
+class GigyaRaasAjax {
 
 	private $gigya_account;
 

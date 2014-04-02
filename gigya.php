@@ -84,8 +84,8 @@ class GigyaAction {
 		wp_enqueue_script( 'jquery-ui-dialog' );
 		wp_enqueue_script( 'gigya_js', GIGYA__PLUGIN_URL . 'gigya.js' );
 // Share widget.
-		require_once( GIGYA__PLUGIN_DIR . 'features/share/GigyaShareAction.php' );
-		$w = new GigyaShareAction();
+		require_once( GIGYA__PLUGIN_DIR . 'features/share/GigyaShareSet.php' );
+		$w = new GigyaShareSet();
 		$w->init();
 		// Parameters to be sent to the DOM.
 		$params = array(
@@ -109,17 +109,17 @@ class GigyaAction {
 
 			// Loads requirements for any Gigya's social login.
 			if ( $this->login_options['login_mode'] == 'wp_sl' ) {
-				require_once( GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginForm.php' );
-				$gigyaLoginForm = new GigyaLoginForm;
-				$gigyaLoginForm->init();
+				require_once( GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginSet.php' );
+				$gigyaLoginSet = new GigyaLoginSet;
+				$gigyaLoginSet->init();
 			}
 
 			// Loads requirements for any Gigya's RaaS login.
 			if ( $this->login_options['login_mode'] == 'raas' ) {
 				// Loads RaaS links class.
-				require_once( GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasLinks.php' );
-				$gigyaRaasLinks = new GigyaRaasLinks;
-				$gigyaRaasLinks->init();
+				require_once( GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasSet.php' );
+				$gigyaRaasSet = new GigyaRaasSet;
+				$gigyaRaasSet->init();
 			}
 
 			// Loads requirements for any Gigya's Google-Analytics integration.
@@ -158,9 +158,9 @@ class GigyaAction {
 	public function ajaxLogin() {
 
 		// Loads Gigya's social login class.
-		require_once( GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginAction.php' );
-		$gigyaLoginAction = new GigyaLoginAction;
-		$gigyaLoginAction->init();
+		require_once( GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginAjax.php' );
+		$gigyaLoginAjax = new GigyaLoginAjax;
+		$gigyaLoginAjax->init();
 
 	}
 
@@ -170,9 +170,9 @@ class GigyaAction {
 	public function ajaxRaasLogin() {
 
 		// Loads Gigya's RaaS class.
-		require_once( GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasAction.php' );
-		$gigyaLoginAction = new GigyaRaasAction;
-		$gigyaLoginAction->init();
+		require_once( GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasAjax.php' );
+		$gigyaLoginAjax = new GigyaRaasAjax;
+		$gigyaLoginAjax->init();
 
 	}
 
@@ -212,8 +212,8 @@ class GigyaAction {
 		if ( ! empty( $_POST['gigyaUID'] ) ) {
 			// We make a login.
 			$wp_user = get_userdata( $uid );
-			require_once( GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginAction.php' );
-			GigyaLoginAction::login( $wp_user );
+			require_once( GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginAjax.php' );
+			GigyaLoginAjax::login( $wp_user );
 		}
 
 		// New user was register through Gigya social login.

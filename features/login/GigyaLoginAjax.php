@@ -2,10 +2,10 @@
 
 /**
  * @file
- * GigyaLoginAction.php
+ * GigyaLoginAjax.php
  * An AJAX handler for login or register user to WP.
  */
-class GigyaLoginAction {
+class GigyaLoginAjax {
 
 	public function __construct() {
 

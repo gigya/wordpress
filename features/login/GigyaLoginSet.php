@@ -2,10 +2,10 @@
 
 /**
  * @file
- * GigyaLoginForm.php
+ * GigyaLoginSet.php
  * Adds Gigya login option to WP login/register form.
  */
-class GigyaLoginForm {
+class GigyaLoginSet {
 
 	public function __construct() {
 

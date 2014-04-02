@@ -2,10 +2,10 @@
 
 /**
  * @file
- * GigyaRaasLinks.php
- * An AJAX handler for login or register user to WP.
+ * GigyaRaasSet.php
+ * General RaaS settings.
  */
-class GigyaRaasLinks {
+class GigyaRaasSet {
 
 	public function __construct() {
 

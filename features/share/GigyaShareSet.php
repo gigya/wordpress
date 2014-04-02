@@ -2,10 +2,10 @@
 
 /**
  * @file
- * GigyaShareAction.php
+ * GigyaShareSet.php
  * An AJAX handler for login or register user to WP.
  */
-class GigyaShareAction {
+class GigyaShareSet {
 
 	public function __construct() {
 
