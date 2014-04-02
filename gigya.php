@@ -54,6 +54,7 @@ class GigyaAction {
 		define( 'GIGYA__API_DOMAIN', $this->global_options['global_data_center'] );
 		define( 'GIGYA__API_DEBUG', $this->global_options['login_gigya_debug'] );
 
+//		add_action( 'plugins_loaded', array( $this, 'pluginsLoaded' ) );
 		add_action( 'init', array( $this, 'init' ) );
 		add_action( 'admin_action_update', array( $this, 'adminActionUpdate' ) );
 		add_action( 'wp_ajax_gigya_login', array( $this, 'ajaxLogin' ) );
@@ -71,6 +72,17 @@ class GigyaAction {
 
 	}
 
+//	public function pluginsLoaded() {
+//		// Login through WP form.
+//		if ( $this->login_options['login_mode'] != 'raas' &&
+//				( isset( $_POST['log'] ) && isset( $_POST['pwd'] ) ) ||
+//				( isset( $_POST['user_login'] ) && isset( $_POST['user_email'] ) )
+//		) {
+//			wp_safe_redirect( $_SERVER['REQUEST_URI'] );
+//			exit;
+//		}
+//	}
+
 	/**
 	 * Initialize hook.
 	 */
@@ -84,10 +96,12 @@ class GigyaAction {
 		wp_enqueue_script( 'jquery-ui-core' );
 		wp_enqueue_script( 'jquery-ui-dialog' );
 		wp_enqueue_script( 'gigya_js', GIGYA__PLUGIN_URL . 'gigya.js' );
-// Share widget.
+
+		// Share widget.
 		require_once( GIGYA__PLUGIN_DIR . 'features/share/GigyaShareSet.php' );
-		$w = new GigyaShareSet();
-		$w->init();
+		$share = new GigyaShareSet();
+		$share->init();
+
 		// Parameters to be sent to the DOM.
 		$params = array(
 				'ajaxurl'   => admin_url( 'admin-ajax.php' ),
@@ -147,8 +161,10 @@ class GigyaAction {
 		if ( isset( $_POST['gigya_login_settings'] ) ) {
 			// When we turn on the Gigya's social login plugin,
 			// We also turn on the WP 'Membership: Anyone can register' option.
-			if ( $_POST['gigya_login_settings']['login_mode'] != 'wp_only' ) {
+			if ( $_POST['gigya_login_settings']['login_mode'] == 'wp_sl' ) {
 				update_option( 'users_can_register', 1 );
+			} elseif ( $_POST['gigya_login_settings']['login_mode'] == 'raas' ) {
+				update_option( 'users_can_register', 0 );
 			}
 		}
 	}
@@ -187,6 +203,15 @@ class GigyaAction {
 
 		// Login through WP form.
 		if ( isset( $_POST['log'] ) && isset( $_POST['pwd'] ) ) {
+
+			// Trap for non-admin user how try to
+			// login through WP form on RaaS mode.
+			if ( $this->login_options['login_mode'] == 'raas' && ! in_array( 'administrator', $account->roles ) ) {
+				wp_logout();
+				wp_safe_redirect( $_SERVER['REQUEST_URI'] );
+				exit;
+			}
+
 			// Notify Gigya socialize.notifyLogin
 			// for a return user logged in from SITE.
 			$gigyaCMS = new GigyaCMS();
@@ -199,6 +224,14 @@ class GigyaAction {
 		if ( $_POST['form_name'] == 'loginform-gigya-link-account' ) {
 			$gigyaCMS = new GigyaCMS();
 			$gigyaCMS->notifyRegistration( $_POST['gigya_uid'], $account->ID );
+		}
+
+		if ( $this->login_options['login_mode'] != 'raas' &&
+				( isset( $_POST['log'] ) && isset( $_POST['pwd'] ) ) ||
+				( isset( $_POST['user_login'] ) && isset( $_POST['user_email'] ) )
+		) {
+			wp_safe_redirect( $_SERVER['REQUEST_URI'] );
+			exit;
 		}
 	}
 
