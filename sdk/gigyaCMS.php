@@ -375,7 +375,7 @@ class GigyaCMS {
 	 */
 	public static function advancedValuesParser( $values ) {
 
-		if (!empty($values)) {
+		if ( ! empty( $values ) ) {
 			$lines  = array();
 			$values = explode( "\n", $values );
 

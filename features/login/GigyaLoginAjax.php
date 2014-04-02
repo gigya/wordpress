@@ -111,7 +111,7 @@ class GigyaLoginAjax {
 		// we attach an extra value to the name to make it unique.
 		$username_exist = username_exists( $this->gigya_user['nickname'] );
 		if ( ! empty( $username_exist ) ) {
-			$this->gigya_user['nickname'] = $this->gigya_user['nickname'] . ' ' . uniqid();
+			$this->gigya_user['nickname'] = $this->gigya_user['nickname'] . uniqid('-');
 		}
 
 		// When there missing email or the admin checked to
@@ -124,7 +124,6 @@ class GigyaLoginAjax {
 		$name    = $this->gigya_user['nickname'];
 		$email   = $this->gigya_user['email'];
 		$user_id = register_new_user( $name, $email );
-		$wp_user = get_userdata( $user_id );
 
 		// On registration error.
 		if ( ! empty( $user_id->errors ) ) {
@@ -139,6 +138,8 @@ class GigyaLoginAjax {
 			wp_send_json_error( array( 'msg' => $msg ) );
 			exit;
 		}
+
+		$wp_user = get_userdata( $user_id );
 
 		// If we got to here, the user is already register.
 		// But if we have the 'email_not_verified' flag turn on,

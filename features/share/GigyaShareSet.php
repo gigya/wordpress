@@ -29,20 +29,20 @@ class GigyaShareSet {
 				'layout'       => getParam( $this->share_options['share_layout'], 'horizontal' ),
 				'showCounts'   => getParam( $this->share_options['share_counts'], 'right' ),
 				'shareButtons' => getParam( $this->share_options['share_providers'], 'share,facebook-like,google-plusone,twitter,email' ),
-				'shortURLs'    => !empty($this->share_options['share_short_url']) ? 'always' : 'never',
+				'shortURLs'    => ! empty( $this->share_options['share_short_url'] ) ? 'always' : 'never',
 
-				'ua' => array(
-						'linkBack'     => the_permalink(),
-						'postTitle'    => get_the_title(),
-						'postDesc'     => the_excerpt(),
-						'imageBy'      => getParam( $this->share_options['share_image'], 'default' ),
-						'imageURL'     => getParam( $this->share_options['share_image_url'], '' )
+				'ua'           => array(
+						'linkBack'  => the_permalink(),
+						'postTitle' => get_the_title(),
+						'postDesc'  => the_excerpt(),
+						'imageBy'   => getParam( $this->share_options['share_image'], 'default' ),
+						'imageURL'  => getParam( $this->share_options['share_image_url'], '' )
 				),
 		);
 
-		if (!empty($this->share_options['share_advanced'])) {
+		if ( ! empty( $this->share_options['share_advanced'] ) ) {
 			$advanced = gigyaCMS::advancedValuesParser( getParam( $this->share_options['share_advanced'], '' ) );
-			$params = array_merge($params, $advanced);
+			$params   = array_merge( $params, $advanced );
 		}
 
 		// Load params to be available on client-side script.

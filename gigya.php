@@ -63,6 +63,7 @@ class GigyaAction {
 		add_action( 'wp_login', array( $this, 'wpLogin' ), 10, 2 );
 		add_action( 'user_register', array( $this, 'userRegister' ), 10, 1 );
 		add_action( 'wp_logout', array( $this, 'wpLogout' ) );
+		add_action( 'wp_authenticate', array( $this, 'wpAuthenticate' ) );
 		add_action( 'deleted_user', array( $this, 'deletedUser' ) );
 		add_action( 'widgets_init', array( $this, 'widgetsInit' ) );
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
@@ -103,8 +104,8 @@ class GigyaAction {
 			// Loads requirements for any Gigya's login.
 			if ( $this->login_options['login_mode'] != 'wp_only' ) {
 				// Load Gigya's socialize.js from CDN.
-				$lang = getParam($this->global_options['global_lang'], 'en');
-				wp_enqueue_script( 'gigya', GIGYA__JS_CDN . GIGYA__API_KEY . '&lang=' . $lang);
+				$lang = getParam( $this->global_options['global_lang'], 'en' );
+				wp_enqueue_script( 'gigya', GIGYA__JS_CDN . GIGYA__API_KEY . '&lang=' . $lang );
 			}
 
 			// Loads requirements for any Gigya's social login.
@@ -265,12 +266,21 @@ class GigyaAction {
 
 		if ( $this->login_options['login_mode'] == 'wp_sl' ) {
 			$gigyaCMS->deleteUser( $user_id );
-		}
-
-		elseif ( $this->login_options['login_mode'] == 'raas' ) {
+		} elseif ( $this->login_options['login_mode'] == 'raas' ) {
 			$gigyaCMS->deleteAccount( $user_id );
 		}
 
+	}
+
+	/**
+	 * @param $username
+	 */
+	public function wpAuthenticate( $username ) {
+		if ( ! username_exists( $username ) ) {
+			$username;
+		} else {
+			$username;
+		}
 	}
 
 	/**
@@ -302,13 +312,13 @@ class GigyaAction {
 	 */
 	public function theContent( $content ) {
 		$share_options = get_option( GIGYA__SETTINGS_SHARE );
-		$position = $share_options['share_position'];
-		if (!empty($position) && $position!= 'none') {
+		$position      = $share_options['share_position'];
+		if ( ! empty( $position ) && $position != 'none' ) {
 
 			// Get the share widget content.
 //			$widget = the_widget( "GigyaShare_Widget" );
-			$args = array( 'before_widget' => '<div class="widget">', 'after_widget' => "</div>", 'before_title' => '<h2 class="widgettitle">', 'after_title' => '</h2>' );
-			$widget = GigyaShare_Widget::getContent($args, array());
+			$args   = array( 'before_widget' => '<div class="widget">', 'after_widget' => "</div>", 'before_title' => '<h2 class="widgettitle">', 'after_title' => '</h2>' );
+			$widget = GigyaShare_Widget::getContent( $args, array() );
 
 			// Set share widget position on post page.
 			switch ( $share_options['share_position'] ) {
@@ -316,7 +326,7 @@ class GigyaAction {
 					$content = $widget . $content;
 					break;
 				case 'bottom':
-					$content    = $content . $widget;
+					$content = $content . $widget;
 					break;
 //				case 'both':
 //					$content    = $widget . $content . $widget;

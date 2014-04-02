@@ -18,7 +18,7 @@ function shareSettingsForm() {
 			'options' => $share_opts,
 			'label'   => __( 'Set the position of the share widget in a post page' ),
 			'value'   => getParam( $values['share_position'], 'none' ),
-			'desc'  => __( 'You can also find Gigya Share widget in the widgets settings page, and position it through there.' )
+			'desc'    => __( 'You can also find Gigya Share widget in the widgets settings page, and position it through there.' )
 	);
 
 	$form['share_providers'] = array(
@@ -43,7 +43,7 @@ function shareSettingsForm() {
 
 	$layout_opts = array(
 			"horizontal" => __( "Horizontal" ),
-			"vertical"  => __( "Vertical" ),
+			"vertical"   => __( "Vertical" ),
 	);
 
 	$form['share_layout'] = array(
@@ -60,10 +60,10 @@ function shareSettingsForm() {
 //	);
 
 	$form['share_image'] = array(
-			'type'    => 'checkbox',
+			'type'  => 'checkbox',
 //			'options' => $image_opts,
-			'value'   => getParam( $values['share_image'], 0 ),
-			'label'   => __( 'Set image URL' ),
+			'value' => getParam( $values['share_image'], 0 ),
+			'label' => __( 'Set image URL' ),
 	);
 
 	$form['share_image_url'] = array(

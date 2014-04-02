@@ -29,6 +29,7 @@ class GigyaRaasSet {
 
 			// Ajax action.
 				'actionRaas'              => 'gigya_raas',
+				'redirect'                => user_admin_url(),
 
 			// Screen set.
 				'raasWebScreen'           => getParam( $this->login_options['raas_web_screen'], 'Login-web' ),

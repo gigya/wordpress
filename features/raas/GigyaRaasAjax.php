@@ -119,7 +119,29 @@ class GigyaRaasAjax {
 		$name  = $this->gigya_account['profile']['firstName'] . ' ' . $this->gigya_account['profile']['lastName'];
 		$email = $this->gigya_account['profile']['email'];
 
+		// If the name of the new user is already exist in the system,
+		// WP will reject the registration and return an error. to prevent this
+		// we attach an extra value to the name to make it unique.
+		$username_exist = username_exists( $name );
+		if ( ! empty( $username_exist ) ) {
+			$name = $name . uniqid('-');
+		}
+
 		$user_id = register_new_user( $name, $email );
+
+		// On registration error.
+		if ( ! empty( $user_id->errors ) ) {
+			$msg = '';
+			foreach ( $user_id->errors as $error ) {
+				foreach ( $error as $err ) {
+					$msg .= $err . "\n";
+				}
+			}
+
+			// Return JSON to client.
+			wp_send_json_error( array( 'msg' => $msg ) );
+			exit;
+		}
 
 		// Login the user.
 		$wp_user = get_userdata( $user_id );

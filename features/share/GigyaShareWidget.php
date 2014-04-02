@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Adds shareWidget widget.
  */
@@ -23,7 +24,7 @@ class GigyaShare_Widget extends WP_Widget {
 	 * @param array $instance Saved values from database.
 	 */
 	public function widget( $args, $instance ) {
-		echo  $this->getContent($args, $instance);
+		echo $this->getContent( $args, $instance );
 	}
 
 	/**
@@ -32,9 +33,9 @@ class GigyaShare_Widget extends WP_Widget {
 	 *
 	 * @return string
 	 */
-	public function getContent($args, $instance) {
+	public function getContent( $args, $instance ) {
 		$output = '';
-		$title = apply_filters( 'widget_title', $instance['title'] );
+		$title  = apply_filters( 'widget_title', $instance['title'] );
 
 		$output .= $args['before_widget'];
 		if ( ! empty( $title ) ) {

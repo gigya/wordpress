@@ -8,7 +8,7 @@
 		 * Get image object.
 		 * @returns {{type: string, href: *}}
 		 */
-		var getImageObj = function() {
+		var getImageObj = function () {
 			var mediaObj = {type: 'image', href: gigyaShareParams.linkBack};
 
 			// Image source entered manually.
@@ -33,7 +33,7 @@
 		 * Get user action.
 		 * @returns {gigya.services.socialize.UserAction}
 		 */
-		var getUserAction = function() {
+		var getUserAction = function () {
 			var ua = new gigya.services.socialize.UserAction();
 
 //			if (typeof gigyaShareParams.userMessage !== 'undefined') {
