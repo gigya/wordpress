@@ -11,13 +11,13 @@
 		var getImageObj = function() {
 			var mediaObj = {type: 'image', href: gigyaShareParams.linkBack};
 
-			// Image source taken from og meta tag.
-			if (gigyaShareParams.imageBy === 'default' && $('meta[property=og:image]').length > 0) {
-				mediaObj.src = $('meta[property=og:image]').attr('content');
-			}
 			// Image source entered manually.
-			else if ((gigyaShareParams.imageBy === 'url') && (gigyaShareParams.imageUrl !== '')) {
+			if ((gigyaShareParams.imageBy === 'url') && (gigyaShareParams.imageUrl !== '')) {
 				mediaObj.src = gigyaShareParams.imageUrl;
+			}
+			// Image source taken from og meta tag.
+			else if (typeof $('meta[property="og:image"]') !== 'undefined') {
+				mediaObj.src = $('meta[property="og:image"]').attr('content');
 			}
 			// Image source taken from the first image in post.
 			else {
@@ -41,18 +41,20 @@
 //			}
 
 			// Set link back.
-			if (typeof gigyaShareParams.linkBack !== 'undefined') {
-				ua.setLinkBack(gigyaShareParams.linkBack);
+			var linkBack = typeof $('meta[property="og:url"]').attr('content') !== 'undefined' ? $('meta[property="og:url"]').attr('content') : gigyaShareParams.linkBack;
+			if (typeof linkBack !== 'undefined') {
+				ua.setLinkBack(linkBack);
 			}
 
 			// Set title.
-			if (typeof gigyaShareParams.title !== 'undefined') {
-				ua.setTitle(gigyaShareParams.title);
+			var postTitle = typeof $('meta[property="og:title"]').attr('content') !== 'undefined' ? $('meta[property="og:title"]').attr('content') : gigyaShareParams.postTitle;
+			if (typeof postTitle !== 'undefined') {
+				ua.setTitle(postTitle);
 			}
 
 			// Set action link.
-			if (typeof gigyaShareParams.title !== 'undefined' && typeof gigyaShareParams.linkBack !== 'undefined') {
-				ua.addActionLink(gigyaShareParams.postTitle, gigyaShareParams.linkBack);
+			if (typeof postTitle !== 'undefined' && typeof linkBack !== 'undefined') {
+				ua.addActionLink(postTitle, linkBack);
 			}
 
 			// Set subtitle.
@@ -61,8 +63,9 @@
 //			}
 
 			// Set the description.
-			if (typeof gigyaShareParams.postDesc !== 'undefined') {
-				ua.setDescription(gigyaShareParams.postDesc);
+			var postDesc = typeof $('meta[property="og:description"]').attr('content') !== 'undefined' ? $('meta[property="og:description"]').attr('content') : gigyaShareParams.postDesc;
+			if (typeof postDesc !== 'undefined') {
+				ua.setDescription(postDesc);
 			}
 
 			// Set the image.
@@ -95,12 +98,11 @@
 // --------------------------------------------------------------------
 
 		// Conditional settings image url field.
-		var img_url = $('input#gigya_share_image_url').parent('.text-field ');
-		img_url.hide();
-		$('input:radio[name="gigya_share_settings[share_image]"]').change(function () {
-			if ($(this).is(':checked')) {
-				$(this).val() == 'url' ? img_url.show() : img_url.hide();
-			}
+		var check = $('input:checkbox[name="gigya_share_settings[share_image]"]');
+		var textfield = $('input#gigya_share_image_url').parent('.text-field ');
+		check.is(':checked') ? textfield.show() : textfield.hide();
+		check.change(function () {
+			check.is(':checked') ? textfield.show() : textfield.hide();
 		})
 
 // --------------------------------------------------------------------

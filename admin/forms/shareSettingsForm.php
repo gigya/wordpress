@@ -6,19 +6,20 @@ function shareSettingsForm() {
 	$values = get_option( GIGYA__SETTINGS_SHARE );
 	$form   = array();
 
-//	$share_opts = array(
-//			"none"   => __( "None" ),
-//			"bottom" => __( "Bottom" ),
-//			"top"    => __( "Top" ),
+	$share_opts = array(
+			"none"   => __( "None" ),
+			"bottom" => __( "Bottom" ),
+			"top"    => __( "Top" ),
 //			"both"   => __( "Both" )
-//	);
-//
-//	$form['share_plugin'] = array(
-//			'type'    => 'select',
-//			'options' => $share_opts,
-//			'label'   => __( 'Enable Gigya Share Button' ),
-//			'value'   => getParam( $values['share_plugin'], 'bottom' )
-//	);
+	);
+
+	$form['share_position'] = array(
+			'type'    => 'select',
+			'options' => $share_opts,
+			'label'   => __( 'Set the position of the share widget in a post page' ),
+			'value'   => getParam( $values['share_position'], 'none' ),
+			'desc'  => __( 'You can also find Gigya Share widget in the widgets settings page, and position it through there.' )
+	);
 
 	$form['share_providers'] = array(
 			'type'  => 'text',
@@ -52,17 +53,17 @@ function shareSettingsForm() {
 			'label'   => __( 'Privacy' ),
 	);
 
-	$image_opts = array(
-			"default" => __( "Use image tag if exists, first image on post otherwise" ),
-			"first"  => __( "Use first image on the post" ),
-			"url"  => __( "Specify an image URL" )
-	);
+//	$image_opts = array(
+//			"default" => __( "Use image tag if exists, first image on post otherwise" ),
+//			"first"  => __( "Use first image on the post" ),
+//			"url"  => __( "Specify an image URL" )
+//	);
 
 	$form['share_image'] = array(
-			'type'    => 'radio',
-			'options' => $image_opts,
-			'value'   => getParam( $values['share_image'], 'default' ),
-			'label'   => __( 'Image' ),
+			'type'    => 'checkbox',
+//			'options' => $image_opts,
+			'value'   => getParam( $values['share_image'], 0 ),
+			'label'   => __( 'Set image URL' ),
 	);
 
 	$form['share_image_url'] = array(

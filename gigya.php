@@ -66,7 +66,7 @@ class GigyaAction {
 		add_action( 'deleted_user', array( $this, 'deletedUser' ) );
 		add_action( 'widgets_init', array( $this, 'widgetsInit' ) );
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
-//		add_filter( 'the_content', array( $this, 'theContent' ) );
+		add_filter( 'the_content', array( $this, 'theContent' ) );
 
 	}
 
@@ -297,23 +297,28 @@ class GigyaAction {
 	 */
 	public function theContent( $content ) {
 		$share_options = get_option( GIGYA__SETTINGS_SHARE );
-		switch ( $share_options['share_plugin'] ) {
-			case 'top':
-				$topHTML = gigya_get_share_plugin( "top" );
-				$content = $topHTML . $content;
-				break;
-			case 'bottom':
-				$bottomHTML = gigya_get_share_plugin( "bottom" );
-				$content    = $content . $bottomHTML;
-				break;
-			case 'both':
-				$topHTML    = gigya_get_share_plugin( "top" );
-				$bottomHTML = gigya_get_share_plugin( "bottom" );
-				$content    = $topHTML . $content . $bottomHTML;
-				break;
-			case 'none':
-				break;
+		$position = $share_options['share_position'];
+		if (!empty($position) && $position!= 'none') {
+
+			// Get the share widget content.
+//			$widget = the_widget( "GigyaShare_Widget" );
+			$args = array( 'before_widget' => '<div class="widget">', 'after_widget' => "</div>", 'before_title' => '<h2 class="widgettitle">', 'after_title' => '</h2>' );
+			$widget = GigyaShare_Widget::getContent($args, array());
+
+			// Set share widget position on post page.
+			switch ( $share_options['share_position'] ) {
+				case 'top':
+					$content = $widget . $content;
+					break;
+				case 'bottom':
+					$content    = $content . $widget;
+					break;
+//				case 'both':
+//					$content    = $widget . $content . $widget;
+//					break;
+			}
 		}
+
 		return $content;
 	}
 }
