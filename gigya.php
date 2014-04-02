@@ -54,7 +54,6 @@ class GigyaAction {
 		define( 'GIGYA__API_DOMAIN', $this->global_options['global_data_center'] );
 		define( 'GIGYA__API_DEBUG', $this->global_options['login_gigya_debug'] );
 
-//		add_action( 'plugins_loaded', array( $this, 'pluginsLoaded' ) );
 		add_action( 'init', array( $this, 'init' ) );
 		add_action( 'admin_action_update', array( $this, 'adminActionUpdate' ) );
 		add_action( 'wp_ajax_gigya_login', array( $this, 'ajaxLogin' ) );
@@ -71,17 +70,6 @@ class GigyaAction {
 		add_filter( 'the_content', array( $this, 'theContent' ) );
 
 	}
-
-//	public function pluginsLoaded() {
-//		// Login through WP form.
-//		if ( $this->login_options['login_mode'] != 'raas' &&
-//				( isset( $_POST['log'] ) && isset( $_POST['pwd'] ) ) ||
-//				( isset( $_POST['user_login'] ) && isset( $_POST['user_email'] ) )
-//		) {
-//			wp_safe_redirect( $_SERVER['REQUEST_URI'] );
-//			exit;
-//		}
-//	}
 
 	/**
 	 * Initialize hook.
