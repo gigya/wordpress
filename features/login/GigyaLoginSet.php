@@ -50,7 +50,7 @@ class GigyaLoginSet {
 			$params['ui']['buttonsStyle'] = $this->login_options['login_button_style'];
 		}
 		if ( ! empty ( $this->login_options['login_ui'] ) ) {
-			$arr = gigyaCMS::advancedValuesParser( $this->login_options['login_ui'] );
+			$arr = gigyaCMS::parseJSON( $this->login_options['login_ui'] );
 			if ( ! empty( $arr ) ) {
 				foreach ( $arr as $key => $val ) {
 					$params['ui'][$key] = $val;
@@ -58,7 +58,7 @@ class GigyaLoginSet {
 			}
 		}
 		if ( ! empty ( $this->login_options['login_add_connection_custom'] ) ) {
-			$arr = gigyaCMS::advancedValuesParser( $this->login_options['login_add_connection_custom'] );
+			$arr = gigyaCMS::parseJSON( $this->login_options['login_add_connection_custom'] );
 			if ( ! empty( $arr ) ) {
 				foreach ( $arr as $key => $val ) {
 					$params['addConnection'][$key] = $val;

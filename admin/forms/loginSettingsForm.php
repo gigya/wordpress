@@ -98,14 +98,14 @@ function loginSettingsForm() {
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced) LoginUI" ),
 			'value' => getParam( $values['login_custom_code'], '' ),
-			'desc'  => __( 'Enter one value per line, in the format' ) . ' <strong>key|value</strong> ' . __( 'format' )
+			'desc'  => __( 'Enter validate JSON format' )
 	);
 
 	$form['login_add_connection_custom'] = array(
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced) AddConnectionsUI" ),
 			'value' => getParam( $values['login_add_connection_custom'], '' ),
-			'desc'  => __( 'Enter one value per line, in the format' ) . ' <strong>key|value</strong>'
+			'desc'  => __( 'Enter validate JSON format' )
 	);
 
 //	$form['login_custom_code'] = array(

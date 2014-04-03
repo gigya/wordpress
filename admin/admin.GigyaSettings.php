@@ -112,5 +112,52 @@ class GigyaSettings {
 
 		return $render;
 	}
+
+	/**
+	 * On Setting page save event.
+	 * @param $post
+	 */
+	public static function onSave($post) {
+
+		// When a Gigya's setting page is submitted.
+		if ( isset( $post['gigya_login_settings'] ) ) {
+			// When we turn on the Gigya's social login plugin,
+			// We also turn on the WP 'Membership: Anyone can register' option.
+			if ( $post['gigya_login_settings']['login_mode'] == 'wp_sl' ) {
+				update_option( 'users_can_register', 1 );
+			} elseif ( $post['gigya_login_settings']['login_mode'] == 'raas' ) {
+				update_option( 'users_can_register', 0 );
+			}
+
+			GigyaSettings::validateJSON($post['gigya_login_settings']['login_ui']);
+			GigyaSettings::validateJSON($post['gigya_login_settings']['login_add_connection_custom']);
+
+		}
+		elseif (isset( $post['gigya_comment_settings'] )) {
+			GigyaSettings::validateJSON($post['gigya_comment_settings']['comments_custom_code']);
+		}
+		elseif (isset( $post['gigya_global_settings'] )) {
+			GigyaSettings::validateJSON($post['gigya_global_settings']['global_params']);
+		}
+		elseif (isset( $post['gigya_reactions_settings'] )) {
+			GigyaSettings::validateJSON($post['gigya_reactions_settings']['reactions_custom_code']);
+		}
+		elseif (isset( $post['gigya_share_settings'] )) {
+			GigyaSettings::validateJSON($post['gigya_share_settings']['share_advanced']);
+		}
+	}
+
+	/**
+	 * Validate a JSON string.
+	 * @param $json
+	 */
+	public function validateJSON($json) {
+		if (!empty($json)) {
+			$chk = gigyaCMS::parseJSON($json);
+			if (is_string($chk)) {
+				exit($chk);
+			}
+		}
+	}
 }
 

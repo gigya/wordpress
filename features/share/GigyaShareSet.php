@@ -41,7 +41,7 @@ class GigyaShareSet {
 		);
 
 		if ( ! empty( $this->share_options['share_advanced'] ) ) {
-			$advanced = gigyaCMS::advancedValuesParser( getParam( $this->share_options['share_advanced'], '' ) );
+			$advanced = gigyaCMS::parseJSON( getParam( $this->share_options['share_advanced'], '' ) );
 			$params   = array_merge( $params, $advanced );
 		}
 

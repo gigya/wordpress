@@ -143,17 +143,8 @@ class GigyaAction {
 	 * Fires when an 'action' REQUEST variable is sent.
 	 */
 	public function adminActionUpdate() {
-
-		// When a Gigya's setting page is submitted.
-		if ( isset( $_POST['gigya_login_settings'] ) ) {
-			// When we turn on the Gigya's social login plugin,
-			// We also turn on the WP 'Membership: Anyone can register' option.
-			if ( $_POST['gigya_login_settings']['login_mode'] == 'wp_sl' ) {
-				update_option( 'users_can_register', 1 );
-			} elseif ( $_POST['gigya_login_settings']['login_mode'] == 'raas' ) {
-				update_option( 'users_can_register', 0 );
-			}
-		}
+		require_once( GIGYA__PLUGIN_DIR . 'admin/admin.GigyaSettings.php' );
+		GigyaSettings::onSave($_POST);
 	}
 
 	/**

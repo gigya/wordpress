@@ -367,6 +367,51 @@ class GigyaCMS {
 	}
 
 	/**
+	 * Helper function to convert & validate JSON.
+	 *
+	 * @param $json
+	 *
+	 * @return array|mixed|string
+	 */
+	public static function parseJSON( $json ) {
+
+		// decode the JSON data
+		$result = json_decode($json);
+
+		$err = json_last_error();
+		if ($err != JSON_ERROR_NONE) {
+
+			// switch and check possible JSON errors
+			switch (json_last_error()) {
+				case JSON_ERROR_DEPTH:
+					$msg = 'Maximum stack depth exceeded.';
+					break;
+				case JSON_ERROR_STATE_MISMATCH:
+					$msg = 'Underflow or the modes mismatch.';
+					break;
+				case JSON_ERROR_CTRL_CHAR:
+					$msg = 'Unexpected control character found.';
+					break;
+				case JSON_ERROR_SYNTAX:
+					$msg = 'Syntax error, malformed JSON.';
+					break;
+				case JSON_ERROR_UTF8:
+					$msg = 'Malformed UTF-8 characters, possibly incorrectly encoded.';
+					break;
+				default:
+					$msg = 'Unknown JSON error occurred.';
+					break;
+			}
+
+			return $msg;
+		}
+
+		// Everything is OK.Return obj.
+		return $result;
+	}
+
+	/**
+	 * (Deprecated. use JSON and @see parseJSON())
 	 * Helper function to convert a text field key|value to an array.
 	 *
 	 * @param string $values
