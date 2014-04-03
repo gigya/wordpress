@@ -147,7 +147,7 @@ class GigyaAction {
 	 */
 	public function adminActionUpdate() {
 		require_once( GIGYA__PLUGIN_DIR . 'admin/admin.GigyaSettings.php' );
-		GigyaSettings::onSave($_POST);
+		GigyaSettings::onSave( $_POST );
 	}
 
 	/**
@@ -229,7 +229,7 @@ class GigyaAction {
 
 		// New user was register through Gigya social login.
 		// $_POST['action'] == 'gigya_login';
-		if ( ! empty( $_POST['data'] ) && !empty($_POST['data']['UID']) ) {
+		if ( ! empty( $_POST['data'] ) && ! empty( $_POST['data']['UID'] ) ) {
 			if ( $this->login_options['login_mode'] == 'wp_sl' ) {
 				// Connect IDs.
 				$gigyaCMS = new GigyaCMS();

@@ -18,7 +18,7 @@ function loginSettingsForm() {
 			'label'   => __( 'Login Mode' ),
 			'options' => $mode_opts,
 			'desc'    => __( 'By activate Gigya\'s Social Login, you also activate "Anyone can register" option on Wordpress General Settings page<br>' .
-											 'By activate Gigya\'s RaaS Login, you also deactivate "Anyone can register" option on Wordpress General Settings page' ),
+					'By activate Gigya\'s RaaS Login, you also deactivate "Anyone can register" option on Wordpress General Settings page' ),
 			'value'   => getParam( $values['login_mode'], 'wp_only' )
 	);
 

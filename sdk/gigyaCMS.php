@@ -376,13 +376,13 @@ class GigyaCMS {
 	public static function parseJSON( $json ) {
 
 		// decode the JSON data
-		$result = json_decode($json);
+		$result = json_decode( $json );
 
 		$err = json_last_error();
-		if ($err != JSON_ERROR_NONE) {
+		if ( $err != JSON_ERROR_NONE ) {
 
 			// switch and check possible JSON errors
-			switch (json_last_error()) {
+			switch ( json_last_error() ) {
 				case JSON_ERROR_DEPTH:
 					$msg = 'Maximum stack depth exceeded.';
 					break;

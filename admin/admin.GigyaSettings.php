@@ -153,7 +153,12 @@ class GigyaSettings {
 		if ( ! empty( $json ) ) {
 			$chk = gigyaCMS::parseJSON( $json );
 			if ( is_string( $chk ) ) {
-				exit( $chk );
+				$err = new WP_Error();
+				$err->add( 'gigerror', $chk );
+				wp_safe_redirect( $_SERVER['HTTP_REFERER'] );
+				echo 'asdfsfsdfdsfsdf';
+				echo $err->get_error( 'gigerror' );
+				exit;
 			}
 		}
 	}

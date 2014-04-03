@@ -108,7 +108,7 @@ class GigyaLoginAjax {
 		// we attach an extra value to the name to make it unique.
 		$username_exist = username_exists( $this->gigya_user['nickname'] );
 		if ( ! empty( $username_exist ) ) {
-			$this->gigya_user['nickname'] .= uniqid('-');
+			$this->gigya_user['nickname'] .= uniqid( '-' );
 		}
 
 		// When the admin checked to
@@ -133,7 +133,7 @@ class GigyaLoginAjax {
 
 			// Return JSON to client.
 			wp_send_json_error( array( 'msg' => $msg ) );
-			exit;// Redundant there is a die at the end of wp_send_json
+			exit; // Redundant there is a die at the end of wp_send_json
 		}
 
 		$wp_user = get_userdata( $user_id );
@@ -149,7 +149,7 @@ class GigyaLoginAjax {
 							'echo'           => false,
 							'value_username' => $wp_user->data->user_login
 					) ) ) );
-			exit;// Redundant there is a die at the end of wp_send_json
+			exit; // Redundant there is a die at the end of wp_send_json
 		}
 
 		// Finally, let's login the user.
@@ -190,7 +190,7 @@ class GigyaLoginAjax {
 				'type'  => 'hidden',
 				'value' => 'loginform-gigya-link-account',
 		);
-		$form['gigyaUID'] = array(
+		$form['gigyaUID']  = array(
 				'type'  => 'hidden',
 				'value' => $gigya_uid,
 		);
@@ -230,7 +230,7 @@ class GigyaLoginAjax {
 				'label' => __( 'E-mail' ),
 				'value' => getParam( $this->gigya_user['email'], '' )
 		);
-		$form['form_name'] = array(
+		$form['form_name']  = array(
 				'type'  => 'hidden',
 				'value' => 'registerform-gigya-extra',
 		);
@@ -261,7 +261,7 @@ class GigyaLoginAjax {
 		// Return JSON to client.
 		wp_send_json_success( $ret );
 
-		exit;// Redundant there is a die at the end of wp_send_json
+		exit; // Redundant there is a die at the end of wp_send_json
 
 	}
 }
