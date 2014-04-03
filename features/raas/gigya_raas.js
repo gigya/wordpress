@@ -50,7 +50,7 @@
 		 * On RaaS login with Gigya behavior.
 		 * @param data
 		 */
-		GigyaWp.raasLogin = function (data) {
+		var raasLogin = function (data) {
 
 			if (data.provider === 'site') {
 				return false;
@@ -84,10 +84,6 @@
 					});
 		}
 
-		GigyaWp.raasLogout = function () {
-
-		}
-
 // --------------------------------------------------------------------
 
 		var raasInit = function () {
@@ -108,8 +104,7 @@
 
 				// Raas Login.
 				gigya.accounts.addEventHandlers({
-					onLogin : GigyaWp.raasLogin,
-					onLogout: GigyaWp.logout
+					onLogin : raasLogin
 				});
 
 				GigyaWp.regEvents = true;
