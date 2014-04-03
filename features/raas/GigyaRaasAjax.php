@@ -28,7 +28,7 @@ class GigyaRaasAjax {
 		if ( is_user_logged_in() ) {
 			$prm = array( 'msg' => __( 'There already a logged in user' ) );
 			wp_send_json_error( $prm );
-			exit;
+			exit;// Redundant there is a die at the end of wp_send_json
 		}
 
 		// Check Gigya's signature validation.
@@ -43,7 +43,7 @@ class GigyaRaasAjax {
 		if ( empty( $is_sig_validate ) ) {
 			$prm = array( 'msg' => __( 'There a problem to validate your user' ) );
 			wp_send_json_error( $prm );
-			exit;
+			exit;// Redundant there is a die at the end of wp_send_json
 		}
 
 		// Initialize Gigya account.
@@ -54,7 +54,7 @@ class GigyaRaasAjax {
 		if ( empty( $this->gigya_account['profile']['email'] ) ) {
 			$prm = array( 'msg' => __( 'Email address is required by Drupal and is missing, please contact the site administrator' ) );
 			wp_send_json_error( $prm );
-			exit;
+			exit;// Redundant there is a die at the end of wp_send_json
 		}
 
 		// Check if there already WP user with the same email.
@@ -77,7 +77,7 @@ class GigyaRaasAjax {
 
 				$prm = array( 'msg' => $msg );
 				wp_send_json_error( $prm );
-				exit;
+				exit;// Redundant there is a die at the end of wp_send_json
 			}
 
 			// Login this user.
@@ -91,7 +91,7 @@ class GigyaRaasAjax {
 		}
 
 		wp_send_json_success();
-		exit;
+		exit;// Redundant there is a die at the end of wp_send_json
 	}
 
 	/**
@@ -122,6 +122,7 @@ class GigyaRaasAjax {
 		// If the name of the new user is already exist in the system,
 		// WP will reject the registration and return an error. to prevent this
 		// we attach an extra value to the name to make it unique.
+		// TODO: revisit this according to Drupal WMG
 		$username_exist = username_exists( $name );
 		if ( ! empty( $username_exist ) ) {
 			$name .= uniqid('-');
@@ -140,7 +141,7 @@ class GigyaRaasAjax {
 
 			// Return JSON to client.
 			wp_send_json_error( array( 'msg' => $msg ) );
-			exit;
+			exit;// Redundant there is a die at the end of wp_send_json
 		}
 
 		// Login the user.

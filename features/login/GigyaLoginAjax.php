@@ -100,7 +100,7 @@ class GigyaLoginAjax {
 									$email_exists,
 									$this->gigya_user['UID']
 							) ) );
-			exit;
+			exit; // Redundant there is a die at the end of wp_send_json
 		}
 
 		// If the name of the new user is already exist in the system,
@@ -133,7 +133,7 @@ class GigyaLoginAjax {
 
 			// Return JSON to client.
 			wp_send_json_error( array( 'msg' => $msg ) );
-			exit;
+			exit;// Redundant there is a die at the end of wp_send_json
 		}
 
 		$wp_user = get_userdata( $user_id );
@@ -149,7 +149,7 @@ class GigyaLoginAjax {
 							'echo'           => false,
 							'value_username' => $wp_user->data->user_login
 					) ) ) );
-			exit;
+			exit;// Redundant there is a die at the end of wp_send_json
 		}
 
 		// Finally, let's login the user.
@@ -261,7 +261,7 @@ class GigyaLoginAjax {
 		// Return JSON to client.
 		wp_send_json_success( $ret );
 
-		exit;
+		exit;// Redundant there is a die at the end of wp_send_json
 
 	}
 }
