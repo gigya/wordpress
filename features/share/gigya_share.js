@@ -80,10 +80,11 @@
 		 * Show the Gigya's share bar.
 		 * @param settings
 		 */
-		var showShareBar = function () {
+		var showShareBar = function (id) {
 
-			//Define the Share Bar Plugin params object.
-			var params = jQuery.extend(true, {}, gigyaShareParams);
+			// Define the Share Bar Plugin params object.
+			var params = $.extend(true, {}, gigyaShareParams);
+			params.containerID = id;
 			params.userAction = getUserAction();
 
 			//Load the Share Bar Plugin.
@@ -93,17 +94,11 @@
 
 // --------------------------------------------------------------------
 
-		showShareBar();
-
-// --------------------------------------------------------------------
-
-		// Conditional settings image url field.
-		var check = $('input:checkbox[name="gigya_share_settings[share_image]"]');
-		var textfield = $('input#gigya_share_image_url').parent('.text-field ');
-		check.is(':checked') ? textfield.show() : textfield.hide();
-		check.change(function () {
-			check.is(':checked') ? textfield.show() : textfield.hide();
-		})
+		$('.gigya-share-widget').each(function (index, value) {
+			var id = 'gigya-share-widget-' + index;
+			$(this).attr('id', id);
+			showShareBar(id);
+		});
 
 // --------------------------------------------------------------------
 

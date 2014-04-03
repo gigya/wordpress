@@ -6,6 +6,13 @@ function shareSettingsForm() {
 	$values = get_option( GIGYA__SETTINGS_SHARE );
 	$form   = array();
 
+	$form['share_plugin'] = array(
+			'type'    => 'checkbox',
+			'label'   => __( 'Enable Share Plugin' ),
+			'default' => 0,
+			'value'   => getParam( $values['share_plugin'], 0 )
+	);
+
 	$share_opts = array(
 			"none"   => __( "None" ),
 			"bottom" => __( "Bottom" ),
@@ -18,7 +25,7 @@ function shareSettingsForm() {
 			'options' => $share_opts,
 			'label'   => __( 'Set the position of the share widget in a post page' ),
 			'value'   => getParam( $values['share_position'], 'none' ),
-			'desc'    => __( 'You can also find Gigya Share widget in the widgets settings page, and position it through there.' )
+			'desc'    => __( 'You can also find Gigya Share widget in the widgets settings page.' )
 	);
 
 	$form['share_providers'] = array(
@@ -50,7 +57,7 @@ function shareSettingsForm() {
 			'type'    => 'select',
 			'options' => $layout_opts,
 			'value'   => getParam( $values['share_layout'], 'horizontal' ),
-			'label'   => __( 'Privacy' ),
+			'label'   => __( 'Layout' ),
 	);
 
 //	$image_opts = array(

@@ -54,7 +54,7 @@ function loginSettingsForm() {
 	$form['login_width'] = array(
 			'type'  => 'text',
 			'label' => __( 'Width' ),
-			'value' => getParam( $values['login_width'], '' ),
+			'value' => getParam( $values['login_width'], 200 ),
 			'desc'  => __( 'The width of the plugin in px' ),
 			'class' => 'size'
 	);
@@ -62,7 +62,7 @@ function loginSettingsForm() {
 	$form['login_height'] = array(
 			'type'  => 'text',
 			'label' => __( 'Height' ),
-			'value' => getParam( $values['login_height'], '' ),
+			'value' => getParam( $values['login_height'], 100 ),
 			'desc'  => __( 'The height of the plugin in px' ),
 			'class' => 'size'
 	);

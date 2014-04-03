@@ -19,8 +19,8 @@ define( 'GIGYA__MINIMUM_PHP_VERSION', '5.2' );
 define( 'GIGYA__VERSION', '5.0' );
 define( 'GIGYA__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GIGYA__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-//define( 'GIGYA__PROTOCOL', ! empty( $_SERVER['HTTPS'] ) ? 'https' : 'http' );
-define( 'GIGYA__JS_CDN', '//cdn.gigya.com/JS/socialize.js?apiKey=' );
+define( 'GIGYA__CDN_PROTOCOL', ! empty( $_SERVER['HTTPS'] ) ? 'https://cdns' : 'http://cdn' );
+define( 'GIGYA__JS_CDN', GIGYA__CDN_PROTOCOL . '.gigya.com/JS/socialize.js?apiKey=' );
 
 
 /**
@@ -75,21 +75,14 @@ class GigyaAction {
 	 * Initialize hook.
 	 */
 	public function init() {
-
-		require_once( GIGYA__PLUGIN_DIR . 'sdk/GSSDK.php' );
-		require_once( GIGYA__PLUGIN_DIR . 'sdk/gigyaCMS.php' );
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GSSDK.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/gigyaCMS.php';
 
 		// Load jQuery and jQueryUI from WP..
 		wp_enqueue_script( 'jquery' );
 		wp_enqueue_script( 'jquery-ui-core' );
 		wp_enqueue_script( 'jquery-ui-dialog' );
 		wp_enqueue_script( 'gigya_js', GIGYA__PLUGIN_URL . 'gigya.js' );
-
-		// Share widget.
-		// TODO: load files only if enabled
-		require_once( GIGYA__PLUGIN_DIR . 'features/share/GigyaShareSet.php' );
-		$share = new GigyaShareSet();
-		$share->init();
 
 		// Parameters to be sent to the DOM.
 		$params = array(
@@ -103,7 +96,6 @@ class GigyaAction {
 		// Checking that we have an API key and Gigya's plugin is turn on.
 		$api_key = GIGYA__API_KEY;
 		if ( ! empty( $api_key ) ) {
-
 			// Loads requirements for any Gigya's login.
 			if ( $this->login_options['login_mode'] != 'wp_only' ) {
 				// Load Gigya's socialize.js from CDN.
@@ -113,7 +105,7 @@ class GigyaAction {
 
 			// Loads requirements for any Gigya's social login.
 			if ( $this->login_options['login_mode'] == 'wp_sl' ) {
-				require_once( GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginSet.php' );
+				require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginSet.php';
 				$gigyaLoginSet = new GigyaLoginSet;
 				$gigyaLoginSet->init();
 			}
@@ -121,21 +113,28 @@ class GigyaAction {
 			// Loads requirements for any Gigya's RaaS login.
 			if ( $this->login_options['login_mode'] == 'raas' ) {
 				// Loads RaaS links class.
-				require_once( GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasSet.php' );
+				require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasSet.php';
 				$gigyaRaasSet = new GigyaRaasSet;
 				$gigyaRaasSet->init();
 			}
 
 			// Loads requirements for any Gigya's Google-Analytics integration.
 			if ( ! empty( $this->global_options['global_google_analytics'] ) ) {
-				$uri_prefix = ! empty( $_SERVER['HTTPS'] ) ? 'https://cdns' : 'http://cdn';
-				wp_enqueue_script( 'gigya', $uri_prefix . '.gigya.com/js/gigyaGAIntegration.js' );
+				wp_enqueue_script( 'gigya', GIGYA__CDN_PROTOCOL . '.gigya.com/js/gigyaGAIntegration.js' );
 			}
+		}
+
+		// Share plugin.
+		$share_options = get_option( GIGYA__SETTINGS_SHARE );
+		if (!empty($share_options['share_plugin'])) {
+			require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareSet.php';
+			$share = new GigyaShareSet();
+			$share->init();
 		}
 
 		if ( is_admin() ) {
 			// Loads requirements for the admin settings section.
-			require_once( GIGYA__PLUGIN_DIR . 'admin/admin.GigyaSettings.php' );
+			require_once GIGYA__PLUGIN_DIR . 'admin/admin.GigyaSettings.php';
 			new GigyaSettings;
 		}
 	}
@@ -145,7 +144,7 @@ class GigyaAction {
 	 * Fires when an 'action' REQUEST variable is sent.
 	 */
 	public function adminActionUpdate() {
-		require_once( GIGYA__PLUGIN_DIR . 'admin/admin.GigyaSettings.php' );
+		require_once GIGYA__PLUGIN_DIR . 'admin/admin.GigyaSettings.php';
 		GigyaSettings::onSave( $_POST );
 	}
 
@@ -155,7 +154,7 @@ class GigyaAction {
 	public function ajaxLogin() {
 
 		// Loads Gigya's social login class.
-		require_once( GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginAjax.php' );
+		require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginAjax.php';
 		$gigyaLoginAjax = new GigyaLoginAjax;
 		$gigyaLoginAjax->init();
 
@@ -167,7 +166,7 @@ class GigyaAction {
 	public function ajaxRaasLogin() {
 
 		// Loads Gigya's RaaS class.
-		require_once( GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasAjax.php' );
+		require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasAjax.php';
 		$gigyaLoginAjax = new GigyaRaasAjax;
 		$gigyaLoginAjax->init();
 
@@ -218,7 +217,7 @@ class GigyaAction {
 		if ( $_POST['form_name'] == 'registerform-gigya-extra' && ! empty( $_POST['gigyaUID'] ) ) {
 			// We make a login.
 //			$wp_user = get_userdata( $uid );
-//			require_once( GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginAjax.php' );
+//			require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginAjax.php';
 //			GigyaLoginAjax::login( $wp_user );
 
 			// Connect IDs.
@@ -300,7 +299,7 @@ class GigyaAction {
 	 */
 	public function widgetsInit() {
 
-		require_once( GIGYA__PLUGIN_DIR . 'features/share/GigyaShareWidget.php' );
+		require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareWidget.php';
 		register_widget( 'GigyaShare_Widget' );
 	}
 

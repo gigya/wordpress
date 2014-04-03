@@ -1,6 +1,8 @@
 (function ($) {
 	$(document).ready(function () {
 
+// --------------------------------------------------------------------
+
 		/**
 		 * Expose the relevant form element for the login mode selected.
 		 * @param $el
@@ -31,6 +33,46 @@
 		$('input:radio[name="gigya_login_settings[login_mode]"]').change(function () {
 			userManagementPage($(this));
 		});
+
+// --------------------------------------------------------------------
+
+		// JSONLint.
+		var jsonValidate = function (textField, e) {
+			var json = textField.val();
+			if (json.length > 0) {
+				$('.msg').remove();
+				try {
+					var result = jsonlint.parse(json);
+					if (result) {
+						textField.after('<div class="msg updated">JSON is valid!</div>');
+						textField.addClass('valid');
+					}
+				} catch (err) {
+					textField.after('<div class="msg error">' + err + '</div>');
+					textField.addClass('error');
+					e.preventDefault()
+				}
+			}
+
+		}
+
+		$('form.gigya-settings').on('submit', function(e) {
+			$('form.gigya-settings textarea').each(function() {
+				jsonValidate($(this), e);
+			})
+		});
+
+// --------------------------------------------------------------------
+
+		// Conditional settings image url field.
+		var check = $('input:checkbox[name="gigya_share_settings[share_image]"]');
+		var textfield = $('input#gigya_share_image_url').parent('.text-field ');
+		check.is(':checked') ? textfield.show() : textfield.hide();
+		check.change(function () {
+			check.is(':checked') ? textfield.show() : textfield.hide();
+		});
+
+// --------------------------------------------------------------------
 
 	});
 })(jQuery);

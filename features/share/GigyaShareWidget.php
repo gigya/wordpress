@@ -41,7 +41,7 @@ class GigyaShare_Widget extends WP_Widget {
 		if ( ! empty( $title ) ) {
 			$output .= $args['before_title'] . $title . $args['after_title'];
 		}
-		$output .= '<div id="gigya-share"></div>';
+		$output .= '<div class="gigya-share-widget"></div>';
 		$output .= $args['after_widget'];
 
 		return $output;

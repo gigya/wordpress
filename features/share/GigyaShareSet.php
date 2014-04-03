@@ -24,7 +24,6 @@ class GigyaShareSet {
 		wp_enqueue_style( 'gigya_share_css', GIGYA__PLUGIN_URL . 'features/share/gigya_share.css' );
 
 		$params = array(
-				'containerID'  => 'gigya-share',
 				'postId'       => get_the_ID(),
 				'layout'       => getParam( $this->share_options['share_layout'], 'horizontal' ),
 				'showCounts'   => getParam( $this->share_options['share_counts'], 'right' ),

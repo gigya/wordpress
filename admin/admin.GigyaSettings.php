@@ -22,16 +22,31 @@ class GigyaSettings {
 		// Add Javascript and css to admin page
 		wp_enqueue_style( 'gigya_admin_css', GIGYA__PLUGIN_URL . 'admin/gigya_admin.css' );
 		wp_enqueue_script( 'gigya_admin_js', GIGYA__PLUGIN_URL . 'admin/gigya_admin.js' );
+		wp_enqueue_script( 'gigya_jsonlint_js', GIGYA__PLUGIN_URL . 'admin/jsonlint.js' );
 
 		// Add settings sections.
 		foreach ( $this->getSections() as $id => $section ) {
-
 			add_settings_section( $id, $section['title'], $section['func'], $section['slug'] );
-			register_setting( $section['slug'] . '-group', $section['slug'] );
-
+			register_setting( $section['slug'] . '-group', $section['slug'], array($this, 'validate') );
 		}
 	}
 
+	/**
+	 * @param $input
+	 *
+	 * @return mixed
+	 */
+	public function validate($input) {
+		// @todo We using jsonlint.js to validate the JSON strings in the forms.
+		// @todo The Challenge is to keep user input ($_POST) with out save it to the DB.
+//		add_settings_error(
+//				'todo_title',
+//				'todotitle_texterror',
+//				'Please enter a title',
+//				'error'
+//		);
+		return $input;
+	}
 	/**
 	 * Hook admin_menu callback.
 	 * Set Gigya's Setting area.
@@ -44,7 +59,7 @@ class GigyaSettings {
 		// Register the sub-menus Gigya setting pages.
 		foreach ( $this->getSections() as $section ) {
 
-			require_once( GIGYA__PLUGIN_DIR . 'admin/forms/' . $section['func'] . '.php' );
+			require_once GIGYA__PLUGIN_DIR . 'admin/forms/' . $section['func'] . '.php';
 			add_submenu_page( 'gigya_global_settings', __( $section['title'], $section['title'] ), __( $section['title'], $section['title'] ), GIGYA__PERMISSION_LEVEL, $section['slug'], array( $this, 'adminPage' ) );
 
 		}
@@ -119,7 +134,6 @@ class GigyaSettings {
 	 * @param $post
 	 */
 	public static function onSave( $post ) {
-
 		// When a Gigya's setting page is submitted.
 		if ( isset( $post['gigya_login_settings'] ) ) {
 			// When we turn on the Gigya's social login plugin,
@@ -129,38 +143,6 @@ class GigyaSettings {
 			} elseif ( $post['gigya_login_settings']['login_mode'] == 'raas' ) {
 				update_option( 'users_can_register', 0 );
 			}
-
-			GigyaSettings::validateJSON( $post['gigya_login_settings']['login_ui'] );
-			GigyaSettings::validateJSON( $post['gigya_login_settings']['login_add_connection_custom'] );
-
-		} elseif ( isset( $post['gigya_comment_settings'] ) ) {
-			GigyaSettings::validateJSON( $post['gigya_comment_settings']['comments_custom_code'] );
-		} elseif ( isset( $post['gigya_global_settings'] ) ) {
-			GigyaSettings::validateJSON( $post['gigya_global_settings']['global_params'] );
-		} elseif ( isset( $post['gigya_reactions_settings'] ) ) {
-			GigyaSettings::validateJSON( $post['gigya_reactions_settings']['reactions_custom_code'] );
-		} elseif ( isset( $post['gigya_share_settings'] ) ) {
-			GigyaSettings::validateJSON( $post['gigya_share_settings']['share_advanced'] );
-		}
-	}
-
-	/**
-	 * Validate a JSON string.
-	 *
-	 * @param $json
-	 */
-	public function validateJSON( $json ) {
-		if ( ! empty( $json ) ) {
-			$chk = gigyaCMS::parseJSON( $json );
-			if ( is_string( $chk ) ) {
-				$err = new WP_Error();
-				$err->add( 'gigerror', $chk );
-				wp_safe_redirect( $_SERVER['HTTP_REFERER'] );
-				echo 'asdfsfsdfdsfsdf';
-				echo $err->get_error( 'gigerror' );
-				exit;
-			}
 		}
 	}
 }
-
