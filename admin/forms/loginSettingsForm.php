@@ -87,10 +87,10 @@ function loginSettingsForm() {
 			'value' => getParam( $values['login_term_link'], 0 )
 	);
 
-	$form['login_show_reg'] = array(
+	$form['login_extra'] = array(
 			'type'  => 'checkbox',
 			'label' => __( 'Show Complete Registration Form' ),
-			'value' => getParam( $values['login_show_reg'], 0 ),
+			'value' => getParam( $values['login_extra'], 0 ),
 			'desc'  => __( "Check this checkbox if you have defined required fields in you site registration form. When checked a 'Complete Registration' form will pop up during user social registration, to let the user enter the missing required fields" )
 	);
 

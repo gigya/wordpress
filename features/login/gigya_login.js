@@ -148,7 +148,7 @@
 						$('#dialog-modal').dialog("close");
 
 						// Go on with register
-						GigyaWp.socialLogin(response);
+						socialLogin(response);
 					}
 				})
 			}

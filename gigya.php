@@ -63,7 +63,6 @@ class GigyaAction {
 		add_action( 'wp_login', array( $this, 'wpLogin' ), 10, 2 );
 		add_action( 'user_register', array( $this, 'userRegister' ), 10, 1 );
 		add_action( 'wp_logout', array( $this, 'wpLogout' ) );
-		add_action( 'wp_authenticate', array( $this, 'wpAuthenticate' ) );
 		add_action( 'deleted_user', array( $this, 'deletedUser' ) );
 		add_action( 'widgets_init', array( $this, 'widgetsInit' ) );
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
@@ -201,7 +200,7 @@ class GigyaAction {
 			}
 
 			// Notify Gigya socialize.notifyLogin
-			// for a return user logged in from SITE.
+			// for a return user logged in from WP login form.
 			$gigyaCMS = new GigyaCMS();
 			$gigyaCMS->notifyLogin( $account->ID );
 		}
@@ -209,17 +208,9 @@ class GigyaAction {
 		// This post is when there is the same email on the site,
 		// with the one who try to register and we want to link-accounts
 		// after the user is logged in with password.
-		if ( $_POST['form_name'] == 'loginform-gigya-link-account' ) {
+		if ( $_POST['form_name'] == 'loginform-gigya-link-account' && ! empty ( $_POST['gigyaUID'] ) ) {
 			$gigyaCMS = new GigyaCMS();
-			$gigyaCMS->notifyRegistration( $_POST['gigya_uid'], $account->ID );
-		}
-
-		if ( $this->login_options['login_mode'] != 'raas' &&
-				( isset( $_POST['log'] ) && isset( $_POST['pwd'] ) ) ||
-				( isset( $_POST['user_login'] ) && isset( $_POST['user_email'] ) )
-		) {
-			wp_safe_redirect( $_SERVER['REQUEST_URI'] );
-			exit;
+			$gigyaCMS->notifyRegistration( $_POST['gigyaUID'], $account->ID );
 		}
 	}
 
@@ -230,23 +221,26 @@ class GigyaAction {
 	 */
 	public function userRegister( $uid ) {
 
-		// New user was register through our custom extra details form.
-		if ( ! empty( $_POST['gigyaUID'] ) ) {
+		// New user was register through our custom extra-details form.
+		if ( $_POST['form_name'] == 'registerform-gigya-extra' && ! empty( $_POST['gigyaUID'] ) ) {
 			// We make a login.
-			$wp_user = get_userdata( $uid );
-			require_once( GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginAjax.php' );
-			GigyaLoginAjax::login( $wp_user );
+//			$wp_user = get_userdata( $uid );
+//			require_once( GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginAjax.php' );
+//			GigyaLoginAjax::login( $wp_user );
+
+			// Connect IDs.
+			$gigyaCMS = new GigyaCMS();
+			$gigyaCMS->notifyRegistration( $_POST['gigyaUID'], $uid );
 		}
 
 		// New user was register through Gigya social login.
-		// Straight forward OR through our custom extra details form.
-		if ( ! empty ( $_SESSION['gigya_uid'] ) || ! empty( $_POST['gigyaUID'] ) ) {
-
-			// We make a notifyRegistration to Gigya.
-			$guid     = ! empty( $_SESSION['gigya_uid'] ) ? $_SESSION['gigya_uid'] : $_POST['gigyaUID'];
-			$gigyaCMS = new GigyaCMS();
-			$gigyaCMS->notifyRegistration( $guid, $uid );
-
+		// $_POST['action'] == 'gigya_login';
+		if ( ! empty( $_POST['data'] ) && !empty($_POST['data']['UID']) ) {
+			if ( $this->login_options['login_mode'] == 'wp_sl' ) {
+				// Connect IDs.
+				$gigyaCMS = new GigyaCMS();
+				$gigyaCMS->notifyRegistration( $_POST['data']['UID'], $uid );
+			}
 		}
 
 		// New user was register through WP form.
@@ -291,17 +285,6 @@ class GigyaAction {
 			$gigyaCMS->deleteAccount( $user_id );
 		}
 
-	}
-
-	/**
-	 * @param $username
-	 */
-	public function wpAuthenticate( $username ) {
-		if ( ! username_exists( $username ) ) {
-			$username;
-		} else {
-			$username;
-		}
 	}
 
 	/**

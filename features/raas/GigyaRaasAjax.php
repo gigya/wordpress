@@ -124,7 +124,7 @@ class GigyaRaasAjax {
 		// we attach an extra value to the name to make it unique.
 		$username_exist = username_exists( $name );
 		if ( ! empty( $username_exist ) ) {
-			$name = $name . uniqid('-');
+			$name .= uniqid('-');
 		}
 
 		$user_id = register_new_user( $name, $email );

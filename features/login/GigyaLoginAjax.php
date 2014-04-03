@@ -46,9 +46,6 @@ class GigyaLoginAjax {
 		// Initialize Gigya user.
 		$this->gigya_user = $data['user'];
 
-		// Set a session with Gigya's ID.
-		$_SESSION['gigya_uid'] = $this->gigya_user['UID'];
-
 		// Check to see if the Gigya user is a WP user.
 		if ( is_numeric( $this->gigya_user['UID'] ) && $data['isSiteUID'] === 'true' && is_object( $wp_user = get_userdata( $this->gigya_user['UID'] ) ) ) {
 
@@ -111,12 +108,12 @@ class GigyaLoginAjax {
 		// we attach an extra value to the name to make it unique.
 		$username_exist = username_exists( $this->gigya_user['nickname'] );
 		if ( ! empty( $username_exist ) ) {
-			$this->gigya_user['nickname'] = $this->gigya_user['nickname'] . uniqid('-');
+			$this->gigya_user['nickname'] .= uniqid('-');
 		}
 
-		// When there missing email or the admin checked to
+		// When the admin checked to
 		// show the entire registration form to the user.
-		if ( $this->login_options['login_show_reg'] ) {
+		if ( $this->login_options['login_extra'] ) {
 			$this->registerExtra();
 		}
 
@@ -145,7 +142,6 @@ class GigyaLoginAjax {
 		// But if we have the 'email_not_verified' flag turn on,
 		// we can't auto login, and we need to verify the email first.
 		if ( ! empty( $this->gigya_user['email_not_verified'] ) ) {
-
 			// Return JSON with login form to client.
 			wp_send_json_success( array(
 					'type' => 'form',
@@ -154,7 +150,6 @@ class GigyaLoginAjax {
 							'value_username' => $wp_user->data->user_login
 					) ) ) );
 			exit;
-
 		}
 
 		// Finally, let's login the user.
@@ -195,7 +190,7 @@ class GigyaLoginAjax {
 				'type'  => 'hidden',
 				'value' => 'loginform-gigya-link-account',
 		);
-		$form['gigya_uid'] = array(
+		$form['gigyaUID'] = array(
 				'type'  => 'hidden',
 				'value' => $gigya_uid,
 		);
@@ -234,6 +229,10 @@ class GigyaLoginAjax {
 				'id'    => 'user_email',
 				'label' => __( 'E-mail' ),
 				'value' => getParam( $this->gigya_user['email'], '' )
+		);
+		$form['form_name'] = array(
+				'type'  => 'hidden',
+				'value' => 'registerform-gigya-extra',
 		);
 		$form['gigyaUID']   = array(
 				'type'  => 'hidden',
