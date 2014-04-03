@@ -49,7 +49,7 @@ class GigyaApi {
 				$request->setParam( $param, $val );
 			}
 
-			$user_info = in_array( 'getUserInfo', $params ); // @todo check if this is the right check.
+			$user_info = in_array( 'getUserInfo', $params );
 		}
 
 		// Set the request path.

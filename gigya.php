@@ -19,8 +19,8 @@ define( 'GIGYA__MINIMUM_PHP_VERSION', '5.2' );
 define( 'GIGYA__VERSION', '5.0' );
 define( 'GIGYA__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GIGYA__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-// TODO: Make sure we can load the script via https
-define( 'GIGYA__JS_CDN', 'http://cdn.gigya.com/JS/socialize.js?apiKey=' );
+//define( 'GIGYA__PROTOCOL', ! empty( $_SERVER['HTTPS'] ) ? 'https' : 'http' );
+define( 'GIGYA__JS_CDN', '//cdn.gigya.com/JS/socialize.js?apiKey=' );
 
 
 /**
@@ -75,7 +75,6 @@ class GigyaAction {
 	 * Initialize hook.
 	 */
 	public function init() {
-		// TODO: Load only if in front end.
 
 		require_once( GIGYA__PLUGIN_DIR . 'sdk/GSSDK.php' );
 		require_once( GIGYA__PLUGIN_DIR . 'sdk/gigyaCMS.php' );

@@ -26,7 +26,6 @@ class GigyaLoginAjax {
 		// Trap for login users
 		if ( is_user_logged_in() ) {
 			wp_send_json_error( array( 'msg' => __( 'There already a logged in user' ) ) );
-			exit;
 		}
 
 		// Check Gigya's signature validation.
@@ -40,7 +39,6 @@ class GigyaLoginAjax {
 		// Gigya user validate trap.
 		if ( empty( $is_sig_validate ) ) {
 			wp_send_json_error( array( 'msg' => __( 'There a problem to validate your user' ) ) );
-			exit;
 		}
 
 		// Initialize Gigya user.
@@ -61,7 +59,6 @@ class GigyaLoginAjax {
 		}
 
 		wp_send_json_success();
-		exit;
 	}
 
 	/**
@@ -100,7 +97,6 @@ class GigyaLoginAjax {
 									$email_exists,
 									$this->gigya_user['UID']
 							) ) );
-			exit; // Redundant there is a die at the end of wp_send_json
 		}
 
 		// If the name of the new user is already exist in the system,
@@ -133,7 +129,6 @@ class GigyaLoginAjax {
 
 			// Return JSON to client.
 			wp_send_json_error( array( 'msg' => $msg ) );
-			exit; // Redundant there is a die at the end of wp_send_json
 		}
 
 		$wp_user = get_userdata( $user_id );
@@ -149,7 +144,6 @@ class GigyaLoginAjax {
 							'echo'           => false,
 							'value_username' => $wp_user->data->user_login
 					) ) ) );
-			exit; // Redundant there is a die at the end of wp_send_json
 		}
 
 		// Finally, let's login the user.
@@ -260,8 +254,6 @@ class GigyaLoginAjax {
 
 		// Return JSON to client.
 		wp_send_json_success( $ret );
-
-		exit; // Redundant there is a die at the end of wp_send_json
 
 	}
 }
