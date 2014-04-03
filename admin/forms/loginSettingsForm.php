@@ -2,6 +2,7 @@
 /**
  * Form builder for 'Social Login Settings' configuration page.
  */
+// TODO: Add default values.
 function loginSettingsForm() {
 	$values = get_option( GIGYA__SETTINGS_LOGIN );
 	$form   = array();

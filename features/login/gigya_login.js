@@ -173,7 +173,7 @@
 
 				// Social Login.
 				gigya.socialize.addEventHandlers({
-					onLogin: loginValidate,
+					onLogin: loginValidate
 				});
 
 				GigyaWp.regEvents = true;
