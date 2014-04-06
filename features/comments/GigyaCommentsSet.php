@@ -25,14 +25,11 @@ class GigyaCommentsSet {
 
 		global $post;
 		$post_id = $post->ID;
-		$cid     = _gigParam( $this->comments_options['comments_container_id'], 'comments' );
 		$params  = array(
 				'categoryID'  => _gigParam( $this->comments_options['comments_cat_id'], '' ),
-				'containerID' => $cid,
 				'streamID'    => 'stream-' . $post_id,
 				'scope'       => _gigParam( $this->comments_options['comments_enable_share_activity'], 'both' ),
 				'privacy'     => _gigParam( $this->feed_options['feed_privacy'], 'private' ),
-				'context'     => array( 'id' => $cid ),
 				'version'     => 2
 		);
 

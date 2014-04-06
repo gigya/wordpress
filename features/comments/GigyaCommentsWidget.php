@@ -10,9 +10,9 @@ class GigyaComments_Widget extends WP_Widget {
 	 */
 	function __construct() {
 		$args = array(
-				'description' => __( 'Multiple providers Share buttons by Gigya' )
+				'description' => __( 'Gigya\'s Comments' )
 		);
-		parent::__construct( 'GigyaShare_Widget', __( 'Gigya Share' ), $args );
+		parent::__construct( 'GigyaComments_Widget', __( 'Gigya Comments' ), $args );
 	}
 
 	/**
@@ -41,7 +41,7 @@ class GigyaComments_Widget extends WP_Widget {
 		if ( ! empty( $title ) ) {
 			$output .= $args['before_title'] . $title . $args['after_title'];
 		}
-		$output .= '<div class="gigya-share-widget"></div>';
+		$output .= '<div class="gigya-comments-widget"></div>';
 		$output .= $args['after_widget'];
 
 		return $output;

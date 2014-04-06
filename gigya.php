@@ -68,6 +68,7 @@ class GigyaAction {
 		add_action( 'widgets_init', array( $this, 'widgetsInit' ) );
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 		add_filter( 'the_content', array( $this, 'theContent' ) );
+		add_filter( 'comments_template', array( $this, 'commentsTemplate' ) );
 
 	}
 
@@ -297,8 +298,13 @@ class GigyaAction {
 	 */
 	public function widgetsInit() {
 
+		// Share Widget.
 		require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareWidget.php';
 		register_widget( 'GigyaShare_Widget' );
+
+		// Comment Widget.
+		require_once GIGYA__PLUGIN_DIR . 'features/comments/GigyaCommentsWidget.php';
+		register_widget( 'GigyaComments_Widget' );
 	}
 
 	/**
@@ -311,8 +317,13 @@ class GigyaAction {
 			require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareSet.php';
 			$share = new GigyaShareSet();
 			$share->init();
-			$content .= $share->setDefaultPosition( $content );
+			$content = $share->setDefaultPosition( $content );
 		}
+
+		return $content;
+	}
+
+	public function commentsTemplate( $comment_template ) {
 
 		// Comments plugin.
 		$comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
@@ -320,9 +331,11 @@ class GigyaAction {
 			require_once GIGYA__PLUGIN_DIR . 'features/comments/GigyaCommentsSet.php';
 			$comments = new GigyaCommentsSet();
 			$comments->init();
+
+			// Override default WP comments template.
+			return GIGYA__PLUGIN_DIR . 'admin/tpl/comments.tpl.php';
 		}
 
-		return $content;
 	}
 }
 

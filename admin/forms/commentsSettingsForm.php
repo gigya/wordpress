@@ -9,19 +9,23 @@ function commentsSettingsForm() {
 	$form['comments_plugin'] = array(
 			'type'  => 'checkbox',
 			'label' => __( 'Enable Gigya Comments' ),
-			'value' => _gigParam( $values['comments_plugin'], 0 )
+			'value' => _gigParam( $values['comments_plugin'], 0 ),
 	);
 
-	$form['comments_container_id'] = array(
-			'type'  => 'text',
-			'label' => __( 'Container ID' ),
-			'value' => _gigParam( $values['comments_container_id'], 'comments' )
+	$form['comments_hide'] = array(
+			'type'  => 'checkbox',
+			'label' => __( 'Disabled default Comments position' ),
+			'value' => _gigParam( $values['comments_hide'], 0 ),
+			'desc'  => __( "Checking this will disabled the default comment position, but still let you use<br> Gigya's comments widgets to position comments location on the page layout" )
+
 	);
 
 	$form['comments_cat_id'] = array(
 			'type'  => 'text',
 			'label' => __( 'Category ID' ),
-			'value' => _gigParam( $values['comments_cat_id'], '' )
+			'value' => _gigParam( $values['comments_cat_id'], '' ),
+			'desc'  => __( "The category ID on 'Comments category name' at Gigya's settings" ) . ' ' . '<a href=https://platform.gigya.com/Site/partners/Settings.aspx#cmd=Settings.CommentsSetup>' . __( 'here' ) . '</a>'
+
 	);
 
 	$comments_share_opts = array(
@@ -34,7 +38,7 @@ function commentsSettingsForm() {
 			'options' => $comments_share_opts,
 			'value'   => _gigParam( $values['comments_enable_share_activity'], 'external' ),
 			'label'   => __( 'Enable Sharing to Activity Feed' ),
-			'desc'    => 'When publishing feed items, by default the feed items are published to social networks only and will not appear on the site\'s Activity Feed plugin. To change this behavior, you must change the publish scope to "Both"'
+			'desc'    => __( 'When publishing feed items, by default the feed items are published to social networks only and will not appear<br> on the site\'s Activity Feed plugin. To change this behavior, you must change the publish scope to "Both"' )
 	);
 
 	$form['comments_custom_code'] = array(
