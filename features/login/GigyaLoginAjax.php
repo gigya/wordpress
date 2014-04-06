@@ -216,13 +216,13 @@ class GigyaLoginAjax {
 				'type'  => 'text',
 				'id'    => 'user_login',
 				'label' => __( 'Username' ),
-				'value' => getParam( $this->gigya_user['nickname'], '' )
+				'value' => _gigParam( $this->gigya_user['nickname'], '' )
 		);
 		$form['user_email'] = array(
 				'type'  => 'text',
 				'id'    => 'user_email',
 				'label' => __( 'E-mail' ),
-				'value' => getParam( $this->gigya_user['email'], '' )
+				'value' => _gigParam( $this->gigya_user['email'], '' )
 		);
 		$form['form_name']  = array(
 				'type'  => 'hidden',
@@ -230,7 +230,7 @@ class GigyaLoginAjax {
 		);
 		$form['gigyaUID']   = array(
 				'type'  => 'hidden',
-				'value' => getParam( $this->gigya_user['UID'], '' )
+				'value' => _gigParam( $this->gigya_user['UID'], '' )
 		);
 
 		// Render form elements.

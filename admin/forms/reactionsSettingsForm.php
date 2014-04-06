@@ -10,7 +10,7 @@ function reactionsSettingsForm() {
 			'type'    => 'checkbox',
 			'label'   => __( 'Enable Reaction Plugin' ),
 			'default' => 0,
-			'value'   => getParam( $values['reaction_plugin'], 0 )
+			'value'   => _gigParam( $values['reaction_plugin'], 0 )
 	);
 
 	$reaction_position_opts    = array(
@@ -22,7 +22,7 @@ function reactionsSettingsForm() {
 			'type'    => 'select',
 			'label'   => __( 'Position' ),
 			'options' => $reaction_position_opts,
-			'value'   => getParam( $values['reaction_position'], 'bottom' )
+			'value'   => _gigParam( $values['reaction_position'], 'bottom' )
 	);
 
 	$reaction_counts_opts = array(
@@ -35,7 +35,7 @@ function reactionsSettingsForm() {
 			'type'    => 'select',
 			'label'   => __( 'Show Counts' ),
 			'options' => $reaction_counts_opts,
-			'value'   => getParam( $values['reaction_position'], 'right' )
+			'value'   => _gigParam( $values['reaction_position'], 'right' )
 	);
 
 	$reaction_layout_opts = array(
@@ -47,19 +47,19 @@ function reactionsSettingsForm() {
 			'type'    => 'select',
 			'label'   => __( 'Layout' ),
 			'options' => $reaction_layout_opts,
-			'value'   => getParam( $values['reaction_layout'], 'horizontal' )
+			'value'   => _gigParam( $values['reaction_layout'], 'horizontal' )
 	);
 
 	$form['reaction_buttons'] = array(
 			'type'  => 'textarea',
 			'label' => __( 'Reaction Buttons' ),
-			'value' => getParam( $values['reaction_buttons'], _gigya_get_json( 'admin/forms/json/default_reaction' ) )
+			'value' => _gigParam( $values['reaction_buttons'], _gigya_get_json( 'admin/forms/json/default_reaction' ) )
 	);
 
 	$form['reaction_providers'] = array(
 			'type'  => 'text',
 			'label' => __( 'Providers' ),
-			'value' => getParam( $values['reaction_providers'], '' ),
+			'value' => _gigParam( $values['reaction_providers'], '' ),
 			'desc'  => __( 'Leave empty or type * for all providers or define specific providers, for example: facebook,twitter,google,linkedin' )
 	);
 
@@ -72,7 +72,7 @@ function reactionsSettingsForm() {
 			'type'    => 'select',
 			'options' => $reaction_share_opts,
 			'label'   => __( 'Enable Sharing to Activity Feed' ),
-			'value'   => getParam( $values['reaction_enable_share_activity'], 'external' ),
+			'value'   => _gigParam( $values['reaction_enable_share_activity'], 'external' ),
 			'desc'    => 'When publishing feed items, by default the feed items are published to social networks only and will not appear on the site\'s Activity Feed plugin. To change this behavior, you must change the publish scope to "Both"'
 	);
 
@@ -84,7 +84,7 @@ function reactionsSettingsForm() {
 	$form['reaction_count_type'] = array(
 			'type'    => 'select',
 			'options' => $reaction_count_opts,
-			'value'   => getParam( $values['reaction_count_type'], 'number' ),
+			'value'   => _gigParam( $values['reaction_count_type'], 'number' ),
 			'label'   => __( 'Count Type' ),
 	);
 
@@ -97,21 +97,21 @@ function reactionsSettingsForm() {
 	$form['reaction_privacy'] = array(
 			'type'    => 'select',
 			'options' => $reaction_privacy_opts,
-			'value'   => getParam( $values['reaction_privacy'], 'private' ),
+			'value'   => _gigParam( $values['reaction_privacy'], 'private' ),
 			'label'   => __( 'Privacy' ),
 	);
 
 	$form['reactions_custom_code'] = array(
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced)" ),
-			'value' => getParam( $values['reactions_custom_code'], '' ),
+			'value' => _gigParam( $values['reactions_custom_code'], '' ),
 			'desc'  => __( 'Enter validate JSON format' ) . ' <br> ' . __( 'See list of available:' ) . '<a href="http://developers.gigya.com/020_Client_API/010_Socialize/socialize.showReactionsBarUI" target="_blank">parameters</a>'
 	);
 
 	$form['reaction_multiple'] = array(
 			'type'  => 'checkbox',
 			'label' => __( 'Allow multiple reactions' ),
-			'value' => getParam( $values['reaction_multiple'], 1 ),
+			'value' => _gigParam( $values['reaction_multiple'], 1 ),
 	);
 
 	echo _gigya_form_render( $form, GIGYA__SETTINGS_REACTIONS );

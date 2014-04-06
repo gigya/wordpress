@@ -99,7 +99,7 @@ class GigyaAction {
 			// Loads requirements for any Gigya's login.
 			if ( $this->login_options['login_mode'] != 'wp_only' ) {
 				// Load Gigya's socialize.js from CDN.
-				$lang = getParam( $this->global_options['global_lang'], 'en' );
+				$lang = _gigParam( $this->global_options['global_lang'], 'en' );
 				wp_enqueue_script( 'gigya', GIGYA__JS_CDN . GIGYA__API_KEY . '&lang=' . $lang );
 			}
 
@@ -122,14 +122,6 @@ class GigyaAction {
 			if ( ! empty( $this->global_options['global_google_analytics'] ) ) {
 				wp_enqueue_script( 'gigya', GIGYA__CDN_PROTOCOL . '.gigya.com/js/gigyaGAIntegration.js' );
 			}
-		}
-
-		// Share plugin.
-		$share_options = get_option( GIGYA__SETTINGS_SHARE );
-		if (!empty($share_options['share_plugin'])) {
-			require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareSet.php';
-			$share = new GigyaShareSet();
-			$share->init();
 		}
 
 		if ( is_admin() ) {
@@ -204,6 +196,12 @@ class GigyaAction {
 			$gigyaCMS = new GigyaCMS();
 			$gigyaCMS->notifyRegistration( $_POST['gigyaUID'], $account->ID );
 		}
+
+		// Hook for changing WP user metadata from Gigya's user.
+		// @todo find better place for it.
+		$gigyaCMS      = new GigyaCMS();
+		$gigya_account = $gigyaCMS->getAccount( $account->ID );
+		do_action( 'gig_login', $gigya_account, $account );
 	}
 
 	/**
@@ -307,27 +305,21 @@ class GigyaAction {
 	 * Hook content alter.
 	 */
 	public function theContent( $content ) {
+		// Share plugin.
 		$share_options = get_option( GIGYA__SETTINGS_SHARE );
-		$position      = $share_options['share_position'];
-		if ( ! empty( $position ) && $position != 'none' ) {
+		if ( ! empty( $share_options['share_plugin'] ) ) {
+			require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareSet.php';
+			$share = new GigyaShareSet();
+			$share->init();
+			$content .= $share->setDefaultPosition( $content );
+		}
 
-			// Get the share widget content.
-//			$widget = the_widget( "GigyaShare_Widget" );
-			$args   = array( 'before_widget' => '<div class="widget">', 'after_widget' => "</div>", 'before_title' => '<h2 class="widgettitle">', 'after_title' => '</h2>' );
-			$widget = GigyaShare_Widget::getContent( $args, array() );
-
-			// Set share widget position on post page.
-			switch ( $share_options['share_position'] ) {
-				case 'top':
-					$content = $widget . $content;
-					break;
-				case 'bottom':
-					$content = $content . $widget;
-					break;
-//				case 'both':
-//					$content    = $widget . $content . $widget;
-//					break;
-			}
+		// Comments plugin.
+		$comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
+		if ( ! empty( $comments_options['comments_plugin'] ) ) {
+			require_once GIGYA__PLUGIN_DIR . 'features/comments/GigyaCommentsSet.php';
+			$comments = new GigyaCommentsSet();
+			$comments->init();
 		}
 
 		return $content;
@@ -431,7 +423,7 @@ function _gigya_get_json( $file ) {
 /**
  * Helper
  */
-function getParam( $param, $default = null ) {
+function _gigParam( $param, $default = null ) {
 	return ! empty( $param ) ? $param : $default;
 }
 // --------------------------------------------------------------------

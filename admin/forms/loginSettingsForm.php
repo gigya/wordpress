@@ -18,7 +18,7 @@ function loginSettingsForm() {
 			'options' => $mode_opts,
 			'desc'    => __( 'By activate Gigya\'s Social Login, you also activate "Anyone can register" option on Wordpress General Settings page<br>' .
 					'By activate Gigya\'s RaaS Login, you also deactivate "Anyone can register" option on Wordpress General Settings page' ),
-			'value'   => getParam( $values['login_mode'], 'wp_only' )
+			'value'   => _gigParam( $values['login_mode'], 'wp_only' )
 	);
 
 	$form['sl_start'] = array(
@@ -34,7 +34,7 @@ function loginSettingsForm() {
 	$form['login_button_style'] = array(
 			'type'    => 'select',
 			'options' => $button_opts,
-			'value'   => getParam( $values['login_button_style'], 'fullLogo' ),
+			'value'   => _gigParam( $values['login_button_style'], 'fullLogo' ),
 			'label'   => __( 'Button Style' )
 	);
 
@@ -47,14 +47,14 @@ function loginSettingsForm() {
 	$form['login_connect_without'] = array(
 			'type'    => 'select',
 			'options' => $connect_without_opts,
-			'value'   => getParam( $values['login_connect_without'], 'loginExistingUser' ),
+			'value'   => _gigParam( $values['login_connect_without'], 'loginExistingUser' ),
 			'label'   => __( 'Connect Without Login Behavior' ),
 	);
 
 	$form['login_width'] = array(
 			'type'  => 'text',
 			'label' => __( 'Width' ),
-			'value' => getParam( $values['login_width'], 200 ),
+			'value' => _gigParam( $values['login_width'], 200 ),
 			'desc'  => __( 'The width of the plugin in px' ),
 			'class' => 'size'
 	);
@@ -62,7 +62,7 @@ function loginSettingsForm() {
 	$form['login_height'] = array(
 			'type'  => 'text',
 			'label' => __( 'Height' ),
-			'value' => getParam( $values['login_height'], 100 ),
+			'value' => _gigParam( $values['login_height'], 100 ),
 			'desc'  => __( 'The height of the plugin in px' ),
 			'class' => 'size'
 	);
@@ -70,41 +70,41 @@ function loginSettingsForm() {
 	$form['login_redirect'] = array(
 			'type'  => 'text',
 			'label' => __( 'Post Login Redirect' ),
-			'value' => getParam( $values['login_redirect'], '' ),
+			'value' => _gigParam( $values['login_redirect'], '' ),
 			'desc'  => __( 'Provide a URL to redirect users after they logged-in via Gigya social login' )
 	);
 
 	$form['login_providers'] = array(
 			'type'  => 'text',
 			'label' => __( 'Login Providers' ),
-			'value' => getParam( $values['login_providers'], '' ),
+			'value' => _gigParam( $values['login_providers'], '' ),
 			'desc'  => __( 'Leave empty or type * for all providers or define specific providers, for example: facebook, twitter, google, linkedin' )
 	);
 
 	$form['login_term_link'] = array(
 			'type'  => 'checkbox',
 			'label' => __( 'Show Terms Link' ),
-			'value' => getParam( $values['login_term_link'], 0 )
+			'value' => _gigParam( $values['login_term_link'], 0 )
 	);
 
 	$form['login_extra'] = array(
 			'type'  => 'checkbox',
 			'label' => __( 'Show Complete Registration Form' ),
-			'value' => getParam( $values['login_extra'], 0 ),
+			'value' => _gigParam( $values['login_extra'], 0 ),
 			'desc'  => __( "Check this checkbox if you have defined required fields in you site registration form. When checked a 'Complete Registration' form will pop up during user social registration, to let the user enter the missing required fields" )
 	);
 
 	$form['login_ui'] = array(
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced) LoginUI" ),
-			'value' => getParam( $values['login_custom_code'], '' ),
+			'value' => _gigParam( $values['login_custom_code'], '' ),
 			'desc'  => __( 'Enter validate JSON format' )
 	);
 
 	$form['login_add_connection_custom'] = array(
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced) AddConnectionsUI" ),
-			'value' => getParam( $values['login_add_connection_custom'], '' ),
+			'value' => _gigParam( $values['login_add_connection_custom'], '' ),
 			'desc'  => __( 'Enter validate JSON format' )
 	);
 
@@ -127,44 +127,44 @@ function loginSettingsForm() {
 	$form['raas_web_screen'] = array(
 			'type'  => 'text',
 			'label' => __( 'Web Screen Set ID' ),
-			'value' => getParam( $values['raas_web_screen'], 'Login-web' )
+			'value' => _gigParam( $values['raas_web_screen'], 'Login-web' )
 	);
 
 	$form['raas_mobile_screen'] = array(
 			'type'  => 'text',
 			'label' => __( 'Mobile Screen Set ID' ),
-			'value' => getParam( $values['raas_mobile_screen'], 'Mobile-login' )
+			'value' => _gigParam( $values['raas_mobile_screen'], 'Mobile-login' )
 	);
 
 	$form['raas_login_screen'] = array(
 			'type'  => 'text',
 			'label' => __( 'Login Screen ID' ),
-			'value' => getParam( $values['raas_login_screen'], 'gigya-login-screen' )
+			'value' => _gigParam( $values['raas_login_screen'], 'gigya-login-screen' )
 	);
 
 	$form['raas_register_screen'] = array(
 			'type'  => 'text',
 			'label' => __( 'Register Screen ID' ),
-			'value' => getParam( $values['raas_register_screen'], 'gigya-register-screen' )
+			'value' => _gigParam( $values['raas_register_screen'], 'gigya-register-screen' )
 	);
 
 	$form['raas_profile_web_screen'] = array(
 			'type'  => 'text',
 			'label' => __( 'Web Screen Set ID' ),
-			'value' => getParam( $values['raas_profile_web_screen'], 'Profile-web' )
+			'value' => _gigParam( $values['raas_profile_web_screen'], 'Profile-web' )
 	);
 
 	$form['raas_profile_mobile_screen'] = array(
 			'type'  => 'text',
 			'label' => __( 'Mobile Screen Set ID' ),
-			'value' => getParam( $values['login_raas_profile_mobile_screen'], 'Profile-mobile' )
+			'value' => _gigParam( $values['login_raas_profile_mobile_screen'], 'Profile-mobile' )
 	);
 
 	$form['raas_override_links'] = array(
 			'type'  => 'checkbox',
 			'label' => __( 'Override Wordpress Links' ),
 			'desc'  => __( "Checking this checkbox, WordPress's default 'Login', 'Registration' and 'Edit Profile' links will pop-up RaaS's respective screens instead of redirecting to the WordPress screens" ),
-			'value' => getParam( $values['login_raas_profile_mobile'], 1 )
+			'value' => _gigParam( $values['login_raas_profile_mobile'], 1 )
 	);
 
 	$form['raas_divs'] = array(
@@ -175,19 +175,19 @@ function loginSettingsForm() {
 	$form['raas_login_div'] = array(
 			'type'  => 'text',
 			'label' => __( 'Login' ),
-			'value' => getParam( $values['raas_login_div'], 'loginform' )
+			'value' => _gigParam( $values['raas_login_div'], 'loginform' )
 	);
 
 	$form['raas_register_div'] = array(
 			'type'  => 'text',
 			'label' => __( 'Register' ),
-			'value' => getParam( $values['raas_register_div'], 'registerform' )
+			'value' => _gigParam( $values['raas_register_div'], 'registerform' )
 	);
 
 	$form['raas_profile_div'] = array(
 			'type'  => 'text',
 			'label' => __( 'Profile' ),
-			'value' => getParam( $values['raas_profile_div'], 'profile-page' )
+			'value' => _gigParam( $values['raas_profile_div'], 'profile-page' )
 	);
 
 	$form['raas_end'] = array(

@@ -10,7 +10,7 @@ function shareSettingsForm() {
 			'type'    => 'checkbox',
 			'label'   => __( 'Enable Share Plugin' ),
 			'default' => 0,
-			'value'   => getParam( $values['share_plugin'], 0 )
+			'value'   => _gigParam( $values['share_plugin'], 0 )
 	);
 
 	$share_opts = array(
@@ -24,14 +24,14 @@ function shareSettingsForm() {
 			'type'    => 'select',
 			'options' => $share_opts,
 			'label'   => __( 'Set the position of the share widget in a post page' ),
-			'value'   => getParam( $values['share_position'], 'none' ),
+			'value'   => _gigParam( $values['share_position'], 'none' ),
 			'desc'    => __( 'You can also find Gigya Share widget in the widgets settings page.' )
 	);
 
 	$form['share_providers'] = array(
 			'type'  => 'text',
 			'label' => __( 'Share Providers' ),
-			'value' => getParam( $values['share_providers'], 'share,facebook-like,google-plusone,twitter,email' ),
+			'value' => _gigParam( $values['share_providers'], 'share,facebook-like,google-plusone,twitter,email' ),
 			'desc'  => __( 'for example: share,email,pinterest,twitter-tweet,google-plusone,facebook-like' )
 	);
 
@@ -44,7 +44,7 @@ function shareSettingsForm() {
 	$form['share_counts'] = array(
 			'type'    => 'select',
 			'options' => $share_counts_opts,
-			'value'   => getParam( $values['share_counts'], 'right' ),
+			'value'   => _gigParam( $values['share_counts'], 'right' ),
 			'label'   => __( 'Show Counts' )
 	);
 
@@ -56,7 +56,7 @@ function shareSettingsForm() {
 	$form['share_layout'] = array(
 			'type'    => 'select',
 			'options' => $layout_opts,
-			'value'   => getParam( $values['share_layout'], 'horizontal' ),
+			'value'   => _gigParam( $values['share_layout'], 'horizontal' ),
 			'label'   => __( 'Layout' ),
 	);
 
@@ -69,26 +69,26 @@ function shareSettingsForm() {
 	$form['share_image'] = array(
 			'type'  => 'checkbox',
 //			'options' => $image_opts,
-			'value' => getParam( $values['share_image'], 0 ),
+			'value' => _gigParam( $values['share_image'], 0 ),
 			'label' => __( 'Set image URL' ),
 	);
 
 	$form['share_image_url'] = array(
 			'type'  => 'text',
 			'label' => __( "Default URL of the image to share" ),
-			'value' => getParam( $values['share_image_url'], '' ),
+			'value' => _gigParam( $values['share_image_url'], '' ),
 	);
 
 	$form['share_short_url'] = array(
 			'type'  => 'checkbox',
 			'label' => __( "Share using short URLs" ),
-			'value' => getParam( $values['share_short_url'], 0 )
+			'value' => _gigParam( $values['share_short_url'], 0 )
 	);
 
 	$form['share_advanced'] = array(
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced)" ),
-			'value' => getParam( $values['share_advanced'], '' ),
+			'value' => _gigParam( $values['share_advanced'], '' ),
 			'desc'  => __( 'Enter validate JSON format' )
 	);
 

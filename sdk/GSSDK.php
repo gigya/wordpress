@@ -116,7 +116,7 @@ class GSRequest {
 		$this->params->put( $param, $val );
 	}
 
-	public function getParams() {
+	public function _gigParams() {
 		return $this->params;
 	}
 
