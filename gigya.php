@@ -185,10 +185,23 @@ class GigyaAction {
 				exit;
 			}
 
-			// Notify Gigya socialize.notifyLogin
-			// for a return user logged in from WP login form.
-			$gigyaCMS = new GigyaCMS();
-			$gigyaCMS->notifyLogin( $account->ID );
+			// Checking the WP for store Gigya's uid.
+			$guid = get_user_meta($account->ID, 'gigya_uid');
+			if (!empty($guid)) {
+				// When there is, it's means there where
+				// un-verified email registration, so we
+				// merge account just now, and delete the
+				// DB record for not repeating this.
+				$gigyaCMS = new GigyaCMS();
+				$gigyaCMS->notifyRegistration($guid, $account->ID );
+				delete_user_meta($account->ID, 'gigya_uid');
+			}
+			else {
+				// Notify Gigya socialize.notifyLogin
+				// for a return user logged in from WP login form.
+				$gigyaCMS = new GigyaCMS();
+				$gigyaCMS->notifyLogin( $account->ID );
+			}
 		}
 
 		// This post is when there is the same email on the site,
@@ -209,23 +222,25 @@ class GigyaAction {
 
 		// New user was register through our custom extra-details form.
 		if ( $_POST['form_name'] == 'registerform-gigya-extra' && ! empty( $_POST['gigyaUID'] ) ) {
-			// We make a login.
-//			$wp_user = get_userdata( $uid );
-//			require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginAjax.php';
-//			GigyaLoginAjax::login( $wp_user );
-
-			// Connect IDs.
-			$gigyaCMS = new GigyaCMS();
-			$gigyaCMS->notifyRegistration( $_POST['gigyaUID'], $uid );
+			add_user_meta($uid, 'gigya_uid', $_POST['gigyaUID']);
 		}
 
 		// New user was register through Gigya social login.
 		// $_POST['action'] == 'gigya_login';
-		if ( ! empty( $_POST['data'] ) && ! empty( $_POST['data']['UID'] ) ) {
-			if ( $this->login_options['login_mode'] == 'wp_sl' ) {
-				// Connect IDs.
-				$gigyaCMS = new GigyaCMS();
-				$gigyaCMS->notifyRegistration( $_POST['data']['UID'], $uid );
+		if ( $this->login_options['login_mode'] == 'wp_sl' ) {
+			if ( ! empty( $_POST['data'] ) && ! empty( $_POST['data']['UID'] ) ) {
+
+				// We check if we can count on the email.
+				if ($_POST['data']['user']['email_not_verified'] == true) {
+					// The mail is NOT verified, so we save Gigya's UID to DB
+					// and do nothing.
+					add_user_meta($uid, 'guid', $_POST['UID']);
+				}
+				else {
+					// The mail is verified, so we can merge IDs.
+					$gigyaCMS = new GigyaCMS();
+					$gigyaCMS->notifyRegistration( $_POST['data']['UID'], $uid );
+				}
 			}
 		}
 
