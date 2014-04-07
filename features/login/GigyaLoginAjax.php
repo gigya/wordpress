@@ -44,18 +44,38 @@ class GigyaLoginAjax {
 		// Initialize Gigya user.
 		$this->gigya_user = $data['user'];
 
-		// Check to see if the Gigya user is a WP user.
-		if ( is_numeric( $this->gigya_user['UID'] ) && $data['isSiteUID'] === 'true' && is_object( $wp_user = get_userdata( $this->gigya_user['UID'] ) ) ) {
+		// Checking if the Gigya UID is a number.
+		// When the Gigya UID is a number, it's mean
+		// we already notifyRegistration for Gigya
+		// and the Gigya UID is the WP UID.
+		if ( is_numeric( $this->gigya_user['UID'] ) && $this->gigya_user['isSiteUID'] == true ) {
+
+			// Loading the WP from DB.
+			$wp_user = get_userdata( $this->gigya_user['UID'] );
 
 			// Login the user.
 			$this->login( $wp_user );
 
 		} else {
 
-			// If the user isn't a WP user,
-			// try to register if allowed.
-			$this->register();
+			// There might be a user who never verified his email.
+			// So we looking for a user who have 'gigya_uid' meta
+			// with the value of the NOT-number Gigya UID.
+			$users = get_users( 'meta_key=gigya_uid&meta_value=' . $this->gigya_user['UID'] );
 
+			if ( ! empty( $users ) ) {
+				// If there one we return the login form to client.
+				wp_send_json_success( array(
+						'type' => 'form',
+						'html' => wp_login_form( array(
+								'echo'           => false,
+								'value_username' => $users[0]->data->user_login
+						) ) ) );
+			} else {
+				// We now sure there no user in WP records connected
+				// to this Gigya's UID. Lets try and register.
+				$this->register();
+			}
 		}
 
 		wp_send_json_success();

@@ -234,7 +234,7 @@ class GigyaAction {
 				if ($_POST['data']['user']['email_not_verified'] == true) {
 					// The mail is NOT verified, so we save Gigya's UID to DB
 					// and do nothing.
-					add_user_meta($uid, 'guid', $_POST['UID']);
+					add_user_meta($uid, 'gigya_uid', $_POST['data']['UID']);
 				}
 				else {
 					// The mail is verified, so we can merge IDs.
