@@ -17,7 +17,6 @@ function shareSettingsForm() {
 			"none"   => __( "None" ),
 			"bottom" => __( "Bottom" ),
 			"top"    => __( "Top" ),
-//			"both"   => __( "Both" )
 	);
 
 	$form['share_position'] = array(
@@ -60,15 +59,8 @@ function shareSettingsForm() {
 			'label'   => __( 'Layout' ),
 	);
 
-//	$image_opts = array(
-//			"default" => __( "Use image tag if exists, first image on post otherwise" ),
-//			"first"  => __( "Use first image on the post" ),
-//			"url"  => __( "Specify an image URL" )
-//	);
-
 	$form['share_image'] = array(
 			'type'  => 'checkbox',
-//			'options' => $image_opts,
 			'value' => _gigParam( $values['share_image'], 0 ),
 			'label' => __( 'Set image URL' ),
 	);

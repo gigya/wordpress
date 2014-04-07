@@ -37,11 +37,24 @@ class GigyaShare_Widget extends WP_Widget {
 		$output = '';
 		$title  = apply_filters( 'widget_title', $instance['title'] );
 
+		// Get the data from the argument.
+		$data = $instance['params'];
+
+		// If the data is not in the argument get it straight.
+		if ( empty( $data ) ) {
+			require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareSet.php';
+			$share = new GigyaShareSet();
+			$data  = $share->getParams();
+		}
+
+		// Set the output.
 		$output .= $args['before_widget'];
 		if ( ! empty( $title ) ) {
 			$output .= $args['before_title'] . $title . $args['after_title'];
 		}
 		$output .= '<div class="gigya-share-widget"></div>';
+		$output .= '<script class="data-share" type="application/json">' . json_encode( $data ) . '</script>';
+
 		$output .= $args['after_widget'];
 
 		return $output;

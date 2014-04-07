@@ -198,12 +198,6 @@ class GigyaAction {
 			$gigyaCMS = new GigyaCMS();
 			$gigyaCMS->notifyRegistration( $_POST['gigyaUID'], $account->ID );
 		}
-
-		// Hook for changing WP user metadata from Gigya's user.
-		// @todo find better place for it.
-		$gigyaCMS      = new GigyaCMS();
-		$gigya_account = $gigyaCMS->getAccount( $account->ID );
-		do_action( 'gig_login', $gigya_account, $account );
 	}
 
 	/**
@@ -317,7 +311,6 @@ class GigyaAction {
 		if ( ! empty( $share_options['share_plugin'] ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareSet.php';
 			$share = new GigyaShareSet();
-			$share->init();
 			$content = $share->setDefaultPosition( $content );
 		}
 

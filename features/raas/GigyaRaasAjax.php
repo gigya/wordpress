@@ -88,12 +88,15 @@ class GigyaRaasAjax {
 	 *
 	 * @param $wp_user
 	 */
-	public static function login( $wp_user ) {
+	public function login( $wp_user ) {
 
 		// Login procedure.
 		wp_clear_auth_cookie();
 		wp_set_current_user( $wp_user->ID );
 		wp_set_auth_cookie( $wp_user->ID );
+
+		// Hook for changing WP user metadata from Gigya's user.
+		do_action( 'gig_raas_login', $this->gigya_account, $wp_user );
 
 		// Do others login Implementations.
 		do_action( 'wp_login', $wp_user->data->user_login, $wp_user );
