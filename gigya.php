@@ -32,6 +32,7 @@ define( 'GIGYA__SETTINGS_SHARE', 'gigya_share_settings' );
 define( 'GIGYA__SETTINGS_COMMENTS', 'gigya_comments_settings' );
 define( 'GIGYA__SETTINGS_REACTIONS', 'gigya_reactions_settings' );
 define( 'GIGYA__SETTINGS_GM', 'gigya_gm_settings' );
+define( 'GIGYA__SETTINGS_FEED', 'gigya_feed_settings' );
 
 new GigyaAction;
 
@@ -328,6 +329,15 @@ class GigyaAction {
 		// Comments plugin.
 		$comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
 		if ( ! empty( $comments_options['comments_plugin'] ) ) {
+
+			// Spider trap.
+			// When a spider detect we render the comment in the HTML for SEO
+			$is_spider = gigyaCMS::isSpider();
+			if ( ! empty( $is_spider ) ) {
+				// Override default WP comments template with comment spider.
+				return GIGYA__PLUGIN_DIR . 'admin/tpl/comments-spider.tpl.php';
+			}
+
 			require_once GIGYA__PLUGIN_DIR . 'features/comments/GigyaCommentsSet.php';
 			$comments = new GigyaCommentsSet();
 			$comments->init();
@@ -335,7 +345,6 @@ class GigyaAction {
 			// Override default WP comments template.
 			return GIGYA__PLUGIN_DIR . 'admin/tpl/comments.tpl.php';
 		}
-
 	}
 }
 

@@ -56,8 +56,8 @@
 
 		}
 
-		$('form.gigya-settings').on('submit', function(e) {
-			$('form.gigya-settings textarea').each(function() {
+		$('form.gigya-settings').on('submit', function (e) {
+			$('form.gigya-settings textarea').each(function () {
 				jsonValidate($(this), e);
 			})
 		});

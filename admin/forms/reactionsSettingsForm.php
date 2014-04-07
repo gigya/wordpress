@@ -88,19 +88,6 @@ function reactionsSettingsForm() {
 			'label'   => __( 'Count Type' ),
 	);
 
-	$reaction_privacy_opts = array(
-			"private" => __( "Private" ),
-			"public"  => __( "Public" ),
-			"friends" => __( "Friends" )
-	);
-
-	$form['reaction_privacy'] = array(
-			'type'    => 'select',
-			'options' => $reaction_privacy_opts,
-			'value'   => _gigParam( $values['reaction_privacy'], 'private' ),
-			'label'   => __( 'Privacy' ),
-	);
-
 	$form['reactions_custom_code'] = array(
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced)" ),

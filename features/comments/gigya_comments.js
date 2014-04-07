@@ -7,7 +7,7 @@
 
 // --------------------------------------------------------------------
 
-		var showComments = function(id) {
+		var showComments = function (id) {
 			if (typeof gigyaCommentsParams == 'undefined' || typeof id == 'undefined') {
 				return false;
 			}
@@ -15,7 +15,7 @@
 			gigyaCommentsParams.containerID = id;
 			gigyaCommentsParams.context = {id: id};
 			gigya.comments.showCommentsUI(gigyaCommentsParams);
-	}
+		}
 
 // --------------------------------------------------------------------
 

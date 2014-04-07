@@ -27,7 +27,7 @@ class GigyaSettings {
 		// Add settings sections.
 		foreach ( $this->getSections() as $id => $section ) {
 			add_settings_section( $id, $section['title'], $section['func'], $section['slug'] );
-			register_setting( $section['slug'] . '-group', $section['slug'], array($this, 'validate') );
+			register_setting( $section['slug'] . '-group', $section['slug'], array( $this, 'validate' ) );
 		}
 	}
 
@@ -36,7 +36,7 @@ class GigyaSettings {
 	 *
 	 * @return mixed
 	 */
-	public function validate($input) {
+	public function validate( $input ) {
 		// @todo We using jsonlint.js to validate the JSON strings in the forms.
 		// @todo The Challenge is to keep user input ($_POST) with out save it to the DB.
 //		add_settings_error(
@@ -47,6 +47,7 @@ class GigyaSettings {
 //		);
 		return $input;
 	}
+
 	/**
 	 * Hook admin_menu callback.
 	 * Set Gigya's Setting area.
@@ -101,6 +102,11 @@ class GigyaSettings {
 						'title' => 'Gamification Settings',
 						'func'  => 'gmSettingsForm',
 						'slug'  => 'gigya_gm_settings'
+				),
+				'gigya_feed_settings'      => array(
+						'title' => 'Activity Feed Settings',
+						'func'  => 'feedSettingsForm',
+						'slug'  => 'gigya_feed_settings'
 				),
 		);
 	}
