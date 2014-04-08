@@ -4,9 +4,6 @@
 
 // --------------------------------------------------------------------
 
-
-// --------------------------------------------------------------------
-
 		var showComments = function (id) {
 			if (typeof gigyaCommentsParams == 'undefined' || typeof id == 'undefined') {
 				return false;

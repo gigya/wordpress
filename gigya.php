@@ -70,6 +70,7 @@ class GigyaAction {
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 		add_filter( 'the_content', array( $this, 'theContent' ) );
 		add_filter( 'comments_template', array( $this, 'commentsTemplate' ) );
+		add_filter( 'login_redirect', array( $this, 'loginRedirect' ), 10, 3 );
 
 	}
 
@@ -88,8 +89,8 @@ class GigyaAction {
 
 		// Parameters to be sent to the DOM.
 		$params = array(
-				'ajaxurl'   => admin_url( 'admin-ajax.php' ),
-				'logoutUrl' => wp_logout_url(),
+				'ajaxurl'         => admin_url( 'admin-ajax.php' ),
+				'logoutUrl'       => wp_logout_url(),
 				'connectBehavior' => _gigParam( $this->login_options['login_connect_behavior'], 'loginExistingUser' )
 		);
 
@@ -167,6 +168,12 @@ class GigyaAction {
 
 	}
 
+	public function loginRedirect( $redirect_to, $request, $user ) {
+		$e=1;
+
+		return get_permalink();
+	}
+
 	/**
 	 * Hook user login.
 	 *
@@ -187,17 +194,16 @@ class GigyaAction {
 			}
 
 			// Checking the WP for store Gigya's uid.
-			$guid = get_user_meta($account->ID, 'gigya_uid');
-			if (!empty($guid)) {
+			$guid = get_user_meta( $account->ID, 'gigya_uid' );
+			if ( ! empty( $guid ) ) {
 				// When there is, it's means there where
 				// un-verified email registration, so we
 				// merge account just now, and delete the
 				// DB record for not repeating this.
 				$gigyaCMS = new GigyaCMS();
-				$gigyaCMS->notifyRegistration($guid, $account->ID );
-				delete_user_meta($account->ID, 'gigya_uid');
-			}
-			else {
+				$gigyaCMS->notifyRegistration( $guid, $account->ID );
+				delete_user_meta( $account->ID, 'gigya_uid' );
+			} else {
 				// Notify Gigya socialize.notifyLogin
 				// for a return user logged in from WP login form.
 				$gigyaCMS = new GigyaCMS();
@@ -223,7 +229,7 @@ class GigyaAction {
 
 		// New user was register through our custom extra-details form.
 		if ( $_POST['form_name'] == 'registerform-gigya-extra' && ! empty( $_POST['gigyaUID'] ) ) {
-			add_user_meta($uid, 'gigya_uid', $_POST['gigyaUID']);
+			add_user_meta( $uid, 'gigya_uid', $_POST['gigyaUID'] );
 		}
 
 		// New user was register through Gigya social login.
@@ -232,12 +238,11 @@ class GigyaAction {
 			if ( ! empty( $_POST['data'] ) && ! empty( $_POST['data']['UID'] ) ) {
 
 				// We check if we can count on the email.
-				if ($_POST['data']['user']['email_not_verified'] == true) {
+				if ( $_POST['data']['user']['email_not_verified'] == true ) {
 					// The mail is NOT verified, so we save Gigya's UID to DB
 					// and do nothing.
-					add_user_meta($uid, 'gigya_uid', $_POST['data']['UID']);
-				}
-				else {
+					add_user_meta( $uid, 'gigya_uid', $_POST['data']['UID'] );
+				} else {
 					// The mail is verified, so we can merge IDs.
 					$gigyaCMS = new GigyaCMS();
 					$gigyaCMS->notifyRegistration( $_POST['data']['UID'], $uid );
@@ -326,7 +331,7 @@ class GigyaAction {
 		$share_options = get_option( GIGYA__SETTINGS_SHARE );
 		if ( ! empty( $share_options['share_plugin'] ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareSet.php';
-			$share = new GigyaShareSet();
+			$share   = new GigyaShareSet();
 			$content = $share->setDefaultPosition( $content );
 		}
 

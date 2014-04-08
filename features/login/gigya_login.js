@@ -84,8 +84,14 @@
           }
           else {
 
-            // Redirect.
-            location.replace( gigyaLoginParams.redirect );
+            if (location.pathname.indexOf('wp-login.php') != -1) {
+              // Redirect.
+              location.replace( gigyaLoginParams.redirect );
+            }
+            else {
+              location.reload();
+            }
+
           }
         }
         else {

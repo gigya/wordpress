@@ -48,10 +48,7 @@ class GigyaLoginAjax {
 		// When the Gigya UID is a number, it's mean
 		// we already notifyRegistration for Gigya
 		// and the Gigya UID is the WP UID.
-		if ( is_numeric( $this->gigya_user['UID'] ) && $this->gigya_user['isSiteUID'] == true ) {
-
-			// Loading the WP from DB.
-			$wp_user = get_userdata( $this->gigya_user['UID'] );
+		if ( is_numeric( $this->gigya_user['UID'] ) && $this->gigya_user['isSiteUID'] == true && ( is_object( $wp_user = get_userdata( $this->gigya_user['UID'] ) ) ) ) {
 
 			// Login the user.
 			$this->login( $wp_user );
@@ -100,7 +97,6 @@ class GigyaLoginAjax {
 
 		// Do others login Implementations.
 		do_action( 'wp_login', $wp_user->data->user_login, $wp_user );
-
 	}
 
 	/**
