@@ -44,10 +44,10 @@ function loginSettingsForm() {
 			'loginExistingUser' => __( 'Login Existing User' ),
 	);
 
-	$form['login_connect_without'] = array(
+	$form['login_connect_behavior'] = array(
 			'type'    => 'select',
 			'options' => $connect_without_opts,
-			'value'   => _gigParam( $values['login_connect_without'], 'loginExistingUser' ),
+			'value'   => _gigParam( $values['login_connect_behavior'], 'loginExistingUser' ),
 			'label'   => __( 'Connect Without Login Behavior' ),
 	);
 

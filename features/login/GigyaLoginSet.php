@@ -28,7 +28,6 @@ class GigyaLoginSet {
 		$params = array(
 				'actionLogin'                 => 'gigya_login',
 				'redirect'                    => _gigParam( $this->login_options['login_redirect'], user_admin_url() ),
-				'connectWithoutLoginBehavior' => _gigParam( $this->login_options['login_connect_without'], 'loginExistingUser' )
 		);
 
 		$params['ui']                  = array();

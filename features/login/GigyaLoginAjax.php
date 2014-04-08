@@ -60,7 +60,7 @@ class GigyaLoginAjax {
 
 			// There might be a user who never verified his email.
 			// So we looking for a user who have 'gigya_uid' meta
-			// with the value of the NOT-number Gigya UID.
+			// with the value of the original (NOT-number) Gigya UID.
 			$users = get_users( 'meta_key=gigya_uid&meta_value=' . $this->gigya_user['UID'] );
 
 			if ( ! empty( $users ) ) {
@@ -73,7 +73,7 @@ class GigyaLoginAjax {
 						) ) ) );
 			} else {
 				// We now sure there no user in WP records connected
-				// to this Gigya's UID. Lets try and register.
+				// to this Gigya's UID. Lets try to register the user.
 				$this->register();
 			}
 		}

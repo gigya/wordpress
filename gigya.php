@@ -90,6 +90,7 @@ class GigyaAction {
 		$params = array(
 				'ajaxurl'   => admin_url( 'admin-ajax.php' ),
 				'logoutUrl' => wp_logout_url(),
+				'connectBehavior' => _gigParam( $this->login_options['login_connect_behavior'], 'loginExistingUser' )
 		);
 
 		// Load params to be available to client-side script.
