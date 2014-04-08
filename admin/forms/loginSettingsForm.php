@@ -39,7 +39,7 @@ function loginSettingsForm() {
 	);
 
 	$connect_without_opts = array(
-			'tempUser'          => __( 'Temp User' ),
+//			'tempUser'          => __( 'Temp User' ),
 			'alwaysLogin'       => __( 'Always Login' ),
 			'loginExistingUser' => __( 'Login Existing User' ),
 	);

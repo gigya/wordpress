@@ -182,7 +182,8 @@
 
         // Social Login.
         gigya.socialize.addEventHandlers( {
-          onLogin: loginValidate
+          onLogin: loginValidate,
+          onLogout: GigyaWp.logout
         } );
 
         GigyaWp.regEvents = true;

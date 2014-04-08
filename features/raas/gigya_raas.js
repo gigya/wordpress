@@ -104,7 +104,8 @@
 
 				// Raas Login.
 				gigya.accounts.addEventHandlers({
-					onLogin: raasLogin
+					onLogin: raasLogin,
+          onLogout: GigyaWp.logout
 				});
 
 				GigyaWp.regEvents = true;
