@@ -26,8 +26,8 @@ class GigyaLoginSet {
 
 		// Parameters to be sent to the DOM.
 		$params = array(
-				'actionLogin'                 => 'gigya_login',
-				'redirect'                    => _gigParam( $this->login_options['login_redirect'], user_admin_url() ),
+				'actionLogin' => 'gigya_login',
+				'redirect'    => _gigParam( $this->login_options['login_redirect'], user_admin_url() ),
 		);
 
 		$params['ui']                  = array();

@@ -37,7 +37,7 @@ class GigyaShareSet {
 
 		// The parameters array.
 		$params = array(
-				'postId'       => get_the_ID(),
+//				'postId'       => get_the_ID(),
 				'layout'       => _gigParam( $this->share_options['share_layout'], 'horizontal' ),
 				'showCounts'   => _gigParam( $this->share_options['share_counts'], 'right' ),
 				'shareButtons' => _gigParam( $this->share_options['share_providers'], 'share,facebook-like,google-plusone,twitter,email' ),

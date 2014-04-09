@@ -5,11 +5,11 @@
 $comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
 $params = array(
 		'categoryID' => $comments_options['comments_cat_id'],
-		'streamID' => get_the_ID(),
+		'streamID'   => get_the_ID(),
 		'dataFormat' => 'html'
 );
 $gigya = new GigyaCMS;
-$html = $gigya->call('comments.getComments', $params);
+$html = $gigya->call( 'comments.getComments', $params );
 ?>
 <div class="gigya-comments-spider">
 	<?php echo $html['comments']; ?>

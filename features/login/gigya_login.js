@@ -84,7 +84,7 @@
           }
           else {
 
-            if (location.pathname.indexOf('wp-login.php') != -1) {
+            if ( location.pathname.indexOf( 'wp-login.php' ) != -1 ) {
               // Redirect.
               location.replace( gigyaLoginParams.redirect );
             }
@@ -182,7 +182,7 @@
 
         // Social Login.
         gigya.socialize.addEventHandlers( {
-          onLogin: loginValidate,
+          onLogin : loginValidate,
           onLogout: GigyaWp.logout
         } );
 

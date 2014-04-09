@@ -11,6 +11,7 @@ class GigyaCommentsSet {
 
 		// Get settings variables.
 		$this->comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
+		$this->feed_options     = get_option( GIGYA__SETTINGS_FEED );
 
 	}
 
@@ -26,11 +27,11 @@ class GigyaCommentsSet {
 //		global $post;
 //		$post_id = $post->ID;
 		$params = array(
-				'categoryID'   => _gigParam( $this->comments_options['comments_cat_id'], '' ),
-				'streamID'     => get_the_ID(),
-				'scope'        => _gigParam( $this->comments_options['comments_enable_share_activity'], 'both' ),
-				'privacy'      => _gigParam( $this->feed_options['feed_privacy'], 'private' ),
-				'version'      => 2,
+				'categoryID' => _gigParam( $this->comments_options['comments_cat_id'], '' ),
+				'streamID'   => get_the_ID(),
+				'scope'      => _gigParam( $this->feed_options['feed_scope'], 'external' ),
+				'privacy'    => _gigParam( $this->feed_options['feed_privacy'], 'private' ),
+				'version'    => 2,
 		);
 
 		// Let others plugins to modify the comments parameters.
@@ -38,7 +39,7 @@ class GigyaCommentsSet {
 		// $params['useSiteLogin'] = true;
 		// $params['onSiteLoginClicked'] = 'onSiteLoginHandler';
 		// To registering to the onSiteLoginClicked event.
-		$params = apply_filters('gigya_comments_params_alter', $params);
+		$params = apply_filters( 'gigya_comments_params_alter', $params );
 
 		if ( ! empty( $this->comments_options['comments_advanced'] ) ) {
 			$advanced = gigyaCMS::parseJSON( _gigParam( $this->comments_options['comments_advanced'], '' ) );

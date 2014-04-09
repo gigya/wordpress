@@ -28,19 +28,6 @@ function commentsSettingsForm() {
 
 	);
 
-	$comments_share_opts = array(
-			"both"     => __( "both" ),
-			"external" => __( "External" )
-	);
-
-	$form['comments_enable_share_activity'] = array(
-			'type'    => 'select',
-			'options' => $comments_share_opts,
-			'value'   => _gigParam( $values['comments_enable_share_activity'], 'external' ),
-			'label'   => __( 'Enable Sharing to Activity Feed' ),
-			'desc'    => __( 'When publishing feed items, by default the feed items are published to social networks only and will not appear<br> on the site\'s Activity Feed plugin. To change this behavior, you must change the publish scope to "Both"' )
-	);
-
 	$form['comments_custom_code'] = array(
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced)" ),

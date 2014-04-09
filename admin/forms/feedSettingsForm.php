@@ -48,5 +48,19 @@ function feedSettingsForm() {
 			'label'   => __( 'Activity Feed privacy level' ),
 	);
 
+	$feed_scope_opts = array(
+			"both"     => __( "both" ),
+			"external" => __( "External" )
+	);
+
+	$form['feed_scope'] = array(
+			'type'    => 'select',
+			'options' => $feed_scope_opts,
+			'value'   => _gigParam( $values['feed_scope'], 'external' ),
+			'label'   => __( 'Enable Sharing to Activity Feed' ),
+			'desc'    => __( 'When publishing feed items, like comment and reactions, by default the feed items are published to social networks only and will not appear<br> on the site\'s Activity Feed plugin ("External"). To change this behavior, you must change the publish scope to "Both"' )
+	);
+
+
 	echo _gigya_form_render( $form, GIGYA__SETTINGS_FEED );
 }

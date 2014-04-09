@@ -1,6 +1,6 @@
 var GigyaWp = GigyaWp || {};
 
-(function ($) {
+(function ( $ ) {
 
 // --------------------------------------------------------------------
 
@@ -10,16 +10,22 @@ var GigyaWp = GigyaWp || {};
 
 // --------------------------------------------------------------------
 
-	$(document).ready(function () {
-		// jQueryUI dialog element.
-		$('body').append('<div id="dialog-modal"></div>');
+  $( document ).ready( function () {
+    // jQueryUI dialog element.
+    $( 'body' ).append( '<div id="dialog-modal"></div>' );
 
-		GigyaWp.logout = function () {
-			document.location = gigyaParams.logouUrl;
-		}
-	});
+    GigyaWp.logout = function () {
+      document.location = gigyaParams.logouUrl;
+    }
+  } );
 
 // --------------------------------------------------------------------
 
-})(jQuery);
+  GigyaWp.errHandle = function ( errEvent ) {
+    console.log( errEvent );
+  }
+
+// --------------------------------------------------------------------
+
+})( jQuery );
 

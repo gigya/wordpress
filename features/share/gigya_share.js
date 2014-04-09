@@ -11,7 +11,7 @@
     var getImage = function ( gigyaShareParams ) {
       var image = {
         type: 'image',
-        href: gigyaShareParams.linkBack
+        href: gigyaShareParams.ua.linkBack
       };
 
       if ( typeof $( 'meta[property="og:image"]' ).length > 0 ) {
@@ -20,7 +20,7 @@
       }
       else {
         // Image source taken from data.
-        image.src = image.src = gigyaShareParams.imageUrl;
+        image.src = gigyaShareParams.ua.imageURL;
       }
 
       return image;
@@ -89,9 +89,12 @@
       var params = $.extend( true, {}, gigyaShareParams );
       params.containerID = id;
       params.userAction = getUserAction( gigyaShareParams );
+      params.onError = GigyaWp.errHandle;
+
+      delete params.ua;
 
       // Load the Share Bar Plugin.
-      gigya.services.socialize.showShareBarUI( params );
+      gigya.socialize.showShareBarUI( params );
 
     };
 

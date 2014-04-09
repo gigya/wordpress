@@ -20,7 +20,7 @@ define( 'GIGYA__VERSION', '5.0' );
 define( 'GIGYA__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GIGYA__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'GIGYA__CDN_PROTOCOL', ! empty( $_SERVER['HTTPS'] ) ? 'https://cdns' : 'http://cdn' );
-define( 'GIGYA__JS_CDN', GIGYA__CDN_PROTOCOL . '.gigya.com/JS/socialize.js?apiKey=' );
+define( 'GIGYA__JS_CDN', GIGYA__CDN_PROTOCOL . '.gigya.com/js/socialize.js?apiKey=' );
 
 
 /**
@@ -169,7 +169,7 @@ class GigyaAction {
 	}
 
 	public function loginRedirect( $redirect_to, $request, $user ) {
-		$e=1;
+		$e = 1;
 
 		return get_permalink();
 	}
@@ -315,12 +315,25 @@ class GigyaAction {
 	public function widgetsInit() {
 
 		// Share Widget.
-		require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareWidget.php';
-		register_widget( 'GigyaShare_Widget' );
+		$share_options = get_option( GIGYA__SETTINGS_SHARE );
+		if ( ! empty( $share_options['share_plugin'] ) ) {
+			require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareWidget.php';
+			register_widget( 'GigyaShare_Widget' );
+		}
 
 		// Comment Widget.
-		require_once GIGYA__PLUGIN_DIR . 'features/comments/GigyaCommentsWidget.php';
-		register_widget( 'GigyaComments_Widget' );
+		$share_options = get_option( GIGYA__SETTINGS_COMMENTS );
+		if ( ! empty( $share_options['comments_plugin'] ) ) {
+			require_once GIGYA__PLUGIN_DIR . 'features/comments/GigyaCommentsWidget.php';
+			register_widget( 'GigyaComments_Widget' );
+		}
+
+		// Reactions Widget.
+		$share_options = get_option( GIGYA__SETTINGS_REACTIONS );
+		if ( ! empty( $share_options['reactions_plugin'] ) ) {
+			require_once GIGYA__PLUGIN_DIR . 'features/reactions/GigyaReactionsWidget.php';
+			register_widget( 'GigyaReactions_Widget' );
+		}
 	}
 
 	/**
@@ -332,6 +345,14 @@ class GigyaAction {
 		if ( ! empty( $share_options['share_plugin'] ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareSet.php';
 			$share   = new GigyaShareSet();
+			$content = $share->setDefaultPosition( $content );
+		}
+
+		// Reactions plugin.
+		$reactions_options = get_option( GIGYA__SETTINGS_REACTIONS );
+		if ( ! empty( $reactions_options['reactions_plugin'] ) ) {
+			require_once GIGYA__PLUGIN_DIR . 'features/reactions/GigyaReactionsSet.php';
+			$share   = new GigyaReactionsSet();
 			$content = $share->setDefaultPosition( $content );
 		}
 
