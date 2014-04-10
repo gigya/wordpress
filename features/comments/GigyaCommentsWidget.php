@@ -41,6 +41,10 @@ class Gigya_Comments_Widget extends WP_Widget {
 		if ( ! empty( $title ) ) {
 			$output .= $args['before_title'] . $title . $args['after_title'];
 		}
+		$comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
+		if ( ! empty( $comments_options['comments_rating'] ) ) {
+			$output .= '<div class="gigya-rating-widget"></div>';
+		}
 		$output .= '<div class="gigya-comments-widget"></div>';
 		$output .= $args['after_widget'];
 

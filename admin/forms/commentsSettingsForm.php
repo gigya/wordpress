@@ -17,7 +17,12 @@ function commentsSettingsForm() {
 			'label' => __( 'Disabled default Comments position' ),
 			'value' => _gigParam( $values['comments_hide'], 0 ),
 			'desc'  => __( "Checking this will disabled the default comment position, but still let you use<br> Gigya's comments widgets to position comments location on the page layout" )
+	);
 
+	$form['comments_rating'] = array(
+			'type'  => 'checkbox',
+			'label' => __( 'Include Rating plugin' ),
+			'value' => _gigParam( $values['comments_rating'], 0 ),
 	);
 
 	$form['comments_cat_id'] = array(
@@ -25,7 +30,6 @@ function commentsSettingsForm() {
 			'label' => __( 'Category ID' ),
 			'value' => _gigParam( $values['comments_cat_id'], '' ),
 			'desc'  => __( "The category ID on 'Comments category name' at Gigya's settings" ) . ' ' . '<a href=https://platform.gigya.com/Site/partners/Settings.aspx#cmd=Settings.CommentsSetup>' . __( 'here' ) . '</a>'
-
 	);
 
 	$form['comments_custom_code'] = array(

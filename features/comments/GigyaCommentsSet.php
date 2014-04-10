@@ -24,10 +24,21 @@ class GigyaCommentsSet {
 		wp_enqueue_script( 'gigya_comments_js', GIGYA__PLUGIN_URL . 'features/comments/gigya_comments.js' );
 		wp_enqueue_style( 'gigya_comments_css', GIGYA__PLUGIN_URL . 'features/comments/gigya_comments.css' );
 
-//		global $post;
-//		$post_id = $post->ID;
+		$params = $this->getParams();
+
+		// Load params to be available on client-side script.
+		wp_localize_script( 'gigya_comments_js', 'gigyaCommentsParams', $params );
+
+	}
+
+	/**
+	 * Generate the parameters for the Comments plugin.
+	 * @return array
+	 */
+	public function getParams() {
 		$params = array(
 				'categoryID' => _gigParam( $this->comments_options['comments_cat_id'], '' ),
+				'rating'		 => _gigParam( $this->comments_options['comments_rating'], 0 ),
 				'streamID'   => get_the_ID(),
 				'scope'      => _gigParam( $this->feed_options['feed_scope'], 'external' ),
 				'privacy'    => _gigParam( $this->feed_options['feed_privacy'], 'private' ),
@@ -46,8 +57,6 @@ class GigyaCommentsSet {
 			$params   = array_merge( $params, $advanced );
 		}
 
-		// Load params to be available on client-side script.
-		wp_localize_script( 'gigya_comments_js', 'gigyaCommentsParams', $params );
-
+		return $params;
 	}
 }

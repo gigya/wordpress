@@ -322,11 +322,11 @@ class GigyaAction {
 		}
 
 		// Comment Widget.
-		$share_options = get_option( GIGYA__SETTINGS_COMMENTS );
-		if ( ! empty( $share_options['comments_plugin'] ) ) {
-			require_once GIGYA__PLUGIN_DIR . 'features/comments/GigyaCommentsWidget.php';
-			register_widget( 'Gigya_Comments_Widget' );
-		}
+//		$share_options = get_option( GIGYA__SETTINGS_COMMENTS );
+//		if ( ! empty( $share_options['comments_plugin'] ) ) {
+//			require_once GIGYA__PLUGIN_DIR . 'features/comments/GigyaCommentsWidget.php';
+//			register_widget( 'Gigya_Comments_Widget' );
+//		}
 
 		// Reactions Widget.
 		$share_options = get_option( GIGYA__SETTINGS_REACTIONS );
