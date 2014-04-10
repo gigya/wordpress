@@ -5,6 +5,37 @@
 // --------------------------------------------------------------------
 
     /**
+     * Show Notification.
+     * @param response
+     * @returns {boolean}
+     */
+    var notificationCB = function(response) {
+      if (response.errorCode === 0) {
+        if (typeof response.UID !== 'undefined') {
+          var params = gigyaGmNotificationParams;
+          gigya.gm.showNotifications(params);
+        }
+      }
+
+      return false;
+    }
+
+// --------------------------------------------------------------------
+
+    /**
+     * Set notification if enabled.
+     */
+    var setNotification = function() {
+      if (typeof gigyaGmNotificationParams !== 'undefined' && gigyaGamificationParams.length > 0 ) {
+        gigya.services.socialize.getUserInfo({
+          callback: notificationCB
+        })
+      }
+    }
+
+// --------------------------------------------------------------------
+
+    /**
      * Get Gamification type.
      * @param gigyaGamificationParams
      * @returns {string}
@@ -57,10 +88,14 @@
 
 // --------------------------------------------------------------------
 
+    /**
+     * Start.
+     */
     $( '.gigya-gamification-widget' ).each( function ( index, value ) {
       var id = 'gigya-gamification-widget-' + index;
       $( this ).attr( 'id', id );
       showGamification( id );
+      setNotification();
     } );
 
 // --------------------------------------------------------------------
