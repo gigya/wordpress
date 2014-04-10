@@ -119,6 +119,9 @@
       if ( response.provider === 'site' ) {
         return false;
       }
+      if ( response.source == "showCommentsUI" ) {
+        return false;
+      }
 
       // We check there an email field.
       // Only for the first time.
@@ -158,9 +161,9 @@
             // Go on with register
             socialLogin( response );
           }
-          else {
-            gigya.socialize.logout();
-          }
+//          else {
+//            gigya.socialize.logout();
+//          }
 
         } );
       }

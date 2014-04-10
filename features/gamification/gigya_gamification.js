@@ -9,11 +9,11 @@
      * @param response
      * @returns {boolean}
      */
-    var notificationCB = function(response) {
-      if (response.errorCode === 0) {
-        if (typeof response.UID !== 'undefined') {
+    var notificationCB = function ( response ) {
+      if ( response.errorCode === 0 ) {
+        if ( typeof response.UID !== 'undefined' ) {
           var params = gigyaGmNotificationParams;
-          gigya.gm.showNotifications(params);
+          gigya.gm.showNotifications( params );
         }
       }
 
@@ -25,11 +25,11 @@
     /**
      * Set notification if enabled.
      */
-    var setNotification = function() {
-      if (typeof gigyaGmNotificationParams !== 'undefined' && gigyaGamificationParams.length > 0 ) {
-        gigya.services.socialize.getUserInfo({
+    var setNotification = function () {
+      if ( typeof gigyaGmNotificationParams !== 'undefined' && gigyaGamificationParams.length > 0 ) {
+        gigya.services.socialize.getUserInfo( {
           callback: notificationCB
-        })
+        } )
       }
     }
 

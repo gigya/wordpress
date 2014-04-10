@@ -16,13 +16,13 @@
 // --------------------------------------------------------------------
 
     var showRating = function ( rid, cid ) {
-      var ratingParams ={
-        categoryID: gigyaCommentsParams.categoryID,
-        streamID: gigyaCommentsParams.streamID,
-        containerID: rid,
+      var ratingParams = {
+        categoryID      : gigyaCommentsParams.categoryID,
+        streamID        : gigyaCommentsParams.streamID,
+        containerID     : rid,
         linkedCommentsUI: cid
       }
-      gigya.comments.showRatingUI(ratingParams);
+      gigya.comments.showRatingUI( ratingParams );
     }
 
 // --------------------------------------------------------------------
@@ -34,7 +34,7 @@
 
       if ( typeof gigyaCommentsParams != 'undefined' && gigyaCommentsParams.rating == true ) {
         var rid = 'gigya-rating-widget-' + index;
-        $( this ).siblings('.gigya-rating-widget').attr( 'id', rid );
+        $( this ).siblings( '.gigya-rating-widget' ).attr( 'id', rid );
         showRating( rid, cid );
       }
     } );

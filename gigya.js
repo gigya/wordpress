@@ -14,8 +14,12 @@ var GigyaWp = GigyaWp || {};
     // jQueryUI dialog element.
     $( 'body' ).append( '<div id="dialog-modal"></div>' );
 
-    GigyaWp.logout = function () {
-      document.location = gigyaParams.logouUrl;
+    GigyaWp.logout = function ( response ) {
+      if ( response.source == "showCommentsUI" ) {
+        return false;
+      }
+
+      document.location = gigyaParams.logoutUrl;
     }
   } );
 

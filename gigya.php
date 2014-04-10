@@ -70,7 +70,7 @@ class GigyaAction {
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 		add_filter( 'the_content', array( $this, 'theContent' ) );
 		add_filter( 'comments_template', array( $this, 'commentsTemplate' ) );
-		add_filter( 'login_redirect', array( $this, 'loginRedirect' ), 10, 3 );
+//		add_filter( 'login_redirect', array( $this, 'loginRedirect' ), 10, 3 );
 
 	}
 
@@ -169,9 +169,7 @@ class GigyaAction {
 	}
 
 	public function loginRedirect( $redirect_to, $request, $user ) {
-		$e = 1;
-
-		return get_permalink();
+//		return get_permalink();
 	}
 
 	/**
