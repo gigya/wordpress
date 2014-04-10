@@ -46,7 +46,7 @@
         try {
           var result = jsonlint.parse( json );
           if ( result ) {
-            textField.after( '<div class="msg updated">JSON is valid!</div>' );
+            textField.after( '<div class="msg updated">JSON is valid</div>' );
             textField.addClass( 'valid' );
           }
         } catch ( err ) {

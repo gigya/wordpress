@@ -325,14 +325,21 @@ class GigyaAction {
 		$share_options = get_option( GIGYA__SETTINGS_COMMENTS );
 		if ( ! empty( $share_options['comments_plugin'] ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/comments/GigyaCommentsWidget.php';
-			register_widget( 'GigyaComments_Widget' );
+			register_widget( 'Gigya_Comments_Widget' );
 		}
 
 		// Reactions Widget.
 		$share_options = get_option( GIGYA__SETTINGS_REACTIONS );
 		if ( ! empty( $share_options['reactions_plugin'] ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/reactions/GigyaReactionsWidget.php';
-			register_widget( 'GigyaReactions_Widget' );
+			register_widget( 'Gigya_Reactions_Widget' );
+		}
+
+		// Gemification Widget.
+		$gm_options = get_option( GIGYA__SETTINGS_GM );
+		if ( ! empty( $gm_options['gamification_plugin'] ) ) {
+			require_once GIGYA__PLUGIN_DIR . 'features/gamification/GigyaGamificationWidget.php';
+			register_widget( 'Gigya_Gamification_Widget' );
 		}
 	}
 
@@ -432,18 +439,20 @@ function _gigya_form_render( $form, $name_prefix = '' ) {
 
 		} else {
 
-			if ( ! empty( $name_prefix ) ) {
+			if ( empty( $el['name'] ) ) {
+				if ( ! empty( $name_prefix ) ) {
 
-				// In cases like on admin multipage the element
-				// name is build from the section and the ID.
-				// This tells WP under which option to save this field value.
-				$el['name'] = $name_prefix . '[' . $id . ']';
+					// In cases like on admin multipage the element
+					// name is build from the section and the ID.
+					// This tells WP under which option to save this field value.
+					$el['name'] = $name_prefix . '[' . $id . ']';
 
-			} else {
+				} else {
 
-				// Usually the element name is just the ID.
-				$el['name'] = $id;
+					// Usually the element name is just the ID.
+					$el['name'] = $id;
 
+				}
 			}
 
 			// Add the ID value to the array.

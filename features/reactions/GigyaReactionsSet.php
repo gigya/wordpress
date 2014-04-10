@@ -98,7 +98,7 @@ class GigyaReactionsSet {
 			);
 
 			// Get the widget.
-			$widget = GigyaReactions_Widget::getContent( $args, $instance );
+			$widget = Gigya_Reactions_Widget::getContent( $args, $instance );
 
 			// Set reactions widget position on post page.
 			switch ( $position ) {

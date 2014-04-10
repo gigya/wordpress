@@ -3,7 +3,7 @@
 /**
  * Adds reactionsWidget widget.
  */
-class GigyaReactions_Widget extends WP_Widget {
+class Gigya_Reactions_Widget extends WP_Widget {
 
 	/**
 	 * Register widget with WordPress.
@@ -12,7 +12,7 @@ class GigyaReactions_Widget extends WP_Widget {
 		$args = array(
 				'description' => __( 'Multiple providers Reactions buttons by Gigya' )
 		);
-		parent::__construct( 'GigyaReactions_Widget', __( 'Gigya Reactions' ), $args );
+		parent::__construct( 'Gigya_Reactions_Widget', __( 'Gigya Reactions' ), $args );
 	}
 
 	/**
