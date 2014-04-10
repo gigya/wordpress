@@ -42,3 +42,7 @@ input[type=checkbox] {
 #adminmenu .toplevel_page_gigya .wp-menu-image img {
 	padding: 0;
 }
+
+.widget-content .size input {
+	width: 100%;
+}

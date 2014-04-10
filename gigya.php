@@ -339,6 +339,13 @@ class GigyaAction {
 			require_once GIGYA__PLUGIN_DIR . 'features/gamification/GigyaGamificationWidget.php';
 			register_widget( 'Gigya_Gamification_Widget' );
 		}
+
+		// Feed Widget.
+		$feed_options = get_option( GIGYA__SETTINGS_FEED );
+		if ( ! empty( $feed_options['feed_plugin'] ) ) {
+			require_once GIGYA__PLUGIN_DIR . 'features/feed/GigyaFeedWidget.php';
+			register_widget( 'Gigya_Feed_Widget' );
+		}
 	}
 
 	/**
