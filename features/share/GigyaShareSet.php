@@ -56,6 +56,9 @@ class GigyaShareSet {
 			$params   = array_merge( $params, $advanced );
 		}
 
+		// Let others plugins to modify the share parameters.
+		$params = apply_filters( 'gigya_share_params', $params );
+
 		return $params;
 	}
 

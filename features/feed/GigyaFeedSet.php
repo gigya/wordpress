@@ -32,6 +32,9 @@ class GigyaFeedSet {
 				'siteName' => get_option( 'blogname', '' )
 		);
 
+		// Let others plugins to modify the comments parameters.
+		$params = apply_filters( 'gigya_feed_params', $params );
+
 		return $params;
 	}
 

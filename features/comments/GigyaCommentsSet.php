@@ -45,17 +45,17 @@ class GigyaCommentsSet {
 				'version'    => 2,
 		);
 
+		if ( ! empty( $this->comments_options['comments_advanced'] ) ) {
+			$advanced = gigyaCMS::parseJSON( _gigParam( $this->comments_options['comments_advanced'], '' ) );
+			$params   = array_merge( $params, $advanced );
+		}
+
 		// Let others plugins to modify the comments parameters.
 		// For example:
 		// $params['useSiteLogin'] = true;
 		// $params['onSiteLoginClicked'] = 'onSiteLoginHandler';
 		// To registering to the onSiteLoginClicked event.
-		$params = apply_filters( 'gigya_comments_params_alter', $params );
-
-		if ( ! empty( $this->comments_options['comments_advanced'] ) ) {
-			$advanced = gigyaCMS::parseJSON( _gigParam( $this->comments_options['comments_advanced'], '' ) );
-			$params   = array_merge( $params, $advanced );
-		}
+		$params = apply_filters( 'gigya_comments_params', $params );
 
 		return $params;
 	}

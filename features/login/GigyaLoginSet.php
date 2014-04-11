@@ -24,6 +24,19 @@ class GigyaLoginSet {
 		wp_enqueue_script( 'gigya_login_js', GIGYA__PLUGIN_URL . 'features/login/gigya_login.js' );
 		wp_enqueue_style( 'gigya_login_css', GIGYA__PLUGIN_URL . 'features/login/gigya_login.css' );
 
+		$params = $this->getParams();
+
+		// Load params to be available to client-side script.
+		wp_localize_script( 'gigya_login_js', 'gigyaLoginParams', $params );
+
+	}
+
+	/**
+	 * Generate the parameters for the login plugin.
+	 * @return array
+	 */
+	public function getParams() {
+
 		// Parameters to be sent to the DOM.
 		$params = array(
 				'actionLogin' => 'gigya_login',
@@ -65,8 +78,9 @@ class GigyaLoginSet {
 			}
 		}
 
-		// Load params to be available to client-side script.
-		wp_localize_script( 'gigya_login_js', 'gigyaLoginParams', $params );
+		// Let others plugins to modify the login parameters.
+		$params = apply_filters( 'gigya_login_params', $params );
 
+		return $params;
 	}
 }

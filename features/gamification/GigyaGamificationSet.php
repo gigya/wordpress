@@ -19,8 +19,8 @@ class GigyaGamificationSet {
 		if ( ! empty( $this->gm_options['notification'] ) ) {
 			$params = array();
 
-			// Let others plugins to modify the comments parameters.
-			$params = apply_filters( 'gigya_gamification_notification_params', $params );
+			// Let others plugins to modify the gmNotification parameters.
+			$params = apply_filters( 'gigya_gmNotification_params', $params );
 
 			// Load params to be available on client-side script.
 			wp_localize_script( 'gigya_gamification_js', 'gigyaGmNotificationParams', $params );
@@ -39,6 +39,9 @@ class GigyaGamificationSet {
 				'period'     => _gigParam( $this->gm_options['period'], '7days' ),
 				'totalCount' => _gigParam( $this->gm_options['totalCount'], '12' ),
 		);
+
+		// Let others plugins to modify the gamification parameters.
+		$params = apply_filters( 'gigya_gamification_params', $params );
 
 		return $params;
 	}

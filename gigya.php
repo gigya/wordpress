@@ -70,7 +70,6 @@ class GigyaAction {
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 		add_filter( 'the_content', array( $this, 'theContent' ) );
 		add_filter( 'comments_template', array( $this, 'commentsTemplate' ) );
-//		add_filter( 'login_redirect', array( $this, 'loginRedirect' ), 10, 3 );
 
 	}
 
@@ -93,6 +92,9 @@ class GigyaAction {
 				'logoutUrl'                   => wp_logout_url(),
 				'connectWithoutLoginBehavior' => _gigParam( $this->login_options['connectWithoutLoginBehavior'], 'loginExistingUser' )
 		);
+
+		// Let others plugins to modify the global parameters.
+		$params = apply_filters( 'gigya_global_params', $params );
 
 		// Load params to be available to client-side script.
 		wp_localize_script( 'gigya_js', 'gigyaParams', $params );
@@ -166,10 +168,6 @@ class GigyaAction {
 		$gigyaLoginAjax = new GigyaRaasAjax;
 		$gigyaLoginAjax->init();
 
-	}
-
-	public function loginRedirect( $redirect_to, $request, $user ) {
-//		return get_permalink();
 	}
 
 	/**
@@ -289,7 +287,6 @@ class GigyaAction {
 		} elseif ( $this->login_options['mode'] == 'raas' ) {
 			$gigyaCMS->deleteAccount( $user_id );
 		}
-
 	}
 
 	/**
@@ -501,4 +498,5 @@ function _gigya_get_json( $file ) {
 function _gigParam( $param, $default = null ) {
 	return ! empty( $param ) ? $param : $default;
 }
+
 // --------------------------------------------------------------------

@@ -24,6 +24,18 @@ class GigyaRaasSet {
 		wp_enqueue_script( 'gigya_raas_js', GIGYA__PLUGIN_URL . 'features/raas/gigya_raas.js' );
 		wp_enqueue_style( 'gigya_raas_css', GIGYA__PLUGIN_URL . 'features/raas/gigya_raas.css' );
 
+
+		// Load params to be available on client-side script.
+		wp_localize_script( 'gigya_raas_js', 'gigyaRaasParams', $params );
+
+	}
+
+	/**
+	 * Generate the parameters for the raas plugin.
+	 * @return array
+	 */
+	public function getParams() {
+
 		// Parameters to be sent to the DOM.
 		$params = array(
 
@@ -48,8 +60,9 @@ class GigyaRaasSet {
 				'raasProfileDiv'          => _gigParam( $this->login_options['raasProfileDiv'], 'profile-page' )
 		);
 
-		// Load params to be available on client-side script.
-		wp_localize_script( 'gigya_raas_js', 'gigyaRaasParams', $params );
+		// Let others plugins to modify the raas parameters.
+		$params = apply_filters( 'gigya_raas_params', $params );
 
+		return $params;
 	}
 }

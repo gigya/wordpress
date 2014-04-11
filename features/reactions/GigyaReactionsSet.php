@@ -70,6 +70,9 @@ class GigyaReactionsSet {
 			$params   = array_merge( $params, $advanced );
 		}
 
+		// Let others plugins to modify the reactions parameters.
+		$params = apply_filters( 'gigya_reactions_params', $params );
+
 		return $params;
 	}
 
