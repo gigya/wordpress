@@ -73,16 +73,14 @@ class Gigya_Gamification_Widget extends WP_Widget {
 
 		$form = array();
 
-		$gm_opts = array(
-				'game'         => 'Game status',
-				'challenge'    => 'Challenge Status',
-				'leaderboard'  => 'Leaderboard',
-				'achievements' => 'Achievements'
-		);
-
 		$form[$this->get_field_id( $type_name )] = array(
 				'type'    => 'select',
-				'options' => $gm_opts,
+				'options' => array(
+						'game'         => 'Game status',
+						'challenge'    => 'Challenge Status',
+						'leaderboard'  => 'Leaderboard',
+						'achievements' => 'Achievements'
+				),
 				'value'   => _gigParam( esc_attr( $instance[$type_name] ), 'game' ),
 				'label'   => __( 'Type' ),
 				'name'    => $this->get_field_name( $type_name )

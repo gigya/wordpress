@@ -88,17 +88,15 @@ class Gigya_Follow_Widget extends WP_Widget {
 				'name'  => $this->get_field_name( 'iconSize' )
 		);
 
-		$layout_opts = array(
-				'horizontal' => __( 'Horizontal' ),
-				'vertical'   => __( 'Vertical' )
-		);
-
 		$form[$this->get_field_id( 'layout' )] = array(
 				'type'    => 'select',
-				'options' => $layout_opts,
+				'options' => array(
+						'horizontal' => __( 'Horizontal' ),
+						'vertical'   => __( 'Vertical' )
+				),
 				'value'   => _gigParam( esc_attr( $instance['layout'] ), 'horizontal' ),
 				'label'   => __( 'Layout' ),
-				'class' => 'size',
+				'class'   => 'size',
 				'name'    => $this->get_field_name( 'layout' )
 		);
 

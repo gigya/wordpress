@@ -29,9 +29,9 @@ class GigyaReactionsSet {
 		global $post;
 
 		// Set image path.
-		$image_by = _gigParam( $this->reactions_options['reactions_image'], '0' );
+		$image_by = _gigParam( $this->reactions_options['image'], '0' );
 		if ( ! empty( $image_by ) ) {
-			$img = _gigParam( $this->reactions_options['reactions_image_url'], get_bloginfo( 'wpurl' ) . '/' . WPINC . '/images/blank.gif' );
+			$img = _gigParam( $this->reactions_options['imageURL'], get_bloginfo( 'wpurl' ) . '/' . WPINC . '/images/blank.gif' );
 		} else {
 			$img = $this->getImage( $post );
 		}
@@ -42,13 +42,13 @@ class GigyaReactionsSet {
 		// The parameters array.
 		$params = array(
 				'barID'             => $bar_id,
-				'layout'            => _gigParam( $this->reactions_options['reactions_layout'], 'horizontal' ),
-				'showCounts'        => _gigParam( $this->reactions_options['reactions_counts'], 'right' ),
-				'countType'         => _gigParam( $this->reactions_options['reactions_count_type'], 'right' ),
-				'enabledProviders'  => _gigParam( $this->reactions_options['reactions_providers'], 'reactions,facebook-like,google-plusone,twitter,email' ),
-				'multipleReactions' => _gigParam( $this->reactions_options['reactions_multiple'], 1 ),
-				'scope'             => _gigParam( $this->feed_options['feed_scope'], 'external' ),
-				'privacy'           => _gigParam( $this->feed_options['feed_privacy'], 'private' ),
+				'layout'            => _gigParam( $this->reactions_options['layout'], 'horizontal' ),
+				'showCounts'        => _gigParam( $this->reactions_options['showCounts'], 'right' ),
+				'countType'         => _gigParam( $this->reactions_options['countType'], 'right' ),
+				'enabledProviders'  => _gigParam( $this->reactions_options['enabledProviders'], 'reactions,facebook-like,google-plusone,twitter,email' ),
+				'multipleReactions' => _gigParam( $this->reactions_options['multipleReactions'], 1 ),
+				'scope'             => _gigParam( $this->feed_options['scope'], 'external' ),
+				'privacy'           => _gigParam( $this->feed_options['privacy'], 'private' ),
 				'context'           => array( 'id' => $bar_id ),
 				'ua'                => array(
 						'linkBack'  => esc_url( apply_filters( 'the_permalink', get_permalink() ) ),
@@ -59,14 +59,14 @@ class GigyaReactionsSet {
 		);
 
 		// Add reactions buttons parameters if exist.
-		if ( ! empty( $this->reactions_options['reactions_buttons'] ) ) {
-			$buttons             = gigyaCMS::parseJSON( _gigParam( $this->reactions_options['reactions_buttons'], _gigya_get_json( 'admin/forms/json/default_reaction' ) ) );
+		if ( ! empty( $this->reactions_options['buttons'] ) ) {
+			$buttons             = gigyaCMS::parseJSON( _gigParam( $this->reactions_options['buttons'], _gigya_get_json( 'admin/forms/json/default_reaction' ) ) );
 			$params['reactions'] = $buttons;
 		}
 
 		// Add advanced parameters if exist.
-		if ( ! empty( $this->reactions_options['reactions_advanced'] ) ) {
-			$advanced = gigyaCMS::parseJSON( _gigParam( $this->reactions_options['reactions_advanced'], '' ) );
+		if ( ! empty( $this->reactions_options['advanced'] ) ) {
+			$advanced = gigyaCMS::parseJSON( _gigParam( $this->reactions_options['advanced'], '' ) );
 			$params   = array_merge( $params, $advanced );
 		}
 
@@ -81,7 +81,7 @@ class GigyaReactionsSet {
 	 * @return string
 	 */
 	public function setDefaultPosition( $content ) {
-		$position = $this->reactions_options['reactions_position'];
+		$position = $this->reactions_options['position'];
 		if ( ! empty( $position ) && $position != 'none' ) {
 
 			// Get the reactions widget content.

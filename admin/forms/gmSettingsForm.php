@@ -6,33 +6,31 @@ function gmSettingsForm() {
 	$values = get_option( GIGYA__SETTINGS_GM );
 	$form   = array();
 
-	$form['gamification_plugin'] = array(
+	$form['on'] = array(
 			'type'  => 'checkbox',
 			'label' => __( 'Enable Gamification plugin' ),
-			'value' => _gigParam( $values['gamification_plugin'], 0 )
+			'value' => _gigParam( $values['on'], 0 )
 	);
 
-	$form['gamification_notification'] = array(
+	$form['notification'] = array(
 			'type'  => 'checkbox',
 			'label' => __( 'Enable Notifications' ),
-			'value' => _gigParam( $values['gamification_notification'], 0 )
+			'value' => _gigParam( $values['notification'], 0 )
 	);
 
-	$gm_leadebloard_opts = array(
-			"7days" => __( "7 Days" ),
-			"all"   => __( "All" )
-	);
-
-	$form['gamification_period'] = array(
+	$form['period'] = array(
 			'type'    => 'select',
-			'options' => $gm_leadebloard_opts,
-			'value'   => _gigParam( $values['gamification_plugin'], '7days' ),
+			'options' => array(
+					"7days" => __( "7 Days" ),
+					"all"   => __( "All" )
+			),
+			'value'   => _gigParam( $values['period'], '7days' ),
 			'label'   => __( 'Leaderboard time period' ),
 	);
 
-	$form['gamification_count'] = array(
+	$form['totalCount'] = array(
 			'type'  => 'text',
-			'value' => _gigParam( $values['gamification_plugin'], '12' ),
+			'value' => _gigParam( $values['totalCount'], '12' ),
 			'label' => __( 'Leaderboard user count' ),
 			'desc'  => __( 'Valid values are between 1 to 23' )
 	);

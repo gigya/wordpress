@@ -28,9 +28,9 @@ class GigyaShareSet {
 		global $post;
 
 		// Set image path.
-		$image_by = _gigParam( $this->share_options['share_image'], '0' );
+		$image_by = _gigParam( $this->share_options['image'], '0' );
 		if ( ! empty( $image_by ) ) {
-			$img = _gigParam( $this->share_options['share_image_url'], get_bloginfo( 'wpurl' ) . '/' . WPINC . '/images/blank.gif' );
+			$img = _gigParam( $this->share_options['imageURL'], get_bloginfo( 'wpurl' ) . '/' . WPINC . '/images/blank.gif' );
 		} else {
 			$img = $this->getImage( $post );
 		}
@@ -38,10 +38,10 @@ class GigyaShareSet {
 		// The parameters array.
 		$params = array(
 //				'postId'       => get_the_ID(),
-				'layout'       => _gigParam( $this->share_options['share_layout'], 'horizontal' ),
-				'showCounts'   => _gigParam( $this->share_options['share_counts'], 'right' ),
-				'shareButtons' => _gigParam( $this->share_options['share_providers'], 'share,facebook-like,google-plusone,twitter,email' ),
-				'shortURLs'    => ! empty( $this->share_options['share_short_url'] ) ? 'always' : 'never',
+				'layout'       => _gigParam( $this->share_options['layout'], 'horizontal' ),
+				'showCounts'   => _gigParam( $this->share_options['showCounts'], 'right' ),
+				'shareButtons' => _gigParam( $this->share_options['shareButtons'], 'share,facebook-like,google-plusone,twitter,email' ),
+				'shortURLs'    => ! empty( $this->share_options['shortURLs'] ) ? 'always' : 'never',
 				'ua'           => array(
 						'linkBack'  => esc_url( apply_filters( 'the_permalink', get_permalink() ) ),
 						'postTitle' => get_the_title(),
@@ -51,8 +51,8 @@ class GigyaShareSet {
 		);
 
 		// Add advanced parameters if exist.
-		if ( ! empty( $this->share_options['share_advanced'] ) ) {
-			$advanced = gigyaCMS::parseJSON( _gigParam( $this->share_options['share_advanced'], '' ) );
+		if ( ! empty( $this->share_options['advanced'] ) ) {
+			$advanced = gigyaCMS::parseJSON( _gigParam( $this->share_options['advanced'], '' ) );
 			$params   = array_merge( $params, $advanced );
 		}
 
@@ -67,7 +67,7 @@ class GigyaShareSet {
 	 * @return string
 	 */
 	public function setDefaultPosition( $content ) {
-		$position = $this->share_options['share_position'];
+		$position = $this->share_options['position'];
 		if ( ! empty( $position ) && $position != 'none' ) {
 
 			// Get the share widget content.

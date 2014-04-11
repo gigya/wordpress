@@ -25,12 +25,12 @@
     }
 
     // Set user management page at page load.
-    $( '#gigya_login_mode input' ).each( function () {
+    $( '#gigya_mode input' ).each( function () {
       userManagementPage( $( this ) );
     } );
 
     // Set user management page at modes manually change.
-    $( 'input:radio[name="gigya_login_settings[login_mode]"]' ).change( function () {
+    $( 'input:radio[name="gigya_login_settings[mode]"]' ).change( function () {
       userManagementPage( $( this ) );
     } );
 
@@ -67,7 +67,7 @@
     } );
 
     // Validate JSON before submit on widget form.
-    var submitEl = $( '.textarea.json' ).parents('form' ).find('input[type="submit"]')
+    var submitEl = $( '.textarea.json' ).parents( 'form' ).find( 'input[type="submit"]' )
     submitEl.on( 'click', function ( e ) {
       $( '.textarea.json textarea' ).each( function () {
         jsonValidate( $( this ), e );
@@ -90,16 +90,9 @@
 
 // --------------------------------------------------------------------
 
-    // Conditional settings reactions image url field.
-    var check = $( 'input:checkbox[name="gigya_reactions_settings[reactions_image]"]' );
-    var textfield = $( 'input#gigya_reactions_image_url' ).parent( '.text-field ' );
-    conditionalSettingsField( check, textfield );
-
-// --------------------------------------------------------------------
-
-    // Conditional settings share image url field.
-    var check = $( 'input:checkbox[name="gigya_share_settings[share_image]"]' );
-    var textfield = $( 'input#gigya_share_image_url' ).parent( '.text-field ' );
+    // Conditional settings share/reactions image url field.
+    var check = $( 'input:checkbox[name="gigya_share_settings[image]"], input:checkbox[name="gigya_reactions_settings[image]"]' );
+    var textfield = $( 'input#gigya_imageURL' ).parent( '.text-field ' );
     conditionalSettingsField( check, textfield );
 
 // --------------------------------------------------------------------

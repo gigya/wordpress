@@ -27,37 +27,37 @@ class GigyaLoginSet {
 		// Parameters to be sent to the DOM.
 		$params = array(
 				'actionLogin' => 'gigya_login',
-				'redirect'    => _gigParam( $this->login_options['login_redirect'], user_admin_url() ),
+				'redirect'    => _gigParam( $this->login_options['redirect'], user_admin_url() ),
 		);
 
 		$params['ui']                  = array();
 		$params['ui']['showTermsLink'] = false;
 
-		if ( ! empty ( $this->login_options['login_width'] ) ) {
-			$params['ui']['width'] = $this->login_options['login_width'];
+		if ( ! empty ( $this->login_options['width'] ) ) {
+			$params['ui']['width'] = $this->login_options['width'];
 		}
-		if ( ! empty ( $this->login_options['login_height'] ) ) {
-			$params['ui']['height'] = $this->login_options['login_height'];
+		if ( ! empty ( $this->login_options['height'] ) ) {
+			$params['ui']['height'] = $this->login_options['height'];
 		}
-		if ( ! empty ( $this->login_options['login_term_link'] ) ) {
-			$params['ui']['showTermsLink'] = $this->login_options['login_term_link'];
+		if ( ! empty ( $this->login_options['showTermsLink'] ) ) {
+			$params['ui']['showTermsLink'] = $this->login_options['showTermsLink'];
 		}
-		if ( ! empty ( $this->login_options['login_providers'] ) ) {
-			$params['ui']['enabledProviders'] = $this->login_options['login_providers'];
+		if ( ! empty ( $this->login_options['enabledProviders'] ) ) {
+			$params['ui']['enabledProviders'] = $this->login_options['enabledProviders'];
 		}
-		if ( ! empty ( $this->login_options['login_button_style'] ) ) {
-			$params['ui']['buttonsStyle'] = $this->login_options['login_button_style'];
+		if ( ! empty ( $this->login_options['buttonsStyle'] ) ) {
+			$params['ui']['buttonsStyle'] = $this->login_options['buttonsStyle'];
 		}
-		if ( ! empty ( $this->login_options['login_ui'] ) ) {
-			$arr = gigyaCMS::parseJSON( $this->login_options['login_ui'] );
+		if ( ! empty ( $this->login_options['advancedLoginUI'] ) ) {
+			$arr = gigyaCMS::parseJSON( $this->login_options['advancedLoginUI'] );
 			if ( ! empty( $arr ) ) {
 				foreach ( $arr as $key => $val ) {
 					$params['ui'][$key] = $val;
 				}
 			}
 		}
-		if ( ! empty ( $this->login_options['login_add_connection_custom'] ) ) {
-			$arr = gigyaCMS::parseJSON( $this->login_options['login_add_connection_custom'] );
+		if ( ! empty ( $this->login_options['advancedAddConnectionsUI'] ) ) {
+			$arr = gigyaCMS::parseJSON( $this->login_options['advancedAddConnectionsUI'] );
 			if ( ! empty( $arr ) ) {
 				foreach ( $arr as $key => $val ) {
 					$params['addConnection'][$key] = $val;

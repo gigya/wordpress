@@ -144,9 +144,9 @@ class GigyaSettings {
 		if ( isset( $post['gigya_login_settings'] ) ) {
 			// When we turn on the Gigya's social login plugin,
 			// We also turn on the WP 'Membership: Anyone can register' option.
-			if ( $post['gigya_login_settings']['login_mode'] == 'wp_sl' ) {
+			if ( $post['gigya_login_settings']['mode'] == 'wp_sl' ) {
 				update_option( 'users_can_register', 1 );
-			} elseif ( $post['gigya_login_settings']['login_mode'] == 'raas' ) {
+			} elseif ( $post['gigya_login_settings']['mode'] == 'raas' ) {
 				update_option( 'users_can_register', 0 );
 			}
 		}

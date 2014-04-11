@@ -6,57 +6,53 @@ function feedSettingsForm() {
 	$values = get_option( GIGYA__SETTINGS_FEED );
 	$form   = array();
 
-	$form['feed_plugin'] = array(
+	$form['on'] = array(
 			'type'  => 'checkbox',
 			'label' => __( 'Enable Activity Feed' ),
-			'value' => _gigParam( $values['feed_plugin'], 0 )
+			'value' => _gigParam( $values['on'], 0 )
 	);
 
-	$feed_privacy_opts = array(
-			"private" => __( "Private" ),
-			"public"  => __( "Public" ),
-			"friends" => __( "Friends" )
-	);
-
-	$form['feed_privacy'] = array(
+	$form['privacy'] = array(
 			'type'    => 'select',
-			'options' => $feed_privacy_opts,
-			'value'   => _gigParam( $values['feed_privacy'], 'private' ),
+			'options' => array(
+					"private" => __( "Private" ),
+					"public"  => __( "Public" ),
+					"friends" => __( "Friends" )
+			),
+			'value'   => _gigParam( $values['privacy'], 'private' ),
 			'label'   => __( 'Activity Feed privacy level' ),
 	);
 
-	$feed_scope_opts = array(
-			"both"     => __( "both" ),
-			"external" => __( "External" )
-	);
-
-	$form['feed_scope'] = array(
+	$form['scope'] = array(
 			'type'    => 'select',
-			'options' => $feed_scope_opts,
-			'value'   => _gigParam( $values['feed_scope'], 'external' ),
+			'options' => array(
+					"both"     => __( "both" ),
+					"external" => __( "External" )
+			),
+			'value'   => _gigParam( $values['scope'], 'external' ),
 			'label'   => __( 'Enable Sharing to Activity Feed' ),
 			'desc'    => __( 'When publishing feed items, like comment and reactions, by default the feed items are published to social networks only and will not appear<br> on the site\'s Activity Feed plugin ("External"). To change this behavior, you must change the publish scope to "Both"' )
 	);
 
-	$form['feed_tabs'] = array(
+	$form['tabOrder'] = array(
 			'type'  => 'text',
 			'label' => __( 'Tabs and order' ),
-			'value' => _gigParam( $values['feed_tabs'], 'everyone,friends,me' ),
+			'value' => _gigParam( $values['tabOrder'], 'everyone,friends,me' ),
 			'desc'  => __( 'A comma delimited list of tabs names that defines which tabs to show and the tabs order. The optional tabs names are: "everyone", "friends", "me".' )
 	);
 
-	$form['feed_width'] = array(
+	$form['width'] = array(
 			'type'  => 'text',
 			'label' => __( 'Custom Width' ),
-			'value' => _gigParam( $values['feed_width'], '170' ),
+			'value' => _gigParam( $values['width'], '170' ),
 			'desc'  => __( 'The width of the plugin in px' ),
 			'class' => 'size'
 	);
 
-	$form['feed_height'] = array(
+	$form['height'] = array(
 			'type'  => 'text',
 			'label' => __( 'Custom Height' ),
-			'value' => _gigParam( $values['feed_height'], '270' ),
+			'value' => _gigParam( $values['height'], '270' ),
 			'desc'  => __( 'The height of the plugin in px' ),
 			'class' => 'size'
 	);

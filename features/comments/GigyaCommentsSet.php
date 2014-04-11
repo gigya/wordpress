@@ -37,11 +37,11 @@ class GigyaCommentsSet {
 	 */
 	public function getParams() {
 		$params = array(
-				'categoryID' => _gigParam( $this->comments_options['comments_cat_id'], '' ),
-				'rating'     => _gigParam( $this->comments_options['comments_rating'], 0 ),
+				'categoryID' => _gigParam( $this->comments_options['categoryID'], '' ),
+				'rating'     => _gigParam( $this->comments_options['rating'], 0 ),
 				'streamID'   => get_the_ID(),
-				'scope'      => _gigParam( $this->feed_options['feed_scope'], 'external' ),
-				'privacy'    => _gigParam( $this->feed_options['feed_privacy'], 'private' ),
+				'scope'      => _gigParam( $this->feed_options['scope'], 'external' ),
+				'privacy'    => _gigParam( $this->feed_options['privacy'], 'private' ),
 				'version'    => 2,
 		);
 

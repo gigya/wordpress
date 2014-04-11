@@ -72,34 +72,30 @@ class Gigya_Feed_Widget extends WP_Widget {
 	 */
 	public function form( $instance ) {
 
-		$feed_tabs   = 'tabOrder';
-		$feed_width  = 'width';
-		$feed_height = 'height';
-
 		$form = array();
 
-		$form[$this->get_field_id( $feed_tabs )] = array(
+		$form[$this->get_field_id( 'tabOrder' )] = array(
 				'type'  => 'text',
-				'value' => _gigParam( esc_attr( $instance[$feed_tabs] ), '' ),
+				'value' => _gigParam( esc_attr( $instance['tabOrder'] ), '' ),
 				'label' => __( 'Tabs override:' ),
 				'class' => 'size',
-				'name'  => $this->get_field_name( $feed_tabs )
+				'name'  => $this->get_field_name( 'tabOrder' )
 		);
 
-		$form[$this->get_field_id( $feed_width )] = array(
+		$form[$this->get_field_id( 'width' )] = array(
 				'type'  => 'text',
-				'value' => _gigParam( esc_attr( $instance[$feed_width] ), '' ),
+				'value' => _gigParam( esc_attr( $instance['width'] ), '' ),
 				'label' => __( 'Width override:' ),
 				'class' => 'size',
-				'name'  => $this->get_field_name( $feed_width )
+				'name'  => $this->get_field_name( 'width' )
 		);
 
-		$form[$this->get_field_id( $feed_height )] = array(
+		$form[$this->get_field_id( 'height' )] = array(
 				'type'  => 'text',
-				'value' => _gigParam( esc_attr( $instance[$feed_height] ), '' ),
+				'value' => _gigParam( esc_attr( $instance['height'] ), '' ),
 				'label' => __( 'Height override:' ),
 				'class' => 'size',
-				'name'  => $this->get_field_name( $feed_height )
+				'name'  => $this->get_field_name( 'height' )
 		);
 
 		echo _gigya_form_render( $form );

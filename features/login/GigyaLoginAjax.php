@@ -130,7 +130,7 @@ class GigyaLoginAjax {
 
 		// When the admin checked to
 		// show the entire registration form to the user.
-		if ( $this->login_options['login_extra'] ) {
+		if ( $this->login_options['registerExtra'] ) {
 			$this->registerExtra();
 		}
 

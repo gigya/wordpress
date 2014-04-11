@@ -9,7 +9,7 @@ NOT defined in the file, and you MUST define in your code.
 
 ### For instance:
 // Gigya CMS
-		define( 'GIGYA__API_KEY', $this->options['global_api_key'] );
-		define( 'GIGYA__API_SECRET', $this->options['global_api_secret'] );
-		define( 'GIGYA__API_DOMAIN', $this->options['global_data_center'] );
+		define( 'GIGYA__API_KEY', $this->options['api_key'] );
+		define( 'GIGYA__API_SECRET', $this->options['api_secret'] );
+		define( 'GIGYA__API_DOMAIN', $this->options['data_center'] );
 		define( 'GIGYA__API_DEBUG', $this->options['login_gigya_debug'] );

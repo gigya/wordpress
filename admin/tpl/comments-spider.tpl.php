@@ -4,7 +4,7 @@
  */
 $comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
 $params = array(
-		'categoryID' => $comments_options['comments_cat_id'],
+		'categoryID' => $comments_options['categoryID'],
 		'streamID'   => get_the_ID(),
 		'dataFormat' => 'html'
 );

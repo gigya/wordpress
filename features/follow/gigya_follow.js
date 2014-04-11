@@ -13,13 +13,13 @@
       // Get the data.
       var dataEl = $( '#' + id ).next( 'script.data-follow' );
       var gigyaFollowParams = JSON.parse( dataEl.text() );
-      gigyaFollowParams.buttons = JSON.parse(gigyaFollowParams.buttons);
+      gigyaFollowParams.buttons = JSON.parse( gigyaFollowParams.buttons );
       // Define the Follow Bar Plugin params object.
       var params = $.extend( true, {}, gigyaFollowParams );
       params.containerID = id;
       params.onError = GigyaWp.errHandle;
 
-      // Load the gamification block Plugin.
+      // Load the follow bar block Plugin.
       gigya.socialize.showFollowBarUI( params );
 
     };
