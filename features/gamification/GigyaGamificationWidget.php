@@ -10,7 +10,7 @@ class Gigya_Gamification_Widget extends WP_Widget {
 	 */
 	function __construct() {
 		$args = array(
-				'description' => __( 'Gigya Gamification' )
+				'description' => __( 'Gamification by Gigya' )
 		);
 		parent::__construct( 'Gigya_Gamification_Widget', __( 'Gigya Gamification' ), $args );
 	}

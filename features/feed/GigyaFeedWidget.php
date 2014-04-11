@@ -10,7 +10,7 @@ class Gigya_Feed_Widget extends WP_Widget {
 	 */
 	function __construct() {
 		$args = array(
-				'description' => __( 'Gigya Activity Feed' )
+				'description' => __( 'Activity Feed block by Gigya' )
 		);
 		parent::__construct( 'Gigya_Feed_Widget', __( 'Gigya Activity Feed' ), $args );
 	}

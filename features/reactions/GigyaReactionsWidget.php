@@ -10,7 +10,7 @@ class Gigya_Reactions_Widget extends WP_Widget {
 	 */
 	function __construct() {
 		$args = array(
-				'description' => __( 'Multiple providers Reactions buttons by Gigya' )
+				'description' => __( 'Reactions buttons bar by Gigya' )
 		);
 		parent::__construct( 'Gigya_Reactions_Widget', __( 'Gigya Reactions' ), $args );
 	}

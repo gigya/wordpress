@@ -316,7 +316,7 @@ class GigyaAction {
 		$share_options = get_option( GIGYA__SETTINGS_SHARE );
 		if ( ! empty( $share_options['share_plugin'] ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareWidget.php';
-			register_widget( 'GigyaShare_Widget' );
+			register_widget( 'Gigya_Share_Widget' );
 		}
 
 		// Comment Widget.
@@ -333,19 +333,23 @@ class GigyaAction {
 			register_widget( 'Gigya_Reactions_Widget' );
 		}
 
-		// Gemification Widget.
+		// Gamification Widget.
 		$gm_options = get_option( GIGYA__SETTINGS_GM );
 		if ( ! empty( $gm_options['gamification_plugin'] ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/gamification/GigyaGamificationWidget.php';
 			register_widget( 'Gigya_Gamification_Widget' );
 		}
 
-		// Feed Widget.
+		// Activity Feed Widget.
 		$feed_options = get_option( GIGYA__SETTINGS_FEED );
 		if ( ! empty( $feed_options['feed_plugin'] ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/feed/GigyaFeedWidget.php';
 			register_widget( 'Gigya_Feed_Widget' );
 		}
+
+		// Follow Bar Widget.
+		require_once GIGYA__PLUGIN_DIR . 'features/follow/GigyaFollowWidget.php';
+		register_widget( 'Gigya_Follow_Widget' );
 	}
 
 	/**

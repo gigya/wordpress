@@ -3,16 +3,16 @@
 /**
  * Adds shareWidget widget.
  */
-class GigyaShare_Widget extends WP_Widget {
+class Gigya_Share_Widget extends WP_Widget {
 
 	/**
 	 * Register widget with WordPress.
 	 */
 	function __construct() {
 		$args = array(
-				'description' => __( 'Multiple providers Share buttons by Gigya' )
+				'description' => __( 'Multiple providers Share buttons bar by Gigya' )
 		);
-		parent::__construct( 'GigyaShare_Widget', __( 'Gigya Share' ), $args );
+		parent::__construct( 'Gigya_Share_Widget', __( 'Gigya Share' ), $args );
 	}
 
 	/**

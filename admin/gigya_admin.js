@@ -52,15 +52,24 @@
         } catch ( err ) {
           textField.after( '<div class="msg error">' + err + '</div>' );
           textField.addClass( 'error' );
-          e.preventDefault()
+          e.preventDefault();
+          e.stopPropagation();
         }
       }
 
     }
 
-    // Validate JSON before submit
+    // Validate JSON before submit on settings form.
     $( 'form.gigya-settings' ).on( 'submit', function ( e ) {
       $( 'form.gigya-settings textarea' ).each( function () {
+        jsonValidate( $( this ), e );
+      } )
+    } );
+
+    // Validate JSON before submit on widget form.
+    var submitEl = $( '.textarea.json' ).parents('form' ).find('input[type="submit"]')
+    submitEl.on( 'click', function ( e ) {
+      $( '.textarea.json textarea' ).each( function () {
         jsonValidate( $( this ), e );
       } )
     } );
