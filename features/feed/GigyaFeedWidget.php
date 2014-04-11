@@ -74,6 +74,14 @@ class Gigya_Feed_Widget extends WP_Widget {
 
 		$form = array();
 
+		$form[$this->get_field_id( 'title' )] = array(
+				'type'  => 'text',
+				'value' => _gigParam( esc_attr( $instance['title'] ), '' ),
+				'label' => __( 'Title' ),
+				'class' => 'size',
+				'name'  => $this->get_field_name( 'title' )
+		);
+
 		$form[$this->get_field_id( 'tabOrder' )] = array(
 				'type'  => 'text',
 				'value' => _gigParam( esc_attr( $instance['tabOrder'] ), '' ),
@@ -112,6 +120,8 @@ class Gigya_Feed_Widget extends WP_Widget {
 	 * @return array Updated safe values to be saved.
 	 */
 	public function update( $new_instance, $old_instance ) {
+		$new_instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
+
 		return $new_instance;
 	}
 

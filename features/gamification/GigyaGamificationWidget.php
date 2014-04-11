@@ -68,12 +68,17 @@ class Gigya_Gamification_Widget extends WP_Widget {
 	 */
 	public function form( $instance ) {
 
-		$type_name  = 'gamification_type';
-		$width_name = 'gamification_width';
-
 		$form = array();
 
-		$form[$this->get_field_id( $type_name )] = array(
+		$form[$this->get_field_id( 'title' )] = array(
+				'type'  => 'text',
+				'value' => _gigParam( esc_attr( $instance['title'] ), '' ),
+				'label' => __( 'Title' ),
+				'class' => 'size',
+				'name'  => $this->get_field_name( 'title' )
+		);
+
+		$form[$this->get_field_id( 'type' )] = array(
 				'type'    => 'select',
 				'options' => array(
 						'game'         => 'Game status',
@@ -81,17 +86,17 @@ class Gigya_Gamification_Widget extends WP_Widget {
 						'leaderboard'  => 'Leaderboard',
 						'achievements' => 'Achievements'
 				),
-				'value'   => _gigParam( esc_attr( $instance[$type_name] ), 'game' ),
+				'value'   => _gigParam( esc_attr( $instance['type'] ), 'game' ),
 				'label'   => __( 'Type' ),
-				'name'    => $this->get_field_name( $type_name )
+				'name'    => $this->get_field_name( 'type' )
 		);
 
-		$form[$this->get_field_id( $width_name )] = array(
+		$form[$this->get_field_id( 'width' )] = array(
 				'type'  => 'text',
-				'value' => _gigParam( esc_attr( $instance[$width_name] ), '200' ),
+				'value' => _gigParam( esc_attr( $instance['width'] ), '200' ),
 				'label' => __( 'Width' ),
 				'class' => 'size',
-				'name'  => $this->get_field_name( $width_name )
+				'name'  => $this->get_field_name( 'width' )
 		);
 
 		echo _gigya_form_render( $form );
@@ -108,6 +113,8 @@ class Gigya_Gamification_Widget extends WP_Widget {
 	 * @return array Updated safe values to be saved.
 	 */
 	public function update( $new_instance, $old_instance ) {
+		$new_instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
+
 		return $new_instance;
 	}
 

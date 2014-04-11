@@ -69,21 +69,20 @@ class Gigya_Share_Widget extends WP_Widget {
 	 *
 	 * @return string|void
 	 */
-//	public function form( $instance ) {
-//		if ( isset( $instance['title'] ) ) {
-//			$title = $instance['title'];
-//		} else {
-//			$title = __( 'New title' );
-//		}
-//
-//		$output = '';
-//		$output .= '<p>';
-//		$output .= '<label for="' . $this->get_field_id( 'title' ) . '">' . __( 'Title:' ) . '</label>';
-//		$output .= '<input class="widefat" id="' . $this->get_field_id( 'title' ) . '" name="' . $this->get_field_name( 'title' ) . '" type="text" value="' . esc_attr( $title ) . '">';
-//		$output .= '</p>';
-//
-//		echo $output;
-//	}
+	public function form( $instance ) {
+
+		$form = array();
+
+		$form[$this->get_field_id( 'title' )] = array(
+				'type'  => 'text',
+				'value' => _gigParam( esc_attr( $instance['title'] ), '' ),
+				'label' => __( 'Title' ),
+				'class' => 'size',
+				'name'  => $this->get_field_name( 'title' )
+		);
+
+		echo _gigya_form_render( $form );
+	}
 
 	/**
 	 * Sanitize widget form values as they are saved.
@@ -95,11 +94,10 @@ class Gigya_Share_Widget extends WP_Widget {
 	 *
 	 * @return array Updated safe values to be saved.
 	 */
-//	public function update( $new_instance, $old_instance ) {
-//		$instance          = array();
-//		$instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
-//
-//		return $instance;
-//	}
+	public function update( $new_instance, $old_instance ) {
+		$new_instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
+
+		return $new_instance;
+	}
 
 }
