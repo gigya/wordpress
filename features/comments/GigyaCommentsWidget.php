@@ -42,7 +42,7 @@ class GigyaComments_Widget extends WP_Widget {
 			$output .= $args['before_title'] . $title . $args['after_title'];
 		}
 
-		$output .= _gigya_render_tpl('admin/tpl/comments.tpl.php');
+		$output .= _gigya_render_tpl( 'admin/tpl/comments.tpl.php' );
 		$output .= $args['after_widget'];
 
 		return $output;

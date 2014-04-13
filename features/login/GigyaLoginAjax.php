@@ -136,8 +136,8 @@ class GigyaLoginAjax {
 		}
 
 		// Register a new user to WP with params from Gigya.
-		$name    = $this->gigya_user['nickname'];
-		$email   = $this->gigya_user['email'];
+		$name  = $this->gigya_user['nickname'];
+		$email = $this->gigya_user['email'];
 
 		// Hook just before register new user from Gigya Social Login.
 		do_action( 'gigya_before_social_register', $name, $email );

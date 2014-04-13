@@ -14,38 +14,38 @@ class GigyaInstall {
 		// on each request. This behavior can not be change in update_option() function.
 		// So, on installation we initialize our records with the desired value of autoload.
 		$this->global_options = get_option( GIGYA__SETTINGS_GLOBAL );
-		if (empty ($this->global_options)) {
-			add_option( GIGYA__SETTINGS_GLOBAL, array(), null,  'yes');
+		if ( empty ( $this->global_options ) ) {
+			add_option( GIGYA__SETTINGS_GLOBAL, array(), '', 'yes' );
 		}
 
 		$this->login_options = get_option( GIGYA__SETTINGS_LOGIN );
-		if (empty ($this->login_options)) {
-			add_option( GIGYA__SETTINGS_LOGIN, array(), null,  'yes');
+		if ( empty ( $this->login_options ) ) {
+			add_option( GIGYA__SETTINGS_LOGIN, array(), '', 'yes' );
 		}
 
 		$this->share_options = get_option( GIGYA__SETTINGS_SHARE );
-		if (empty ($this->share_options)) {
-			add_option( GIGYA__SETTINGS_SHARE, array(), null,  'no');
+		if ( empty ( $this->share_options ) ) {
+			add_option( GIGYA__SETTINGS_SHARE, array(), '', 'no' );
 		}
 
 		$this->comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
-		if (empty ($this->comments_options)) {
-			add_option( GIGYA__SETTINGS_COMMENTS, array(), null,  'no');
+		if ( empty ( $this->comments_options ) ) {
+			add_option( GIGYA__SETTINGS_COMMENTS, array(), '', 'no' );
 		}
 
 		$this->reactions_options = get_option( GIGYA__SETTINGS_REACTIONS );
-		if (empty ($this->reactions_options)) {
-			add_option( GIGYA__SETTINGS_REACTIONS, array(), null,  'no');
+		if ( empty ( $this->reactions_options ) ) {
+			add_option( GIGYA__SETTINGS_REACTIONS, array(), '', 'no' );
 		}
 
 		$this->gm_options = get_option( GIGYA__SETTINGS_GM );
-		if (empty ($this->gm_options)) {
-			add_option( GIGYA__SETTINGS_GM, array(), null,  'no');
+		if ( empty ( $this->gm_options ) ) {
+			add_option( GIGYA__SETTINGS_GM, array(), '', 'no' );
 		}
 
 		$this->feed_options = get_option( GIGYA__SETTINGS_FEED );
-		if (empty ($this->feed_options)) {
-			add_option( GIGYA__SETTINGS_FEED, array(), null,  'no');
+		if ( empty ( $this->feed_options ) ) {
+			add_option( GIGYA__SETTINGS_FEED, array(), '', 'no' );
 		}
 
 	}
@@ -54,23 +54,26 @@ class GigyaInstall {
 
 		// Load v4.0 options
 		$old = get_option( 'gigya_settings_fields' );
-		if ( empty( $old ) ) {
-			return;
+		if ( ! empty( $old ) ) {
+
+			// Update new structure with
+			// old values if exist.
+			$this->upgradeGlobal( $old );
+			$this->upgradeLogin( $old );
+			$this->upgradeShare( $old );
+			$this->upgradeComments( $old );
+			$this->upgradeReactions( $old );
+			$this->upgradeGamification( $old );
+
 		}
 
-		// Update new structure with
-		// old values if exist.
-		$this->upgradeGlobal( $old );
-		$this->upgradeLogin( $old );
-		$this->upgradeShare( $old );
-		$this->upgradeComments( $old );
-		$this->upgradeReactions( $old );
-		$this->upgradeGamification( $old );
+		delete_option( 'gigya_settings_fields' );
 
 	}
 
 	/**
 	 * Upgrade Global options.
+	 *
 	 * @param $old
 	 */
 	private function upgradeGlobal( $old ) {
@@ -89,6 +92,7 @@ class GigyaInstall {
 
 	/**
 	 * upgrade Login options.
+	 *
 	 * @param $old
 	 */
 	private function upgradeLogin( $old ) {
@@ -109,6 +113,7 @@ class GigyaInstall {
 
 	/**
 	 * Upgrade Share options.
+	 *
 	 * @param $old
 	 */
 	private function upgradeShare( $old ) {
@@ -130,6 +135,7 @@ class GigyaInstall {
 
 	/**
 	 * Upgrade Comments options.
+	 *
 	 * @param $old
 	 */
 	private function upgradeComments( $old ) {
@@ -143,6 +149,7 @@ class GigyaInstall {
 
 	/**
 	 * Upgrade Reactions options.
+	 *
 	 * @param $old
 	 */
 	private function upgradeReactions( $old ) {
@@ -162,6 +169,7 @@ class GigyaInstall {
 
 	/**
 	 * Upgrade Gamification options.
+	 *
 	 * @param $old
 	 */
 	private function upgradeGamification( $old ) {
