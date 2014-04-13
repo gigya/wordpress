@@ -3,7 +3,7 @@
 /**
  * Adds followWidget widget.
  */
-class Gigya_Follow_Widget extends WP_Widget {
+class GigyaFollow_Widget extends WP_Widget {
 
 	/**
 	 * Register widget with WordPress.
@@ -12,7 +12,7 @@ class Gigya_Follow_Widget extends WP_Widget {
 		$args = array(
 				'description' => __( 'Multiple providers Follow Bar buttons by Gigya' )
 		);
-		parent::__construct( 'Gigya_Follow_Widget', __( 'Gigya Follow Bar' ), $args );
+		parent::__construct( 'gigya_follow', __( 'Gigya Follow Bar' ), $args );
 	}
 
 	/**

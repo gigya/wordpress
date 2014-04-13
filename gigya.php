@@ -324,40 +324,40 @@ class GigyaAction {
 		$share_options = get_option( GIGYA__SETTINGS_SHARE );
 		if ( ! empty( $share_options['on'] ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareWidget.php';
-			register_widget( 'Gigya_Share_Widget' );
+			register_widget( 'GigyaShare_Widget' );
 		}
 
 		// Comment Widget.
 		$share_options = get_option( GIGYA__SETTINGS_COMMENTS );
 		if ( ! empty( $share_options['on'] ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/comments/GigyaCommentsWidget.php';
-			register_widget( 'Gigya_Comments_Widget' );
+			register_widget( 'GigyaComments_Widget' );
 		}
 
 		// Reactions Widget.
 		$share_options = get_option( GIGYA__SETTINGS_REACTIONS );
 		if ( ! empty( $share_options['on'] ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/reactions/GigyaReactionsWidget.php';
-			register_widget( 'Gigya_Reactions_Widget' );
+			register_widget( 'GigyaReactions_Widget' );
 		}
 
 		// Gamification Widget.
 		$gm_options = get_option( GIGYA__SETTINGS_GM );
 		if ( ! empty( $gm_options['on'] ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/gamification/GigyaGamificationWidget.php';
-			register_widget( 'Gigya_Gamification_Widget' );
+			register_widget( 'GigyaGamification_Widget' );
 		}
 
 		// Activity Feed Widget.
 		$feed_options = get_option( GIGYA__SETTINGS_FEED );
 		if ( ! empty( $feed_options['on'] ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/feed/GigyaFeedWidget.php';
-			register_widget( 'Gigya_Feed_Widget' );
+			register_widget( 'GigyaFeed_Widget' );
 		}
 
 		// Follow Bar Widget.
 		require_once GIGYA__PLUGIN_DIR . 'features/follow/GigyaFollowWidget.php';
-		register_widget( 'Gigya_Follow_Widget' );
+		register_widget( 'GigyaFollow_Widget' );
 	}
 
 	/**

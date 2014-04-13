@@ -3,7 +3,7 @@
 /**
  * Adds GamificationWidget widget.
  */
-class Gigya_Gamification_Widget extends WP_Widget {
+class GigyaGamification_Widget extends WP_Widget {
 
 	/**
 	 * Register widget with WordPress.
@@ -12,7 +12,7 @@ class Gigya_Gamification_Widget extends WP_Widget {
 		$args = array(
 				'description' => __( 'Gamification by Gigya' )
 		);
-		parent::__construct( 'Gigya_Gamification_Widget', __( 'Gigya Gamification' ), $args );
+		parent::__construct( 'gigya_gamification', __( 'Gigya Gamification' ), $args );
 	}
 
 	/**

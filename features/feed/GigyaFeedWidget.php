@@ -3,7 +3,7 @@
 /**
  * Adds FeedWidget widget.
  */
-class Gigya_Feed_Widget extends WP_Widget {
+class GigyaFeed_Widget extends WP_Widget {
 
 	/**
 	 * Register widget with WordPress.
@@ -12,7 +12,7 @@ class Gigya_Feed_Widget extends WP_Widget {
 		$args = array(
 				'description' => __( 'Activity Feed block by Gigya' )
 		);
-		parent::__construct( 'Gigya_Feed_Widget', __( 'Gigya Activity Feed' ), $args );
+		parent::__construct( 'gigya_feed', __( 'Gigya Activity Feed' ), $args );
 	}
 
 	/**

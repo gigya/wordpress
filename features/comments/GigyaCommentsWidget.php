@@ -3,7 +3,7 @@
 /**
  * Adds commentsWidget widget.
  */
-class Gigya_Comments_Widget extends WP_Widget {
+class GigyaComments_Widget extends WP_Widget {
 
 	/**
 	 * Register widget with WordPress.
@@ -12,7 +12,7 @@ class Gigya_Comments_Widget extends WP_Widget {
 		$args = array(
 				'description' => __( 'Gigya\'s Comments' )
 		);
-		parent::__construct( 'Gigya_Comments_Widget', __( 'Gigya Comments' ), $args );
+		parent::__construct( 'gigya_comments', __( 'Gigya Comments' ), $args );
 	}
 
 	/**
