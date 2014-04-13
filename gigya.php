@@ -34,10 +34,18 @@ define( 'GIGYA__SETTINGS_REACTIONS', 'gigya_reactions_settings' );
 define( 'GIGYA__SETTINGS_GM', 'gigya_gm_settings' );
 define( 'GIGYA__SETTINGS_FEED', 'gigya_feed_settings' );
 
-new GigyaAction;
+/**
+ * Register activation hook
+ */
+register_activation_hook( __FILE__, 'registerActivationHook' );
+function registerActivationHook() {
+	require_once GIGYA__PLUGIN_DIR . 'install.php';
+	$activation = new GigyaInstall();
+	$activation->upgrade();
+}
 
-require_once GIGYA__PLUGIN_DIR . 'install.php';
-register_activation_hook( GIGYA__PLUGIN_DIR, array( 'GigyaInstall', 'upgrade' ) );
+
+new GigyaAction;
 
 /**
  * class.GigyaAction.php
