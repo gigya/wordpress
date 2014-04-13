@@ -36,6 +36,9 @@ define( 'GIGYA__SETTINGS_FEED', 'gigya_feed_settings' );
 
 new GigyaAction;
 
+require_once GIGYA__PLUGIN_DIR . 'install.php';
+register_activation_hook( GIGYA__PLUGIN_DIR, array( 'GigyaInstall', 'upgrade' ) );
+
 /**
  * class.GigyaAction.php
  */
