@@ -96,7 +96,7 @@ class GigyaRaasAjax {
 		wp_set_auth_cookie( $wp_user->ID );
 
 		// Hook for changing WP user metadata from Gigya's user.
-		do_action( 'gig_raas_login', $this->gigya_account, $wp_user );
+		do_action( 'gigya_after_raas_login', $this->gigya_account, $wp_user );
 
 		// Do others login Implementations.
 		do_action( 'wp_login', $wp_user->data->user_login, $wp_user );
@@ -118,6 +118,9 @@ class GigyaRaasAjax {
 		if ( ! empty( $username_exist ) ) {
 			$name .= uniqid( '-' );
 		}
+
+		// Hook just before register new user from Gigya RaaS.
+		do_action( 'gigya_before_raas_register', $name, $email );
 
 		$user_id = register_new_user( $name, $email );
 

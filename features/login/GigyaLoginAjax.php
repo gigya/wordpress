@@ -83,7 +83,7 @@ class GigyaLoginAjax {
 	 *
 	 * @param $wp_user
 	 */
-	public static function login( $wp_user ) {
+	public function login( $wp_user ) {
 
 		// Login procedure.
 		wp_clear_auth_cookie();
@@ -91,9 +91,10 @@ class GigyaLoginAjax {
 		wp_set_auth_cookie( $wp_user->ID );
 
 		// Hook for changing WP user metadata from Gigya's user.
-		$gigyaCMS      = new GigyaCMS();
-		$gigya_account = $gigyaCMS->getAccount( $wp_user->ID );
-		do_action( 'gig_social_login', $gigya_account, $wp_user );
+//		$gigya_account = $this->gigya_user;
+//		$gigyaCMS      = new GigyaCMS();
+//		$gigya_account = $gigyaCMS->getAccount( $wp_user->ID );
+		do_action( 'gigya_after_social_login', $this->gigya_user, $wp_user );
 
 		// Do others login Implementations.
 		do_action( 'wp_login', $wp_user->data->user_login, $wp_user );
@@ -137,6 +138,10 @@ class GigyaLoginAjax {
 		// Register a new user to WP with params from Gigya.
 		$name    = $this->gigya_user['nickname'];
 		$email   = $this->gigya_user['email'];
+
+		// Hook just before register new user from Gigya Social Login.
+		do_action( 'gigya_before_social_register', $name, $email );
+
 		$user_id = register_new_user( $name, $email );
 
 		// On registration error.
