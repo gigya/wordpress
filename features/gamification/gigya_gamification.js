@@ -41,7 +41,7 @@
      * @returns {string}
      */
     var getType = function ( gigyaGamificationParams ) {
-      var type = '';
+      var type = 'showUserStatusUI';
       switch ( gigyaGamificationParams.type ) {
         case 'leaderboard' :
           type = 'showLeaderboardUI';
