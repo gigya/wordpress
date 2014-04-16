@@ -71,8 +71,8 @@ class GigyaAction {
 
 		add_action( 'init', array( $this, 'init' ) );
 		add_action( 'admin_action_update', array( $this, 'adminActionUpdate' ) );
-		add_action( 'register_form',array( $this, 'loginForm' ) );
-		add_action( 'login_form',array( $this, 'loginForm' ) );
+		add_action( 'register_form', array( $this, 'loginForm' ) );
+		add_action( 'login_form', array( $this, 'loginForm' ) );
 		add_action( 'wp_ajax_gigya_login', array( $this, 'ajaxLogin' ) );
 		add_action( 'wp_ajax_nopriv_gigya_login', array( $this, 'ajaxLogin' ) );
 		add_action( 'wp_ajax_gigya_raas', array( $this, 'ajaxRaasLogin' ) );
@@ -388,7 +388,7 @@ class GigyaAction {
 		if ( ! empty( $reactions_options['on'] ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/reactions/GigyaReactionsSet.php';
 			$reactions = new GigyaReactionsSet();
-			$content 	= $reactions->setDefaultPosition( $content );
+			$content   = $reactions->setDefaultPosition( $content );
 		}
 
 		return $content;

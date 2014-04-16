@@ -45,7 +45,7 @@ class GigyaFeed_Widget extends WP_Widget {
 		// Override params or take the defaults.
 		foreach ( $instance as $key => $value ) {
 			if ( ! empty( $value ) ) {
-				$data[$key] = $value;
+				$data[$key] = esc_attr( $value );
 			}
 		}
 

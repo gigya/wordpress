@@ -39,13 +39,13 @@ class GigyaLogin_Widget extends WP_Widget {
 
 		// Get the data from the argument.
 		require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginSet.php';
-		$login           = new GigyaLoginSet();
-		$data          = $login->getParams();
+		$login = new GigyaLoginSet();
+		$data  = $login->getParams();
 
 		// Override params or take the defaults.
 		foreach ( $instance as $key => $value ) {
 			if ( ! empty( $value ) ) {
-				$data[$key] = $value;
+				$data[$key] = esc_attr( $value );
 			}
 		}
 

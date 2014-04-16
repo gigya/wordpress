@@ -38,13 +38,15 @@ class GigyaShare_Widget extends WP_Widget {
 		$title  = apply_filters( 'widget_title', $instance['title'] );
 
 		// Get the data from the argument.
-		$data = $instance['params'];
+		require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareSet.php';
+		$share = new GigyaShareSet();
+		$data  = $share->getParams();
 
-		// If the data is not in the argument get it straight.
-		if ( empty( $data ) ) {
-			require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareSet.php';
-			$share = new GigyaShareSet();
-			$data  = $share->getParams();
+		// Override params or take the defaults.
+		foreach ( $instance as $key => $value ) {
+			if ( ! empty( $value ) ) {
+				$data[$key] = esc_attr( $value );
+			}
 		}
 
 		// Set the output.

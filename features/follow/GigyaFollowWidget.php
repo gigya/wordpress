@@ -43,8 +43,9 @@ class GigyaFollow_Widget extends WP_Widget {
 		$title  = apply_filters( 'widget_title', $instance['title'] );
 
 		// Get the data from the argument.
-		$data = $instance;
-
+		foreach ( $instance as $key => $value ) {
+			$data[$key] = esc_attr( $value );
+		}
 
 		// Set the output.
 		$output .= $args['before_widget'];
