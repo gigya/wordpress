@@ -1,18 +1,18 @@
 <?php
 
 /**
- * Adds FeedWidget widget.
+ * Adds LoginWidget widget.
  */
-class GigyaFeed_Widget extends WP_Widget {
+class GigyaLogin_Widget extends WP_Widget {
 
 	/**
 	 * Register widget with WordPress.
 	 */
 	function __construct() {
 		$args = array(
-				'description' => __( 'Activity Feed block by Gigya' )
+				'description' => __( 'Login by Gigya' )
 		);
-		parent::__construct( 'gigya_feed', __( 'Gigya Activity Feed' ), $args );
+		parent::__construct( 'gigya_login', __( 'Gigya Login' ), $args );
 	}
 
 	/**
@@ -38,9 +38,9 @@ class GigyaFeed_Widget extends WP_Widget {
 		$title  = apply_filters( 'widget_title', $instance['title'] );
 
 		// Get the data from the argument.
-		require_once GIGYA__PLUGIN_DIR . 'features/feed/GigyaFeedSet.php';
-		$feed = new GigyaFeedSet();
-		$data = $feed->getParams();
+		require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginSet.php';
+		$login           = new GigyaLoginSet();
+		$data          = $login->getParams();
 
 		// Override params or take the defaults.
 		foreach ( $instance as $key => $value ) {
@@ -54,8 +54,8 @@ class GigyaFeed_Widget extends WP_Widget {
 		if ( ! empty( $title ) ) {
 			$output .= $args['before_title'] . $title . $args['after_title'];
 		}
-		$output .= '<div class="gigya-feed-widget"></div>';
-		$output .= '<script class="data-feed" type="application/json">' . json_encode( $data ) . '</script>';
+		$output .= '<div class="gigya-login-widget"></div>';
+		$output .= '<script class="data-login" type="application/json">' . json_encode( $data ) . '</script>';
 
 		$output .= $args['after_widget'];
 

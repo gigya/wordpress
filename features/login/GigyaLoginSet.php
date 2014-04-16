@@ -13,16 +13,16 @@ class GigyaLoginSet {
 		$this->login_options  = get_option( GIGYA__SETTINGS_LOGIN );
 		$this->global_options = get_option( GIGYA__SETTINGS_GLOBAL );
 
+		// Load custom Gigya login script.
+		wp_enqueue_script( 'gigya_login_js', GIGYA__PLUGIN_URL . 'features/login/gigya_login.js' );
+		wp_enqueue_style( 'gigya_login_css', GIGYA__PLUGIN_URL . 'features/login/gigya_login.css' );
+
 	}
 
 	/**
 	 * Initialize Gigya login block at Wp login/register.
 	 */
 	function init() {
-
-		// Load custom Gigya login script.
-		wp_enqueue_script( 'gigya_login_js', GIGYA__PLUGIN_URL . 'features/login/gigya_login.js' );
-		wp_enqueue_style( 'gigya_login_css', GIGYA__PLUGIN_URL . 'features/login/gigya_login.css' );
 
 		$params = $this->getParams();
 
@@ -82,5 +82,30 @@ class GigyaLoginSet {
 		$params = apply_filters( 'gigya_login_params', $params );
 
 		return $params;
+	}
+
+	/**
+	 * Set the Gigya's login and register default position.
+	 *
+	 * @return string
+	 */
+	public function setDefaultPosition() {
+		// Get the reactions widget content.
+		$args = array(
+				'before_widget' => '<div class="widget">',
+				'after_widget'  => "</div>",
+				'before_title'  => '<h2 class="widgettitle">',
+				'after_title'   => '</h2>'
+		);
+
+		// Add param to instance.
+		$instance = array(
+				'params' => $this->getParams()
+		);
+
+		// Get the widget.
+		$widget = GigyaLogin_Widget::getContent( $args, $instance );
+
+		return $widget;
 	}
 }

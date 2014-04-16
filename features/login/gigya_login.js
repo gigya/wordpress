@@ -5,19 +5,15 @@
 // --------------------------------------------------------------------
 
     /**
-     * Show Gigya's login block on login/register forms.
+     * Set the showLoginUI.
+     * @param params
      */
-    var showLoginUI = function () {
-      // Add an HTML element to attach the Gigya Login UI to.
-      $( '#registerform, #loginform' ).append( '<div id="gigya-login"></div>' );
+    var showLoginUI = function ( params ) {
+      params.onError = GigyaWp.errHandle;
 
-      // Add the Gigya's social login block to login/register pages.
-      var params = {};
-      params.containerID = "gigya-login";
-
-      if ( typeof gigyaLoginParams.ui != 'undefined' ) {
+      if ( typeof params.ui != 'undefined' ) {
         var paramsUI = {};
-        $.each( gigyaLoginParams.ui, function ( index, value ) {
+        $.each( params.ui, function ( index, value ) {
           paramsUI[index] = value;
         } );
 
@@ -26,6 +22,41 @@
 
       // Attach the Gigya block.
       gigya.socialize.showLoginUI( params );
+    }
+
+    /**
+     * Initialize each login widget on page.
+     */
+    var showLoginWidget = function () {
+      $( '.gigya-login-widget' ).each( function ( index, value ) {
+
+        var id = 'gigya-login-widget-' + index;
+        $( this ).attr( 'id', id );
+
+        // Get the data.
+        var dataEl = $( '#' + id ).next( 'script.data-login' );
+        var paramsFromJson = JSON.parse( dataEl.text() );
+
+        // Define the Feed Plugin params object.
+        var params = $.extend( true, {}, paramsFromJson );
+        params.containerID = id;
+        showLoginUI( params );
+      } );
+    }
+
+    /**
+     * Show Gigya's login block on login/register forms pages.
+     */
+    var showLoginDefault = function () {
+      // Add an HTML element to attach the Gigya Login UI to.
+      $( '#registerform, #loginform' ).after( '<div class="gigya-login-or">- Or -</div><div id="gigya-login"></div>' );
+
+      // Add the Gigya's social login block to login/register pages.
+      // Define the Feed Plugin params object.
+      var params = $.extend( true, {}, gigyaLoginParams );
+      params.containerID = "gigya-login";
+
+      showLoginUI( params );
     }
 
 // --------------------------------------------------------------------
@@ -177,7 +208,8 @@
 // --------------------------------------------------------------------
 
     var loginInit = function () {
-      showLoginUI();
+      showLoginWidget();
+      showLoginDefault();
       showAddConnectionsUI();
 
       // Attach event handlers.

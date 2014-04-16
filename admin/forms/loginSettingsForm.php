@@ -47,7 +47,7 @@ function loginSettingsForm() {
 	$form['width'] = array(
 			'type'  => 'text',
 			'label' => __( 'Width' ),
-			'value' => _gigParam( $values['width'], 200 ),
+			'value' => _gigParam( $values['width'], 320 ),
 			'desc'  => __( 'The width of the plugin in px' ),
 			'class' => 'size'
 	);
