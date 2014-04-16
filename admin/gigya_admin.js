@@ -74,30 +74,19 @@
       } )
     } );
 
-// --------------------------------------------------------------------
-
-    /**
-     * Conditional settings field.
-     * @param check
-     * @param textfield
-     */
-    var conditionalSettingsField = function ( check, textfield ) {
-      check.is( ':checked' ) ? textfield.show() : textfield.hide();
-      check.change( function () {
-        check.is( ':checked' ) ? textfield.show() : textfield.hide();
-      } );
-    }
 
 // --------------------------------------------------------------------
 
     // Conditional settings share/reactions image url field.
-    var check1 = $( 'input:checkbox[name="gigya_share_settings[image]"], input:checkbox[name="gigya_reactions_settings[image]"]' );
-    var fields1 = $( 'input#gigya_imageURL' ).parent( '.text-field ' );
-    conditionalSettingsField( check1, fields1 );
+    var el = $( 'input:checkbox[name="gigya_share_settings[image]"], input:checkbox[name="gigya_reactions_settings[image]"]' );
+    el.find('input').is( ':checked' ) ? el.next().show() : el.next().hide();
+    el.find('input').change( function () {
+      el.find('input').is( ':checked' ) ? el.next().show() : el.next().hide();
+    } );
 
 // --------------------------------------------------------------------
 
-    // Conditional.
+    // Conditional widget overrides fields.
     var el = $( '.gigya-widget-override' );
     el.find('input').is( ':checked' ) ? el.nextAll().show() : el.nextAll().hide();
     el.find('input').change( function () {
