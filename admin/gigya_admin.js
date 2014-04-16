@@ -91,9 +91,19 @@
 // --------------------------------------------------------------------
 
     // Conditional settings share/reactions image url field.
-    var check = $( 'input:checkbox[name="gigya_share_settings[image]"], input:checkbox[name="gigya_reactions_settings[image]"]' );
-    var textfield = $( 'input#gigya_imageURL' ).parent( '.text-field ' );
-    conditionalSettingsField( check, textfield );
+    var check1 = $( 'input:checkbox[name="gigya_share_settings[image]"], input:checkbox[name="gigya_reactions_settings[image]"]' );
+    var fields1 = $( 'input#gigya_imageURL' ).parent( '.text-field ' );
+    conditionalSettingsField( check1, fields1 );
+
+// --------------------------------------------------------------------
+
+    // Conditional.
+    var el = $( '.gigya-widget-override' );
+    el.find('input').is( ':checked' ) ? el.nextAll().show() : el.nextAll().hide();
+    el.find('input').change( function () {
+      el.find('input').is( ':checked' ) ? el.nextAll().show() : el.nextAll().hide();
+    } );
+
 
 // --------------------------------------------------------------------
 

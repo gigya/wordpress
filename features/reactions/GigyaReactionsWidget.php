@@ -43,9 +43,11 @@ class GigyaReactions_Widget extends WP_Widget {
 		$data      = $reactions->getParams();
 
 		// Override params or take the defaults.
-		foreach ( $instance as $key => $value ) {
-			if ( ! empty( $value ) ) {
-				$data[$key] = esc_attr( $value );
+		if (!empty($instance['override'])) {
+			foreach ( $instance as $key => $value ) {
+				if ( ! empty( $value ) ) {
+					$data[$key] = esc_attr( $value );
+				}
 			}
 		}
 
@@ -82,6 +84,14 @@ class GigyaReactions_Widget extends WP_Widget {
 				'class' => 'size',
 				'name'  => $this->get_field_name( 'title' )
 		);
+
+//		$form[$this->get_field_id( 'override' )] = array(
+//				'type'  => 'checkbox',
+//				'value' => _gigParam( esc_attr( $instance['override'] ), '' ),
+//				'label' => __( 'Override' ),
+//				'class' => 'gigya-widget-override',
+//				'name'  => $this->get_field_name( 'override' )
+//		);
 
 		echo _gigya_form_render( $form );
 	}
