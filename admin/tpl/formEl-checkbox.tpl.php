@@ -6,7 +6,7 @@
 ?>
 <div class="row checkbox <?php echo $class ?>">
 	<label for="gigya_<?php echo $id; ?>">
-		<input type="checkbox" <?php echo( ! empty( $value ) ? "checked" : "" ); ?> value="1" id="gigya_<?php echo $id; ?>" name="<?php echo $name ?>" />
+		<input type="checkbox" <?php checked( ! empty( $value ) ); ?> value="1" id="gigya_<?php echo $id; ?>" name="<?php echo $name ?>" />
 		<?php echo $label; ?>
 	</label>
 	<?php if ( $desc ): ?>
