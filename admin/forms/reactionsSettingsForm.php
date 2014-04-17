@@ -68,6 +68,7 @@ function reactionsSettingsForm() {
 			'type'  => 'checkbox',
 			'value' => _gigParam( $values['image'], 0 ),
 			'label' => __( 'Set image URL' ),
+			'class' => 'conditional'
 	);
 
 	$form['imageURL'] = array(
@@ -79,7 +80,7 @@ function reactionsSettingsForm() {
 	$form['multipleReactions'] = array(
 			'type'  => 'checkbox',
 			'label' => __( 'Allow multiple reactions' ),
-			'value' => _gigParam( $values['multipleReactions'], 1 ),
+			'value' => _gigParam( $values['multipleReactions'], 0 ),
 	);
 
 	$form['buttons'] = array(

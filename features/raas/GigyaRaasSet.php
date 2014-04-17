@@ -24,8 +24,9 @@ class GigyaRaasSet {
 		wp_enqueue_script( 'gigya_raas_js', GIGYA__PLUGIN_URL . 'features/raas/gigya_raas.js' );
 		wp_enqueue_style( 'gigya_raas_css', GIGYA__PLUGIN_URL . 'features/raas/gigya_raas.css' );
 
+		$params = $this->getParams();
 
-		// Load params to be available on client-side script.
+				// Load params to be available on client-side script.
 		wp_localize_script( 'gigya_raas_js', 'gigyaRaasParams', $params );
 
 	}

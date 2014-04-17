@@ -68,7 +68,7 @@ class GigyaInstall {
 		}
 
 		// Delete old Settings.
-		delete_option( 'gigya_settings_fields' );
+//		delete_option( 'gigya_settings_fields' );
 
 		// Upgrade widgets.
 		$this->upgradeWidgets();
@@ -190,24 +190,35 @@ class GigyaInstall {
 	private function upgradeWidgets() {
 
 		// Creating new widgets based on the old ones.
-		$this->upgradeWidget('widget_gigya', 'widget_gigya_login');
-		$this->upgradeWidget('widget_gigyaactivityfeed', 'widget_gigya_feed');
-		$this->upgradeWidget('widget_gigyafollowbar', 'widget_gigya_follow');
-		$this->upgradeWidget('widget_gigyagamification', 'widget_gigya_gamification');
+		$this->upgradeWidget( 'widget_gigya', 'widget_gigya_login' );
+		$this->upgradeWidget( 'widget_gigyaactivityfeed', 'widget_gigya_feed' );
+		$this->upgradeWidget( 'widget_gigyafollowbar', 'widget_gigya_follow' );
+		$this->upgradeWidget( 'widget_gigyagamification', 'widget_gigya_gamification' );
 
 		// Updating the sidebars.
 		$sb = get_option( 'sidebars_widgets' );
 		foreach ( $sb as $k => $sidebar ) {
-			foreach ( $sidebar as $l => $widget ) {
-				if ( strpos( $widget, 'gigya-' ) === 0 ) {
-					$sb[$k][$l] = str_replace( 'gigya-', 'gigya_login-', $widget );
-				} elseif ( strpos( $widget, 'gigyaactivityfeed-' ) === 0 ) {
-					$sb[$k][$l] = str_replace( 'gigyaactivityfeed-', 'gigya_feed-', $widget );
-				} elseif ( strpos( $widget, 'gigyafollowbar-' ) === 0 ) {
-					$sb[$k][$l] = str_replace( 'gigyafollowbar-', 'gigya_follow-', $widget );
-				} elseif ( strpos( $widget, 'gigyagamification-' ) === 0 ) {
-					$sb[$k][$l] = str_replace( 'gigyagamification-', 'gigya_gamification-', $widget );
+			foreach ( $sidebar as $widget ) {
+				$brk = explode( '-', $widget );
+				if ( $brk[0] = 'gigya' ) {
+					$sb[$k][] = 'gigya_login-' . $brk[1];
+				} elseif ( $brk[0] = 'gigyaactivityfeed' ) {
+					$sb[$k][] = 'gigya_feed-' . $brk[1];
+				} elseif ( $brk[0] = 'gigyafollowbar' ) {
+					$sb[$k][] = 'gigya_follow-' . $brk[1];
+				} elseif ( $brk[0] = 'gigyagamification' ) {
+					$sb[$k][] = 'gigya_gamification-' . $brk[1];
 				}
+
+//				if ( strpos( $widget, 'gigya-' ) === 0 ) {
+//					$sb[$k][$l] = str_replace( 'gigya-', 'gigya_login-', $widget );
+//				} elseif ( strpos( $widget, 'gigyaactivityfeed-' ) === 0 ) {
+//					$sb[$k][$l] = str_replace( 'gigyaactivityfeed-', 'gigya_feed-', $widget );
+//				} elseif ( strpos( $widget, 'gigyafollowbar-' ) === 0 ) {
+//					$sb[$k][$l] = str_replace( 'gigyafollowbar-', 'gigya_follow-', $widget );
+//				} elseif ( strpos( $widget, 'gigyagamification-' ) === 0 ) {
+//					$sb[$k][$l] = str_replace( 'gigyagamification-', 'gigya_gamification-', $widget );
+//				}
 			}
 		}
 
@@ -233,11 +244,11 @@ class GigyaInstall {
 	 * @param $old
 	 * @param $new
 	 */
-	private function upgradeWidget($old, $new) {
-		$old_widget = get_option($old);
-		if (!empty($old_widget)) {
-			add_option($new, $old_widget);
-			delete_option('$old');
+	private function upgradeWidget( $old, $new ) {
+		$old_widget = get_option( $old );
+		if ( ! empty( $old_widget ) ) {
+			add_option( $new, $old_widget );
+//			delete_option('$old');
 		}
 	}
 }

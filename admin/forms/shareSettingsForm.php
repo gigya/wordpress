@@ -58,6 +58,7 @@ function shareSettingsForm() {
 			'type'  => 'checkbox',
 			'value' => _gigParam( $values['image'], 0 ),
 			'label' => __( 'Set image URL' ),
+			'class' => 'conditional'
 	);
 
 	$form['imageURL'] = array(
