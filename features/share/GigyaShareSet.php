@@ -94,8 +94,13 @@ class GigyaShareSet {
 				case 'top':
 					$content = $widget . $content;
 					break;
+
 				case 'bottom':
 					$content = $content . $widget;
+					break;
+
+				case 'both':
+					$content = $widget . $content . $widget;
 					break;
 			}
 		}

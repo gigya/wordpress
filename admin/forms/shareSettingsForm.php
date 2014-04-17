@@ -19,6 +19,7 @@ function shareSettingsForm() {
 					"none"   => __( "None" ),
 					"bottom" => __( "Bottom" ),
 					"top"    => __( "Top" ),
+					"both"    => __( "Both" ),
 			),
 			'label'   => __( 'Set the position of the share widget in a post page' ),
 			'value'   => _gigParam( $values['position'], 'none' ),

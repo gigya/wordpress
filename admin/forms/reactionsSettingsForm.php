@@ -20,6 +20,7 @@ function reactionsSettingsForm() {
 					"none"   => __( "None" ),
 					"bottom" => __( "Bottom" ),
 					"top"    => __( "Top" ),
+					"both"    => __( "Both" ),
 			),
 			'value'   => _gigParam( $values['position'], 'none' ),
 			'desc'    => __( 'You can also find Gigya Reactions widget in the widgets settings page.' )
