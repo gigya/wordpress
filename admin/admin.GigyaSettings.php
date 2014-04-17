@@ -8,6 +8,12 @@ class GigyaSettings {
 	 */
 	public function __construct() {
 
+		// Add Javascript and css to admin page
+		wp_enqueue_style( 'gigya_admin_css', GIGYA__PLUGIN_URL . 'admin/gigya_admin.css' );
+		wp_enqueue_script( 'gigya_admin_js', GIGYA__PLUGIN_URL . 'admin/gigya_admin.js' );
+		wp_enqueue_script( 'gigya_jsonlint_js', GIGYA__PLUGIN_URL . 'admin/jsonlint.js' );
+
+		// Actions.
 		add_action( 'admin_init', array( $this, 'adminInit' ) );
 		add_action( 'admin_menu', array( $this, 'adminMenu' ) );
 
@@ -18,11 +24,6 @@ class GigyaSettings {
 	 * Initialize Admin section.
 	 */
 	public function adminInit() {
-
-		// Add Javascript and css to admin page
-		wp_enqueue_style( 'gigya_admin_css', GIGYA__PLUGIN_URL . 'admin/gigya_admin.css' );
-		wp_enqueue_script( 'gigya_admin_js', GIGYA__PLUGIN_URL . 'admin/gigya_admin.js' );
-		wp_enqueue_script( 'gigya_jsonlint_js', GIGYA__PLUGIN_URL . 'admin/jsonlint.js' );
 
 		// Add settings sections.
 		foreach ( $this->getSections() as $id => $section ) {

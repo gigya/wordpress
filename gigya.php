@@ -95,7 +95,7 @@ class GigyaAction {
 		require_once GIGYA__PLUGIN_DIR . 'sdk/GSSDK.php';
 		require_once GIGYA__PLUGIN_DIR . 'sdk/gigyaCMS.php';
 
-		// Load jQuery and jQueryUI from WP..
+		// Load jQuery and jQueryUI from WP.
 		wp_enqueue_script( 'jquery' );
 		wp_enqueue_script( 'jquery-ui-core' );
 		wp_enqueue_script( 'jquery-ui-dialog' );
