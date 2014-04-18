@@ -53,7 +53,7 @@ class GigyaRaasSet {
 				'raasProfileMobileScreen' => _gigParam( $this->login_options['raasProfileMobileScreen'], 'Profile-mobile' ),
 
 			// Override links.
-				'raasOverrideLinks'       => _gigParam( $this->login_options['raasOverrideLinks'], 1 ),
+				'raasOverrideLinks'       => _gigParam( $this->login_options['raasOverrideLinks'], 0 ),
 
 			// Embed DIVs.
 				'raasLoginDiv'            => _gigParam( $this->login_options['raasLoginDiv'], 'loginform' ),

@@ -46,7 +46,7 @@ class GigyaReactionsSet {
 				'showCounts'        => _gigParam( $this->reactions_options['showCounts'], 'right' ),
 				'countType'         => _gigParam( $this->reactions_options['countType'], 'right' ),
 				'enabledProviders'  => _gigParam( $this->reactions_options['enabledProviders'], 'reactions,facebook-like,google-plusone,twitter,email' ),
-				'multipleReactions' => _gigParam( $this->reactions_options['multipleReactions'], 1 ),
+				'multipleReactions' => _gigParam( $this->reactions_options['multipleReactions'], 0 ),
 				'scope'             => _gigParam( $this->feed_options['scope'], 'external' ),
 				'privacy'           => _gigParam( $this->feed_options['privacy'], 'private' ),
 				'context'           => array( 'id' => $bar_id ),
