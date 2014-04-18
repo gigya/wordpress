@@ -52,6 +52,13 @@ class GigyaInstall {
 
 	public function upgrade() {
 
+//		$v = get_option( 'gigya_db_version' );
+//		if ( ! empty( $v ) && $v == 5 ) {
+//			return;
+//		} else {
+//			add_option( 'gigya_db_version', 5, '', 'no' );
+//		}
+
 		// Load v4.0 options
 		$old = get_option( 'gigya_settings_fields' );
 		if ( ! empty( $old ) ) {
@@ -91,6 +98,8 @@ class GigyaInstall {
 		$this->setVar( $this->global_options, 'google_analytics', $old['google_analytics'] );
 		$this->setVar( $this->global_options, 'debug', $old['gigya_debug'] );
 
+		$this->setJson( $this->global_options, 'advanced', $old['global_params'] );
+
 		update_option( GIGYA__SETTINGS_GLOBAL, $this->global_options );
 	}
 
@@ -111,6 +120,9 @@ class GigyaInstall {
 		$this->setVar( $this->login_options, 'enabledProviders', $old['login_providers'] );
 		$this->setVar( $this->login_options, 'showTermsLink', $old['login_term_link'] );
 		$this->setVar( $this->login_options, 'registerExtra', $old['show_reg'] );
+
+		$this->setJson( $this->login_options, 'advancedAddConnectionsUI', $old['login_add_connection_custom'] );
+		$this->setJson( $this->login_options, 'advancedLoginUI', $old['login_ui'] );
 
 		update_option( GIGYA__SETTINGS_LOGIN, $this->login_options );
 	}
@@ -134,6 +146,8 @@ class GigyaInstall {
 		$this->setVar( $this->share_options, 'shareButtons', $old['share_providers'] );
 		$this->setVar( $this->share_options, 'shortURLs', $old['short_url'] );
 
+		$this->setJson( $this->share_options, 'advanced', $old['share_advanced'] );
+
 		update_option( GIGYA__SETTINGS_SHARE, $this->share_options );
 	}
 
@@ -147,6 +161,8 @@ class GigyaInstall {
 		// Update old (v4.0) comments options if exist.
 		$this->setVar( $this->comments_options, 'on', $old['comments_plugin'] );
 		$this->setVar( $this->comments_options, 'categoryID', $old['comments_cat_id'] );
+
+		$this->setJson( $this->comments_options, 'advanced', $old['commets_custom_code'] );
 
 		update_option( GIGYA__SETTINGS_COMMENTS, $this->comments_options );
 	}
@@ -163,10 +179,12 @@ class GigyaInstall {
 		$this->reactions_options['position'] = $old['reaction_position'] == 'both' ? 'top' : $old['reaction_position'];
 		$this->setVar( $this->reactions_options, 'showCounts', $old['reaction_show_counts'] );
 		$this->setVar( $this->reactions_options, 'layout', $old['reaction_layout'] );
-		$this->setVar( $this->reactions_options, 'buttons', $old['reaction_buttons'] );
+		$this->setVar( $this->reactions_options, 'buttons', $this->toValidJson( '[' . $old['reaction_buttons'] . ']' ) );
 		$this->setVar( $this->reactions_options, 'enabledProviders', $old['reaction_providers'] );
 		$this->setVar( $this->reactions_options, 'countType', $old['reaction_count_type'] );
 		$this->setVar( $this->reactions_options, 'multipleReactions', $old['reaction_multiple'] );
+
+		$this->setJson( $this->reactions_optionsjson_decode_nice, 'advanced', $old['reactions_custom_code'] );
 
 		update_option( GIGYA__SETTINGS_REACTIONS, $this->reactions_options );
 	}
@@ -200,13 +218,13 @@ class GigyaInstall {
 		foreach ( $sb as $k => $sidebar ) {
 			foreach ( $sidebar as $widget ) {
 				$brk = explode( '-', $widget );
-				if ( $brk[0] = 'gigya' ) {
+				if ( $brk[0] == 'gigya' ) {
 					$sb[$k][] = 'gigya_login-' . $brk[1];
-				} elseif ( $brk[0] = 'gigyaactivityfeed' ) {
+				} elseif ( $brk[0] == 'gigyaactivityfeed' ) {
 					$sb[$k][] = 'gigya_feed-' . $brk[1];
-				} elseif ( $brk[0] = 'gigyafollowbar' ) {
+				} elseif ( $brk[0] == 'gigyafollowbar' ) {
 					$sb[$k][] = 'gigya_follow-' . $brk[1];
-				} elseif ( $brk[0] = 'gigyagamification' ) {
+				} elseif ( $brk[0] == 'gigyagamification' ) {
 					$sb[$k][] = 'gigya_gamification-' . $brk[1];
 				}
 
@@ -239,6 +257,20 @@ class GigyaInstall {
 	}
 
 	/**
+	 * Helper - Update from old advanced variables.
+	 *
+	 * @param $options
+	 * @param $new_name
+	 * @param $old_value
+	 */
+	private function setJson( &$options, $new_name, $old_value ) {
+		if ( ! empty( $old_value ) ) {
+			$old_arr            = $this->parseKeyValuePair( $old_value );
+			$options[$new_name] = json_encode( $old_arr );
+		}
+	}
+
+	/**
 	 * Upgrade widgets.
 	 *
 	 * @param $old
@@ -247,9 +279,47 @@ class GigyaInstall {
 	private function upgradeWidget( $old, $new ) {
 		$old_widget = get_option( $old );
 		if ( ! empty( $old_widget ) ) {
+			if ( $old == 'widget_gigyafollowbar' ) {
+				foreach ($old_widget as $k => $inst ) {
+					if ( ! empty($inst['buttons'])) {
+						$old_widget[$k]['buttons'] = $this->toValidJson( $inst['buttons'] );
+					}
+				}
+			}
 			add_option( $new, $old_widget );
 //			delete_option('$old');
 		}
+	}
+
+	/**
+	 * Parse Key Value Pair old style.
+	 *
+	 * @param $str
+	 *
+	 * @return array|bool
+	 */
+	function parseKeyValuePair( $str ) {
+		$reg = preg_match_all( "/([^,= ]+)=([^,= ]+)/", $str, $r );
+		if ( $reg ) {
+			return array_combine( $r[1], $r[2] );
+		}
+		return false;
+	}
+
+	/**
+	 * Try to convert invalid JSON.
+	 *
+	 * @param $json
+	 *
+	 * @return mixed
+	 */
+	function toValidJson( $json ) {
+		$json = trim($json);
+		$json = str_replace("'", '"', $json);
+		$json = str_replace( array( "\n", "\r" ), "", $json );
+		$json = preg_replace( '/([{,]+)(\s*)([^"]+?)\s*:/', '$1"$3":', $json );
+		$json = preg_replace( '/(,)\s*}$/', '}', $json );
+		return $json;
 	}
 }
 

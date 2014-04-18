@@ -26,7 +26,7 @@ class GigyaRaasSet {
 
 		$params = $this->getParams();
 
-				// Load params to be available on client-side script.
+		// Load params to be available on client-side script.
 		wp_localize_script( 'gigya_raas_js', 'gigyaRaasParams', $params );
 
 	}

@@ -43,7 +43,7 @@ class GigyaReactions_Widget extends WP_Widget {
 		$data      = $reactions->getParams();
 
 		// Override params or take the defaults.
-		if (!empty($instance['override'])) {
+		if ( ! empty( $instance['override'] ) ) {
 			foreach ( $instance as $key => $value ) {
 				if ( ! empty( $value ) ) {
 					$data[$key] = esc_attr( $value );

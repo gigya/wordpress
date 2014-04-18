@@ -74,25 +74,23 @@
       } )
     } );
 
-
 // --------------------------------------------------------------------
 
     // Conditional settings share/reactions image url field.
     var el1 = $( '.conditional' );
-    el1.find('input').attr("checked") == 'checked' ? el1.next().show() : el1.next().hide();
-    el1.find('input').change( function () {
-      $(this).attr("checked") == 'checked' ? el1.next().show() : el1.next().hide();
+    el1.find( 'input' ).attr( "checked" ) == 'checked' ? el1.next().show() : el1.next().hide();
+    el1.find( 'input' ).change( function () {
+      $( this ).attr( "checked" ) == 'checked' ? el1.next().show() : el1.next().hide();
     } );
 
 // --------------------------------------------------------------------
 
     // Conditional widget overrides fields.
     var el2 = $( '.gigya-widget-override' );
-    el2.find('input').attr("checked") == 'checked' ? el2.nextAll().show() : el2.nextAll().hide();
-    el2.find('input').change( function () {
-      $(this).attr("checked") == 'checked' ? el2.nextAll().show() : el2.nextAll().hide();
+    el2.find( 'input' ).attr( "checked" ) == 'checked' ? el2.nextAll().show() : el2.nextAll().hide();
+    el2.find( 'input' ).change( function () {
+      $( this ).attr( "checked" ) == 'checked' ? el2.nextAll().show() : el2.nextAll().hide();
     } );
-
 
 // --------------------------------------------------------------------
 

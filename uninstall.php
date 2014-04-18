@@ -24,4 +24,4 @@ delete_option( 'widget_gigya_follow' );
 
 // Remove old widgets if still there.
 global $wpdb;
-$wpdb->query($wpdb->prepare("DELETE FROM $wpdb->wp_options WHERE option_name LIKE '%widget_gigya%'"));
+$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->wp_options WHERE option_name LIKE '%widget_gigya%'" ) );
