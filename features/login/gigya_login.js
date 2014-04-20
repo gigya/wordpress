@@ -104,6 +104,8 @@
       };
 
       var req = $.ajax( options );
+      $( 'body' ).prepend( '<span class="spinner"></span>' );
+      $( '.spinner' ).show();
 
       req.done( function ( res ) {
         if ( res.success == true ) {

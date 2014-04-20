@@ -66,8 +66,11 @@
         }
       };
 
-      $.ajax( options )
-          .done( function ( res ) {
+      var req = $.ajax( options );
+      $( 'body' ).prepend( '<span class="spinner"></span>' );
+      $( '.spinner' ).show();
+
+      req.done( function ( res ) {
             if ( res.success == true ) {
               if ( typeof res.data != 'undefined' ) {
                 // The user didn't register, and need more field to fill.
@@ -78,8 +81,9 @@
                 location.replace( gigyaRaasParams.redirect );
               }
             }
-          } )
-          .fail( function ( jqXHR, textStatus, errorThrown ) {
+          } );
+
+      req.fail( function ( jqXHR, textStatus, errorThrown ) {
             console.log( errorThrown );
           } );
     }

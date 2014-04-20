@@ -318,11 +318,18 @@ class GigyaCMS {
 	}
 
 	/**
-	 * @param $uid
+	 * @param $account
 	 */
-	public function deleteAccount( $uid ) {
+	public function deleteAccount( $account ) {
 
-		$this->call( 'accounts.deleteAccount', array( 'UID' => $uid ) );
+		// Get info about the primary account.
+		$query = 'select UID from accounts where loginIDs.emails = ' . $account->data->user_email;
+
+		// Get the UID from Email.
+		$res = $this->call( 'accounts.search', array( 'query' => $query ) );
+
+		// Delete the user.
+		$this->call( 'accounts.deleteAccount', array( 'UID' => $res['results'][0]['UID'] ) );
 
 	}
 

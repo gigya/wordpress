@@ -80,7 +80,7 @@ class GigyaAction {
 		add_action( 'wp_login', array( $this, 'wpLogin' ), 10, 2 );
 		add_action( 'user_register', array( $this, 'userRegister' ), 10, 1 );
 		add_action( 'wp_logout', array( $this, 'wpLogout' ) );
-		add_action( 'deleted_user', array( $this, 'deletedUser' ) );
+		add_action( 'delete_user', array( $this, 'deleteUser' ) );
 		add_action( 'widgets_init', array( $this, 'widgetsInit' ) );
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 		add_filter( 'the_content', array( $this, 'theContent' ) );
@@ -293,14 +293,15 @@ class GigyaAction {
 	 *
 	 * @param $user_id
 	 */
-	public function deletedUser( $user_id ) {
+	public function deleteUser( $user_id ) {
 
 		$gigyaCMS = new GigyaCMS();
 
 		if ( $this->login_options['mode'] == 'wp_sl' ) {
 			$gigyaCMS->deleteUser( $user_id );
 		} elseif ( $this->login_options['mode'] == 'raas' ) {
-			$gigyaCMS->deleteAccount( $user_id );
+			$account = get_userdata( $user_id );
+			$gigyaCMS->deleteAccount( $account );
 		}
 	}
 
