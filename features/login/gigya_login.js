@@ -177,14 +177,13 @@
         // Modal with the email form.
         $( '#dialog-modal' ).html( html ).dialog( { modal: true } );
 
+
+
         $( document ).on( 'click', '.button-get-email', function () {
-          $( '#dialog-modal' ).dialog( "close" );
-        } );
-
-        $( "#dialog-modal" ).on( "dialogclose", function ( event, ui ) {
+          // The email input.
           var email = $( 'input#get-email' ).val();
+          // Check it's not empty.
           if ( email.length > 0 ) {
-
             // When we get a value, we update the user object,
             // And put a flag for 'email not verified'.
             response.user.email = email;
@@ -194,11 +193,18 @@
             // Go on with register
             socialLogin( response );
           }
+
+        } );
+
+//        $( "#dialog-modal" ).on( "dialogclose", function ( event, ui ) {
+//          if ( email.length > 0 ) {
+//
+//          }
 //          else {
 //            gigya.socialize.logout();
 //          }
-
-        } );
+//
+//        } );
       }
 
       else {
