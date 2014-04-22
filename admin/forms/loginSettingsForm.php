@@ -14,10 +14,15 @@ function loginSettingsForm() {
 					'wp_sl'   => __( 'Wordpress + Social Login' ),
 					'raas'    => __( 'Registration-as-a-Service' )
 			),
-			'desc'    => __( 'By activate Gigya\'s Social Login, you also activate "Anyone can register" option on Wordpress General Settings page<br>' .
-					'By activate Gigya\'s RaaS Login, you also deactivate "Anyone can register" option on Wordpress General Settings page' ),
+			'desc'    => __( 'By activate Gigya\'s Social Login or Gigya\'s RaaS Login, you also activate "Anyone can register" option on Wordpress General Settings page'),
 			'value'   => _gigParam( $values['mode'], 'wp_only' )
 	);
+
+	$c       = new GigyaCMS();
+	$is_raas = $c->isRaaS();
+	if ( empty( $is_raas ) ) {
+		$form['mode']['class'] = 'raas_disabled';
+	}
 
 	$form['sl_start'] = array(
 			'markup' => '<div class="social-login-wrapper">'

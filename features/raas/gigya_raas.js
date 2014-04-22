@@ -71,21 +71,26 @@
       $( '.spinner' ).show();
 
       req.done( function ( res ) {
-            if ( res.success == true ) {
-              if ( typeof res.data != 'undefined' ) {
-                // The user didn't register, and need more field to fill.
-                $( '#dialog-modal' ).html( res.data.html );
-                $( '#dialog-modal' ).dialog( { modal: true } );
-              }
-              else {
-                location.replace( gigyaRaasParams.redirect );
-              }
-            }
-          } );
+        if ( res.success == true ) {
+          location.replace( gigyaRaasParams.redirect );
+        }
+        else {
+          if ( typeof res.data != 'undefined' ) {
+            // The user didn't register, and need more field to fill.
+            $( '#dialog-modal' ).html( res.data.msg );
+            $( '#dialog-modal' ).dialog( { modal: true } );
+
+          }
+        }
+      } );
 
       req.fail( function ( jqXHR, textStatus, errorThrown ) {
-            console.log( errorThrown );
-          } );
+        console.log( errorThrown );
+      } );
+
+      $( "#dialog-modal" ).on( "dialogclose", function ( event, ui ) {
+        location.reload();
+      } );
     }
 
 // --------------------------------------------------------------------

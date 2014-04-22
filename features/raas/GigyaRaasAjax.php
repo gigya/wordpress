@@ -62,9 +62,7 @@ class GigyaRaasAjax {
 
 				$providers = $gigyaCMS->getProviders( $this->gigya_account );
 
-				$msg = sprintf( __( "We found your email in our system.<br>Please login to your existing account using your <strong>%s</strong> identity.<br>
-            If you wish to link your account with your <strong>%s</strong> identity - after logging-in, please go to your profile page and click the <strong>%s</strong> button.",
-						array( $providers['primary'], $providers['secondary'], $providers['secondary'] ) ) );
+				$msg = sprintf( __( 'We found your email in our system.<br>Please login to your existing account using your <strong>%1$s</strong> identity.<br>If you wish to link your account with your <strong>%2$s</strong> identity - after logging-in, please go to your profile page and click the <strong>%2$s</strong> button.' ), $providers['primary'], $providers['secondary'] );
 
 				$prm = array( 'msg' => $msg );
 				wp_send_json_error( $prm );

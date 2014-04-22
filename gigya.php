@@ -86,7 +86,6 @@ class GigyaAction {
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 		add_filter( 'the_content', array( $this, 'theContent' ) );
 		add_filter( 'comments_template', array( $this, 'commentsTemplate' ) );
-
 	}
 
 	/**
@@ -101,6 +100,7 @@ class GigyaAction {
 		wp_enqueue_script( 'jquery-ui-core' );
 		wp_enqueue_script( 'jquery-ui-dialog' );
 		wp_enqueue_script( 'gigya_js', GIGYA__PLUGIN_URL . 'gigya.js' );
+		wp_enqueue_style( 'gigya_css', GIGYA__PLUGIN_URL . 'gigya.css' );
 
 		// Parameters to be sent to the DOM.
 		$params = array(

@@ -299,6 +299,15 @@ class GigyaCMS {
 //            RaaS             //
 /////////////////////////////////
 
+	public function isRaaS() {
+		$res = $this->call( 'accounts.getSchema', array() );
+		if ($res['errorCode'] === 403036) {
+			return false;
+		}
+
+		return true;
+	}
+
 	/**
 	 * @param $guid
 	 *
