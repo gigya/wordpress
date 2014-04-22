@@ -61,11 +61,14 @@ class GigyaInstall {
 	 */
 	public function upgrade() {
 
+		// We mark the the DB with the current installed version.
+		// For future DB updates & upgrades.
 		$v = get_option( 'gigya_db_version' );
-		if ( ! empty( $v ) && $v == 5 ) {
+		if ( ! empty( $v ) && $v == 5.0 ) {
+			// If the DB is already on 5.0, do nothing and quit.
 			return;
 		} else {
-			add_option( 'gigya_db_version', 5, '', 'no' );
+			add_option( 'gigya_db_version', 5.0, '', 'no' );
 		}
 
 		// Load v4.0 options
@@ -85,7 +88,6 @@ class GigyaInstall {
 
 		// Upgrade widgets.
 		$this->upgradeWidgets();
-
 	}
 
 	/**
@@ -322,7 +324,7 @@ class GigyaInstall {
 	/**
 	 * Clean the database from old (4.0) plugin records.
 	 */
-	public function cleanDB() {
+	public static function cleanDB() {
 		// Delete old Settings.
 		delete_option( 'gigya_settings_fields' );
 
@@ -343,15 +345,18 @@ class GigyaInstall {
 						||
 						strpos( $widget, 'gigyafollowbar-' ) === 0
 						||
-						strpos( $widget, 'gigyagamification-' ) === 0 )
-				{
+						strpos( $widget, 'gigyagamification-' ) === 0
+				) {
 					unset( $sb[$k][$l] );
 				}
 			}
 		}
 
 		// update the DB with the clean record.
-		update_option('sidebars_widgets', $sb);
+		update_option( 'sidebars_widgets', $sb );
+
+		// return AJAX success.
+		wp_send_json_success( array( 'msg' => __( 'The database cleaned successfully' ) ) );
 	}
 
 }

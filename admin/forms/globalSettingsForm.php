@@ -6,6 +6,12 @@ function globalSettingsForm() {
 	$values = get_option( GIGYA__SETTINGS_GLOBAL );
 	$form   = array();
 
+	if ( get_option( 'gigya_settings_fields' ) ) {
+		$form['clean_db'] = array(
+				'markup' => '<a href="javascript:void(0)" class="clean-db">Database cleaner after upgrade</a><br><small>Very recommended to backup your database before preform a clean!</small>'
+		);
+	}
+
 	$form['api_key'] = array(
 			'type'  => 'text',
 			'label' => __( 'Gigya Socialize API Key' ),

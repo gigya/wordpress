@@ -40,8 +40,8 @@ define( 'GIGYA__SETTINGS_FEED', 'gigya_feed_settings' );
 register_activation_hook( __FILE__, 'registerActivationHook' );
 function registerActivationHook() {
 	require_once GIGYA__PLUGIN_DIR . 'install.php';
-	$activation = new GigyaInstall();
-	$activation->init();
+	$install = new GigyaInstall();
+	$install->init();
 }
 
 /**
@@ -77,6 +77,7 @@ class GigyaAction {
 		add_action( 'wp_ajax_nopriv_gigya_login', array( $this, 'ajaxLogin' ) );
 		add_action( 'wp_ajax_gigya_raas', array( $this, 'ajaxRaasLogin' ) );
 		add_action( 'wp_ajax_nopriv_gigya_raas', array( $this, 'ajaxRaasLogin' ) );
+		add_action( 'wp_ajax_clean_db', array( $this, 'ajaxCleanDB' ) );
 		add_action( 'wp_login', array( $this, 'wpLogin' ), 10, 2 );
 		add_action( 'user_register', array( $this, 'userRegister' ), 10, 1 );
 		add_action( 'wp_logout', array( $this, 'wpLogout' ) );
@@ -415,6 +416,13 @@ class GigyaAction {
 
 			// Override default WP comments template.
 			return GIGYA__PLUGIN_DIR . 'admin/tpl/comments.tpl.php';
+		}
+	}
+
+	public function ajaxCleanDB() {
+		if ( current_user_can( 'manage_options' ) ) {
+			require_once GIGYA__PLUGIN_DIR . 'install.php';
+			GigyaInstall::cleanDB();
 		}
 	}
 }

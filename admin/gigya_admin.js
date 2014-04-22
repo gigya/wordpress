@@ -94,5 +94,40 @@
 
 // --------------------------------------------------------------------
 
+    /**
+     * Run the clean DB after upgrade script.
+     */
+    var cleanDB = function () {
+      var options = {
+        url : gigyaParams.ajaxurl,
+        type: 'POST',
+        data: {
+          data  : '',
+          action: 'clean_db'
+        }
+      };
+
+      var req = $.ajax( options );
+
+      req.done( function ( res ) {
+        if ( res.success == true ) {
+          alert( res.data.msg );
+          location.reload();
+        }
+      } );
+
+      req.fail( function ( jqXHR, textStatus, errorThrown ) {
+        console.log( errorThrown );
+      } );
+    }
+
+    $( document ).on( 'click', '.gigya-settings .clean-db', function () {
+      var r = confirm( "You're about to run a database cleaner.\n\rOld data from version 4.0 will be deleted permanently from the database.\n\rIt's highly recommended to backup your database before you run this script.\n\rPlease confirm you want to continue." );
+      if ( r == true ) {
+        cleanDB();
+      }
+    } )
+
+// --------------------------------------------------------------------
   } );
 })( jQuery );
