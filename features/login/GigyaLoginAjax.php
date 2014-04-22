@@ -115,10 +115,8 @@ class GigyaLoginAjax {
 			// Return JSON with login form to client.
 			wp_send_json_success( array(
 					'type' => 'form',
-					'html' => $this->linkAccountForm(
-									$email_exists,
-									$this->gigya_user['UID']
-							) ) );
+					'html' => $this->linkAccountForms()
+			) );
 		}
 
 		// If the name of the new user is already exist in the system,
@@ -177,27 +175,60 @@ class GigyaLoginAjax {
 	}
 
 	/**
+	 * AJAX submission of link account form.
+	 */
+	public function linkAccounts() {
+		$data = $_POST['data'];
+
+		$creds = array();
+		foreach ($data as $p) {
+			if ($p['name'] == 'log') {
+				$creds['user_login'] = $p['value'];
+			}
+			elseif ($p['name'] == 'pwd') {
+				$creds['user_password'] = $p['value'];
+			}
+		}
+
+		$user = wp_signon( $creds );
+
+		// On registration error.
+		if ( ! empty( $user->errors ) ) {
+			$msg = '';
+			foreach ( $user->errors as $error ) {
+				foreach ( $error as $err ) {
+					$msg .= $err . "\n";
+				}
+			}
+
+			// Return JSON to client.
+			wp_send_json_error(  );
+		}
+		else {
+			wp_send_json_success();
+		}
+	}
+
+	/**
 	 * Generate form for link accounts.
-	 *
-	 * @param        $account
-	 * @param null   $gigya_uid
 	 *
 	 * @return string
 	 */
-	private function linkAccountForm( $account, $gigya_uid = null ) {
+	private function linkAccountForms() {
 
 		$output = '';
-		$output .= '<form name="loginform" id="loginform" action="' . site_url( 'wp-login.php', 'login_post' ) . '" method="post">';
+		$output .= '<form name="linkAccounts" id="link-accounts-form" action="">';
+//		$output .= '<form name="loginform" id="loginform" action="' . site_url( 'wp-login.php', 'login_post' ) . '" method="post">';
 
 		// Set form elements.
 		$form            = array();
 		$form['message'] = array(
-				'markup' => __( 'Your Email address' ) . ': ' . $account['email'] . ' ' . __( 'already exists. If you have previously registered, please login with your site credentials to link the accounts. Otherwise, please use a different Email address' ) . '<br><br>'
+				'markup' => __( 'Your Email address' ) . ': <strong>' . $this->gigya_user['email'] . '</strong> ' . __( 'already exists. If you have previously registered, please login with your site credentials to link the accounts. Otherwise, please use a different Email address' ) . '<br><br>'
 		);
 		$form['log']     = array(
 				'type'  => 'text',
 				'label' => __( 'Username' ),
-				'value' => $account['nickname'],
+				'value' => $this->gigya_user['nickname'],
 				'desc'  => __( 'Enter your' ) . ' ' . get_option( 'blogname' ) . ' ' . __( 'username' )
 		);
 
@@ -212,7 +243,7 @@ class GigyaLoginAjax {
 		);
 		$form['gigyaUID']  = array(
 				'type'  => 'hidden',
-				'value' => $gigya_uid,
+				'value' => $this->gigya_user['UID'],
 		);
 
 		// Render form elements.

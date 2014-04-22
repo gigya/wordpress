@@ -152,8 +152,8 @@ function loginSettingsForm() {
 
 	$form['raasOverrideLinks'] = array(
 			'type'  => 'checkbox',
-			'label' => __( 'Override Wordpress Link' ),
-			'desc'  => __( "Checking this checkbox, WordPress's default 'Login', 'Registration' and 'Edit Profile' links will pop-up RaaS's respective screens instead of redirecting to the WordPress screens" ),
+			'label' => __( 'Disabled Override Wordpress Link' ),
+			'desc'  => __( "Checking this will disabled the overriding of WordPress's default 'Login', 'Registration' and 'Edit Profile' links" ),
 			'value' => _gigParam( $values['raasOverrideLinks'], 0 )
 	);
 

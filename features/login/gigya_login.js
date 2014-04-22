@@ -177,8 +177,6 @@
         // Modal with the email form.
         $( '#dialog-modal' ).html( html ).dialog( { modal: true } );
 
-
-
         $( document ).on( 'click', '.button-get-email', function () {
           // The email input.
           var email = $( 'input#get-email' ).val();
@@ -237,6 +235,41 @@
 // --------------------------------------------------------------------
 
     loginInit();
+
+// --------------------------------------------------------------------
+
+    $( document ).on( 'submit', '#link-accounts-form', function () {
+      var formData = $( this ).serializeArray();
+//      var formData = JSON.stringify( formArr );
+
+      var options = {
+        type: 'POST',
+        url : gigyaParams.ajaxurl,
+        data: {
+          data  : formData,
+          action: gigyaLoginParams.actionLinkAccounts
+        }
+
+      }
+
+      var req = $.ajax( options );
+
+      req.done( function ( res ) {
+        if ( res.success == true ) {
+
+        }
+        else {
+          if ( typeof res.data != 'undefined' ) {
+            $( '#dialog-modal' ).prepend( res.data.msg);
+          }
+        }
+      });
+
+      req.fail( function ( jqXHR, textStatus, errorThrown ) {
+        console.log( errorThrown );
+      } );
+
+    } );
 
 // --------------------------------------------------------------------
 
