@@ -41,7 +41,7 @@ register_activation_hook( __FILE__, 'registerActivationHook' );
 function registerActivationHook() {
 	require_once GIGYA__PLUGIN_DIR . 'install.php';
 	$activation = new GigyaInstall();
-	$activation->upgrade();
+	$activation->init();
 }
 
 /**

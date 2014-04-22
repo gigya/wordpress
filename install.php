@@ -9,55 +9,64 @@ class GigyaInstall {
 	 * Constructor.
 	 */
 	public function __construct() {
+		$this->global_options    = get_option( GIGYA__SETTINGS_GLOBAL );
+		$this->login_options     = get_option( GIGYA__SETTINGS_LOGIN );
+		$this->share_options     = get_option( GIGYA__SETTINGS_SHARE );
+		$this->comments_options  = get_option( GIGYA__SETTINGS_COMMENTS );
+		$this->reactions_options = get_option( GIGYA__SETTINGS_REACTIONS );
+		$this->gm_options        = get_option( GIGYA__SETTINGS_GM );
+		$this->feed_options      = get_option( GIGYA__SETTINGS_FEED );
+	}
 
+	/**
+	 * Initialize the installation process.
+	 */
+	public function init() {
 		// The default behavior of WP is to load all options with autoload='yes'
 		// on each request. This behavior can not be change in update_option() function.
 		// So, on installation we initialize our records with the desired value of autoload.
-		$this->global_options = get_option( GIGYA__SETTINGS_GLOBAL );
 		if ( empty ( $this->global_options ) ) {
 			add_option( GIGYA__SETTINGS_GLOBAL, array(), '', 'yes' );
 		}
 
-		$this->login_options = get_option( GIGYA__SETTINGS_LOGIN );
 		if ( empty ( $this->login_options ) ) {
 			add_option( GIGYA__SETTINGS_LOGIN, array(), '', 'yes' );
 		}
 
-		$this->share_options = get_option( GIGYA__SETTINGS_SHARE );
 		if ( empty ( $this->share_options ) ) {
 			add_option( GIGYA__SETTINGS_SHARE, array(), '', 'no' );
 		}
 
-		$this->comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
 		if ( empty ( $this->comments_options ) ) {
 			add_option( GIGYA__SETTINGS_COMMENTS, array(), '', 'no' );
 		}
 
-		$this->reactions_options = get_option( GIGYA__SETTINGS_REACTIONS );
 		if ( empty ( $this->reactions_options ) ) {
 			add_option( GIGYA__SETTINGS_REACTIONS, array(), '', 'no' );
 		}
 
-		$this->gm_options = get_option( GIGYA__SETTINGS_GM );
 		if ( empty ( $this->gm_options ) ) {
 			add_option( GIGYA__SETTINGS_GM, array(), '', 'no' );
 		}
 
-		$this->feed_options = get_option( GIGYA__SETTINGS_FEED );
 		if ( empty ( $this->feed_options ) ) {
 			add_option( GIGYA__SETTINGS_FEED, array(), '', 'no' );
 		}
 
+		$this->upgrade();
 	}
 
+	/**
+	 * Start the upgrade path workflow.
+	 */
 	public function upgrade() {
 
-//		$v = get_option( 'gigya_db_version' );
-//		if ( ! empty( $v ) && $v == 5 ) {
-//			return;
-//		} else {
-//			add_option( 'gigya_db_version', 5, '', 'no' );
-//		}
+		$v = get_option( 'gigya_db_version' );
+		if ( ! empty( $v ) && $v == 5 ) {
+			return;
+		} else {
+			add_option( 'gigya_db_version', 5, '', 'no' );
+		}
 
 		// Load v4.0 options
 		$old = get_option( 'gigya_settings_fields' );
@@ -73,9 +82,6 @@ class GigyaInstall {
 			$this->upgradeGamification( $old );
 
 		}
-
-		// Delete old Settings.
-//		delete_option( 'gigya_settings_fields' );
 
 		// Upgrade widgets.
 		$this->upgradeWidgets();
@@ -227,16 +233,6 @@ class GigyaInstall {
 				} elseif ( $brk[0] == 'gigyagamification' ) {
 					$sb[$k][] = 'gigya_gamification-' . $brk[1];
 				}
-
-//				if ( strpos( $widget, 'gigya-' ) === 0 ) {
-//					$sb[$k][$l] = str_replace( 'gigya-', 'gigya_login-', $widget );
-//				} elseif ( strpos( $widget, 'gigyaactivityfeed-' ) === 0 ) {
-//					$sb[$k][$l] = str_replace( 'gigyaactivityfeed-', 'gigya_feed-', $widget );
-//				} elseif ( strpos( $widget, 'gigyafollowbar-' ) === 0 ) {
-//					$sb[$k][$l] = str_replace( 'gigyafollowbar-', 'gigya_follow-', $widget );
-//				} elseif ( strpos( $widget, 'gigyagamification-' ) === 0 ) {
-//					$sb[$k][$l] = str_replace( 'gigyagamification-', 'gigya_gamification-', $widget );
-//				}
 			}
 		}
 
@@ -280,14 +276,15 @@ class GigyaInstall {
 		$old_widget = get_option( $old );
 		if ( ! empty( $old_widget ) ) {
 			if ( $old == 'widget_gigyafollowbar' ) {
-				foreach ($old_widget as $k => $inst ) {
-					if ( ! empty($inst['buttons'])) {
+				foreach ( $old_widget as $k => $inst ) {
+					if ( ! empty( $inst['buttons'] ) ) {
 						$old_widget[$k]['buttons'] = $this->toValidJson( $inst['buttons'] );
 					}
 				}
 			}
+
+			// Add new widget based on old one.
 			add_option( $new, $old_widget );
-//			delete_option('$old');
 		}
 	}
 
@@ -314,12 +311,48 @@ class GigyaInstall {
 	 * @return mixed
 	 */
 	function toValidJson( $json ) {
-		$json = trim($json);
-		$json = str_replace("'", '"', $json);
+		$json = trim( $json );
+		$json = str_replace( "'", '"', $json );
 		$json = str_replace( array( "\n", "\r" ), "", $json );
 		$json = preg_replace( '/([{,]+)(\s*)([^"]+?)\s*:/', '$1"$3":', $json );
 		$json = preg_replace( '/(,)\s*}$/', '}', $json );
 		return $json;
 	}
+
+	/**
+	 * Clean the database from old (4.0) plugin records.
+	 */
+	public function cleanDB() {
+		// Delete old Settings.
+		delete_option( 'gigya_settings_fields' );
+
+		// Delete old Widgets.
+		$old_widgets = array( 'widget_gigya', 'widget_gigyaactivityfeed', 'widget_gigyafollowbar', 'widget_gigyagamification' );
+		foreach ( $old_widgets as $widget_name ) {
+			delete_option( $widget_name );
+		}
+
+		// Delete old widgets from the sidebars.
+		$sb = get_option( 'sidebars_widgets' );
+		foreach ( $sb as $k => $sidebar ) {
+			foreach ( $sidebar as $l => $widget ) {
+				if (
+						strpos( $widget, 'gigya-' ) === 0
+						||
+						strpos( $widget, 'gigyaactivityfeed-' ) === 0
+						||
+						strpos( $widget, 'gigyafollowbar-' ) === 0
+						||
+						strpos( $widget, 'gigyagamification-' ) === 0 )
+				{
+					unset( $sb[$k][$l] );
+				}
+			}
+		}
+
+		// update the DB with the clean record.
+		update_option('sidebars_widgets', $sb);
+	}
+
 }
 

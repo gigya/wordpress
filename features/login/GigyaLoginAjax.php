@@ -194,15 +194,15 @@ class GigyaLoginAjax {
 		$form['message'] = array(
 				'markup' => __( 'Your Email address' ) . ': ' . $account['email'] . ' ' . __( 'already exists. If you have previously registered, please login with your site credentials to link the accounts. Otherwise, please use a different Email address' ) . '<br><br>'
 		);
-		$form['log']     = array(
+		$form['log'] = array(
 				'type'  => 'text',
 				'label' => __( 'Username' ),
 				'value' => $account['nickname'],
 				'desc'  => __( 'Enter your' ) . ' ' . get_option( 'blogname' ) . ' ' . __( 'username' )
 		);
 
-		$form['pwd']       = array(
-				'type'  => 'text',
+		$form['pwd'] = array(
+				'type'  => 'password',
 				'label' => __( 'Password' ),
 				'desc'  => __( 'Enter your password.' ),
 		);
