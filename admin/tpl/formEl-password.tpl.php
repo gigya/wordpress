@@ -10,4 +10,4 @@
 	<?php if ( ! empty( $desc ) ): ?>
 		<small><?php echo $desc; ?></small>
 	<?php endif; ?>
-</div>fsdfsdf
+</div>
