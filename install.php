@@ -149,7 +149,7 @@ class GigyaInstall {
 
 		// Update old (v4.0) share options if exist.
 		if ( ! empty( $old['share_plugin'] ) && $old['share_plugin'] != 'none' ) {
-			$this->share_options['on']       = 1;
+			$this->share_options['on'] = 1;
 			$this->share_options['position'] = $old['share_plugin'] == 'both' ? 'top' : $old['share_plugin'];
 		}
 		$this->setVar( $this->share_options, 'showCounts', $old['share_show_counts'] );

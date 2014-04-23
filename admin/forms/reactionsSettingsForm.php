@@ -10,7 +10,7 @@ function reactionsSettingsForm() {
 			'type'    => 'checkbox',
 			'label'   => __( 'Enable Reaction Plugin' ),
 			'default' => 0,
-			'value'   => _gigParam( $values['on'], 0 )
+			'value'   => $values['on'] === '0' ? '0' :'1'
 	);
 
 	$form['position'] = array(

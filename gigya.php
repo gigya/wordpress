@@ -347,35 +347,35 @@ class GigyaAction {
 
 		// Share Widget.
 		$share_options = get_option( GIGYA__SETTINGS_SHARE );
-		if ( ! empty( $share_options['on'] ) ) {
+		if ( $share_options['on'] !== '0' ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareWidget.php';
 			register_widget( 'GigyaShare_Widget' );
 		}
 
 		// Comment Widget.
 		$share_options = get_option( GIGYA__SETTINGS_COMMENTS );
-		if ( ! empty( $share_options['on'] ) ) {
+		if ( $share_options['on'] !== '0' ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/comments/GigyaCommentsWidget.php';
 			register_widget( 'GigyaComments_Widget' );
 		}
 
 		// Reactions Widget.
 		$share_options = get_option( GIGYA__SETTINGS_REACTIONS );
-		if ( ! empty( $share_options['on'] ) ) {
+		if ( $share_options['on'] !== '0' ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/reactions/GigyaReactionsWidget.php';
 			register_widget( 'GigyaReactions_Widget' );
 		}
 
 		// Gamification Widget.
 		$gm_options = get_option( GIGYA__SETTINGS_GM );
-		if ( ! empty( $gm_options['on'] ) ) {
+		if ( $gm_options['on'] !== '0' ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/gamification/GigyaGamificationWidget.php';
 			register_widget( 'GigyaGamification_Widget' );
 		}
 
 		// Activity Feed Widget.
 		$feed_options = get_option( GIGYA__SETTINGS_FEED );
-		if ( ! empty( $feed_options['on'] ) ) {
+		if (  $feed_options['on'] !== '0' ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/feed/GigyaFeedWidget.php';
 			register_widget( 'GigyaFeed_Widget' );
 		}
@@ -391,7 +391,7 @@ class GigyaAction {
 	public function theContent( $content ) {
 		// Share plugin.
 		$share_options = get_option( GIGYA__SETTINGS_SHARE );
-		if ( ! empty( $share_options['on'] ) ) {
+		if (  $share_options['on'] !== '0' ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareSet.php';
 			$share   = new GigyaShareSet();
 			$content = $share->setDefaultPosition( $content );
@@ -399,7 +399,7 @@ class GigyaAction {
 
 		// Reactions plugin.
 		$reactions_options = get_option( GIGYA__SETTINGS_REACTIONS );
-		if ( ! empty( $reactions_options['on'] ) ) {
+		if ( $reactions_options['on'] !== '0' ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/reactions/GigyaReactionsSet.php';
 			$reactions = new GigyaReactionsSet();
 			$content   = $reactions->setDefaultPosition( $content );
@@ -412,7 +412,7 @@ class GigyaAction {
 
 		// Comments plugin.
 		$comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
-		if ( ! empty( $comments_options['on'] ) ) {
+		if ( $comments_options['on'] !== '0' ) {
 
 			// Spider trap.
 			// When a spider detect we render the comment in the HTML for SEO
@@ -538,7 +538,10 @@ function _gigya_get_json( $file ) {
 /**
  * Helper
  */
-function _gigParam( $param, $default = null ) {
+function _gigParam( $param, $default = null, $checkbox_on = null ) {
+	if ( ! empty( $checkbox_on ) ) {
+		return $param === '0' ? '0' : '1';
+	}
 	return ! empty( $param ) ? $param : $default;
 }
 
