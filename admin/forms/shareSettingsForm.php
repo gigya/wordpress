@@ -7,9 +7,9 @@ function shareSettingsForm() {
 	$form   = array();
 
 	$form['on'] = array(
-			'type'    => 'checkbox',
-			'label'   => __( 'Enable Share Plugin' ),
-			'value'   => $values['on'] === '0' ? '0' :'1'
+			'type'  => 'checkbox',
+			'label' => __( 'Enable Share Plugin' ),
+			'value' => $values['on'] === '0' ? '0' : '1'
 	);
 
 	$form['position'] = array(

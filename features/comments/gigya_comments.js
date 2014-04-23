@@ -4,7 +4,8 @@
 
 // --------------------------------------------------------------------
 
-    var showComments = function ( cid ) {
+    var showComments = function ( cid, gigyaCommentsParams ) {
+
       if ( typeof gigyaCommentsParams == 'undefined' || typeof cid == 'undefined' ) {
         return false;
       }
@@ -15,7 +16,8 @@
     }
 // --------------------------------------------------------------------
 
-    var showRating = function ( rid, cid ) {
+    var showRating = function ( rid, cid, gigyaCommentsParams ) {
+
       var ratingParams = {
         categoryID      : gigyaCommentsParams.categoryID,
         streamID        : gigyaCommentsParams.streamID,
@@ -30,12 +32,17 @@
     $( '.gigya-comments-widget' ).each( function ( index, value ) {
       var cid = 'gigya-comments-widget-' + index;
       $( this ).attr( 'id', cid );
-      showComments( cid );
+
+      // Get the data.
+      var dataEl = $( '#' + cid ).next( 'script.data-comments' );
+      var gigyaCommentsParams = JSON.parse( dataEl.text() );
+
+      showComments( cid, gigyaCommentsParams );
 
       if ( typeof gigyaCommentsParams != 'undefined' && gigyaCommentsParams.rating == true ) {
         var rid = 'gigya-rating-widget-' + index;
         $( this ).siblings( '.gigya-rating-widget' ).attr( 'id', rid );
-        showRating( rid, cid );
+        showRating( rid, cid, gigyaCommentsParams );
       }
     } );
 

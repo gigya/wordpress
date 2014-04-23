@@ -16,7 +16,7 @@ class GigyaInstall {
 		$this->reactions_options = get_option( GIGYA__SETTINGS_REACTIONS );
 		$this->gm_options        = get_option( GIGYA__SETTINGS_GM );
 		$this->feed_options      = get_option( GIGYA__SETTINGS_FEED );
-		$this->log      				 = get_option( 'gigya_log' );
+		$this->log               = get_option( 'gigya_log' );
 	}
 
 	/**
@@ -149,7 +149,7 @@ class GigyaInstall {
 
 		// Update old (v4.0) share options if exist.
 		if ( ! empty( $old['share_plugin'] ) && $old['share_plugin'] != 'none' ) {
-			$this->share_options['on'] = 1;
+			$this->share_options['on']       = 1;
 			$this->share_options['position'] = $old['share_plugin'] == 'both' ? 'top' : $old['share_plugin'];
 		}
 		$this->setVar( $this->share_options, 'showCounts', $old['share_show_counts'] );

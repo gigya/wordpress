@@ -9,17 +9,17 @@ function commentsSettingsForm() {
 	$form['on'] = array(
 			'type'  => 'checkbox',
 			'label' => __( 'Enable Gigya Comments' ),
-			'value' => $values['on'] === '0' ? '0' :'1'
+			'value' => $values['on'] === '0' ? '0' : '1'
 	);
 
 	$form['position'] = array(
-			'type'  => 'select',
+			'type'    => 'select',
 			'options' => array(
-				'under' => __('Under Post'),
-				'none'  => __('None')
+					'under' => __( 'Under Post' ),
+					'none'  => __( 'None' )
 			),
-			'label' => __( 'Comments position' ),
-			'value' => _gigParam( $values['position'], 'under' ),
+			'label'   => __( 'Comments position' ),
+			'value'   => _gigParam( $values['position'], 'under' ),
 	);
 
 	$form['rating'] = array(

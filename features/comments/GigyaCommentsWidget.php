@@ -37,12 +37,27 @@ class GigyaComments_Widget extends WP_Widget {
 		$output = '';
 		$title  = apply_filters( 'widget_title', $instance['title'] );
 
+		// Get the data from the argument.
+		require_once GIGYA__PLUGIN_DIR . 'features/comments/GigyaCommentsSet.php';
+		$comments = new GigyaCommentsSet();
+		$data     = $comments->getParams();
+
+		// Override params or take the defaults.
+		if ( ! empty( $instance['override'] ) ) {
+			foreach ( $instance as $key => $value ) {
+				if ( ! empty( $value ) ) {
+					$data[$key] = esc_attr( $value );
+				}
+			}
+		}
+
 		$output .= $args['before_widget'];
 		if ( ! empty( $title ) ) {
 			$output .= $args['before_title'] . $title . $args['after_title'];
 		}
 
-		$output .= _gigya_render_tpl( 'admin/tpl/comments.tpl.php' );
+		$output .= _gigya_render_tpl( 'admin/tpl/comments.tpl.php', array( 'data' => $data ) );
+
 		$output .= $args['after_widget'];
 
 		return $output;
@@ -69,6 +84,30 @@ class GigyaComments_Widget extends WP_Widget {
 				'name'  => $this->get_field_name( 'title' )
 		);
 
+		$form[$this->get_field_id( 'override' )] = array(
+				'type'  => 'checkbox',
+				'value' => _gigParam( esc_attr( $instance['override'] ), '' ),
+				'label' => __( 'Override' ),
+				'class' => 'gigya-widget-override',
+				'name'  => $this->get_field_name( 'override' )
+		);
+
+		$form[$this->get_field_id( 'rating' )] = array(
+				'type'  => 'checkbox',
+				'label' => __( 'Rating Mode' ),
+				'value' => _gigParam( esc_attr( $instance['rating'] ), 0 ),
+				'name'  => $this->get_field_name( 'rating' )
+		);
+
+		$form[$this->get_field_id( 'categoryID' )] = array(
+				'type'  => 'text',
+				'label' => __( 'Category ID' ),
+				'value' => _gigParam( esc_attr( $instance['categoryID'] ), '' ),
+				'desc'  => __( "The category ID on 'Comments category name' at Gigya's settings" ) . ' ' . '<a href=https://platform.gigya.com/Site/partners/Settings.aspx#cmd=Settings.CommentsSetup>' . __( 'here' ) . '</a>',
+				'class' => 'size',
+				'name'  => $this->get_field_name( 'categoryID' )
+
+		);
 		echo _gigya_form_render( $form );
 	}
 

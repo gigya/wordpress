@@ -375,7 +375,7 @@ class GigyaAction {
 
 		// Activity Feed Widget.
 		$feed_options = get_option( GIGYA__SETTINGS_FEED );
-		if (  $feed_options['on'] !== '0' ) {
+		if ( $feed_options['on'] !== '0' ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/feed/GigyaFeedWidget.php';
 			register_widget( 'GigyaFeed_Widget' );
 		}
@@ -391,7 +391,7 @@ class GigyaAction {
 	public function theContent( $content ) {
 		// Share plugin.
 		$share_options = get_option( GIGYA__SETTINGS_SHARE );
-		if (  $share_options['on'] !== '0' ) {
+		if ( $share_options['on'] !== '0' ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareSet.php';
 			$share   = new GigyaShareSet();
 			$content = $share->setDefaultPosition( $content );
@@ -421,10 +421,6 @@ class GigyaAction {
 				// Override default WP comments template with comment spider.
 				return GIGYA__PLUGIN_DIR . 'admin/tpl/comments-spider.tpl.php';
 			}
-
-			require_once GIGYA__PLUGIN_DIR . 'features/comments/GigyaCommentsSet.php';
-			$comments = new GigyaCommentsSet();
-			$comments->init();
 
 			// Override default WP comments template.
 			return GIGYA__PLUGIN_DIR . 'admin/tpl/comments.tpl.php';
@@ -538,10 +534,7 @@ function _gigya_get_json( $file ) {
 /**
  * Helper
  */
-function _gigParam( $param, $default = null, $checkbox_on = null ) {
-	if ( ! empty( $checkbox_on ) ) {
-		return $param === '0' ? '0' : '1';
-	}
+function _gigParam( $param, $default = null ) {
 	return ! empty( $param ) ? $param : $default;
 }
 

@@ -13,21 +13,9 @@ class GigyaCommentsSet {
 		$this->comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
 		$this->feed_options     = get_option( GIGYA__SETTINGS_FEED );
 
-	}
-
-	/**
-	 * This is Gigya login AJAX callback
-	 */
-	public function init() {
-
 		// Load custom Gigya comments script.
 		wp_enqueue_script( 'gigya_comments_js', GIGYA__PLUGIN_URL . 'features/comments/gigya_comments.js' );
 		wp_enqueue_style( 'gigya_comments_css', GIGYA__PLUGIN_URL . 'features/comments/gigya_comments.css' );
-
-		$params = $this->getParams();
-
-		// Load params to be available on client-side script.
-		wp_localize_script( 'gigya_comments_js', 'gigyaCommentsParams', $params );
 
 	}
 

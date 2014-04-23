@@ -9,7 +9,7 @@ function feedSettingsForm() {
 	$form['on'] = array(
 			'type'  => 'checkbox',
 			'label' => __( 'Enable Activity Feed' ),
-			'value' => $values['on'] === '0' ? '0' :'1'
+			'value' => $values['on'] === '0' ? '0' : '1'
 	);
 
 	$form['privacy'] = array(

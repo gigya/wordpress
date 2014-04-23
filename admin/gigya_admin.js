@@ -8,7 +8,7 @@
      * @param $el
      */
     var userManagementPage = function ( $el ) {
-      $('.raas_enabled' ).find( '.gigya-raas-warn' ).addClass('hidden');
+      $( '.raas_enabled' ).find( '.gigya-raas-warn' ).addClass( 'hidden' );
       if ( $el.is( ':checked' ) ) {
         if ( $el.val() == 'wp_only' ) {
           $( '.social-login-wrapper' ).addClass( 'hidden' );
@@ -17,7 +17,7 @@
         else if ( $el.val() == 'wp_sl' ) {
           $( '.social-login-wrapper' ).removeClass( 'hidden' );
           $( '.raas-login-wrapper' ).addClass( 'hidden' );
-          $('.raas_enabled' ).find( '.gigya-raas-warn' ).removeClass('hidden');
+          $( '.raas_enabled' ).find( '.gigya-raas-warn' ).removeClass( 'hidden' );
         }
         else if ( $el.val() == 'raas' ) {
           $( '.social-login-wrapper' ).addClass( 'hidden' );

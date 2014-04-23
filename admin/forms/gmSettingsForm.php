@@ -9,7 +9,7 @@ function gmSettingsForm() {
 	$form['on'] = array(
 			'type'  => 'checkbox',
 			'label' => __( 'Enable Gamification plugin' ),
-			'value' => $values['on'] === '0' ? '0' :'1'
+			'value' => $values['on'] === '0' ? '0' : '1'
 	);
 
 	$form['notification'] = array(
