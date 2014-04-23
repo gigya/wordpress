@@ -218,6 +218,7 @@ class GigyaAction {
 
 			// Checking the WP for store Gigya's uid.
 			$guid = get_user_meta( $account->ID, 'gigya_uid' );
+			$guid = $guid[0];
 			if ( ! empty( $guid ) ) {
 				// When there is, it's means there where
 				// un-verified email registration, so we

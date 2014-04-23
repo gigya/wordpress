@@ -166,7 +166,8 @@ class GigyaLoginAjax {
 					'type' => 'form',
 					'html' => wp_login_form( array(
 							'echo'           => false,
-							'value_username' => $wp_user->data->user_login
+							'value_username' => $wp_user->data->user_login,
+							'redirect'       => _gigParam( $this->login_options['redirect'], user_admin_url() )
 					) ) ) );
 		}
 
@@ -213,7 +214,6 @@ class GigyaLoginAjax {
 
 		$output = '';
 		$output .= '<form id="link-accounts-form">';
-//		$output .= '<form name="loginform" id="loginform" action="' . site_url( 'wp-login.php', 'login_post' ) . '" method="post">';
 
 		// Set form elements.
 		$form            = array();

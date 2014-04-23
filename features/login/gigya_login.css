@@ -15,3 +15,7 @@
 .gigya-register-extra .title {
 	margin-bottom: 10px;
 }
+
+#dialog-modal #loginform .login-username {
+	display: none;
+}
