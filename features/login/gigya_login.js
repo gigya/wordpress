@@ -238,7 +238,7 @@
 
 // --------------------------------------------------------------------
 
-    var linkAccounts = function() {
+    var linkAccounts = function () {
       var formData = $( this ).serialize();
 
       var options = {
@@ -255,7 +255,7 @@
 
       req.done( function ( res ) {
         if ( res.success == true ) {
-          location.replace(gigyaLoginParams.redirect)
+          location.replace( gigyaLoginParams.redirect )
         }
         else {
           if ( typeof res.data != 'undefined' ) {

@@ -179,7 +179,7 @@ class GigyaLoginAjax {
 	 * AJAX submission of link account form.
 	 */
 	public function linkAccounts() {
-		parse_str($_POST['data'], $data);
+		parse_str( $_POST['data'], $data );
 
 		$creds = array(
 				'user_login'    => $data['log'],
@@ -198,9 +198,8 @@ class GigyaLoginAjax {
 			}
 
 			// Return JSON to client.
-			wp_send_json_error(array( 'msg' => $msg ));
-		}
-		else {
+			wp_send_json_error( array( 'msg' => $msg ) );
+		} else {
 			wp_send_json_success();
 		}
 	}

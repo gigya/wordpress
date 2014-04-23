@@ -80,7 +80,7 @@ class GigyaSettings {
 						'slug'  => 'gigya_global_settings'
 				),
 				'gigya_login_settings'     => array(
-						'title' => 'User Management',
+						'title' => 'User Management Settings',
 						'func'  => 'loginSettingsForm',
 						'slug'  => 'gigya_login_settings'
 				),

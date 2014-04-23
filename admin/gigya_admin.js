@@ -130,7 +130,7 @@
 
 // --------------------------------------------------------------------
 
-    $('.raas_disabled' ).find('input[value="raas"]' ).attr('disabled', 'disabled' ).parent('label').css('color', '#ccc');
+    $( '.raas_disabled' ).find( 'input[value="raas"]' ).attr( 'disabled', 'disabled' ).parent( 'label' ).css( 'color', '#ccc' );
 
 // --------------------------------------------------------------------
   } );

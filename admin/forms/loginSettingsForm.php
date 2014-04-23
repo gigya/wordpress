@@ -8,13 +8,12 @@ function loginSettingsForm() {
 
 	$form['mode'] = array(
 			'type'    => 'radio',
-			'label'   => __( 'Login Mode' ),
 			'options' => array(
 					'wp_only' => __( 'Wordpress only' ),
 					'wp_sl'   => __( 'Wordpress + Social Login' ),
-					'raas'    => __( 'Registration-as-a-Service' )
+					'raas'    => __( 'Registration-as-a-Service <small>Selecting this option overrides Drupal\'s user management system. This requires additional administration steps. Learn more here</small>' )
 			),
-			'desc'    => __( 'By activate Gigya\'s Social Login or Gigya\'s RaaS Login, you also activate "Anyone can register" option on Wordpress General Settings page'),
+//			'desc'    => __( 'By activate Gigya\'s Social Login or Gigya\'s RaaS Login, you also activate "Anyone can register" option on Wordpress General Settings page' ),
 			'value'   => _gigParam( $values['mode'], 'wp_only' )
 	);
 
@@ -114,6 +113,14 @@ function loginSettingsForm() {
 			'markup' => '<div class="raas-login-wrapper">'
 	);
 
+	$form['raas_txt'] = array(
+			'markup' => '<h4>Registration-as-a-Service Settings</h4><small><span>Please make sure to initially configure RaaS in Gigya\'s site. Go to the <a class="link-https" target="_blank" rel="external nofollow" href="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets" title="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets">UI Builder</a> page after logging in to Gigya\'s site. The page presents the list of predefined default screen-sets, each has an ID. Click on the "Visual Editor" link next to a screen-set that you wish to use. This will open the <a class="external" target="_blank" title="010_Developer_Guide/10_UM360/040_Raas/020_UI_Builder#Visual_Editor" rel="internal" href="http://dev-wiki.gigya.com/010_Developer_Guide/10_UM360/040_Raas/020_UI_Builder#Visual_Editor">Visual Editor</a> window. You can modify the screens, or just hit the "Save" button to activate it. Please make sure that the screen-sets IDs that are defined below match the IDs of the screen-sets you have configured in the <a class="link-https" target="_blank" rel="external nofollow" href="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets" title="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets">UI Builder</a> page.</span></small>'
+	);
+
+	$form['raas_screens'] = array(
+			'markup' => '<h4>Login/Registration Screen Sets</h4>'
+	);
+
 	$form['raasWebScreen'] = array(
 			'type'  => 'text',
 			'label' => __( 'Web Screen Set ID' ),
@@ -138,6 +145,10 @@ function loginSettingsForm() {
 			'value' => _gigParam( $values['raasRegisterScreen'], 'gigya-register-screen' )
 	);
 
+	$form['raas_profile_screens'] = array(
+			'markup' => '<h4>Profile Screen Sets</h4>'
+	);
+
 	$form['raasProfileWebScreen'] = array(
 			'type'  => 'text',
 			'label' => __( 'Web Screen Set ID' ),
@@ -153,13 +164,12 @@ function loginSettingsForm() {
 	$form['raasOverrideLinks'] = array(
 			'type'  => 'checkbox',
 			'label' => __( 'Override Wordpress Link' ),
-			'desc'  => __( "Checking this will overriding of WordPress's default 'Login', 'Registration' and 'Edit Profile' links" ),
+			'desc'  => __( 'Checking this checkbox, WordPress\'s default "Login", "Registration" and "Edit Profile" links will pop-up RaaS\'s respective screens instead of redirecting to the WordPress screens.' ),
 			'value' => $values['raasOverrideLinks'] === '0' ? '0' : '1'
 	);
 
 	$form['raas_divs'] = array(
-			'markup' => __( 'DIV IDs' ) . '<br>' .
-					'<small>' . __( 'Specify the DIV IDs in which to embed the screen-sets. If the IDs are empty (default), then the screen-set would show as pop-up dialogs' ) . '<small>'
+			'markup' => '<h4>DIV IDs</h4><small>' . __( 'Specify the DIV IDs in which to embed the screen-sets. If the IDs are empty (default), then the screen-set would show as pop-up dialogs' ) . '<small>'
 	);
 
 	$form['raasLoginDiv'] = array(
