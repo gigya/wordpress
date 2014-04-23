@@ -4,7 +4,7 @@
  */
 $comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
 ?>
-<?php if ( empty( $comments_options['hide'] ) ) : ?>
+<?php if ( $comments_options['position'] !== 'none') : ?>
 	<?php if ( ! empty( $comments_options['rating'] ) ) : ?>
 		<div class="gigya-rating-widget"></div>
 	<?php endif ?>

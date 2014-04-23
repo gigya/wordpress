@@ -12,16 +12,19 @@ function commentsSettingsForm() {
 			'value' => $values['on'] === '0' ? '0' :'1'
 	);
 
-	$form['hide'] = array(
-			'type'  => 'checkbox',
-			'label' => __( 'Disabled default Comments position' ),
-			'value' => _gigParam( $values['hide'], 0 ),
-			'desc'  => __( "Checking this will disabled the default comment position, but still let you use<br> Gigya's comments widgets to position comments location on the page layout" )
+	$form['position'] = array(
+			'type'  => 'select',
+			'options' => array(
+				'under' => __('Under Post'),
+				'none'  => __('None')
+			),
+			'label' => __( 'Comments position' ),
+			'value' => _gigParam( $values['position'], 'under' ),
 	);
 
 	$form['rating'] = array(
 			'type'  => 'checkbox',
-			'label' => __( 'Include Rating plugin' ),
+			'label' => __( 'Rating Mode' ),
 			'value' => _gigParam( $values['rating'], 0 ),
 	);
 
