@@ -178,22 +178,17 @@ class GigyaLoginAjax {
 	 * AJAX submission of link account form.
 	 */
 	public function linkAccounts() {
-		$data = $_POST['data'];
+		parse_str($_POST['data'], $data);
 
-		$creds = array();
-		foreach ($data as $p) {
-			if ($p['name'] == 'log') {
-				$creds['user_login'] = $p['value'];
-			}
-			elseif ($p['name'] == 'pwd') {
-				$creds['user_password'] = $p['value'];
-			}
-		}
+		$creds = array(
+				'user_login'    => $data['log'],
+				'user_password' => $data['pwd']
+		);
 
 		$user = wp_signon( $creds );
 
-		// On registration error.
-		if ( ! empty( $user->errors ) ) {
+		// On login error.
+		if ( isset( $user->errors ) ) {
 			$msg = '';
 			foreach ( $user->errors as $error ) {
 				foreach ( $error as $err ) {
@@ -202,7 +197,7 @@ class GigyaLoginAjax {
 			}
 
 			// Return JSON to client.
-			wp_send_json_error(  );
+			wp_send_json_error(array( 'msg' => $msg ));
 		}
 		else {
 			wp_send_json_success();
@@ -217,7 +212,7 @@ class GigyaLoginAjax {
 	private function linkAccountForms() {
 
 		$output = '';
-		$output .= '<form name="linkAccounts" id="link-accounts-form" action="">';
+		$output .= '<form id="link-accounts-form">';
 //		$output .= '<form name="loginform" id="loginform" action="' . site_url( 'wp-login.php', 'login_post' ) . '" method="post">';
 
 		// Set form elements.
@@ -248,7 +243,7 @@ class GigyaLoginAjax {
 
 		// Render form elements.
 		$output .= _gigya_form_render( $form );
-		$output .= '<input type="submit" name="wp-submit" id="gigya-submit" class="button button-primary button-large" value="Log In" />';
+		$output .= '<input type="button" id="gigya-submit" class="button button-primary button-large" value="Log In" />';
 		$output .= '</form>';
 
 		return $output;
@@ -297,7 +292,7 @@ class GigyaLoginAjax {
 		$output .= do_action( 'register_form' );
 
 		// Add submit button.
-		$output .= '<input type="submit" name="wp-submit" id="gigya-submit" class="button button-primary button-large" value="' . $submit_value . '">';
+		$output .= '<input type="submit" id="gigya-submit" class="button button-primary button-large" value="' . $submit_value . '">';
 		$output .= '</form>';
 
 		// Tokens replace.

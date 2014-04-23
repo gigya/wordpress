@@ -238,9 +238,8 @@
 
 // --------------------------------------------------------------------
 
-    $( document ).on( 'submit', '#link-accounts-form', function () {
-      var formData = $( this ).serializeArray();
-//      var formData = JSON.stringify( formArr );
+    var linkAccounts = function() {
+      var formData = $( this ).serialize();
 
       var options = {
         type: 'POST',
@@ -256,23 +255,27 @@
 
       req.done( function ( res ) {
         if ( res.success == true ) {
-
+          location.replace(gigyaLoginParams.redirect)
         }
         else {
           if ( typeof res.data != 'undefined' ) {
-            $( '#dialog-modal' ).prepend( res.data.msg);
+            $( '#dialog-modal' ).prepend( res.data.msg );
           }
         }
-      });
-
-      req.fail( function ( jqXHR, textStatus, errorThrown ) {
-        console.log( errorThrown );
       } );
 
+      req.fail( function ( jqXHR, textStatus, errorThrown ) {
+        console.log( jqXHR.statusCode() );
+      } );
+    }
+
+    $( document ).on( 'click', '#link-accounts-form #gigya-submit', function () {
+      linkAccounts();
     } );
+
+  } );
 
 // --------------------------------------------------------------------
 
-  } );
 })( jQuery );
 

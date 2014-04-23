@@ -152,9 +152,9 @@ function loginSettingsForm() {
 
 	$form['raasOverrideLinks'] = array(
 			'type'  => 'checkbox',
-			'label' => __( 'Disabled Override Wordpress Link' ),
-			'desc'  => __( "Checking this will disabled the overriding of WordPress's default 'Login', 'Registration' and 'Edit Profile' links" ),
-			'value' => _gigParam( $values['raasOverrideLinks'], 0 )
+			'label' => __( 'Override Wordpress Link' ),
+			'desc'  => __( "Checking this will overriding of WordPress's default 'Login', 'Registration' and 'Edit Profile' links" ),
+			'value' => $values['raasOverrideLinks'] === '0' ? '0' : '1'
 	);
 
 	$form['raas_divs'] = array(
