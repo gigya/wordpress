@@ -19,6 +19,14 @@
 	display: block;
 }
 
+.gigya-settings .hidden {
+	display: none;
+}
+
+.gigya-settings .gigya-raas-warn {
+	color: red;
+}
+
 .row {
 	margin: 10px 0;
 }

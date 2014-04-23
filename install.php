@@ -16,6 +16,7 @@ class GigyaInstall {
 		$this->reactions_options = get_option( GIGYA__SETTINGS_REACTIONS );
 		$this->gm_options        = get_option( GIGYA__SETTINGS_GM );
 		$this->feed_options      = get_option( GIGYA__SETTINGS_FEED );
+		$this->log      				 = get_option( 'gigya_log' );
 	}
 
 	/**
@@ -51,6 +52,10 @@ class GigyaInstall {
 
 		if ( empty ( $this->feed_options ) ) {
 			add_option( GIGYA__SETTINGS_FEED, array(), '', 'no' );
+		}
+
+		if ( empty ( $this->log ) ) {
+			add_option( 'gigya_log', array(), '', 'no' );
 		}
 
 		$this->upgrade();

@@ -10,17 +10,17 @@ function loginSettingsForm() {
 			'type'    => 'radio',
 			'options' => array(
 					'wp_only' => __( 'Wordpress only' ),
-					'wp_sl'   => __( 'Wordpress + Social Login' ),
+					'wp_sl'   => __( 'Wordpress + Social Login <small class="gigya-raas-warn hidden">Warning: this site is configured on Gigya server to use Registration-as-a-Service. Please contact your Gigya account manager for migration instruction.</small>' ),
 					'raas'    => __( 'Registration-as-a-Service <small>Selecting this option overrides Drupal\'s user management system. This requires additional administration steps. Learn more here</small>' )
 			),
-//			'desc'    => __( 'By activate Gigya\'s Social Login or Gigya\'s RaaS Login, you also activate "Anyone can register" option on Wordpress General Settings page' ),
-			'value'   => _gigParam( $values['mode'], 'wp_only' )
+			'value'   => _gigParam( $values['mode'], 'wp_only' ),
+			'class'   => 'raas_disabled'
 	);
 
 	$c       = new GigyaCMS();
 	$is_raas = $c->isRaaS();
-	if ( empty( $is_raas ) ) {
-		$form['mode']['class'] = 'raas_disabled';
+	if ( ! empty( $is_raas ) ) {
+		$form['mode']['class'] = 'raas_enabled';
 	}
 
 	$form['sl_start'] = array(
