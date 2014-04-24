@@ -53,11 +53,9 @@ class GigyaCMS {
 		$err_code = $response->getErrorCode();
 		if ( $err_code != 0 ) {
 
-			// Set global debug on the CMS
-			$gigya_debug = GIGYA__API_DEBUG;
-
-			if ( ! empty( $gigya_debug ) ) {
-				error_log( $response->getLog() );
+			if ( function_exists( '_gigya_error_log' ) ) {
+				$log = explode("\r\n", $response->getLog());
+				_gigya_error_log( $log );
 			}
 		} else {
 			if ( ! empty( $user_info ) ) {

@@ -99,7 +99,7 @@ function globalSettingsForm() {
 			'type'  => 'checkbox',
 			'label' => __( 'Enable Gigya debug log' ),
 			'value' => _gigParam( $values['debug'], 0 ),
-//			'desc'  => __( 'Log all Gigya\'s requests and responses into a "GigyaDebugLog" file.' )
+			'desc'  => __( 'Log all Gigya\'s requests and responses.' ) . ' <a target="_blank" href="' . admin_url( 'gigya-log' ) . '">' . __( 'here' ) . '</a>'
 	);
 
 	echo _gigya_form_render( $form, GIGYA__SETTINGS_GLOBAL );

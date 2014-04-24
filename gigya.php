@@ -21,7 +21,7 @@ define( 'GIGYA__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GIGYA__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'GIGYA__CDN_PROTOCOL', ! empty( $_SERVER['HTTPS'] ) ? 'https://cdns' : 'http://cdn' );
 define( 'GIGYA__JS_CDN', GIGYA__CDN_PROTOCOL . '.gigya.com/js/socialize.js?apiKey=' );
-
+define( 'GIGYA__LOG_LIMIT', 50 );
 
 /**
  * Gigya constants for admin settings sections.
@@ -67,7 +67,7 @@ class GigyaAction {
 		define( 'GIGYA__API_KEY', $this->global_options['api_key'] );
 		define( 'GIGYA__API_SECRET', $this->global_options['api_secret'] );
 		define( 'GIGYA__API_DOMAIN', $this->global_options['data_center'] );
-		define( 'GIGYA__API_DEBUG', $this->global_options['login_gigya_debug'] );
+		define( 'GIGYA__API_DEBUG', $this->global_options['debug'] );
 
 		add_action( 'init', array( $this, 'init' ) );
 		add_action( 'admin_action_update', array( $this, 'adminActionUpdate' ) );
@@ -85,6 +85,7 @@ class GigyaAction {
 		add_action( 'wp_logout', array( $this, 'wpLogout' ) );
 		add_action( 'delete_user', array( $this, 'deleteUser' ) );
 		add_action( 'widgets_init', array( $this, 'widgetsInit' ) );
+		add_action( 'template_redirect', array( $this, 'templateRedirect' ) );
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 		add_filter( 'the_content', array( $this, 'theContent' ) );
 		add_filter( 'comments_template', array( $this, 'commentsTemplate' ) );
@@ -385,6 +386,16 @@ class GigyaAction {
 		register_widget( 'GigyaFollow_Widget' );
 	}
 
+	public function templateRedirect() {
+		if ( rtrim( $_GET['q'], '/' ) === 'wp-admin/gigya-log' ) {
+			if ( current_user_can( 'manage_options' ) ) {
+				$log = get_option( 'gigya_log' );
+				echo _gigya_render_tpl( 'admin/tpl/log.tpl.php', array( 'log' => $log ) );
+				exit;
+			}
+		}
+	}
+
 	/**
 	 * Hook content alter.
 	 */
@@ -524,18 +535,53 @@ function _gigya_form_render( $form, $name_prefix = '' ) {
  * @return bool|string
  */
 function _gigya_get_json( $file ) {
-
 	$path = GIGYA__PLUGIN_DIR . $file . '.json';
 	$json = file_get_contents( $path );
 	return ! empty( $json ) ? $json : FALSE;
-
 }
+
+// --------------------------------------------------------------------
 
 /**
  * Helper
  */
 function _gigParam( $param, $default = null ) {
 	return ! empty( $param ) ? $param : $default;
+}
+
+// --------------------------------------------------------------------
+
+/**
+ * Implements _gigya_error_log from gigyaCMS().
+ *
+ * @param $new_log
+ *
+ * @internal param $log
+ */
+function _gigya_error_log( $new_log ) {
+	// Get global debug.
+	$gigya_debug = GIGYA__API_DEBUG;
+	if ( ! empty( $gigya_debug ) && is_array( $new_log ) ) {
+
+		// Get to existing log from DB.
+		$exist_log = get_option( 'gigya_log' );
+
+		// Initialize if there is no existing one.
+		if ( ! is_array( $exist_log ) ) {
+			$exist_log = array();
+		}
+
+		// Push new entries to the beginning of the array.
+		foreach ( $new_log as $entry ) {
+			array_unshift( $exist_log, $entry );
+		}
+
+		// Cut the array to max limit log entries.
+		$log = array_slice( $exist_log, 0, GIGYA__LOG_LIMIT );
+
+		// Update the DB with new entries.
+		update_option( 'gigya_log', $log );
+	}
 }
 
 // --------------------------------------------------------------------
