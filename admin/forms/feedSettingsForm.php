@@ -8,8 +8,9 @@ function feedSettingsForm() {
 
 	$form['on'] = array(
 			'type'  => 'checkbox',
-			'label' => __( 'Enable Activity Feed' ),
-			'value' => $values['on'] === '0' ? '0' : '1'
+			'label' => __( 'Enable Activity Feed Plugins' ),
+			'value' => $values['on'] === '0' ? '0' : '1',
+			'desc'  => __( 'Enable Sharing to Activity Feed' )
 	);
 
 	$form['privacy'] = array(

@@ -8,14 +8,14 @@ function reactionsSettingsForm() {
 
 	$form['on'] = array(
 			'type'    => 'checkbox',
-			'label'   => __( 'Enable Reaction Plugin' ),
+			'label'   => __( 'Enable Reactions Plugin' ),
 			'default' => 0,
 			'value'   => $values['on'] === '0' ? '0' : '1'
 	);
 
 	$form['position'] = array(
 			'type'    => 'select',
-			'label'   => __( 'Set the position of the reactions widget in a post page' ),
+			'label'   => __( 'Set the position of the Reactions in a post page' ),
 			'options' => array(
 					"none"   => __( "None" ),
 					"bottom" => __( "Bottom" ),
@@ -23,14 +23,14 @@ function reactionsSettingsForm() {
 					"both"   => __( "Both" ),
 			),
 			'value'   => _gigParam( $values['position'], 'none' ),
-			'desc'    => __( 'You can also find Gigya Reactions widget in the widgets settings page.' )
+			'desc'    => sprintf( __( 'You can also add and position Gigya Reactions using the %s settings page.' ), '<a href="' . admin_url( 'widgets.php' ) . '">' . __( 'Widgets' ) . '</a>' )
 	);
 
 	$form['enabledProviders'] = array(
 			'type'  => 'text',
 			'label' => __( 'Providers' ),
-			'value' => _gigParam( $values['enabledProviders'], 'reactions,facebook-like,google-plusone,twitter,email' ),
-			'desc'  => __( 'Leave empty or type * for all providers or define specific providers, for example: facebook,twitter,google,linkedin' )
+			'value' => _gigParam( $values['enabledProviders'], '*' ),
+			'desc'  => __( 'Comma separated list of share providers that would be included. For example: facebook,twitter,linkedin. Leave empty or type * for all providers. See the entire list of available' ) . ' <a href="http://developers.gigya.com/020_Client_API/010_Socialize/socialize.showReactionsBarUI">Providers</a>'
 	);
 
 	$form['showCounts'] = array(
@@ -86,14 +86,16 @@ function reactionsSettingsForm() {
 	$form['buttons'] = array(
 			'type'  => 'textarea',
 			'label' => __( 'Reaction Buttons' ),
-			'value' => _gigParam( $values['buttons'], _gigya_get_json( 'admin/forms/json/default_reaction' ) )
+			'value' => _gigParam( $values['buttons'], _gigya_get_json( 'admin/forms/json/default_reaction' ) ),
+			'desc'  => sprinf(__('Please enter an array of %s, representing the buttons to display in the Reactions bar.'), '<a href="http://developers.gigya.com/020_Client_API/010_Socialize/socialize.showReactionsBarUI#Reaction_Object">'. _('Reaction objects') .'</a>')
 	);
 
 	$form['advanced'] = array(
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced)" ),
 			'value' => _gigParam( $values['advanced'], '' ),
-			'desc'  => __( 'Enter valid JSON format' ) . ' <br> ' . __( 'See list of available:' ) . '<a href="http://developers.gigya.com/020_Client_API/010_Socialize/socialize.showReactionsBarUI" target="_blank">parameters</a>'
+			'desc'  => __( 'Enter valid JSON format. See list of available' ) . ' <a href="http://developers.gigya.com/020_Client_API/010_Socialize/socialize.showReactionsBarUI">' . __( 'parameters' ) . '</a>'
+
 	);
 
 	echo _gigya_form_render( $form, GIGYA__SETTINGS_REACTIONS );

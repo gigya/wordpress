@@ -8,7 +8,7 @@ function gmSettingsForm() {
 
 	$form['on'] = array(
 			'type'  => 'checkbox',
-			'label' => __( 'Enable Gamification plugin' ),
+			'label' => __( 'Enable Gamification Plugins' ),
 			'value' => $values['on'] === '0' ? '0' : '1'
 	);
 
