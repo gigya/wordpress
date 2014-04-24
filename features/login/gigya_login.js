@@ -149,7 +149,12 @@
      * @returns {boolean}
      */
     var loginValidate = function ( response ) {
+      // Came from site.
       if ( response.provider === 'site' ) {
+        return false;
+      }
+      // Gigya temp user.
+      if (response.UID.indexOf('_temp_') === 0) {
         return false;
       }
 //      if ( response.source == "showCommentsUI" ) {
