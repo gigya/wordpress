@@ -8,7 +8,7 @@ function shareSettingsForm() {
 
 	$form['on'] = array(
 			'type'  => 'checkbox',
-			'label' => __( 'Enable Share Plugin' ),
+			'label' => __( 'Enable Share Bar Plugin' ),
 			'value' => $values['on'] === '0' ? '0' : '1'
 	);
 
@@ -20,16 +20,16 @@ function shareSettingsForm() {
 					"top"    => __( "Top" ),
 					"both"   => __( "Both" ),
 			),
-			'label'   => __( 'Set the position of the share widget in a post page' ),
+			'label'   => __( 'Set the position of the Share Bar in a post page' ),
 			'value'   => _gigParam( $values['position'], 'none' ),
-			'desc'    => __( 'You can also find Gigya Share widget in the widgets settings page.' )
+			'desc'    => sprintf( __( 'You can also add and position Gigya Share Bar using the %s settings page.' ), '<a href="' . admin_url( 'widgets.php' ) . '">' . __( 'Widgets' ) . '</a>' )
 	);
 
 	$form['shareButtons'] = array(
 			'type'  => 'text',
 			'label' => __( 'Share Providers' ),
 			'value' => _gigParam( $values['shareButtons'], 'share,facebook-like,google-plusone,twitter,email' ),
-			'desc'  => __( 'for example: share,email,pinterest,twitter-tweet,google-plusone,facebook-like' )
+			'desc'  => __( 'For example: share,email,pinterest,twitter-tweet,google-plusone,facebook-like.' )
 	);
 
 	$form['showCounts'] = array(
@@ -76,7 +76,7 @@ function shareSettingsForm() {
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced)" ),
 			'value' => _gigParam( $values['advanced'], '' ),
-			'desc'  => __( 'Enter valid JSON format' )
+			'desc'  => __( 'Enter valid JSON format. See list of available' ) . ' <a htef="http://developers.gigya.com/020_Client_API/020_Methods/socialize.showShareBarUI">' . __( 'parameters' ) . '</a>'
 	);
 
 	echo _gigya_form_render( $form, GIGYA__SETTINGS_SHARE );
