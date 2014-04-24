@@ -95,14 +95,14 @@ function loginSettingsForm() {
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced) LoginUI" ),
 			'value' => _gigParam( $values['advancedLoginUI'], '' ),
-			'desc'  => __( 'Enter validate JSON format' )
+			'desc'  => __( 'Enter valid JSON format. See list of available' ) . ' <a htef="http://developers.gigya.com/030_Gigya_Socialize_API_2.0/030_API_reference/010_Client_API_%28JavaScript%29/Social_service/Socialize.showLoginUI">' . __( 'parameters' ) . '</a>'
 	);
 
 	$form['advancedAddConnectionsUI'] = array(
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced) AddConnectionsUI" ),
 			'value' => _gigParam( $values['advancedAddConnectionsUI'], '' ),
-			'desc'  => __( 'Enter validate JSON format' )
+			'desc'  => __( 'Enter valid JSON format. See list of available' ) . ' <a htef="http://developers.gigya.com/020_Client_API/020_Methods/socialize.showAddConnectionsUI">' . __( 'parameters' ) . '</a>'
 	);
 
 	$form['sl_end'] = array(

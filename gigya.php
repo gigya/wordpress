@@ -71,21 +71,20 @@ class GigyaAction {
 
 		add_action( 'init', array( $this, 'init' ) );
 		add_action( 'admin_action_update', array( $this, 'adminActionUpdate' ) );
-		add_action( 'register_form', array( $this, 'loginForm' ) );
-		add_action( 'login_form', array( $this, 'loginForm' ) );
 		add_action( 'wp_ajax_gigya_login', array( $this, 'ajaxLogin' ) );
 		add_action( 'wp_ajax_nopriv_gigya_login', array( $this, 'ajaxLogin' ) );
 		add_action( 'wp_ajax_gigya_raas', array( $this, 'ajaxRaasLogin' ) );
 		add_action( 'wp_ajax_nopriv_gigya_raas', array( $this, 'ajaxRaasLogin' ) );
 		add_action( 'wp_ajax_link_accounts', array( $this, 'ajaxLinkAccounts' ) );
 		add_action( 'wp_ajax_nopriv_link_accounts', array( $this, 'ajaxLinkAccounts' ) );
+		add_action( 'wp_ajax_debug_log', array( $this, 'ajaxDebugLog' ) );
 		add_action( 'wp_ajax_clean_db', array( $this, 'ajaxCleanDB' ) );
 		add_action( 'wp_login', array( $this, 'wpLogin' ), 10, 2 );
 		add_action( 'user_register', array( $this, 'userRegister' ), 10, 1 );
 		add_action( 'wp_logout', array( $this, 'wpLogout' ) );
 		add_action( 'delete_user', array( $this, 'deleteUser' ) );
 		add_action( 'widgets_init', array( $this, 'widgetsInit' ) );
-		add_action( 'template_redirect', array( $this, 'templateRedirect' ) );
+//		add_action( 'template_redirect', array( $this, 'templateRedirect' ) );
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 		add_filter( 'the_content', array( $this, 'theContent' ) );
 		add_filter( 'comments_template', array( $this, 'commentsTemplate' ) );
@@ -196,6 +195,17 @@ class GigyaAction {
 		require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginAjax.php';
 		$linkAccountsAjax = new GigyaLoginAjax;
 		$linkAccountsAjax->linkAccounts();
+	}
+
+	/**
+	 * Hook AJAX Debug Log.
+	 */
+	public function ajaxDebugLog() {
+		if ( current_user_can( 'manage_options' ) ) {
+			wp_send_json_success( array( 'data' => get_option( 'gigya_log' ) ) );
+		}
+
+		wp_send_json_error();
 	}
 
 	/**
@@ -386,15 +396,18 @@ class GigyaAction {
 		register_widget( 'GigyaFollow_Widget' );
 	}
 
-	public function templateRedirect() {
-		if ( rtrim( $_GET['q'], '/' ) === 'wp-admin/gigya-log' ) {
-			if ( current_user_can( 'manage_options' ) ) {
-				$log = get_option( 'gigya_log' );
-				echo _gigya_render_tpl( 'admin/tpl/log.tpl.php', array( 'log' => $log ) );
-				exit;
-			}
-		}
-	}
+	/**
+	 * Hook template_redirect.
+	 */
+//	public function templateRedirect() {
+//		if ( rtrim( $_GET['q'], '/' ) === 'wp-admin/gigya-log' ) {
+//			if ( current_user_can( 'manage_options' ) ) {
+//				$log = get_option( 'gigya_log' );
+//				echo _gigya_render_tpl( 'admin/tpl/log.tpl.php', array( 'log' => $log ) );
+//				exit;
+//			}
+//		}
+//	}
 
 	/**
 	 * Hook content alter.
@@ -419,6 +432,12 @@ class GigyaAction {
 		return $content;
 	}
 
+	/**
+	 * Hook comments_template.
+	 * @param $comment_template
+	 *
+	 * @return string
+	 */
 	public function commentsTemplate( $comment_template ) {
 
 		// Comments plugin.
@@ -438,6 +457,9 @@ class GigyaAction {
 		}
 	}
 
+	/**
+	 * Hook AJAX Clean DB.
+	 */
 	public function ajaxCleanDB() {
 		if ( current_user_can( 'manage_options' ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'install.php';

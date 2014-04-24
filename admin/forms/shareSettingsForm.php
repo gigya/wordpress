@@ -76,7 +76,7 @@ function shareSettingsForm() {
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced)" ),
 			'value' => _gigParam( $values['advanced'], '' ),
-			'desc'  => __( 'Enter validate JSON format' )
+			'desc'  => __( 'Enter valid JSON format' )
 	);
 
 	echo _gigya_form_render( $form, GIGYA__SETTINGS_SHARE );

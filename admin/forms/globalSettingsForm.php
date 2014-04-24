@@ -86,7 +86,7 @@ function globalSettingsForm() {
 			'type'  => 'textarea',
 			'value' => _gigParam( $values['advanced'], '' ),
 			'label' => __( 'Additional Parameters (advanced)' ),
-			'desc'  => __( 'Enter validate JSON format' ) . ' <br> ' . __( 'See list of available:' ) . ' <a href="http://developers.gigya.com/030_API_reference/010_Client_API/010_Objects/Conf_object" target="_blank">parameters</a>'
+			'desc'  => __( 'Enter valid JSON format' ) . ' <br> ' . __( 'See list of available:' ) . ' <a href="http://developers.gigya.com/030_API_reference/010_Client_API/010_Objects/Conf_object" target="_blank">parameters</a>'
 	);
 
 	$form['google_analytics'] = array(
@@ -99,7 +99,7 @@ function globalSettingsForm() {
 			'type'  => 'checkbox',
 			'label' => __( 'Enable Gigya debug log' ),
 			'value' => _gigParam( $values['debug'], 0 ),
-			'desc'  => __( 'Log all Gigya\'s requests and responses.' ) . ' <a target="_blank" href="' . admin_url( 'gigya-log' ) . '">' . __( 'here' ) . '</a>'
+			'desc'  => __( 'Log all Gigya\'s requests and responses.' ) . ' <a href="javascript:void(0)" class="gigya-debug-log">' . __( 'here' ) . '</a>'
 	);
 
 	echo _gigya_form_render( $form, GIGYA__SETTINGS_GLOBAL );

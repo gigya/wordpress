@@ -93,7 +93,7 @@ function reactionsSettingsForm() {
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced)" ),
 			'value' => _gigParam( $values['advanced'], '' ),
-			'desc'  => __( 'Enter validate JSON format' ) . ' <br> ' . __( 'See list of available:' ) . '<a href="http://developers.gigya.com/020_Client_API/010_Socialize/socialize.showReactionsBarUI" target="_blank">parameters</a>'
+			'desc'  => __( 'Enter valid JSON format' ) . ' <br> ' . __( 'See list of available:' ) . '<a href="http://developers.gigya.com/020_Client_API/010_Socialize/socialize.showReactionsBarUI" target="_blank">parameters</a>'
 	);
 
 	echo _gigya_form_render( $form, GIGYA__SETTINGS_REACTIONS );

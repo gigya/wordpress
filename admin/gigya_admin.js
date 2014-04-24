@@ -132,6 +132,41 @@
 
 // --------------------------------------------------------------------
 
+    /**
+     * Run the clean DB after upgrade script.
+     */
+    var debugLog = function () {
+      var options = {
+        url : gigyaParams.ajaxurl,
+        type: 'POST',
+        data: {
+          data  : '',
+          action: 'debug_log'
+        }
+      };
+
+      var req = $.ajax( options );
+
+      req.done( function ( res ) {
+        if ( res.success == true ) {
+          var pom = document.createElement( 'a' );
+          pom.setAttribute( 'href', 'data:application/json;charset=utf-8,' + encodeURIComponent( JSON.stringify( res.data.data ) ) );
+          pom.setAttribute( 'download', 'gigya-log.json' );
+          pom.click();
+        }
+      } );
+
+      req.fail( function ( jqXHR, textStatus, errorThrown ) {
+        console.log( errorThrown );
+      } );
+    }
+
+    $( document ).on( 'click', '.gigya-debug-log', function () {
+      debugLog();
+    } );
+
+// --------------------------------------------------------------------
+
     $( '.raas_disabled' ).find( 'input[value="raas"]' ).attr( 'disabled', 'disabled' ).parent( 'label' ).css( 'color', '#ccc' );
 
 // --------------------------------------------------------------------
