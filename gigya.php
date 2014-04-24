@@ -84,7 +84,6 @@ class GigyaAction {
 		add_action( 'wp_logout', array( $this, 'wpLogout' ) );
 		add_action( 'delete_user', array( $this, 'deleteUser' ) );
 		add_action( 'widgets_init', array( $this, 'widgetsInit' ) );
-//		add_action( 'template_redirect', array( $this, 'templateRedirect' ) );
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 		add_filter( 'the_content', array( $this, 'theContent' ) );
 		add_filter( 'comments_template', array( $this, 'commentsTemplate' ) );
@@ -108,7 +107,9 @@ class GigyaAction {
 		$params = array(
 				'ajaxurl'                     => admin_url( 'admin-ajax.php' ),
 				'logoutUrl'                   => wp_logout_url(),
-				'connectWithoutLoginBehavior' => _gigParam( $this->login_options['connectWithoutLoginBehavior'], 'loginExistingUser' )
+				'connectWithoutLoginBehavior' => _gigParam( $this->login_options['connectWithoutLoginBehavior'], 'loginExistingUser' ),
+				'jsonExampleURL'              => GIGYA__PLUGIN_URL . 'admin/forms/json/advance_example.json'
+
 		);
 
 		// Let others plugins to modify the global parameters.
@@ -246,12 +247,15 @@ class GigyaAction {
 			}
 		}
 
-		// This post is when there is the same email on the site,
+		// This post vars available when there is the same email on the site,
 		// with the one who try to register and we want to link-accounts
 		// after the user is logged in with password.
-		if ( $_POST['form_name'] == 'loginform-gigya-link-account' && ! empty ( $_POST['gigyaUID'] ) ) {
-			$gigyaCMS = new GigyaCMS();
-			$gigyaCMS->notifyRegistration( $_POST['gigyaUID'], $account->ID );
+		if ( $_POST['action'] == 'link_accounts' && ! empty ( $_POST['data'] ) ) {
+			parse_str( $_POST['data'], $data );
+			if ( ! empty( $data['gigyaUID'] ) ) {
+				$gigyaCMS = new GigyaCMS();
+				$gigyaCMS->notifyRegistration( $data['gigyaUID'], $account->ID );
+			}
 		}
 	}
 
@@ -434,6 +438,7 @@ class GigyaAction {
 
 	/**
 	 * Hook comments_template.
+	 *
 	 * @param $comment_template
 	 *
 	 * @return string

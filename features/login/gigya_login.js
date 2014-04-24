@@ -152,9 +152,9 @@
       if ( response.provider === 'site' ) {
         return false;
       }
-      if ( response.source == "showCommentsUI" ) {
-        return false;
-      }
+//      if ( response.source == "showCommentsUI" ) {
+//        return false;
+//      }
 
       // We check there an email field.
       // Only for the first time.
@@ -238,8 +238,8 @@
 
 // --------------------------------------------------------------------
 
-    var linkAccounts = function () {
-      var formData = $( this ).serialize();
+    var linkAccounts = function ( form ) {
+      var formData = form.serialize();
 
       var options = {
         type: 'POST',
@@ -270,7 +270,7 @@
     }
 
     $( document ).on( 'click', '#link-accounts-form #gigya-submit', function () {
-      linkAccounts();
+      linkAccounts( $('#link-accounts-form') );
     } );
 
   } );
