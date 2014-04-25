@@ -16,7 +16,7 @@ var GigyaWp = GigyaWp || {};
 
     GigyaWp.logout = function ( response ) {
       if ( typeof response.context.id !== 'undefined' ) {
-        document.location = gigyaParams.logoutUrl;
+        location.replace( gigyaParams.logoutUrl );
       }
     }
   } );

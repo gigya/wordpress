@@ -68,7 +68,7 @@ function loginSettingsForm() {
 			'type'  => 'text',
 			'label' => __( 'Post Login Redirect' ),
 			'value' => _gigParam( $values['redirect'], '' ),
-			'desc'  => __( 'Provide a URL to redirect users after they logged-in via Gigya social login' )
+			'desc'  => __( 'Provide a URL to redirect users after they logged-in via Gigya social login. For external address you must include the protocol prefix ( usually: http:// or https:// ).' )
 	);
 
 	$form['enabledProviders'] = array(

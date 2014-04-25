@@ -169,8 +169,24 @@
 
 // --------------------------------------------------------------------
 
+    // Disable the RaaS option when not available.
     $( '.raas_disabled' ).find( 'input[value="raas"]' ).attr( 'disabled', 'disabled' ).parent( 'label' ).css( 'color', '#ccc' );
 
 // --------------------------------------------------------------------
+
+    // JSON example for Additional Parameters (advanced) sections.
+    $( document ).on( 'click', '.gigya-json-example', function ( e ) {
+      e.preventDefault();
+      var w = window.open( "about:blank", "jsonExample", "width=440,height=330" );
+
+      $.getJSON( gigyaParams.jsonExampleURL )
+          .done( function ( data ) {
+            w.document.write( '<p>JSON Example:</p><textarea  rows="8" cols="45">' + JSON.stringify( data, null, 4 ) + '</textarea><br><small>Tips for valid JSON:<ol><li>{curly brackets} are for objects (key:value).</li><li>[square brackets] are for arrays (value).</li><li>Both keys and values must have double quote ("").</li><li>No trailing commas.</li></ol></small>' );
+          } )
+
+    } );
+
+// --------------------------------------------------------------------
+
   } );
 })( jQuery );

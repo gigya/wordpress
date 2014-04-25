@@ -116,12 +116,12 @@
 
           }
           else {
-            if ( response.source == "showCommentsUI" ) {
-              location.reload();
-            }
-            else {
+            if ( location.pathname.indexOf( 'wp-login.php' ) != -1 ) {
               // Redirect.
               location.replace( gigyaLoginParams.redirect );
+            }
+            else {
+              location.reload();
             }
 
           }

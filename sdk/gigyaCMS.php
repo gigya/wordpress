@@ -103,7 +103,7 @@ class GigyaCMS {
 
 		$res = $request->send();
 
-		return json_decode($res->getResponseText());
+		return json_decode( $res->getResponseText() );
 	}
 
 	/**

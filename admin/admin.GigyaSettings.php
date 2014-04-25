@@ -149,7 +149,7 @@ class GigyaSettings {
 		} elseif ( isset( $_POST['gigya_global_settings'] ) ) {
 			$cms = new gigyaCMS();
 			$res = $cms->apiValidate( $_POST['gigya_global_settings']['api_key'], $_POST['gigya_global_settings']['api_secret'], $_POST['gigya_global_settings']['data_center'] );
-			if ( ! empty ($res) && $res->errorCode == 301001 ) {
+			if ( ! empty ( $res ) && $res->errorCode == 301001 ) {
 				$_POST['gigya_global_settings']['data_center'] = $res->apiDomain;
 
 				$msg = $res->errorMessage . '. ' . 'This API key is served by: ' . $res->apiDomain;
