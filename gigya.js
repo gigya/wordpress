@@ -4,7 +4,7 @@ var GigyaWp = GigyaWp || {};
 
 // --------------------------------------------------------------------
 
-  {
+  window.__gigyaConf = {
     connectWithoutLoginBehavior: gigyaParams.connectWithoutLoginBehavior
   }
 
