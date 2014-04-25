@@ -132,6 +132,7 @@
             // Message modal.
             $( '#dialog-modal' ).html( res.data.msg ).dialog( { modal: true } );
           }
+          gigya.socialize.logout();
         }
       } );
 
@@ -154,11 +155,8 @@
       }
       // Gigya temp user.
       if (response.UID.indexOf('_temp_') === 0) {
-//        return false;
+        return false;
       }
-//      if ( response.source == "showCommentsUI" ) {
-//        return false;
-//      }
 
       // We check there an email field.
       // Only for the first time.

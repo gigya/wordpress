@@ -55,6 +55,10 @@
       if ( response.provider === 'site' ) {
         return false;
       }
+      // Gigya temp user.
+      if (typeof response.UID === 'undefined' || response.UID.indexOf('_temp_') === 0) {
+        return false;
+      }
 
       var options = {
         url     : gigyaParams.ajaxurl,
@@ -82,11 +86,11 @@
         }
         else {
           if ( typeof res.data != 'undefined' ) {
-            // The user didn't register, and need more field to fill.
+            // The user didn't logged in.
             $( '#dialog-modal' ).html( res.data.msg );
             $( '#dialog-modal' ).dialog( { modal: true } );
-
           }
+          gigya.accounts.logout();
         }
       } );
 
