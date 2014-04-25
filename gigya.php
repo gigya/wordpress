@@ -71,6 +71,7 @@ class GigyaAction {
 
 		add_action( 'init', array( $this, 'init' ) );
 		add_action( 'admin_action_update', array( $this, 'adminActionUpdate' ) );
+//		add_action( 'admin_notices', array( $this, 'adminNotice' ) );
 		add_action( 'wp_ajax_gigya_login', array( $this, 'ajaxLogin' ) );
 		add_action( 'wp_ajax_nopriv_gigya_login', array( $this, 'ajaxLogin' ) );
 		add_action( 'wp_ajax_gigya_raas', array( $this, 'ajaxRaasLogin' ) );
@@ -162,8 +163,13 @@ class GigyaAction {
 	 */
 	public function adminActionUpdate() {
 		require_once GIGYA__PLUGIN_DIR . 'admin/admin.GigyaSettings.php';
-		GigyaSettings::onSave( $_POST );
+		GigyaSettings::onSave();
 	}
+
+//	public function adminNotice() {
+//		require_once GIGYA__PLUGIN_DIR . 'admin/admin.GigyaSettings.php';
+//		GigyaSettings::onLoad( $_POST );
+//	}
 
 	/**
 	 * Hook AJAX login.
@@ -311,8 +317,7 @@ class GigyaAction {
 			if ( $this->login_options['mode'] == 'wp_sl' ) {
 				$gigyaCMS = new GigyaCMS();
 				$gigyaCMS->userLogout( $account->ID );
-			}
-			elseif ($this->login_options['mode'] == 'raas') {
+			} elseif ( $this->login_options['mode'] == 'raas' ) {
 				$gigyaCMS = new GigyaCMS();
 				$gigyaCMS->accountLogout( $account );
 			}

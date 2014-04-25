@@ -154,7 +154,7 @@
         return false;
       }
       // Gigya temp user.
-      if (response.UID.indexOf('_temp_') === 0) {
+      if ( response.UID.indexOf( '_temp_' ) === 0 ) {
         return false;
       }
 
@@ -199,9 +199,9 @@
         $( "#dialog-modal" ).on( "dialogclose", function ( event, ui ) {
 //          gigya.socialize.logout( response );
         } );
-        $(document).on('click', ".ui-dialog-titlebar-close", function() {
+        $( document ).on( 'click', ".ui-dialog-titlebar-close", function () {
           gigya.socialize.logout();
-        })
+        } )
       }
 
       else {
@@ -269,7 +269,7 @@
     }
 
     $( document ).on( 'click', '#link-accounts-form #gigya-submit', function () {
-      linkAccounts( $('#link-accounts-form') );
+      linkAccounts( $( '#link-accounts-form' ) );
     } );
 
   } );

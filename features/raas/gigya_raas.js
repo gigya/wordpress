@@ -56,7 +56,7 @@
         return false;
       }
       // Gigya temp user.
-      if (typeof response.UID === 'undefined' || response.UID.indexOf('_temp_') === 0) {
+      if ( typeof response.UID === 'undefined' || response.UID.indexOf( '_temp_' ) === 0 ) {
         return false;
       }
 

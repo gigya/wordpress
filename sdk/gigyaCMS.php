@@ -54,7 +54,7 @@ class GigyaCMS {
 		if ( $err_code != 0 ) {
 
 			if ( function_exists( '_gigya_error_log' ) ) {
-				$log = explode("\r\n", $response->getLog());
+				$log = explode( "\r\n", $response->getLog() );
 				_gigya_error_log( $log );
 			}
 		} else {
@@ -92,6 +92,21 @@ class GigyaCMS {
 	}
 
 	/**
+	 * Check validation of the data center.
+	 */
+	public function apiValidate( $api_key, $api_secret, $api_domain ) {
+
+		$request = new GSRequest( $api_key, $api_secret, 'socialize.shortenURL' );
+
+		$request->setAPIDomain( $api_domain );
+		$request->setParam( 'url', 'http://gigya.com' );
+
+		$res = $request->send();
+
+		return json_decode($res->getResponseText());
+	}
+
+	/**
 	 * Get user info from Gigya
 	 *
 	 * @param $guid
@@ -121,7 +136,7 @@ class GigyaCMS {
 	 *   The user object we need to attache to.
 	 */
 	public static function load( &$account ) {
-		//Attache to user if the user is logged in.
+		// Attache to user if the user is logged in.
 		$account->gigya = ( isset( $account->uid ) ? new GigyaUser( $account->uid ) : NULL );
 	}
 

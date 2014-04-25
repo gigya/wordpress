@@ -38,14 +38,11 @@ class GigyaSettings {
 	 * @return mixed
 	 */
 	public function validate( $input ) {
-		// @todo We using jsonlint.js to validate the JSON strings in the forms.
-		// @todo The Challenge is to keep user input ($_POST) with out save it to the DB.
-//		add_settings_error(
-//				'todo_title',
-//				'todotitle_texterror',
-//				'Please enter a title',
-//				'error'
-//		);
+//		$cms = new gigyaCMS();
+//		$res = $cms->apiValidate( $input['api_key'], $input['api_secret'], $input['data_center'] );
+//		if ( $res['error'] == 301001 ) {
+//			add_settings_error( 'gigiya_data_canter', 'validation', 'Incorrect value entered!', 'error' );
+//		}
 		return $input;
 	}
 
@@ -137,19 +134,29 @@ class GigyaSettings {
 
 	/**
 	 * On Setting page save event.
-	 *
-	 * @param $post
 	 */
-	public static function onSave( $post ) {
+	public static function onSave() {
 		// When a Gigya's setting page is submitted.
-		if ( isset( $post['gigya_login_settings'] ) ) {
+		if ( isset( $_POST['gigya_login_settings'] ) ) {
 			// When we turn on the Gigya's social login plugin,
 			// We also turn on the WP 'Membership: Anyone can register' option.
-			if ( $post['gigya_login_settings']['mode'] == 'wp_sl' ) {
+			if ( $_POST['gigya_login_settings']['mode'] == 'wp_sl' ) {
 				update_option( 'users_can_register', 1 );
-			} elseif ( $post['gigya_login_settings']['mode'] == 'raas' ) {
+			} elseif ( $_POST['gigya_login_settings']['mode'] == 'raas' ) {
 				update_option( 'users_can_register', 0 );
+			}
+
+		} elseif ( isset( $_POST['gigya_global_settings'] ) ) {
+			$cms = new gigyaCMS();
+			$res = $cms->apiValidate( $_POST['gigya_global_settings']['api_key'], $_POST['gigya_global_settings']['api_secret'], $_POST['gigya_global_settings']['data_center'] );
+			if ( ! empty ($res) && $res->errorCode == 301001 ) {
+				$_POST['gigya_global_settings']['data_center'] = $res->apiDomain;
+
+				$msg = $res->errorMessage . '. ' . 'This API key is served by: ' . $res->apiDomain;
+				add_settings_error( 'gigiya_data_canter', 'validation', $msg, 'error' );
+
 			}
 		}
 	}
+
 }
