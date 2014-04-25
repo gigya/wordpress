@@ -92,13 +92,13 @@
      * Send Gigya's response object to server.
      * @param data
      */
-    var socialLogin = function ( data ) {
+    var socialLogin = function ( response ) {
 
       var options = {
         url : gigyaParams.ajaxurl,
         type: 'POST',
         data: {
-          data  : data,
+          data  : response,
           action: gigyaLoginParams.actionLogin
         }
       };
@@ -116,13 +116,12 @@
 
           }
           else {
-
-            if ( location.pathname.indexOf( 'wp-login.php' ) != -1 ) {
-              // Redirect.
-              location.replace( gigyaLoginParams.redirect );
+            if ( response.source == "showCommentsUI" ) {
+              location.reload();
             }
             else {
-              location.reload();
+              // Redirect.
+              location.replace( gigyaLoginParams.redirect );
             }
 
           }
@@ -155,7 +154,7 @@
       }
       // Gigya temp user.
       if (response.UID.indexOf('_temp_') === 0) {
-        return false;
+//        return false;
       }
 //      if ( response.source == "showCommentsUI" ) {
 //        return false;
@@ -199,15 +198,12 @@
 
         } );
 
-//        $( "#dialog-modal" ).on( "dialogclose", function ( event, ui ) {
-//          if ( email.length > 0 ) {
-//
-//          }
-//          else {
-//            gigya.socialize.logout();
-//          }
-//
-//        } );
+        $( "#dialog-modal" ).on( "dialogclose", function ( event, ui ) {
+//          gigya.socialize.logout( response );
+        } );
+        $(document).on('click', ".ui-dialog-titlebar-close", function() {
+          gigya.socialize.logout();
+        })
       }
 
       else {
