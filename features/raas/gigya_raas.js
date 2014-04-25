@@ -50,9 +50,9 @@
      * On RaaS login with Gigya behavior.
      * @param data
      */
-    var raasLogin = function ( data ) {
+    var raasLogin = function ( response ) {
 
-      if ( data.provider === 'site' ) {
+      if ( response.provider === 'site' ) {
         return false;
       }
 
@@ -61,7 +61,7 @@
         type    : 'POST',
         dataType: 'json',
         data    : {
-          data  : data,
+          data  : response,
           action: gigyaRaasParams.actionRaas
         }
       };
@@ -72,7 +72,13 @@
 
       req.done( function ( res ) {
         if ( res.success == true ) {
-          location.replace( gigyaRaasParams.redirect );
+          if ( location.pathname.indexOf( 'wp-login.php' ) != -1 ) {
+            // Redirect.
+            location.replace( gigyaRaasParams.redirect );
+          }
+          else {
+            location.reload();
+          }
         }
         else {
           if ( typeof res.data != 'undefined' ) {

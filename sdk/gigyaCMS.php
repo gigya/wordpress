@@ -126,9 +126,9 @@ class GigyaCMS {
 	}
 
 	/**
-	 * Redirects to a logout URL where JavaScript will be added to the page.
+	 * Social logout.
 	 */
-	public function logout( $guid ) {
+	public function userLogout( $guid ) {
 		if ( ! empty( $guid ) ) {
 			$params = array(
 					'uid' => $guid,
@@ -321,6 +321,22 @@ class GigyaCMS {
 		// Because we can only trust the UID parameter from the origin object,
 		// We'll ask Gigya's API for account-info straight from the server.
 		return $this->call( 'accounts.getAccountInfo', $req_params );
+
+	}
+
+	/**
+	 * RaaS logout.
+	 */
+	public function accountLogout( $account ) {
+
+		// Get info about the primary account.
+		$query = 'select UID from accounts where loginIDs.emails = ' . $account->data->user_email;
+
+		// Get the UID from Email.
+		$res = $this->call( 'accounts.search', array( 'query' => $query ) );
+
+		// Logout the user.
+		$this->call( 'accounts.logout', array( 'UID' => $res['results'][0]['UID'] ) );
 
 	}
 

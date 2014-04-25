@@ -303,17 +303,22 @@ class GigyaAction {
 	 */
 	public function wpLogout() {
 
-		if ( $this->login_options['mode'] == 'wp_sl' ) {
-			// Get the current user.
-			$account = wp_get_current_user();
+		// Get the current user.
+		$account = wp_get_current_user();
+		if ( ! empty ( $account ) ) {
 
-			if ( ! empty ( $account->ID ) ) {
-				// We using Gigya's account-linking (best practice).
-				// So the siteUID is the same as Gigya's UID.
+			// Social logout
+			if ( $this->login_options['mode'] == 'wp_sl' ) {
 				$gigyaCMS = new GigyaCMS();
-				$gigyaCMS->logout( $account->ID );
+				$gigyaCMS->userLogout( $account->ID );
+			}
+			elseif ($this->login_options['mode'] == 'raas') {
+				$gigyaCMS = new GigyaCMS();
+				$gigyaCMS->accountLogout( $account );
 			}
 		}
+
+
 	}
 
 	/**
