@@ -152,7 +152,7 @@
       req.done( function ( res ) {
         if ( res.success == true ) {
           var pom = document.createElement( 'a' );
-          pom.setAttribute( 'href', 'data:application/json;charset=utf-8,' + encodeURIComponent( JSON.stringify( res.data ) ) );
+          pom.setAttribute( 'href', 'data:application/json;charset=utf-8,' + encodeURIComponent( JSON.stringify( res.data, null, 4 ) ) );
           pom.setAttribute( 'download', 'gigya-log.json' );
           pom.click();
         }
