@@ -231,7 +231,7 @@
 
 // --------------------------------------------------------------------
 
-    var linkAccounts = function ( form ) {
+    var customLogin = function ( form ) {
       var formData = form.serialize();
 
       var options = {
@@ -239,9 +239,8 @@
         url : gigyaParams.ajaxurl,
         data: {
           data  : formData,
-          action: gigyaLoginParams.actionLinkAccounts
+          action: gigyaLoginParams.actionCustomLogin
         }
-
       }
 
       var req = $.ajax( options );
@@ -262,45 +261,14 @@
       } );
     }
 
-    $( document ).on( 'click', '#link-accounts-form #gigya-submit', function () {
-      linkAccounts( $( '#link-accounts-form' ) );
+    // Email verify form.
+    $( document ).on( 'click', '#email-verify-form #gigya-submit', function () {
+      customLogin( $( '#email-verify-form' ) );
     } );
 
-// --------------------------------------------------------------------
-
-    var emailVerify = function ( form ) {
-      var formData = form.serialize();
-
-      var options = {
-        type: 'POST',
-        url : gigyaParams.ajaxurl,
-        data: {
-          data  : formData,
-          action: gigyaLoginParams.actionEmailVerify
-        }
-
-      }
-
-      var req = $.ajax( options );
-
-      req.done( function ( res ) {
-        if ( res.success == true ) {
-          GigyaWp.redirect();
-        }
-        else {
-          if ( typeof res.data != 'undefined' ) {
-            $( '#dialog-modal' ).prepend( res.data.msg );
-          }
-        }
-      } );
-
-      req.fail( function ( jqXHR, textStatus, errorThrown ) {
-        console.log( jqXHR.statusCode() );
-      } );
-    }
-
-    $( document ).on( 'click', '#email-verify-form #gigya-submit', function () {
-      emailVerify( $( '#email-verify-form' ) );
+    // Link account form.
+    $( document ).on( 'click', '#link-accounts-form #gigya-submit', function () {
+      customLogin( $( '#link-accounts-form' ) );
     } );
 
 // --------------------------------------------------------------------

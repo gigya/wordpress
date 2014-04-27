@@ -75,10 +75,10 @@ class GigyaAction {
 		add_action( 'wp_ajax_nopriv_gigya_login', array( $this, 'ajaxLogin' ) );
 		add_action( 'wp_ajax_gigya_raas', array( $this, 'ajaxRaasLogin' ) );
 		add_action( 'wp_ajax_nopriv_gigya_raas', array( $this, 'ajaxRaasLogin' ) );
-		add_action( 'wp_ajax_email_verify', array( $this, 'ajaxCustomLogin' ) );
-		add_action( 'wp_ajax_nopriv_email_verify', array( $this, 'ajaxCustomLogin' ) );
-		add_action( 'wp_ajax_link_accounts', array( $this, 'ajaxCustomLogin' ) );
-		add_action( 'wp_ajax_nopriv_link_accounts', array( $this, 'ajaxCustomLogin' ) );
+		add_action( 'wp_ajax_custom_login', array( $this, 'ajaxCustomLogin' ) );
+		add_action( 'wp_ajax_nopriv_custom_login', array( $this, 'ajaxCustomLogin' ) );
+//		add_action( 'wp_ajax_link_accounts', array( $this, 'ajaxCustomLogin' ) );
+//		add_action( 'wp_ajax_nopriv_link_accounts', array( $this, 'ajaxCustomLogin' ) );
 		add_action( 'wp_ajax_debug_log', array( $this, 'ajaxDebugLog' ) );
 		add_action( 'wp_ajax_clean_db', array( $this, 'ajaxCleanDB' ) );
 		add_action( 'wp_login', array( $this, 'wpLogin' ), 10, 2 );
