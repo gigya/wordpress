@@ -5,7 +5,9 @@ var GigyaWp = GigyaWp || {};
 // --------------------------------------------------------------------
 
   window.__gigyaConf = {
-    connectWithoutLoginBehavior: gigyaParams.connectWithoutLoginBehavior
+    connectWithoutLoginBehavior: gigyaParams.connectWithoutLoginBehavior,
+    enabledProviders           : gigyaParams.enabledProviders,
+    lang                       : gigyaParams.lang
   }
 
 // --------------------------------------------------------------------

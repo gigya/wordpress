@@ -35,10 +35,10 @@ function globalSettingsForm() {
 			'value'   => _gigParam( $values['data_center'], 'us1.gigya.com' )
 	);
 
-	$form['providers'] = array(
+	$form['enabledProviders'] = array(
 			'type'  => 'text',
 			'label' => __( 'List of providers' ),
-			'value' => _gigParam( $values['providers'], '*' ),
+			'value' => _gigParam( $values['enabledProviders'], '*' ),
 			'desc'  => __( 'Comma separated list of login providers that would be included. For example: facebook,twitter,google. Leave empty or type * for all providers. See the entire list of available' ) . ' <a href="http://developers.gigya.com/020_Client_API/020_Methods/Socialize.showLoginUI">Providers</a>'
 	);
 

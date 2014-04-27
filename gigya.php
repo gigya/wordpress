@@ -108,9 +108,16 @@ class GigyaAction {
 				'ajaxurl'                     => admin_url( 'admin-ajax.php' ),
 				'logoutUrl'                   => wp_logout_url(),
 				'connectWithoutLoginBehavior' => _gigParam( $this->login_options['connectWithoutLoginBehavior'], 'loginExistingUser' ),
-				'jsonExampleURL'              => GIGYA__PLUGIN_URL . 'admin/forms/json/advance_example.json'
-
+				'jsonExampleURL'              => GIGYA__PLUGIN_URL . 'admin/forms/json/advance_example.json',
+				'enabledProviders'            => _gigParam( $this->global_options['enabledProviders'], '*' ),
+				'lang'                        => _gigParam( $this->global_options['lang'], 'en' )
 		);
+
+		// Add advanced parameters if exist.
+		if ( ! empty( $this->global_options['advanced'] ) ) {
+			$advanced = gigyaCMS::parseJSON( _gigParam( $this->global_options['advanced'], '' ) );
+			$params   = array_merge( $params, $advanced );
+		}
 
 		// Let others plugins to modify the global parameters.
 		$params = apply_filters( 'gigya_global_params', $params );
@@ -124,8 +131,7 @@ class GigyaAction {
 			// Loads requirements for any Gigya's login.
 			if ( $this->login_options['mode'] != 'wp_only' ) {
 				// Load Gigya's socialize.js from CDN.
-				$lang = _gigParam( $this->global_options['lang'], 'en' );
-				wp_enqueue_script( 'gigya', GIGYA__JS_CDN . GIGYA__API_KEY . '&lang=' . $lang );
+				wp_enqueue_script( 'gigya', GIGYA__JS_CDN . GIGYA__API_KEY . '&lang=' . $params['lang'] );
 			}
 
 			// Loads requirements for any Gigya's social login.
