@@ -76,7 +76,7 @@ function shareSettingsForm() {
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced)" ),
 			'value' => _gigParam( $values['advanced'], '' ),
-			'desc'  => __( 'Enter valid JSON format. See list of available' ) . ' <a href="http://developers.gigya.com/020_Client_API/020_Methods/socialize.showShareBarUI">' . __( 'parameters' ) . '</a>'
+			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="http://developers.gigya.com/020_Client_API/020_Methods/socialize.showShareBarUI" target="_blank">' . __( 'parameters' ) . '</a>'
 	);
 
 	echo _gigya_form_render( $form, GIGYA__SETTINGS_SHARE );
