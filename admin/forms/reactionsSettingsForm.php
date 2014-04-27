@@ -87,7 +87,7 @@ function reactionsSettingsForm() {
 			'type'  => 'textarea',
 			'label' => __( 'Reaction Buttons' ),
 			'value' => _gigParam( $values['buttons'], _gigya_get_json( 'admin/forms/json/default_reaction' ) ),
-			'desc'  => sprinf( __( 'Please enter an array of %s, representing the buttons to display in the Reactions bar.' ), '<a href="http://developers.gigya.com/020_Client_API/010_Socialize/socialize.showReactionsBarUI#Reaction_Object">' . _( 'Reaction objects' ) . '</a>' )
+			'desc'  => sprintf( __( 'Please enter an array of %s, representing the buttons to display in the Reactions bar.' ), '<a href="http://developers.gigya.com/020_Client_API/010_Socialize/socialize.showReactionsBarUI#Reaction_Object">' . _( 'Reaction objects' ) . '</a>' )
 	);
 
 	$form['advanced'] = array(
