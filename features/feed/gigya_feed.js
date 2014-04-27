@@ -13,12 +13,10 @@
 
       // Get the data.
       var dataEl = $( '#' + id ).next( 'script.data-feed' );
-      var gigyaFeedParams = JSON.parse( dataEl.text() );
+      var params = JSON.parse( dataEl.text() );
 
-      // Define the Feed Plugin params object.
-      var params = $.extend( true, {}, gigyaFeedParams );
       params.containerID = id;
-      params.context = {id: id};
+      params.context = { id: id };
       params.onError = GigyaWp.errHandle;
 
       // Load the feed block Plugin.

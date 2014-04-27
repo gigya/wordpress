@@ -40,9 +40,9 @@
      * @param gigyaGamificationParams
      * @returns {string}
      */
-    var getType = function ( gigyaGamificationParams ) {
+    var getType = function ( params ) {
       var type = 'showUserStatusUI';
-      switch ( gigyaGamificationParams.type ) {
+      switch ( params.type ) {
         case 'leaderboard' :
           type = 'showLeaderboardUI';
           break;
@@ -74,15 +74,15 @@
 
       // Get the data.
       var dataEl = $( '#' + id ).next( 'script.data-gamification' );
-      var gigyaGamificationParams = JSON.parse( dataEl.text() );
+      var params = JSON.parse( dataEl.text() );
 
       // Define the Gamification Bar Plugin params object.
-      var params = $.extend( true, {}, gigyaGamificationParams );
       params.containerID = id;
+      params.context = { id: id };
       params.onError = GigyaWp.errHandle;
 
       // Load the gamification block Plugin.
-      gigya.gm[getType( gigyaGamificationParams )]( params );
+      gigya.gm[getType( params )]( params );
 
     };
 

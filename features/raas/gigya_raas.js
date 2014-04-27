@@ -76,13 +76,7 @@
 
       req.done( function ( res ) {
         if ( res.success == true ) {
-          if ( location.pathname.indexOf( 'wp-login.php' ) != -1 ) {
-            // Redirect.
-            location.replace( gigyaRaasParams.redirect );
-          }
-          else {
-            location.reload();
-          }
+          GigyaWp.redirect();
         }
         else {
           if ( typeof res.data != 'undefined' ) {

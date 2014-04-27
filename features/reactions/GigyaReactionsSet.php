@@ -49,7 +49,6 @@ class GigyaReactionsSet {
 				'multipleReactions' => _gigParam( $this->reactions_options['multipleReactions'], 0 ),
 				'scope'             => _gigParam( $this->feed_options['scope'], 'external' ),
 				'privacy'           => _gigParam( $this->feed_options['privacy'], 'private' ),
-				'context'           => array( 'id' => $bar_id ),
 				'ua'                => array(
 						'linkBack'  => esc_url( apply_filters( 'the_permalink', get_permalink() ) ),
 						'postTitle' => get_the_title(),

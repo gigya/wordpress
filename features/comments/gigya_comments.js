@@ -12,6 +12,7 @@
 
       gigyaCommentsParams.containerID = cid;
       gigyaCommentsParams.context = {id: cid};
+      gigyaCommentsParams.onError = GigyaWp.errHandle;
       gigya.comments.showCommentsUI( gigyaCommentsParams );
     }
 // --------------------------------------------------------------------

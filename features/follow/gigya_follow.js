@@ -12,11 +12,12 @@
 
       // Get the data.
       var dataEl = $( '#' + id ).next( 'script.data-follow' );
-      var gigyaFollowParams = JSON.parse( dataEl.text() );
-      gigyaFollowParams.buttons = JSON.parse( gigyaFollowParams.buttons );
+      var params = JSON.parse( dataEl.text() );
+
       // Define the Follow Bar Plugin params object.
-      var params = $.extend( true, {}, gigyaFollowParams );
+      params.buttons = JSON.parse( params.buttons );
       params.containerID = id;
+      params.context = { id: id };
       params.onError = GigyaWp.errHandle;
 
       // Load the follow bar block Plugin.

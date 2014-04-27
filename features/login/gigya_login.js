@@ -35,11 +35,12 @@
 
         // Get the data.
         var dataEl = $( '#' + id ).next( 'script.data-login' );
-        var paramsFromJson = JSON.parse( dataEl.text() );
+        var params = JSON.parse( dataEl.text() );
 
         // Define the Feed Plugin params object.
-        var params = $.extend( true, {}, paramsFromJson );
         params.containerID = id;
+        params.context = { id: id };
+        params.onError = GigyaWp.errHandle;
         showLoginUI( params );
       } );
     }
@@ -55,6 +56,8 @@
       // Define the Feed Plugin params object.
       var params = $.extend( true, {}, gigyaLoginParams );
       params.containerID = "gigya-login";
+      params.context = { id: 'default' };
+      params.onError = GigyaWp.errHandle;
 
       showLoginUI( params );
     }
@@ -116,14 +119,7 @@
 
           }
           else {
-            if ( location.pathname.indexOf( 'wp-login.php' ) != -1 ) {
-              // Redirect.
-              location.replace( gigyaLoginParams.redirect );
-            }
-            else {
-              location.reload();
-            }
-
+            GigyaWp.redirect();
           }
         }
         else {
@@ -252,13 +248,7 @@
 
       req.done( function ( res ) {
         if ( res.success == true ) {
-          if ( location.pathname.indexOf( 'wp-login.php' ) != -1 ) {
-            // Redirect.
-            location.replace( gigyaLoginParams.redirect );
-          }
-          else {
-            location.reload();
-          }
+          GigyaWp.redirect();
         }
         else {
           if ( typeof res.data != 'undefined' ) {
@@ -295,13 +285,7 @@
 
       req.done( function ( res ) {
         if ( res.success == true ) {
-          if ( location.pathname.indexOf( 'wp-login.php' ) != -1 ) {
-            // Redirect.
-            location.replace( gigyaLoginParams.redirect );
-          }
-          else {
-            location.reload();
-          }
+          GigyaWp.redirect();
         }
         else {
           if ( typeof res.data != 'undefined' ) {

@@ -8,10 +8,10 @@
      * Get image object.
      * @returns {{type: string, href: *}}
      */
-    var getImage = function ( gigyaReactionsParams ) {
+    var getImage = function ( params ) {
       var image = {
         type: 'image',
-        href: gigyaReactionsParams.ua.linkBack
+        href: params.ua.linkBack
       };
 
       if ( typeof $( 'meta[property="og:image"]' ).length > 0 ) {
@@ -20,7 +20,7 @@
       }
       else {
         // Image source taken from data.
-        image.src = gigyaReactionsParams.ua.imageURL;
+        image.src = params.ua.imageURL;
       }
 
       return image;
@@ -32,21 +32,21 @@
      * Get user action.
      * @returns {gigya.services.socialize.UserAction}
      */
-    var getUserAction = function ( gigyaReactionsParams ) {
+    var getUserAction = function ( params ) {
       var ua = new gigya.services.socialize.UserAction();
 
-//			if (typeof gigyaReactionsParams.userMessage !== 'undefined') {
-//				ua.setUserMessage(gigyaReactionsParams.userMessage);
+//			if (typeof params.userMessage !== 'undefined') {
+//				ua.setUserMessage(params.userMessage);
 //			}
 
       // Set link back.
-      var linkBack = typeof $( 'meta[property="og:url"]' ).attr( 'content' ) !== 'undefined' ? $( 'meta[property="og:url"]' ).attr( 'content' ) : gigyaReactionsParams.ua.linkBack;
+      var linkBack = typeof $( 'meta[property="og:url"]' ).attr( 'content' ) !== 'undefined' ? $( 'meta[property="og:url"]' ).attr( 'content' ) : params.ua.linkBack;
       if ( linkBack !== '' ) {
         ua.setLinkBack( linkBack );
       }
 
       // Set title.
-      var postTitle = typeof $( 'meta[property="og:title"]' ).attr( 'content' ) !== 'undefined' ? $( 'meta[property="og:title"]' ).attr( 'content' ) : gigyaReactionsParams.ua.postTitle;
+      var postTitle = typeof $( 'meta[property="og:title"]' ).attr( 'content' ) !== 'undefined' ? $( 'meta[property="og:title"]' ).attr( 'content' ) : params.ua.postTitle;
       if ( postTitle !== '' ) {
         ua.setTitle( postTitle );
       }
@@ -57,18 +57,18 @@
 //      }
 
       // Set subtitle.
-//			if (typeof gigyaReactionsParams.subtitle !== 'undefined') {
-//				ua.setSubtitle(gigyaReactionsParams.subtitle);
+//			if (typeof params.subtitle !== 'undefined') {
+//				ua.setSubtitle(params.subtitle);
 //			}
 
       // Set the description.
-      var postDesc = typeof $( 'meta[property="og:description"]' ).attr( 'content' ) !== 'undefined' ? $( 'meta[property="og:description"]' ).attr( 'content' ) : gigyaReactionsParams.ua.postDesc;
+      var postDesc = typeof $( 'meta[property="og:description"]' ).attr( 'content' ) !== 'undefined' ? $( 'meta[property="og:description"]' ).attr( 'content' ) : params.ua.postDesc;
       if ( postDesc !== '' ) {
         ua.setDescription( postDesc );
       }
 
       // Set the image.
-      ua.addMediaItem( getImage( gigyaReactionsParams ) );
+      ua.addMediaItem( getImage( params ) );
 
       return ua;
     }
@@ -83,12 +83,12 @@
 
       // Get the data.
       var dataEl = $( '#' + id ).next( 'script.data-reactions' );
-      var gigyaReactionsParams = JSON.parse( dataEl.text() );
+      var params = JSON.parse( dataEl.text() );
 
       // Define the Reactions Bar Plugin params object.
-      var params = $.extend( true, {}, gigyaReactionsParams );
       params.containerID = id;
-      params.userAction = getUserAction( gigyaReactionsParams );
+      params.context = { id: id };
+      params.userAction = getUserAction( params );
       params.onError = GigyaWp.errHandle;
 
       delete params.ua;
