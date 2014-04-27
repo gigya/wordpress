@@ -166,9 +166,7 @@
         var html =
             '<div class="form-get-email">' +
                 '<div class="description">' +
-                'Additional information is required in order ' +
-                'to complete your registration. ' +
-                'Please fill-in your Email' +
+                'Hi ' + response.user.firstName + ', we still need some details from you, please provide your email address or link to an existing account.' +
                 '<br><br>' +
                 '</div>' +
                 '<label for="email">Email</label>' +
