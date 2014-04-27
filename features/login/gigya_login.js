@@ -252,7 +252,13 @@
 
       req.done( function ( res ) {
         if ( res.success == true ) {
-          location.replace( gigyaLoginParams.redirect )
+          if ( location.pathname.indexOf( 'wp-login.php' ) != -1 ) {
+            // Redirect.
+            location.replace( gigyaLoginParams.redirect );
+          }
+          else {
+            location.reload();
+          }
         }
         else {
           if ( typeof res.data != 'undefined' ) {
@@ -270,9 +276,50 @@
       linkAccounts( $( '#link-accounts-form' ) );
     } );
 
-  } );
-
 // --------------------------------------------------------------------
 
+    var emailVerify = function ( form ) {
+      var formData = form.serialize();
+
+      var options = {
+        type: 'POST',
+        url : gigyaParams.ajaxurl,
+        data: {
+          data  : formData,
+          action: gigyaLoginParams.actionEmailVerify
+        }
+
+      }
+
+      var req = $.ajax( options );
+
+      req.done( function ( res ) {
+        if ( res.success == true ) {
+          if ( location.pathname.indexOf( 'wp-login.php' ) != -1 ) {
+            // Redirect.
+            location.replace( gigyaLoginParams.redirect );
+          }
+          else {
+            location.reload();
+          }
+        }
+        else {
+          if ( typeof res.data != 'undefined' ) {
+            $( '#dialog-modal' ).prepend( res.data.msg );
+          }
+        }
+      } );
+
+      req.fail( function ( jqXHR, textStatus, errorThrown ) {
+        console.log( jqXHR.statusCode() );
+      } );
+    }
+
+    $( document ).on( 'click', '#email-verify-form #gigya-submit', function () {
+      emailVerify( $( '#email-verify-form' ) );
+    } );
+
+// --------------------------------------------------------------------
+  } );
 })( jQuery );
 

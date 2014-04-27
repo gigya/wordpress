@@ -41,6 +41,7 @@ class GigyaLoginSet {
 		$params = array(
 				'actionLogin'        => 'gigya_login',
 				'actionLinkAccounts' => 'link_accounts',
+				'actionEmailVerify'  => 'email_verify',
 				'redirect'           => _gigParam( $this->login_options['redirect'], user_admin_url() ),
 		);
 

@@ -64,10 +64,8 @@ class GigyaLoginAjax {
 				// If there one we return the login form to client.
 				wp_send_json_success( array(
 						'type' => 'form',
-						'html' => wp_login_form( array(
-								'echo'           => false,
-								'value_username' => $users[0]->data->user_login
-						) ) ) );
+						'html' => $this->emailVerifyForm()
+				) );
 			} else {
 				// We now sure there no user in WP records connected
 				// to this Gigya's UID. Lets try to register the user.
@@ -91,9 +89,6 @@ class GigyaLoginAjax {
 		wp_set_auth_cookie( $wp_user->ID );
 
 		// Hook for changing WP user metadata from Gigya's user.
-//		$gigya_account = $this->gigya_user;
-//		$gigyaCMS      = new GigyaCMS();
-//		$gigya_account = $gigyaCMS->getAccount( $wp_user->ID );
 		do_action( 'gigya_after_social_login', $this->gigya_user, $wp_user );
 
 		// Do others login Implementations.
@@ -115,7 +110,7 @@ class GigyaLoginAjax {
 			// Return JSON with login form to client.
 			wp_send_json_success( array(
 					'type' => 'form',
-					'html' => $this->linkAccountForms()
+					'html' => $this->linkAccountForm()
 			) );
 		}
 
@@ -130,7 +125,7 @@ class GigyaLoginAjax {
 		// When the admin checked to
 		// show the entire registration form to the user.
 		if ( $this->login_options['registerExtra'] ) {
-			$this->registerExtra();
+			$this->registerExtraForm();
 		}
 
 		// Register a new user to WP with params from Gigya.
@@ -164,11 +159,8 @@ class GigyaLoginAjax {
 			// Return JSON with login form to client.
 			wp_send_json_success( array(
 					'type' => 'form',
-					'html' => wp_login_form( array(
-							'echo'           => false,
-							'value_username' => $wp_user->data->user_login,
-							'redirect'       => _gigParam( $this->login_options['redirect'], user_admin_url() )
-					) ) ) );
+					'html' => $this->emailVerifyForm()
+			) );
 		}
 
 		// Finally, let's login the user.
@@ -176,9 +168,9 @@ class GigyaLoginAjax {
 	}
 
 	/**
-	 * AJAX submission of link account form.
+	 * AJAX submission of custom login forms.
 	 */
-	public function linkAccounts() {
+	public static function customLogin() {
 		parse_str( $_POST['data'], $data );
 
 		$creds = array(
@@ -204,12 +196,54 @@ class GigyaLoginAjax {
 		}
 	}
 
+	///////////////////////////
+	//         Forms         //
+	///////////////////////////
+
+	/**
+	 * Generate form for email verify.
+	 *
+	 * @return string
+	 */
+	private function emailVerifyForm() {
+		$output = '';
+		$output .= '<form id="email-verify-form">';
+
+		// Set form elements.
+		$form            = array();
+		$form['message'] = array(
+				'markup' => __( 'Hi' ) . ' <strong>' . $this->gigya_user['firstName'] . ',</strong><br> ' . __( 'Please enter your password' ) . '<br><br>'
+		);
+		$form['log']     = array(
+				'type'  => 'hidden',
+				'label' => __( 'Username' ),
+				'value' => $this->gigya_user['nickname'],
+		);
+
+		$form['pwd']       = array(
+				'type'  => 'password',
+				'label' => __( 'Password' ),
+		);
+
+		$form['form_name'] = array(
+				'type'  => 'hidden',
+				'value' => 'loginform-gigya-email-verify',
+		);
+
+		// Render form elements.
+		$output .= _gigya_form_render( $form );
+		$output .= '<input type="button" id="gigya-submit" class="button button-primary button-large" value="Log In" />';
+		$output .= '</form>';
+
+		return $output;
+	}
+
 	/**
 	 * Generate form for link accounts.
 	 *
 	 * @return string
 	 */
-	private function linkAccountForms() {
+	private function linkAccountForm() {
 
 		$output = '';
 		$output .= '<form id="link-accounts-form">';
@@ -251,7 +285,7 @@ class GigyaLoginAjax {
 	/**
 	 * Deal with missing fields on registration.
 	 */
-	private function registerExtra() {
+	private function registerExtraForm() {
 
 		// Set submit button value.
 		$submit_value = sprintf( __( 'Register %s' ), ! empty( $this->gigya_user['loginProvider'] ) ? ' ' . __( 'with' ) . ' ' . $this->gigya_user['loginProvider'] : '' );

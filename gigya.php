@@ -75,8 +75,10 @@ class GigyaAction {
 		add_action( 'wp_ajax_nopriv_gigya_login', array( $this, 'ajaxLogin' ) );
 		add_action( 'wp_ajax_gigya_raas', array( $this, 'ajaxRaasLogin' ) );
 		add_action( 'wp_ajax_nopriv_gigya_raas', array( $this, 'ajaxRaasLogin' ) );
-		add_action( 'wp_ajax_link_accounts', array( $this, 'ajaxLinkAccounts' ) );
-		add_action( 'wp_ajax_nopriv_link_accounts', array( $this, 'ajaxLinkAccounts' ) );
+		add_action( 'wp_ajax_email_verify', array( $this, 'ajaxCustomLogin' ) );
+		add_action( 'wp_ajax_nopriv_email_verify', array( $this, 'ajaxCustomLogin' ) );
+		add_action( 'wp_ajax_link_accounts', array( $this, 'ajaxCustomLogin' ) );
+		add_action( 'wp_ajax_nopriv_link_accounts', array( $this, 'ajaxCustomLogin' ) );
 		add_action( 'wp_ajax_debug_log', array( $this, 'ajaxDebugLog' ) );
 		add_action( 'wp_ajax_clean_db', array( $this, 'ajaxCleanDB' ) );
 		add_action( 'wp_login', array( $this, 'wpLogin' ), 10, 2 );
@@ -171,11 +173,6 @@ class GigyaAction {
 		GigyaSettings::onSave();
 	}
 
-//	public function adminNotice() {
-//		require_once GIGYA__PLUGIN_DIR . 'admin/admin.GigyaSettings.php';
-//		GigyaSettings::onLoad( $_POST );
-//	}
-
 	/**
 	 * Hook AJAX login.
 	 */
@@ -199,14 +196,13 @@ class GigyaAction {
 	}
 
 	/**
-	 * Hook AJAX Link accounts.
+	 * Hook AJAX Custom forms login.
 	 */
-	public function ajaxLinkAccounts() {
+	public function ajaxCustomLogin() {
 
 		// Loads Gigya's social login class.
 		require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginAjax.php';
-		$linkAccountsAjax = new GigyaLoginAjax;
-		$linkAccountsAjax->linkAccounts();
+		GigyaLoginAjax::customLogin();
 	}
 
 	/**
