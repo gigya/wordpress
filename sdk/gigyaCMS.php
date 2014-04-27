@@ -421,7 +421,7 @@ class GigyaCMS {
 	public static function parseJSON( $json ) {
 
 		// decode the JSON data
-		$result = json_decode( $json );
+		$result = json_decode( $json, true );
 
 		$err = json_last_error();
 		if ( $err != JSON_ERROR_NONE ) {
