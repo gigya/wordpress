@@ -34,10 +34,10 @@ var GigyaWp = GigyaWp || {};
   GigyaWp.redirect = function () {
     if ( location.pathname.indexOf( 'wp-login.php' ) != -1 ) {
       // Redirect after login page.
-      if (typeof gigyaLoginParams != 'undefined') {
+      if ( typeof gigyaLoginParams != 'undefined' ) {
         location.replace( gigyaLoginParams.redirect );
       }
-      else if (typeof gigyaRaasParams != 'undefined') {
+      else if ( typeof gigyaRaasParams != 'undefined' ) {
         location.replace( gigyaRaasParams.redirect );
       }
     }

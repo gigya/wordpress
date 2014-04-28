@@ -12,4 +12,3 @@ NOT defined in the file, and you MUST define in your code.
 		define( 'GIGYA__API_KEY', $this->options['api_key'] );
 		define( 'GIGYA__API_SECRET', $this->options['api_secret'] );
 		define( 'GIGYA__API_DOMAIN', $this->options['data_center'] );
-		define( 'GIGYA__API_DEBUG', $this->options['login_gigya_debug'] );

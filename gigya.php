@@ -77,8 +77,6 @@ class GigyaAction {
 		add_action( 'wp_ajax_nopriv_gigya_raas', array( $this, 'ajaxRaasLogin' ) );
 		add_action( 'wp_ajax_custom_login', array( $this, 'ajaxCustomLogin' ) );
 		add_action( 'wp_ajax_nopriv_custom_login', array( $this, 'ajaxCustomLogin' ) );
-//		add_action( 'wp_ajax_link_accounts', array( $this, 'ajaxCustomLogin' ) );
-//		add_action( 'wp_ajax_nopriv_link_accounts', array( $this, 'ajaxCustomLogin' ) );
 		add_action( 'wp_ajax_debug_log', array( $this, 'ajaxDebugLog' ) );
 		add_action( 'wp_ajax_clean_db', array( $this, 'ajaxCleanDB' ) );
 		add_action( 'wp_login', array( $this, 'wpLogin' ), 10, 2 );
@@ -323,8 +321,6 @@ class GigyaAction {
 				$gigyaCMS->accountLogout( $account );
 			}
 		}
-
-
 	}
 
 	/**
@@ -410,19 +406,6 @@ class GigyaAction {
 		require_once GIGYA__PLUGIN_DIR . 'features/follow/GigyaFollowWidget.php';
 		register_widget( 'GigyaFollow_Widget' );
 	}
-
-	/**
-	 * Hook template_redirect.
-	 */
-//	public function templateRedirect() {
-//		if ( rtrim( $_GET['q'], '/' ) === 'wp-admin/gigya-log' ) {
-//			if ( current_user_can( 'manage_options' ) ) {
-//				$log = get_option( 'gigya_log' );
-//				echo _gigya_render_tpl( 'admin/tpl/log.tpl.php', array( 'log' => $log ) );
-//				exit;
-//			}
-//		}
-//	}
 
 	/**
 	 * Hook content alter.

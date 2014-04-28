@@ -220,7 +220,7 @@ class GigyaLoginAjax {
 				'value' => $this->gigya_user['nickname'],
 		);
 
-		$form['pwd']       = array(
+		$form['pwd'] = array(
 				'type'  => 'password',
 				'label' => __( 'Password' ),
 		);
