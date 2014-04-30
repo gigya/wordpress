@@ -465,6 +465,22 @@ class GigyaAction {
 			GigyaInstall::cleanDB();
 		}
 	}
+
+}
+
+if ( ! function_exists( 'wp_new_user_notification' ) ) {
+	$login_opts = get_option( GIGYA__SETTINGS_LOGIN );
+	if ( $login_opts['mode'] == 'raas' ) {
+		/**
+		 * If we're on raas mode we disabled new user notifications from WP.
+		 *
+		 * @param        $user_id
+		 * @param string $plaintext_pass
+		 */
+		function wp_new_user_notification( $user_id, $plaintext_pass = '' ) {
+			return;
+		}
+	}
 }
 
 /**
