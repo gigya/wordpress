@@ -124,7 +124,7 @@ class GigyaLoginAjax {
 
 		// When the admin checked to
 		// show the entire registration form to the user.
-		if ( $this->login_options['registerExtra'] ) {
+		if ( ! empty( $this->login_options['registerExtra'] ) ) {
 			$this->registerExtraForm();
 		}
 
@@ -322,7 +322,11 @@ class GigyaLoginAjax {
 		$output .= _gigya_form_render( $form );
 
 		// Get other plugins register form implementation.
-		$output .= do_action( 'register_form' );
+		do_action( 'register_form' );
+		$extra_fields = ob_get_clean();
+		if ( ! empty( $extra_fields ) ) {
+			$output .= $extra_fields;
+		}
 
 		// Add submit button.
 		$output .= '<input type="submit" id="gigya-submit" class="button button-primary button-large" value="' . $submit_value . '">';
