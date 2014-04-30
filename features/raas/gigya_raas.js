@@ -106,7 +106,7 @@
       }
 
       // Embed Screens.
-      if ( location.search.indexOf( 'admin=true' ) == -1 ) {
+      if ( location.search.indexOf( 'admin=true' ) == -1 && gigyaRaasParams.canEditUsers > 1 ) {
         gigya.accounts.showScreenSet( {screenSet: gigyaRaasParams.raasWebScreen, mobileScreenSet: gigyaRaasParams.raasMobileScreen, startScreen: gigyaRaasParams.raasLoginScreen, containerID: gigyaRaasParams.raasLoginDiv} );
         gigya.accounts.showScreenSet( {screenSet: gigyaRaasParams.raasWebScreen, mobileScreenSet: gigyaRaasParams.raasMobileScreen, startScreen: gigyaRaasParams.raasRegisterScreen, containerID: gigyaRaasParams.raasRegisterDiv} );
         gigya.accounts.showScreenSet( {screenSet: gigyaRaasParams.raasProfileWebScreen, mobileScreenSet: gigyaRaasParams.raasProfileMobileScreen, containerID: gigyaRaasParams.raasProfileDiv} );
