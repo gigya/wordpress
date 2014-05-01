@@ -2,6 +2,7 @@
 	padding: 20px;
 	background: #f8f8f8;
 	border: 1px solid #888;
+	z-index: 2;
 }
 
 .ui-widget-overlay {
@@ -11,4 +12,9 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
+	z-index: 1;
+}
+
+.ui-button {
+
 }

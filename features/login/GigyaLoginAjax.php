@@ -212,7 +212,7 @@ class GigyaLoginAjax {
 		// Set form elements.
 		$form            = array();
 		$form['message'] = array(
-				'markup' => __( 'Hi' ) . ' <strong>' . $this->gigya_user['firstName'] . ',</strong><br> ' . __( 'Please enter your password' ) . '<br><br>'
+				'markup' => __( 'A verification email has been sent to you with a password to activate your account.' ) . '<br>' . __( 'Please enter below the password you have received in the verification email.' ) . '<br><br>'
 		);
 		$form['log']     = array(
 				'type'  => 'hidden',
@@ -232,7 +232,7 @@ class GigyaLoginAjax {
 
 		// Render form elements.
 		$output .= _gigya_form_render( $form );
-		$output .= '<input type="button" id="gigya-submit" class="button button-primary button-large" value="Log In" />';
+		$output .= '<input type="button" id="gigya-submit" class="button button-primary button-large" value="Submit" />';
 		$output .= '</form>';
 
 		return $output;
