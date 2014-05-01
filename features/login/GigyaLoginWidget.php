@@ -46,7 +46,7 @@ class GigyaLogin_Widget extends WP_Widget {
 		if ( ! empty( $instance['override'] ) ) {
 			foreach ( $instance as $key => $value ) {
 				if ( ! empty( $value ) ) {
-					$data[$key] = esc_attr( $value );
+					$data['ui'][$key] = esc_attr( $value );
 				}
 			}
 		}

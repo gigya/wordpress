@@ -80,20 +80,36 @@
 
 // --------------------------------------------------------------------
 
-    // Conditional settings share/reactions image url field.
-    var el1 = $( '.conditional' );
-    el1.find( 'input' ).attr( "checked" ) == 'checked' ? el1.next().show() : el1.next().hide();
-    el1.find( 'input' ).change( function () {
-      $( this ).attr( "checked" ) == 'checked' ? el1.next().show() : el1.next().hide();
+    /**
+     * Conditional checkbox for next elements.
+     * @param el
+     * @param parentClass
+     * @param all
+     */
+    var overrideToggle = function ( el, parentClass, all ) {
+      parentClass = '.' + parentClass;
+      var elementsToToggle = el.parents( parentClass ).next();
+      if ( typeof all != 'undefined' && all == true ) {
+        elementsToToggle = el.parents( parentClass ).nextAll();
+      }
+
+      el.is( ":checked" ) ? elementsToToggle.show() : elementsToToggle.hide();
+    }
+
+    // Conditional admin settings fields.
+    $( document ).on( 'change', '.conditional input[type="checkbox"]', function () {
+      overrideToggle( $( this ), 'conditional' );
+    } )
+    $( '.conditional input[type="checkbox"]' ).each( function () {
+      overrideToggle( $( this ), 'conditional' );
     } );
 
-// --------------------------------------------------------------------
-
     // Conditional widget overrides fields.
-    var el2 = $( '.gigya-widget-override' );
-    el2.find( 'input' ).attr( "checked" ) == 'checked' ? el2.nextAll().show() : el2.nextAll().hide();
-    el2.find( 'input' ).change( function () {
-      $( this ).attr( "checked" ) == 'checked' ? el2.nextAll().show() : el2.nextAll().hide();
+    $( document ).on( 'change', '.gigya-widget-override input[type="checkbox"]', function () {
+      overrideToggle( $( this ), 'gigya-widget-override', true );
+    } )
+    $( '.gigya-widget-override input[type="checkbox"]' ).each( function () {
+      overrideToggle( $( this ), 'gigya-widget-override', true );
     } );
 
 // --------------------------------------------------------------------
