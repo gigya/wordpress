@@ -123,7 +123,7 @@ class GigyaAction {
 		$params = apply_filters( 'gigya_global_params', $params );
 
 		// Load params to be available to client-side script.
-		wp_localize_script( 'gigya_js', 'gigyaParams', $params );
+		wp_localize_script( 'gigya_global_js', 'gigyaParams', $params );
 
 		// Checking that we have an API key and Gigya's plugin is turn on.
 		$api_key = GIGYA__API_KEY;
@@ -131,7 +131,7 @@ class GigyaAction {
 			// Loads requirements for any Gigya's login.
 			if ( $this->login_options['mode'] != 'wp_only' ) {
 				// Load Gigya's socialize.js from CDN.
-				wp_enqueue_script( 'gigya', GIGYA__JS_CDN . GIGYA__API_KEY . '&lang=' . $params['lang'] );
+				wp_enqueue_script( 'gigya_cdn', GIGYA__JS_CDN . GIGYA__API_KEY . '&lang=' . $params['lang'] );
 			}
 
 			// Loads requirements for any Gigya's social login.
@@ -151,7 +151,7 @@ class GigyaAction {
 
 			// Loads requirements for any Gigya's Google-Analytics integration.
 			if ( ! empty( $this->global_options['google_analytics'] ) ) {
-				wp_enqueue_script( 'gigya', GIGYA__CDN_PROTOCOL . '.gigya.com/js/gigyaGAIntegration.js' );
+				wp_enqueue_script( 'gigya_ga', GIGYA__CDN_PROTOCOL . '.gigya.com/js/gigyaGAIntegration.js' );
 			}
 		}
 
