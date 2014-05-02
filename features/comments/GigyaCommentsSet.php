@@ -33,8 +33,8 @@ class GigyaCommentsSet {
 				'version'    => 2,
 		);
 
-		if ( ! empty( $this->comments_options['comments_advanced'] ) ) {
-			$advanced = gigyaCMS::parseJSON( _gigParam( $this->comments_options['comments_advanced'], '' ) );
+		if ( ! empty( $this->comments_options['advanced'] ) ) {
+			$advanced = gigyaCMS::parseJSON( _gigParam( $this->comments_options['advanced'], '' ) );
 			$params   = array_merge( $params, $advanced );
 		}
 
