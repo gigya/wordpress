@@ -41,8 +41,8 @@ class GigyaGamification_Widget extends WP_Widget {
 		require_once GIGYA__PLUGIN_DIR . 'features/gamification/GigyaGamificationSet.php';
 		$gm            = new GigyaGamificationSet();
 		$data          = $gm->getParams();
-		$data['type']  = esc_attr( $instance['gamification_type'] );
-		$data['width'] = esc_attr( $instance['gamification_width'] );
+		$data['type']  = esc_attr( $instance['type'] );
+		$data['width'] = esc_attr( $instance['width'] );
 
 		// Set the output.
 		$output .= $args['before_widget'];
