@@ -372,6 +372,16 @@ class GigyaCMS {
 	}
 
 	/**
+	 * @param $guid
+	 */
+	public function deleteAccountByGUID( $guid ) {
+
+		// Delete the user.
+		$this->call( 'accounts.deleteAccount', array( 'UID' => $guid ) );
+
+	}
+
+	/**
 	 * @param $account
 	 * Gigya's RaaS account as we get from:
 	 *
