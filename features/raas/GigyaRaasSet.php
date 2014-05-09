@@ -46,20 +46,20 @@ class GigyaRaasSet {
 				'canEditUsers'            => current_user_can( 'edit_users' ),
 
 			// Screen set.
-				'raasWebScreen'           => _gigParam( $this->login_options['raasWebScreen'], 'Login-web' ),
-				'raasMobileScreen'        => _gigParam( $this->login_options['raasMobileScreen'], 'Mobile-login' ),
-				'raasLoginScreen'         => _gigParam( $this->login_options['raasLoginScreen'], 'gigya-login-screen' ),
-				'raasRegisterScreen'      => _gigParam( $this->login_options['raasRegisterScreen'], 'gigya-register-screen' ),
-				'raasProfileWebScreen'    => _gigParam( $this->login_options['raasProfileWebScreen'], 'Profile-web' ),
-				'raasProfileMobileScreen' => _gigParam( $this->login_options['raasProfileMobileScreen'], 'Profile-mobile' ),
+				'raasWebScreen'           => _gigParam( $this->login_options, 'raasWebScreen', 'Login-web' ),
+				'raasMobileScreen'        => _gigParam( $this->login_options, 'raasMobileScreen', 'Mobile-login' ),
+				'raasLoginScreen'         => _gigParam( $this->login_options, 'raasLoginScreen', 'gigya-login-screen' ),
+				'raasRegisterScreen'      => _gigParam( $this->login_options, 'raasRegisterScreen', 'gigya-register-screen' ),
+				'raasProfileWebScreen'    => _gigParam( $this->login_options, 'raasProfileWebScreen', 'Profile-web' ),
+				'raasProfileMobileScreen' => _gigParam( $this->login_options, 'raasProfileMobileScreen', 'Profile-mobile' ),
 
 			// Override links.
-				'raasOverrideLinks'       => $this->login_options['raasOverrideLinks'] === '0' ? '0' : '1',
+				'raasOverrideLinks'       => _gigParamDefaultOn( $this->login_options, 'raasOverrideLinks' ),
 
 			// Embed DIVs.
-				'raasLoginDiv'            => _gigParam( $this->login_options['raasLoginDiv'], 'loginform' ),
-				'raasRegisterDiv'         => _gigParam( $this->login_options['raasRegisterDiv'], 'registerform' ),
-				'raasProfileDiv'          => _gigParam( $this->login_options['raasProfileDiv'], 'profile-page' )
+				'raasLoginDiv'            => _gigParam( $this->login_options, 'raasLoginDiv', 'loginform' ),
+				'raasRegisterDiv'         => _gigParam( $this->login_options, 'raasRegisterDiv', 'registerform' ),
+				'raasProfileDiv'          => _gigParam( $this->login_options, 'raasProfileDiv', 'profile-page' )
 		);
 
 		// Let others plugins to modify the raas parameters.

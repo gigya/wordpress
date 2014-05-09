@@ -107,15 +107,15 @@ class GigyaAction {
 		$params = array(
 				'ajaxurl'                     => admin_url( 'admin-ajax.php' ),
 				'logoutUrl'                   => wp_logout_url(),
-				'connectWithoutLoginBehavior' => _gigParam( $this->login_options['connectWithoutLoginBehavior'], 'loginExistingUser' ),
+				'connectWithoutLoginBehavior' => _gigParam( $this->login_options, 'connectWithoutLoginBehavior', 'loginExistingUser' ),
 				'jsonExampleURL'              => GIGYA__PLUGIN_URL . 'admin/forms/json/advance_example.json',
-				'enabledProviders'            => _gigParam( $this->global_options['enabledProviders'], '*' ),
-				'lang'                        => _gigParam( $this->global_options['lang'], 'en' )
+				'enabledProviders'            => _gigParam( $this->global_options, 'enabledProviders', '*' ),
+				'lang'                        => _gigParam( $this->global_options, 'lang', 'en' )
 		);
 
 		// Add advanced parameters if exist.
 		if ( ! empty( $this->global_options['advanced'] ) ) {
-			$advanced = gigyaCMS::parseJSON( _gigParam( $this->global_options['advanced'], '' ) );
+			$advanced = gigyaCMS::parseJSON( _gigParam( $this->global_options, 'advanced', '' ) );
 			$params   = array_merge( $params, $advanced );
 		}
 
@@ -361,43 +361,49 @@ class GigyaAction {
 	public function widgetsInit() {
 
 		// Login Widget.
-		$share_options = get_option( GIGYA__SETTINGS_LOGIN );
-		if ( $share_options['mode'] == 'wp_sl' ) {
+		$login_options = get_option( GIGYA__SETTINGS_LOGIN );
+		$login_on      = _gigParamDefaultOn( $login_options, 'on' );
+		if ( ! empty( $login_on ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginWidget.php';
 			register_widget( 'GigyaLogin_Widget' );
 		}
 
 		// Share Widget.
 		$share_options = get_option( GIGYA__SETTINGS_SHARE );
-		if ( $share_options['on'] !== '0' ) {
+		$share_on      = _gigParamDefaultOn( $share_options, 'on' );
+		if ( ! empty( $share_on ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareWidget.php';
 			register_widget( 'GigyaShare_Widget' );
 		}
 
 		// Comment Widget.
-		$share_options = get_option( GIGYA__SETTINGS_COMMENTS );
-		if ( $share_options['on'] !== '0' ) {
+		$comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
+		$comments_on      = _gigParamDefaultOn( $comments_options, 'on' );
+		if ( ! empty( $comments_on ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/comments/GigyaCommentsWidget.php';
 			register_widget( 'GigyaComments_Widget' );
 		}
 
 		// Reactions Widget.
-		$share_options = get_option( GIGYA__SETTINGS_REACTIONS );
-		if ( $share_options['on'] !== '0' ) {
+		$reactions_options = get_option( GIGYA__SETTINGS_REACTIONS );
+		$reactions_on      = _gigParamDefaultOn( $reactions_options, 'on' );
+		if ( ! empty( $reactions_on ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/reactions/GigyaReactionsWidget.php';
 			register_widget( 'GigyaReactions_Widget' );
 		}
 
 		// Gamification Widget.
 		$gm_options = get_option( GIGYA__SETTINGS_GM );
-		if ( $gm_options['on'] !== '0' ) {
+		$gm_on      = _gigParamDefaultOn( $gm_options, 'on' );
+		if ( ! empty( $gm_on ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/gamification/GigyaGamificationWidget.php';
 			register_widget( 'GigyaGamification_Widget' );
 		}
 
 		// Activity Feed Widget.
 		$feed_options = get_option( GIGYA__SETTINGS_FEED );
-		if ( $feed_options['on'] !== '0' ) {
+		$feed_on      = _gigParamDefaultOn( $feed_options, 'on' );
+		if ( ! empty( $feed_on ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/feed/GigyaFeedWidget.php';
 			register_widget( 'GigyaFeed_Widget' );
 		}
@@ -413,7 +419,8 @@ class GigyaAction {
 	public function theContent( $content ) {
 		// Share plugin.
 		$share_options = get_option( GIGYA__SETTINGS_SHARE );
-		if ( $share_options['on'] !== '0' ) {
+		$share_on      = _gigParamDefaultOn( $share_options, 'on' );
+		if ( ! empty( $share_on ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareSet.php';
 			$share   = new GigyaShareSet();
 			$content = $share->setDefaultPosition( $content );
@@ -421,7 +428,8 @@ class GigyaAction {
 
 		// Reactions plugin.
 		$reactions_options = get_option( GIGYA__SETTINGS_REACTIONS );
-		if ( $reactions_options['on'] !== '0' ) {
+		$reactions_on      = _gigParamDefaultOn( $reactions_options, 'on' );
+		if ( ! empty( $reactions_on ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/reactions/GigyaReactionsSet.php';
 			$reactions = new GigyaReactionsSet();
 			$content   = $reactions->setDefaultPosition( $content );
@@ -441,7 +449,8 @@ class GigyaAction {
 
 		// Comments plugin.
 		$comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
-		if ( $comments_options['on'] !== '0' ) {
+		$comments_on      = _gigParamDefaultOn( $comments_options, 'on' );
+		if ( ! empty( $comments_on ) ) {
 
 			// Spider trap.
 			// When a spider detect we render the comment in the HTML for SEO
@@ -584,8 +593,21 @@ function _gigya_get_json( $file ) {
 /**
  * Helper
  */
-function _gigParam( $param, $default = null ) {
-	return ! empty( $param ) ? $param : $default;
+function _gigParam( $array, $key, $default = null ) {
+	if ( is_array( $array ) ) {
+		return ! empty( $array[$key] ) ? $array[$key] : $default;
+	} elseif ( is_object( $array ) ) {
+		return ! empty( $array->$key ) ? $array->$key : $default;
+	}
+}
+
+// --------------------------------------------------------------------
+
+/**
+ * Helper
+ */
+function _gigParamDefaultOn( $array, $key ) {
+	return ( isset( $array[$key] ) && $array[$key] === '0' ) ? '0' : '1';
 }
 
 // --------------------------------------------------------------------

@@ -75,7 +75,7 @@ class GigyaFollow_Widget extends WP_Widget {
 
 		$form[$this->get_field_id( 'title' )] = array(
 				'type'  => 'text',
-				'value' => _gigParam( esc_attr( $instance['title'] ), '' ),
+				'value' => esc_attr( _gigParam( $instance, 'title', '' ) ),
 				'label' => __( 'Title' ),
 				'class' => 'size',
 				'name'  => $this->get_field_name( 'title' )
@@ -83,7 +83,7 @@ class GigyaFollow_Widget extends WP_Widget {
 
 		$form[$this->get_field_id( 'iconSize' )] = array(
 				'type'  => 'text',
-				'value' => _gigParam( esc_attr( $instance['iconSize'] ), 32 ),
+				'value' => esc_attr( _gigParam( $instance, 'iconSize', 32 ) ),
 				'label' => __( 'Icon size' ),
 				'class' => 'size',
 				'name'  => $this->get_field_name( 'iconSize' )
@@ -95,7 +95,7 @@ class GigyaFollow_Widget extends WP_Widget {
 						'horizontal' => __( 'Horizontal' ),
 						'vertical'   => __( 'Vertical' )
 				),
-				'value'   => _gigParam( esc_attr( $instance['layout'] ), 'horizontal' ),
+				'value'   => esc_attr( _gigParam( $instance, 'layout', 'horizontal' ) ),
 				'label'   => __( 'Layout' ),
 				'class'   => 'size',
 				'name'    => $this->get_field_name( 'layout' )

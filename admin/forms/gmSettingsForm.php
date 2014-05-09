@@ -9,13 +9,13 @@ function gmSettingsForm() {
 	$form['on'] = array(
 			'type'  => 'checkbox',
 			'label' => __( 'Enable Gamification Plugins' ),
-			'value' => $values['on'] === '0' ? '0' : '1'
+			'value' => _gigParamDefaultOn( $values, 'on' )
 	);
 
 	$form['notification'] = array(
 			'type'  => 'checkbox',
 			'label' => __( 'Enable Notifications' ),
-			'value' => _gigParam( $values['notification'], 0 )
+			'value' => _gigParam( $values, 'notification', 0 )
 	);
 
 	$form['period'] = array(
@@ -24,13 +24,13 @@ function gmSettingsForm() {
 					"7days" => __( "7 Days" ),
 					"all"   => __( "All" )
 			),
-			'value'   => _gigParam( $values['period'], '7days' ),
+			'value'   => _gigParam( $values, 'period', '7days' ),
 			'label'   => __( 'Leaderboard time period' ),
 	);
 
 	$form['totalCount'] = array(
 			'type'  => 'text',
-			'value' => _gigParam( $values['totalCount'], '12' ),
+			'value' => _gigParam( $values, 'totalCount', '12' ),
 			'label' => __( 'Leaderboard user count' ),
 			'desc'  => __( 'Valid values are between 1 to 23' )
 	);

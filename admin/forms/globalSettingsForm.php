@@ -15,13 +15,13 @@ function globalSettingsForm() {
 	$form['api_key'] = array(
 			'type'  => 'text',
 			'label' => __( 'Gigya API Key' ),
-			'value' => _gigParam( $values['api_key'], '' )
+			'value' => _gigParam( $values, 'api_key', '' )
 	);
 
 	$form['api_secret'] = array(
 			'type'  => 'text',
 			'label' => __( 'Gigya Secret Key' ),
-			'value' => _gigParam( $values['api_secret'], '' )
+			'value' => _gigParam( $values, 'api_secret', '' )
 	);
 
 	$form['data_center'] = array(
@@ -32,13 +32,13 @@ function globalSettingsForm() {
 			),
 			'label'   => __( 'Data Center' ),
 			'class'   => 'data_center',
-			'value'   => _gigParam( $values['data_center'], 'us1.gigya.com' )
+			'value'   => _gigParam( $values, 'data_center', 'us1.gigya.com' )
 	);
 
 	$form['enabledProviders'] = array(
 			'type'  => 'text',
 			'label' => __( 'List of providers' ),
-			'value' => _gigParam( $values['enabledProviders'], '*' ),
+			'value' => _gigParam( $values, 'enabledProviders', '*' ),
 			'desc'  => __( 'Comma separated list of login providers that would be included. For example: facebook,twitter,google. Leave empty or type * for all providers. See the entire list of available' ) . ' <a href="http://developers.gigya.com/020_Client_API/020_Methods/Socialize.showLoginUI">Providers</a>'
 	);
 
@@ -77,14 +77,14 @@ function globalSettingsForm() {
 					'uk'    => 'Ukrainian',
 					'vi'    => 'Vietnamese',
 			),
-			'value'   => _gigParam( $values['lang'], 'en' ),
+			'value'   => _gigParam( $values, 'lang', 'en' ),
 			'label'   => __( 'Language' ),
 			'desc'    => __( 'Please select the interface language' )
 	);
 
 	$form['advanced'] = array(
 			'type'  => 'textarea',
-			'value' => _gigParam( $values['advanced'], '' ),
+			'value' => _gigParam( $values, 'advanced', '' ),
 			'label' => __( 'Additional Parameters (advanced)' ),
 			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="http://developers.gigya.com/030_API_reference/010_Client_API/010_Objects/Conf_object" target="_blank">' . __( 'parameters' ) . '</a>'
 	);
@@ -92,13 +92,13 @@ function globalSettingsForm() {
 	$form['google_analytics'] = array(
 			'type'  => 'checkbox',
 			'label' => __( "Enable Google Social Analytics" ),
-			'value' => _gigParam( $values['google_analytics'], 0 )
+			'value' => _gigParam( $values, 'google_analytics', 0 )
 	);
 
 	$form['debug'] = array(
 			'type'  => 'checkbox',
 			'label' => __( 'Enable Gigya debug log' ),
-			'value' => _gigParam( $values['debug'], 0 ),
+			'value' => _gigParam( $values, 'debug', 0 ),
 			'desc'  => __( 'Log all Gigya\'s requests and responses. You can then find the log' ) . ' <a href="javascript:void(0)" class="gigya-debug-log">' . __( 'here' ) . '</a>'
 	);
 

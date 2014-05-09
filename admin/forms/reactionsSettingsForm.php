@@ -10,7 +10,7 @@ function reactionsSettingsForm() {
 			'type'    => 'checkbox',
 			'label'   => __( 'Enable Reactions Plugin' ),
 			'default' => 0,
-			'value'   => $values['on'] === '0' ? '0' : '1'
+			'value'   => _gigParamDefaultOn( $values, 'on' )
 	);
 
 	$form['position'] = array(
@@ -22,14 +22,14 @@ function reactionsSettingsForm() {
 					"top"    => __( "Top" ),
 					"both"   => __( "Both" ),
 			),
-			'value'   => _gigParam( $values['position'], 'none' ),
+			'value'   => _gigParam( $values, 'position', 'none' ),
 			'desc'    => sprintf( __( 'You can also add and position Gigya Reactions using the %s settings page.' ), '<a href="' . admin_url( 'widgets.php' ) . '">' . __( 'Widgets' ) . '</a>' )
 	);
 
 	$form['enabledProviders'] = array(
 			'type'  => 'text',
 			'label' => __( 'Providers' ),
-			'value' => _gigParam( $values['enabledProviders'], '*' ),
+			'value' => _gigParam( $values, 'enabledProviders', '*' ),
 			'desc'  => __( 'Comma separated list of share providers that would be included. For example: facebook,twitter,linkedin. Leave empty or type * for all providers. See the entire list of available' ) . ' <a href="http://developers.gigya.com/020_Client_API/010_Socialize/socialize.showReactionsBarUI">Providers</a>'
 	);
 
@@ -41,7 +41,7 @@ function reactionsSettingsForm() {
 					"top"   => __( "Top" ),
 					"none"  => __( "None" )
 			),
-			'value'   => _gigParam( $values['showCounts'], 'right' )
+			'value'   => _gigParam( $values, 'showCounts', 'right' )
 	);
 
 	$form['countType'] = array(
@@ -50,7 +50,7 @@ function reactionsSettingsForm() {
 					"number"     => __( "Number" ),
 					"percentage" => __( "Percentage" )
 			),
-			'value'   => _gigParam( $values['countType'], 'number' ),
+			'value'   => _gigParam( $values, 'countType', 'number' ),
 			'label'   => __( 'Count Type' ),
 	);
 
@@ -61,12 +61,12 @@ function reactionsSettingsForm() {
 					"horizontal" => __( "Horizontal" ),
 					"vertical"   => __( "Vertical" )
 			),
-			'value'   => _gigParam( $values['layout'], 'horizontal' )
+			'value'   => _gigParam( $values, 'layout', 'horizontal' )
 	);
 
 	$form['image'] = array(
 			'type'  => 'checkbox',
-			'value' => _gigParam( $values['image'], 0 ),
+			'value' => _gigParam( $values, 'image', 0 ),
 			'label' => __( 'Set image URL' ),
 			'class' => 'conditional'
 	);
@@ -74,26 +74,26 @@ function reactionsSettingsForm() {
 	$form['imageURL'] = array(
 			'type'  => 'text',
 			'label' => __( "Default URL of the image to share" ),
-			'value' => _gigParam( $values['imageURL'], '' ),
+			'value' => _gigParam( $values, 'imageURL', '' ),
 	);
 
 	$form['multipleReactions'] = array(
 			'type'  => 'checkbox',
 			'label' => __( 'Allow multiple reactions' ),
-			'value' => _gigParam( $values['multipleReactions'], 0 ),
+			'value' => _gigParam( $values, 'multipleReactions', 0 ),
 	);
 
 	$form['buttons'] = array(
 			'type'  => 'textarea',
 			'label' => __( 'Reaction Buttons' ),
-			'value' => _gigParam( $values['buttons'], _gigya_get_json( 'admin/forms/json/default_reaction' ) ),
+			'value' => _gigParam( $values, 'buttons', _gigya_get_json( 'admin/forms/json/default_reaction' ) ),
 			'desc'  => sprintf( __( 'Please enter an array of %s, representing the buttons to display in the Reactions bar.' ), '<a href="http://developers.gigya.com/020_Client_API/010_Socialize/socialize.showReactionsBarUI#Reaction_Object">' . _( 'Reaction objects' ) . '</a>' )
 	);
 
 	$form['advanced'] = array(
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced)" ),
-			'value' => _gigParam( $values['advanced'], '' ),
+			'value' => _gigParam( $values, 'advanced', '' ),
 			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="http://developers.gigya.com/020_Client_API/010_Socialize/socialize.showReactionsBarUI" target="_blank">' . __( 'parameters' ) . '</a>'
 	);
 

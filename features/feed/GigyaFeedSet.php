@@ -26,9 +26,9 @@ class GigyaFeedSet {
 
 		// The parameters array.
 		$params = array(
-				'tabOrder' => _gigParam( $this->feed_options['tabOrder'], 'everyone,friends,me' ),
-				'width'    => _gigParam( $this->feed_options['width'], '170' ),
-				'height'   => _gigParam( $this->feed_options['height'], '270' ),
+				'tabOrder' => _gigParam( $this->feed_options, 'tabOrder', 'everyone,friends,me' ),
+				'width'    => _gigParam( $this->feed_options, 'width', '170' ),
+				'height'   => _gigParam( $this->feed_options, 'height', '270' ),
 				'siteName' => get_option( 'blogname', '' )
 		);
 

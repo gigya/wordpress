@@ -72,7 +72,7 @@ class GigyaGamification_Widget extends WP_Widget {
 
 		$form[$this->get_field_id( 'title' )] = array(
 				'type'  => 'text',
-				'value' => _gigParam( esc_attr( $instance['title'] ), '' ),
+				'value' => esc_attr( _gigParam( $instance, 'title', '' ) ),
 				'label' => __( 'Title' ),
 				'class' => 'size',
 				'name'  => $this->get_field_name( 'title' )
@@ -86,14 +86,14 @@ class GigyaGamification_Widget extends WP_Widget {
 						'leaderboard'  => 'Leaderboard',
 						'achievements' => 'Achievements'
 				),
-				'value'   => _gigParam( esc_attr( $instance['type'] ), 'game' ),
+				'value'   => esc_attr( _gigParam( $instance, 'type', 'game' ) ),
 				'label'   => __( 'Type' ),
 				'name'    => $this->get_field_name( 'type' )
 		);
 
 		$form[$this->get_field_id( 'width' )] = array(
 				'type'  => 'text',
-				'value' => _gigParam( esc_attr( $instance['width'] ), '200' ),
+				'value' => esc_attr( _gigParam( $instance, 'width', '200' ) ),
 				'label' => __( 'Width' ),
 				'class' => 'size',
 				'name'  => $this->get_field_name( 'width' )

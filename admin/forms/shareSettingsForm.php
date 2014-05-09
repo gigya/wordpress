@@ -9,7 +9,7 @@ function shareSettingsForm() {
 	$form['on'] = array(
 			'type'  => 'checkbox',
 			'label' => __( 'Enable Share Bar Plugin' ),
-			'value' => $values['on'] === '0' ? '0' : '1'
+			'value' => _gigParamDefaultOn( $values, 'on' )
 	);
 
 	$form['position'] = array(
@@ -21,14 +21,14 @@ function shareSettingsForm() {
 					"both"   => __( "Both" ),
 			),
 			'label'   => __( 'Set the position of the Share Bar in a post page' ),
-			'value'   => _gigParam( $values['position'], 'none' ),
+			'value'   => _gigParam( $values, 'position', 'none' ),
 			'desc'    => sprintf( __( 'You can also add and position Gigya Share Bar using the %s settings page.' ), '<a href="' . admin_url( 'widgets.php' ) . '">' . __( 'Widgets' ) . '</a>' )
 	);
 
 	$form['shareButtons'] = array(
 			'type'  => 'text',
 			'label' => __( 'Share Providers' ),
-			'value' => _gigParam( $values['shareButtons'], 'share,facebook-like,google-plusone,twitter,email' ),
+			'value' => _gigParam( $values, 'shareButtons', 'share,facebook-like,google-plusone,twitter,email' ),
 			'desc'  => __( 'For example: share,email,pinterest,twitter-tweet,google-plusone,facebook-like.' )
 	);
 
@@ -39,7 +39,7 @@ function shareSettingsForm() {
 					"top"   => __( "Top" ),
 					"none"  => __( "None" )
 			),
-			'value'   => _gigParam( $values['showCounts'], 'right' ),
+			'value'   => _gigParam( $values, 'showCounts', 'right' ),
 			'label'   => __( 'Show Counts' )
 	);
 
@@ -49,13 +49,13 @@ function shareSettingsForm() {
 					"horizontal" => __( "Horizontal" ),
 					"vertical"   => __( "Vertical" ),
 			),
-			'value'   => _gigParam( $values['layout'], 'horizontal' ),
+			'value'   => _gigParam( $values, 'layout', 'horizontal' ),
 			'label'   => __( 'Layout' ),
 	);
 
 	$form['image'] = array(
 			'type'  => 'checkbox',
-			'value' => _gigParam( $values['image'], 0 ),
+			'value' => _gigParam( $values, 'image', 0 ),
 			'label' => __( 'Set image URL' ),
 			'class' => 'conditional'
 	);
@@ -63,19 +63,19 @@ function shareSettingsForm() {
 	$form['imageURL'] = array(
 			'type'  => 'text',
 			'label' => __( "Default URL of the image to share" ),
-			'value' => _gigParam( $values['imageURL'], '' ),
+			'value' => _gigParam( $values, 'imageURL', '' ),
 	);
 
 	$form['shortURLs'] = array(
 			'type'  => 'checkbox',
 			'label' => __( "Share using short URLs" ),
-			'value' => _gigParam( $values['shortURLs'], 0 )
+			'value' => _gigParam( $values, 'shortURLs', 0 )
 	);
 
 	$form['advanced'] = array(
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced)" ),
-			'value' => _gigParam( $values['advanced'], '' ),
+			'value' => _gigParam( $values, 'advanced', '' ),
 			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="http://developers.gigya.com/020_Client_API/020_Methods/socialize.showShareBarUI" target="_blank">' . __( 'parameters' ) . '</a>'
 	);
 

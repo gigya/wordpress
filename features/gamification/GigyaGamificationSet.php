@@ -36,8 +36,8 @@ class GigyaGamificationSet {
 
 		// The parameters array.
 		$params = array(
-				'period'     => _gigParam( $this->gm_options['period'], '7days' ),
-				'totalCount' => _gigParam( $this->gm_options['totalCount'], '12' ),
+				'period'     => _gigParam( $this->gm_options, 'period', '7days' ),
+				'totalCount' => _gigParam( $this->gm_options, 'totalCount', '12' ),
 		);
 
 		// Let others plugins to modify the gamification parameters.

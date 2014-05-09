@@ -78,7 +78,7 @@ class GigyaComments_Widget extends WP_Widget {
 
 		$form[$this->get_field_id( 'title' )] = array(
 				'type'  => 'text',
-				'value' => _gigParam( esc_attr( $instance['title'] ), '' ),
+				'value' => esc_attr( _gigParam( $instance, 'title', '' ) ),
 				'label' => __( 'Title' ),
 				'class' => 'size',
 				'name'  => $this->get_field_name( 'title' )
@@ -86,7 +86,7 @@ class GigyaComments_Widget extends WP_Widget {
 
 		$form[$this->get_field_id( 'override' )] = array(
 				'type'  => 'checkbox',
-				'value' => _gigParam( esc_attr( $instance['override'] ), '' ),
+				'value' => esc_attr( _gigParam( $instance, 'override', '' ) ),
 				'label' => __( 'Override' ),
 				'class' => 'gigya-widget-override',
 				'name'  => $this->get_field_name( 'override' )
@@ -95,14 +95,14 @@ class GigyaComments_Widget extends WP_Widget {
 		$form[$this->get_field_id( 'rating' )] = array(
 				'type'  => 'checkbox',
 				'label' => __( 'Rating Mode' ),
-				'value' => _gigParam( esc_attr( $instance['rating'] ), 0 ),
+				'value' => esc_attr( _gigParam( $instance, 'rating', 0 ) ),
 				'name'  => $this->get_field_name( 'rating' )
 		);
 
 		$form[$this->get_field_id( 'categoryID' )] = array(
 				'type'  => 'text',
 				'label' => __( 'Category ID' ),
-				'value' => _gigParam( esc_attr( $instance['categoryID'] ), '' ),
+				'value' => esc_attr( _gigParam( $instance, 'categoryID', '' ) ),
 				'desc'  => __( "The category ID on 'Comments category name' at Gigya's settings" ) . ' ' . '<a href=https://platform.gigya.com/Site/partners/Settings.aspx#cmd=Settings.CommentsSetup>' . __( 'here' ) . '</a>',
 				'class' => 'size',
 				'name'  => $this->get_field_name( 'categoryID' )

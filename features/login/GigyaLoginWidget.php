@@ -89,7 +89,7 @@ class GigyaLogin_Widget extends WP_Widget {
 
 		$form[$this->get_field_id( 'title' )] = array(
 				'type'  => 'text',
-				'value' => _gigParam( esc_attr( $instance['title'] ), '' ),
+				'value' => esc_attr( _gigParam( $instance, 'title', '' ) ),
 				'label' => __( 'Title' ),
 				'class' => 'size',
 				'name'  => $this->get_field_name( 'title' )
@@ -97,7 +97,7 @@ class GigyaLogin_Widget extends WP_Widget {
 
 		$form[$this->get_field_id( 'override' )] = array(
 				'type'  => 'checkbox',
-				'value' => _gigParam( esc_attr( $instance['override'] ), '' ),
+				'value' => esc_attr( _gigParam( $instance, 'override', '' ) ),
 				'label' => __( 'Override' ),
 				'class' => 'gigya-widget-override',
 				'name'  => $this->get_field_name( 'override' )
@@ -105,7 +105,7 @@ class GigyaLogin_Widget extends WP_Widget {
 
 		$form[$this->get_field_id( 'width' )] = array(
 				'type'  => 'text',
-				'value' => _gigParam( esc_attr( $instance['width'] ), '' ),
+				'value' => esc_attr( _gigParam( $instance, 'width', '' ) ),
 				'label' => __( 'Width' ),
 				'class' => 'size',
 				'name'  => $this->get_field_name( 'width' )
@@ -113,7 +113,7 @@ class GigyaLogin_Widget extends WP_Widget {
 
 		$form[$this->get_field_id( 'height' )] = array(
 				'type'  => 'text',
-				'value' => _gigParam( esc_attr( $instance['height'] ), '' ),
+				'value' => esc_attr( _gigParam( $instance, 'height', '' ) ),
 				'label' => __( 'Height' ),
 				'class' => 'size',
 				'name'  => $this->get_field_name( 'height' )

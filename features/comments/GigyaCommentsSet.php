@@ -25,16 +25,16 @@ class GigyaCommentsSet {
 	 */
 	public function getParams() {
 		$params = array(
-				'categoryID' => _gigParam( $this->comments_options['categoryID'], '' ),
-				'rating'     => _gigParam( $this->comments_options['rating'], 0 ),
+				'categoryID' => _gigParam( $this->comments_options, 'categoryID', '' ),
+				'rating'     => _gigParam( $this->comments_options, 'rating', 0 ),
 				'streamID'   => get_the_ID(),
-				'scope'      => _gigParam( $this->feed_options['scope'], 'external' ),
-				'privacy'    => _gigParam( $this->feed_options['privacy'], 'private' ),
+				'scope'      => _gigParam( $this->feed_options, 'scope', 'external' ),
+				'privacy'    => _gigParam( $this->feed_options, 'privacy', 'private' ),
 				'version'    => 2,
 		);
 
 		if ( ! empty( $this->comments_options['advanced'] ) ) {
-			$advanced = gigyaCMS::parseJSON( _gigParam( $this->comments_options['advanced'], '' ) );
+			$advanced = gigyaCMS::parseJSON( _gigParam( $this->comments_options, 'advanced', '' ) );
 			$params   = array_merge( $params, $advanced );
 		}
 

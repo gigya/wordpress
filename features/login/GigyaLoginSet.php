@@ -41,7 +41,7 @@ class GigyaLoginSet {
 		$params = array(
 				'actionLogin'       => 'gigya_login',
 				'actionCustomLogin' => 'custom_login',
-				'redirect'          => _gigParam( $this->login_options['redirect'], user_admin_url() ),
+				'redirect'          => _gigParam( $this->login_options, 'redirect', user_admin_url() ),
 		);
 
 		$params['ui']                  = array();
