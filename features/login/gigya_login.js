@@ -251,7 +251,7 @@
         }
         else {
           if ( typeof res.data != 'undefined' ) {
-            $('.gigya-wp-msg' ).remove();
+            $( '.gigya-wp-msg' ).remove();
             $( '#dialog-modal' ).prepend( '<div class="gigya-wp-msg">' + res.data.msg + '</div>' );
           }
         }

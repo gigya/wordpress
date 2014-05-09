@@ -269,7 +269,8 @@ class GigyaInstall {
 	private function setJson( &$options, $new_name, $old_value ) {
 		if ( ! empty( $old_value ) ) {
 			$old_arr            = $this->parseKeyValuePair( $old_value );
-			$options[$new_name] = json_encode( $old_arr );
+			$json               = json_encode( $old_arr );
+			$options[$new_name] = ! empty( $json ) ? $json : '';
 		}
 	}
 

@@ -479,7 +479,7 @@ if ( ! function_exists( 'wp_new_user_notification' ) ) {
 		 */
 		function wp_new_user_notification( $user_id, $plaintext_pass = '' ) {
 			// Set default_password_nag to false, for prevent a user asked to change his password.
-			update_user_option($user_id, 'default_password_nag', false, true);
+			update_user_option( $user_id, 'default_password_nag', false, true );
 			return;
 		}
 	}
