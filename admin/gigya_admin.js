@@ -54,7 +54,7 @@
             textField.addClass( 'valid' );
           }
         } catch ( err ) {
-          textField.after( '<div class="msg error">' + err + '</div>' );
+          textField.after( '<div class="msg error">Error: the text you have entered is not a valid JSON format. JSON Parser error message: ' + err + '</div>' );
           textField.addClass( 'error' );
           e.preventDefault();
           e.stopPropagation();
