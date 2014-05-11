@@ -26,10 +26,12 @@
      * Set notification if enabled.
      */
     var setNotification = function () {
-      if ( typeof gigyaGmNotificationParams !== 'undefined' && gigyaGamificationParams.length > 0 ) {
-        gigya.services.socialize.getUserInfo( {
-          callback: notificationCB
-        } )
+      if ( typeof gigyaGmNotificationParams !== 'undefined' ) {
+        if (gigyaGamificationParams.length > 0 ) {
+          gigya.services.socialize.getUserInfo( {
+            callback: notificationCB
+          } )
+        }
       }
     }
 
