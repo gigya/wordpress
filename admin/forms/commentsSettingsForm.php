@@ -26,6 +26,13 @@ function commentsSettingsForm() {
 			'desc'  => sprintf( __( "Copy the ID under 'Comments category name' from %s." ), '<a href="https://platform.gigya.com/Site/partners/Settings.aspx#cmd%3DSettings.CommentsSetup">' . __( 'Gigya platform' ) . '</a>' )
 	);
 
+	$form['enabledShareProviders'] = array(
+			'type'  => 'text',
+			'label' => __( 'Providers' ),
+			'value' => _gigParam( $values, 'enabledShareProviders', '*' ),
+			'desc'  => __( 'Comma separated list of share providers that would be included. For example: facebook,twitter,linkedin. Leave empty or type * for all providers.' )
+	);
+
 	$form['position'] = array(
 			'type'    => 'select',
 			'options' => array(

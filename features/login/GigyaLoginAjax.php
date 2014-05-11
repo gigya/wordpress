@@ -251,7 +251,7 @@ class GigyaLoginAjax {
 	 * @return string
 	 */
 	private function linkAccountForm( $uid ) {
-		$wp_user = get_userdata( $uid );
+		$wp_user      = get_userdata( $uid );
 		$wp_user_name = $wp_user->data->user_login;
 
 		$output = '';
