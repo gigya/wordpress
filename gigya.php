@@ -233,33 +233,21 @@ class GigyaAction {
 				exit;
 			}
 
-			// Checking the WP for store Gigya's uid.
-			$guid = get_user_meta( $account->ID, 'gigya_uid' );
-			$guid = $guid[0];
-			if ( ! empty( $guid ) ) {
-				// When there is, it's means there where
-				// un-verified email registration, so we
-				// merge account just now, and delete the
-				// DB record for not repeating this.
-				$gigyaCMS = new GigyaCMS();
-				$gigyaCMS->notifyRegistration( $guid, $account->ID );
-				delete_user_meta( $account->ID, 'gigya_uid' );
-			} else {
-				// Notify Gigya socialize.notifyLogin
-				// for a return user logged in from WP login form.
-				$gigyaCMS = new GigyaCMS();
-				$gigyaCMS->notifyLogin( $account->ID );
-			}
+			// Notify Gigya socialize.notifyLogin
+			// for a return user logged in from WP login form.
+			$gigyaCMS = new GigyaCMS();
+			$gigyaCMS->notifyLogin( $account->ID );
 		}
 
 		// This post vars available when there is the same email on the site,
 		// with the one who try to register and we want to link-accounts
-		// after the user is logged in with password.
-		if ( $_POST['action'] == 'link_accounts' && ! empty ( $_POST['data'] ) ) {
+		// after the user is logged in with password. Or login after email verify.
+		if ( ( $_POST['action'] == 'link_accounts' || $_POST['action'] == 'custom_login' ) && ! empty ( $_POST['data'] ) ) {
 			parse_str( $_POST['data'], $data );
 			if ( ! empty( $data['gigyaUID'] ) ) {
 				$gigyaCMS = new GigyaCMS();
 				$gigyaCMS->notifyRegistration( $data['gigyaUID'], $account->ID );
+				delete_user_meta( $account->ID, 'gigya_uid' );
 			}
 		}
 	}

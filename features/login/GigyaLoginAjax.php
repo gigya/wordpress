@@ -230,6 +230,11 @@ class GigyaLoginAjax {
 				'value' => 'loginform-gigya-email-verify',
 		);
 
+		$form['gigyaUID'] = array(
+				'type'  => 'hidden',
+				'value' => $this->gigya_user['UID'],
+		);
+
 		// Render form elements.
 		$output .= _gigya_form_render( $form );
 		$output .= '<input type="button" id="gigya-submit" class="button button-primary button-large" value="Submit" />';

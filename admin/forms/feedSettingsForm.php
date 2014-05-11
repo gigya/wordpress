@@ -10,7 +10,7 @@ function feedSettingsForm() {
 			'type'  => 'checkbox',
 			'label' => __( 'Enable Activity Feed Plugins' ),
 			'value' => _gigParamDefaultOn( $values, 'on' ),
-			'desc'  => __( 'Enable Sharing to Activity Feed' )
+			'desc'  => __( 'Enable Sharing to Activity Feed.' )
 	);
 
 	$form['privacy'] = array(
