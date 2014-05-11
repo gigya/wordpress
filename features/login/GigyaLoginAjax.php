@@ -110,7 +110,7 @@ class GigyaLoginAjax {
 			// Return JSON with login form to client.
 			wp_send_json_success( array(
 					'type' => 'form',
-					'html' => $this->linkAccountForm()
+					'html' => $this->linkAccountForm( $email_exists )
 			) );
 		}
 
@@ -246,9 +246,13 @@ class GigyaLoginAjax {
 	/**
 	 * Generate form for link accounts.
 	 *
+	 * @param $uid
+	 *
 	 * @return string
 	 */
-	private function linkAccountForm() {
+	private function linkAccountForm( $uid ) {
+		$wp_user = get_userdata( $uid );
+		$wp_user_name = $wp_user->data->user_login;
 
 		$output = '';
 		$output .= '<form id="link-accounts-form">';
@@ -259,9 +263,9 @@ class GigyaLoginAjax {
 				'markup' => __( 'Your Email address' ) . ': <strong>' . $this->gigya_user['email'] . '</strong> ' . __( 'already exists. If you have previously registered, please login with your site credentials to link the accounts. Otherwise, please use a different Email address' ) . '<br><br>'
 		);
 		$form['log']     = array(
-				'type'  => 'text',
+				'type'  => 'hidden',
 				'label' => __( 'Username' ),
-				'value' => $this->gigya_user['nickname'],
+				'value' => $wp_user_name,
 				'desc'  => __( 'Enter your' ) . ' ' . get_option( 'blogname' ) . ' ' . __( 'username' )
 		);
 
