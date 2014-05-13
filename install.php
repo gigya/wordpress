@@ -124,7 +124,7 @@ class GigyaInstall {
 	private function upgradeLogin( $old ) {
 
 		// Update old (v4.0) login options if exist.
-		$login_options['mode'] = ! empty( $old['login_plugin'] ) ? 'wp_sl' : 'wp_only';
+		$this->login_options['mode'] = ! empty( $old['login_plugin'] ) ? 'wp_sl' : 'wp_only';
 		$this->setVar( $this->login_options, 'buttonsStyle', $old['login_button_style'] );
 		$this->setVar( $this->login_options, 'connectWithoutLoginBehavior', $old['connect_without'] );
 		$this->setVar( $this->login_options, 'width', $old['login_width'] );

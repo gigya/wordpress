@@ -18,3 +18,13 @@
 .ui-button {
 
 }
+
+input[type="submit"].gigya-input-submit {
+	border: 1px solid #CECECE;
+	cursor: pointer;
+	padding: 0 12px;
+	color: #333333;
+	font-weight: bold;
+	border-radius: 4px;
+	background: #F2F2F2;
+}
