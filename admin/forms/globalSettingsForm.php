@@ -8,7 +8,7 @@ function globalSettingsForm() {
 
 	if ( get_option( 'gigya_settings_fields' ) ) {
 		$form['clean_db'] = array(
-				'markup' => '<a href="javascript:void(0)" class="clean-db">Database cleaner after upgrade</a><br><small>Very recommended to backup your database before preform a clean!</small>'
+				'markup' => '<a href="javascript:void(0)" class="clean-db">Database cleaner after upgrade</a><br><small>Very recommended to backup your database before perform a clean!</small>'
 		);
 	}
 
