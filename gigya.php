@@ -355,8 +355,7 @@ class GigyaAction {
 	public function widgetsInit() {
 
 		// Login Widget.
-		$login_options = get_option( GIGYA__SETTINGS_LOGIN );
-		$login_on      = _gigParamDefaultOn( $login_options, 'on' );
+		$login_on = $this->login_options['mode'] == 'wp_sl';
 		if ( ! empty( $login_on ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginWidget.php';
 			register_widget( 'GigyaLogin_Widget' );
