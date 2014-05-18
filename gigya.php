@@ -79,6 +79,7 @@ class GigyaAction {
 		add_action( 'wp_ajax_nopriv_custom_login', array( $this, 'ajaxCustomLogin' ) );
 		add_action( 'wp_ajax_debug_log', array( $this, 'ajaxDebugLog' ) );
 		add_action( 'wp_ajax_clean_db', array( $this, 'ajaxCleanDB' ) );
+		add_action( 'wp_ajax_gigya_logout', array( $this, 'ajaxLogout' ) );
 		add_action( 'wp_login', array( $this, 'wpLogin' ), 10, 2 );
 		add_action( 'user_register', array( $this, 'userRegister' ), 10, 1 );
 		add_action( 'wp_logout', array( $this, 'wpLogout' ) );
@@ -212,6 +213,11 @@ class GigyaAction {
 		}
 
 		wp_send_json_error();
+	}
+
+	public function ajaxLogout() {
+		wp_logout();
+		wp_send_json_success();
 	}
 
 	/**
