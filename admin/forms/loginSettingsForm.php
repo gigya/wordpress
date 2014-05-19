@@ -23,6 +23,23 @@ function loginSettingsForm() {
 		$form['mode']['class'] = 'raas_enabled';
 	}
 
+	$form['connectWithoutLoginBehavior'] = array(
+			'type'    => 'select',
+			'options' => array(
+					'alwaysLogin'       => __( 'Always Login' ),
+					'loginExistingUser' => __( 'Login Existing User' ),
+			),
+			'value'   => _gigParam( $values, 'connectWithoutLoginBehavior', 'loginExistingUser' ),
+			'label'   => __( 'Connect Without Login Behavior' ),
+	);
+
+	$form['redirect'] = array(
+			'type'  => 'text',
+			'label' => __( 'Post Login Redirect' ),
+			'value' => _gigParam( $values, 'redirect', '' ),
+			'desc'  => __( 'Provide a URL to redirect users after they logged-in via Gigya social login. For external address you must include the protocol prefix ( usually: http:// or https:// ).' )
+	);
+
 	$form['sl_start'] = array(
 			'markup' => '<div class="social-login-wrapper">'
 	);
@@ -36,16 +53,6 @@ function loginSettingsForm() {
 			),
 			'value'   => _gigParam( $values, 'buttonsStyle', 'fullLogo' ),
 			'label'   => __( 'Button Style' )
-	);
-
-	$form['connectWithoutLoginBehavior'] = array(
-			'type'    => 'select',
-			'options' => array(
-					'alwaysLogin'       => __( 'Always Login' ),
-					'loginExistingUser' => __( 'Login Existing User' ),
-			),
-			'value'   => _gigParam( $values, 'connectWithoutLoginBehavior', 'loginExistingUser' ),
-			'label'   => __( 'Connect Without Login Behavior' ),
 	);
 
 	$form['width'] = array(
@@ -62,13 +69,6 @@ function loginSettingsForm() {
 			'value' => _gigParam( $values, 'height', 100 ),
 			'desc'  => __( 'The height of the plugin in px' ),
 			'class' => 'size'
-	);
-
-	$form['redirect'] = array(
-			'type'  => 'text',
-			'label' => __( 'Post Login Redirect' ),
-			'value' => _gigParam( $values, 'redirect', '' ),
-			'desc'  => __( 'Provide a URL to redirect users after they logged-in via Gigya social login. For external address you must include the protocol prefix ( usually: http:// or https:// ).' )
 	);
 
 	$form['enabledProviders'] = array(

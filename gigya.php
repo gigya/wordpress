@@ -354,6 +354,13 @@ class GigyaAction {
 	 */
 	public function widgetsInit() {
 
+		// RasS Widget.
+		$raas_on = $this->login_options['mode'] == 'raas';
+		if ( ! empty( $raas_on ) ) {
+			require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasWidget.php';
+			register_widget( 'GigyaRaas_Widget' );
+		}
+
 		// Login Widget.
 		$login_on = $this->login_options['mode'] == 'wp_sl';
 		if ( ! empty( $login_on ) ) {
