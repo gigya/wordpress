@@ -11,7 +11,7 @@ function loginSettingsForm() {
 			'options' => array(
 					'wp_only' => __( 'Wordpress only' ),
 					'wp_sl'   => __( 'Wordpress + Social Login <small class="gigya-raas-warn hidden">Warning: this site is configured on Gigya server to use Registration-as-a-Service. Please contact your Gigya account manager for migration instruction.</small>' ),
-					'raas'    => __( 'Registration-as-a-Service Selecting this option overrides the Wordpress user management system. This requires additional administration steps. Learn more </small><a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin">here</a><small>' )
+					'raas'    => __( 'Registration-as-a-Service <small>Selecting this option overrides the Wordpress user management system. This requires additional administration steps. Learn more <a href="http://developers.gigya.com//015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin/020_RaaS">here</a></small>' )
 			),
 			'value'   => _gigParam( $values, 'mode', 'wp_only' ),
 			'class'   => 'raas_disabled'
