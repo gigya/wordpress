@@ -39,7 +39,7 @@ function feedSettingsForm() {
 			'type'  => 'text',
 			'label' => __( 'Tabs and order' ),
 			'value' => _gigParam( $values, 'tabOrder', 'everyone,friends,me' ),
-			'desc'  => __( 'A comma delimited list of tabs names that defines which tabs to show and the tabs order. The optional tabs names are: "everyone", "friends", "me".' )
+			'desc'  => __( 'A comma delimited list of tab names that defines which tabs to show and the tab order. The optional tab names are: "everyone", "friends", "me".' )
 	);
 
 	$form['width'] = array(

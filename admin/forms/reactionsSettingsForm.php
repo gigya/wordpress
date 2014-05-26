@@ -30,7 +30,7 @@ function reactionsSettingsForm() {
 			'type'  => 'text',
 			'label' => __( 'Providers' ),
 			'value' => _gigParam( $values, 'enabledProviders', '*' ),
-			'desc'  => __( 'Comma separated list of share providers that would be included. For example: facebook,twitter,linkedin. Leave empty or type * for all providers. See the entire list of available' ) . ' <a href="http://developers.gigya.com/020_Client_API/010_Socialize/socialize.showReactionsBarUI">Providers</a>'
+			'desc'  => __( 'Comma separated list of share providers to include. For example: facebook,twitter,linkedin. Leave empty or type * for all providers. See the entire list of available' ) . ' <a href="http://developers.gigya.com/020_Client_API/010_Socialize/socialize.showReactionsBarUI">Providers</a>'
 	);
 
 	$form['showCounts'] = array(

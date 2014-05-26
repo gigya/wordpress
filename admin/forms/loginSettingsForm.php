@@ -9,9 +9,9 @@ function loginSettingsForm() {
 	$form['mode'] = array(
 			'type'    => 'radio',
 			'options' => array(
-					'wp_only' => __( 'Wordpress only' ),
-					'wp_sl'   => __( 'Wordpress + Social Login <small class="gigya-raas-warn hidden">Warning: this site is configured on Gigya server to use Registration-as-a-Service. Please contact your Gigya account manager for migration instruction.</small>' ),
-					'raas'    => __( 'Registration-as-a-Service <small>Selecting this option overrides the Wordpress user management system. This requires additional administration steps. Learn more <a href="http://developers.gigya.com//015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin/020_RaaS">here</a></small>' )
+					'wp_only' => __( 'WordPress only' ),
+					'wp_sl'   => __( 'WordPress + Social Login <small class="gigya-raas-warn hidden">Warning: this site is configured on Gigya server to use Registration-as-a-Service. Please contact your Gigya account manager for migration instruction.</small>' ),
+					'raas'    => __( 'Registration-as-a-Service <small>Selecting this option overrides the WordPress user management system. This requires additional administration steps. Learn more <a href="http://developers.gigya.com//015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin/020_RaaS">here</a></small>' )
 			),
 			'value'   => _gigParam( $values, 'mode', 'wp_only' ),
 			'class'   => 'raas_disabled'
@@ -37,7 +37,7 @@ function loginSettingsForm() {
 			'type'  => 'text',
 			'label' => __( 'Post Login Redirect' ),
 			'value' => _gigParam( $values, 'redirect', '' ),
-			'desc'  => __( 'Provide a URL to redirect users after they logged-in via Gigya social login. For external address you must include the protocol prefix ( usually: http:// or https:// ).' )
+			'desc'  => __( 'Provide a URL to which users are redirected after they log-in via Gigya. External URLs must include the protocol prefix ( usually: http:// or https:// ).' )
 	);
 
 	$form['sl_start'] = array(
@@ -114,7 +114,7 @@ function loginSettingsForm() {
 	);
 
 	$form['raas_txt'] = array(
-			'markup' => '<h4>Registration-as-a-Service Settings</h4><small><span>Please make sure to initially configure RaaS in Gigya\'s site. Go to the <a class="link-https" target="_blank" rel="external nofollow" href="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets" title="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets">UI Builder</a> page after logging in to Gigya\'s site. The page presents the list of predefined default screen-sets, each has an ID. Click on the "Visual Editor" link next to a screen-set that you wish to use. This will open the <a class="external" target="_blank" title="010_Developer_Guide/10_UM360/040_Raas/020_UI_Builder#Visual_Editor" rel="internal" href="http://dev-wiki.gigya.com/010_Developer_Guide/10_UM360/040_Raas/020_UI_Builder#Visual_Editor">Visual Editor</a> window. You can modify the screens, or just hit the "Save" button to activate it. Please make sure that the screen-sets IDs that are defined below match the IDs of the screen-sets you have configured in the <a class="link-https" target="_blank" rel="external nofollow" href="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets" title="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets">UI Builder</a> page.</span></small>'
+			'markup' => '<h4>Registration-as-a-Service Settings</h4><small><span>RaaS requires initial configuration in Gigya\'s Admin Console. Screen sets can be defined in the <a class="link-https" target="_blank" rel="external nofollow" href="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets" title="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets">UI Builder</a>. The page will display a list of predefined default screen-sets, each with an ID. Click on the "Visual Editor" link next to the screen-set that you want to use. this will open the <a class="external" target="_blank" title="010_Developer_Guide/10_UM360/040_Raas/020_UI_Builder#Visual_Editor" rel="internal" href="http://dev-wiki.gigya.com/010_Developer_Guide/10_UM360/040_Raas/020_UI_Builder#Visual_Editor">Visual Editor</a> window. You can modify the screens, or just hit the "Save" button to activate them. Please make sure that the screen-sets IDs that are defined below match the IDs of the screen-sets you have configured in the <a class="link-https" target="_blank" rel="external nofollow" href="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets" title="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets">UI Builder</a> page.</span></small>'
 	);
 
 	$form['raas_screens'] = array(
@@ -163,8 +163,8 @@ function loginSettingsForm() {
 
 	$form['raasOverrideLinks'] = array(
 			'type'  => 'checkbox',
-			'label' => __( 'Override Wordpress Link' ),
-			'desc'  => __( 'Checking this checkbox, WordPress\'s default "Login", "Registration" and "Edit Profile" links will pop-up RaaS\'s respective screens instead of redirecting to the WordPress screens.' ),
+			'label' => __( 'Override WordPress Link' ),
+			'desc'  => __( 'When checked, the WordPress default "Login", "Registration" and "Edit Profile" links pop-up RaaS screens instead of WordPress screens.' ),
 			'value' => _gigParamDefaultOn( $values, 'raasOverrideLinks' )
 	);
 
