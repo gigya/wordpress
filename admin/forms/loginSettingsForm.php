@@ -169,7 +169,7 @@ function loginSettingsForm() {
 	);
 
 	$form['raas_divs'] = array(
-			'markup' => '<h4>DIV IDs</h4><small>' . __( 'Specify the DIV IDs in which to embed the screen-sets. If the IDs are empty (default), then the screen-set would show as pop-up dialogs' ) . '<small>'
+			'markup' => '<h4>DIV IDs</h4><small>' . __( 'Specify the DIV IDs in which to embed the screen-sets.' ) . '<small>'
 	);
 
 	$form['raasLoginDiv'] = array(
