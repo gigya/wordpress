@@ -58,8 +58,8 @@ class GigyaRaas_Widget extends WP_Widget {
 		}
 		if ( ! is_user_logged_in() ) {
 			$output .= '<div class="gigya-raas-widget">';
-			$output .= '<a href="wp-login.php">Login</a> | ';
-			$output .= '<a href="wp-login.php?action=register">Register</a>';
+			$output .= '<a href="wp-login.php">' . __('Login') . '</a> | ';
+			$output .= '<a href="wp-login.php?action=register">' . __('Register') . '</a>';
 			$output .= '</div>';
 
 		} else {
