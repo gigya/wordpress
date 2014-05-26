@@ -6,12 +6,6 @@ function globalSettingsForm() {
 	$values = get_option( GIGYA__SETTINGS_GLOBAL );
 	$form   = array();
 
-	if ( get_option( 'gigya_settings_fields' ) ) {
-		$form['clean_db'] = array(
-				'markup' => '<a href="javascript:void(0)" class="clean-db">Database cleaner after upgrade</a><br><small>Very recommended to backup your database before perform a clean!</small>'
-		);
-	}
-
 	$form['api_key'] = array(
 			'type'  => 'text',
 			'label' => __( 'Gigya API Key' ),
@@ -101,6 +95,12 @@ function globalSettingsForm() {
 			'value' => _gigParam( $values, 'debug', 0 ),
 			'desc'  => __( 'Log all Gigya\'s requests and responses. You can then find the log' ) . ' <a href="javascript:void(0)" class="gigya-debug-log">' . __( 'here' ) . '</a>'
 	);
+
+	if ( get_option( 'gigya_settings_fields' ) ) {
+		$form['clean_db'] = array(
+				'markup' => '<a href="javascript:void(0)" class="clean-db">Database cleaner after upgrade</a><br><small>Very recommended to backup your database before perform a clean!</small>'
+		);
+	}
 
 	echo _gigya_form_render( $form, GIGYA__SETTINGS_GLOBAL );
 }
