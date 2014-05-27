@@ -11,16 +11,19 @@
 
       if ( $el.attr( "checked" ) == 'checked' ) {
         if ( $el.val() == 'wp_only' ) {
+          $( '.global-login-wrapper' ).addClass( 'hidden' );
           $( '.social-login-wrapper' ).addClass( 'hidden' );
           $( '.raas-login-wrapper' ).addClass( 'hidden' );
           $( '.raas_enabled' ).find( '.gigya-raas-warn' ).addClass( 'hidden' );
         }
         else if ( $el.val() == 'wp_sl' ) {
+          $( '.global-login-wrapper' ).removeClass( 'hidden' );
           $( '.social-login-wrapper' ).removeClass( 'hidden' );
           $( '.raas-login-wrapper' ).addClass( 'hidden' );
           $( '.raas_enabled' ).find( '.gigya-raas-warn' ).removeClass( 'hidden' );
         }
         else if ( $el.val() == 'raas' ) {
+          $( '.global-login-wrapper' ).removeClass( 'hidden' );
           $( '.social-login-wrapper' ).addClass( 'hidden' );
           $( '.raas-login-wrapper' ).removeClass( 'hidden' );
           $( '.raas_enabled' ).find( '.gigya-raas-warn' ).addClass( 'hidden' );

@@ -23,6 +23,10 @@ function loginSettingsForm() {
 		$form['mode']['class'] = 'raas_enabled';
 	}
 
+	$form['gl_start'] = array(
+			'markup' => '<div class="global-login-wrapper">'
+	);
+
 	$form['connectWithoutLoginBehavior'] = array(
 			'type'    => 'select',
 			'options' => array(
@@ -38,6 +42,10 @@ function loginSettingsForm() {
 			'label' => __( 'Post Login Redirect' ),
 			'value' => _gigParam( $values, 'redirect', '' ),
 			'desc'  => __( 'Provide a URL to which users are redirected after they log-in via Gigya. External URLs must include the protocol prefix ( usually: http:// or https:// ).' )
+	);
+
+	$form['gl_end'] = array(
+			'markup' => '</div>'
 	);
 
 	$form['sl_start'] = array(
