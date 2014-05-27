@@ -55,8 +55,7 @@ input[type=checkbox] {
 	width: 100%;
 }
 
-.clean-db,
-.clean-db:hover {
+.clean-db {
 	border: 1px solid #ccc;
 	padding: 5px;
 	background: #f7f7f7;
@@ -67,6 +66,7 @@ input[type=checkbox] {
 	margin-top: 10px;
 	box-shadow: inset 0 1px 0 #fff, 0 1px 0 rgba(0, 0, 0, .08);
 }
+
 .clean-db:hover {
 	background: #fafafa;
 	border-color: #999;
