@@ -32,7 +32,7 @@
               break;
           }
         }
-        else if ( path.indexOf( 'profile.php' ) != -1 ) {
+        else if ( path.indexOf( 'profile.php' ) != -1 && gigyaRaasParams.canEditUsers != 1 ) {
 
           // Profile page
           gigya.accounts.showScreenSet( {screenSet: gigyaRaasParams.raasProfileWebScreen, mobileScreenSet: gigyaRaasParams.raasProfileMobileScreen} );
