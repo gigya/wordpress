@@ -16,7 +16,7 @@ function commentsSettingsForm() {
 			'type'  => 'checkbox',
 			'label' => __( 'Rating & Reviews mode' ),
 			'value' => _gigParam( $values, 'rating', 0 ),
-			'desc'  => sprintf( __( 'Checking this button will change the mode of the Comment plugin to Rating & Reviews. Please make sure that the Category ID defined below is set to Rating & Reviews mode in %s.' ), '<a href="https://platform.gigya.com/Site/partners/Settings.aspx#cmd%3DSettings.CommentsSetup">' . __( 'Gigya platform' ) . '</a>' )
+			'desc'  => sprintf( __( 'Checking this button will change the mode of the Comment plugin to Rating & Reviews. Please make sure that the Category ID defined below is set to Rating & Reviews mode in the %s.' ), '<a href="https://platform.gigya.com/Site/partners/Settings.aspx#cmd%3DSettings.CommentsSetup">' . __( 'Gigya platform' ) . '</a>' )
 	);
 
 	$form['categoryID'] = array(
