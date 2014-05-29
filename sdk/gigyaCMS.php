@@ -47,7 +47,9 @@ class GigyaCMS {
 		$request->setAPIDomain( $domain );
 
 		// Make the request.
+		ini_set('arg_separator.output', '&');
 		$response = $request->send();
+		ini_restore ( 'arg_separator.output' );
 
 		// Check for errors
 		$err_code = $response->getErrorCode();
