@@ -13,7 +13,8 @@ Make your site social by integrating Gigya's Social Infrastructure into your Wor
 Gigya makes websites social by integrating online businesses with the most popular social networks and implementing powerful social plugins into a single, comprehensive solution.
 
 Gigya is the #1 social choice for websites, integrating online businesses with the top social networks and identity providers including Facebook, Twitter and LinkedIn, consolidating the most powerful social features in a single solution.
-The company offers a suite of social plugins such as Social Login, Share, Comments and Community features enabling sites to drive social registrations, scalable word-of-mouth marketing and community interaction.
+Gigya offers a suite of User Management to connect with consumers, harness rich data, and make marketing relevant. 
+Turn your visitors into loyal users by offering them a completely social on-site experience with Social Plugins such as Share, Comments and Gamification.
 Through analytics, best practices, consulting and support, Gigya optimizes every implementation, delivering measurable social ROI.
 
 
@@ -22,15 +23,14 @@ The plug-in code is also GPL licensed.
 
 
 Important Links:
-* <a href="http://www.gigya.com/social-login/" title="Social Login">Social Login</a>
-* <a href="http://developers.gigya.com/050_Partners/050_CMS_Modules/030_Wordpress_Plugin" title="Installation and Configuration guide">Gigya's Wordpress plugin - Installation and Configuration guide</a>
-* <a href="http://blog.gigya.com" title="Gigya Blog">Gigya Blog</a>
-* <a href="https://platform.gigya.com/" title="Gigya Platform">Gigya Platform - Create and configure your Gigya account</a>
+* <a href="http://www.gigya.com" title="Gigya website">Gigya website</a>
+* <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin" title="Installation and Configuration guide">Gigya's Wordpress plugin - Installation and Configuration guide</a>
+* <a href="https://platform.gigya.com/" title="Gigya Management Console">Gigya Management Console - Create and configure your Gigya account</a>
 
 
 == Installation ==
 
-You can read more about the installation steps and other advanced configuration options in Gigya's online documentation <a href="http://developers.gigya.com/050_Partners/050_CMS_Modules/030_Wordpress_Plugin" title="Installation and Configuration guide">here</a>
+You can read more about the installation steps and other advanced configuration options in Gigya's online documentation <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin" title="Installation and Configuration guide">here</a>
 
 1.	After downloading the Gigya plug-in, unpack and upload the folder to the the / wp-content/plugins/ directory on your blog.
 2.	Go to the Plug-in tab in the WordPress administration panel, find the Gigya plug-in on the list and click Activate.
