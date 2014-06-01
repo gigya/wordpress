@@ -101,8 +101,7 @@ Existing site users can link their existing Wordpress account to their social ne
 
 Can I configure the design of the Gigya component?
 
-Yes, the design is fully configurable. Please login to your Gigya account (on www.gigya.com) to use our online component designer. When you are done designing, you can easily copy the configuration code to your Gigya admin settings page.
-You can read more about configuring the Gigya component design in our online documentation <a href="http://developers.gigya.com/050_Partners/050_CMS_Modules/030_Wordpress_Plugin" title="Installation and Configuration guide">here</a>
+Yes, the design is fully configurable. You can read more about configuring the Gigya component design in our online documentation <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin" title="Installation and Configuration guide">here</a>
 
 How can I get support for the Gigya Plugin?
 
