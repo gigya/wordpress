@@ -1,6 +1,6 @@
 === Gigya - Social Infrastructure  ===
 
-Contributors:
+Contributors: gigya.com
 Tags: Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, Gigya, Social Infrastructure, feed
 Requires at least: 3.6
 Tested up to: 3.9.1
@@ -13,7 +13,7 @@ Make your site social by integrating Gigya's Social Infrastructure into your Wor
 Gigya makes websites social by integrating online businesses with the most popular social networks and implementing powerful social plugins into a single, comprehensive solution.
 
 Gigya is the #1 social choice for websites, integrating online businesses with the top social networks and identity providers including Facebook, Twitter and LinkedIn, consolidating the most powerful social features in a single solution.
-Gigya offers a suite of User Management to connect with consumers, harness rich data, and make marketing relevant. 
+Gigya offers a suite of User Management to connect with consumers, harness rich data, and make marketing relevant.
 Make your site social with a comprehensive suite of social plugins such as Share, Comments and Gamification that create an engaging experience for your users as well as loyalty.
 
 Through analytics, best practices, consulting and support, Gigya optimizes every implementation, delivering measurable social ROI.
@@ -89,7 +89,7 @@ For question about installations or configuration, please contact your account m
 * The Plugin has been rewritten, providing improved architecture, administration and security.
 * Gigya's <a href="http://developers.gigya.com/010_Developer_Guide/10_UM360/040_Raas" title="RaaS Integration">Registration-as-a-Service Integration</a>
 * Gigya's <a href="http://developers.gigya.com/010_Developer_Guide/18_Plugins/025_Rating_Reviews" title="Rating & Reviews">Rating & Reviews</a>
-* Added SEO support in the Comments and Rating&Reviews plugins, meaning the comments/reviews content is searchable by the main search engines. 
+* Added SEO support in the Comments and Rating&Reviews plugins, meaning the comments/reviews content is searchable by the main search engines.
 * All Gigya social plugins are provides as WP widgets that can be placed anywhere on your site.
 
 
