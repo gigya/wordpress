@@ -14,7 +14,8 @@ Gigya makes websites social by integrating online businesses with the most popul
 
 Gigya is the #1 social choice for websites, integrating online businesses with the top social networks and identity providers including Facebook, Twitter and LinkedIn, consolidating the most powerful social features in a single solution.
 Gigya offers a suite of User Management to connect with consumers, harness rich data, and make marketing relevant. 
-Turn your visitors into loyal users by offering them a completely social on-site experience with Social Plugins such as Share, Comments and Gamification.
+Make your site social with a comprehensive suite of social plugins such as Share, Comments and Gamification that create an engaging experience for your users as well as loyalty.
+
 Through analytics, best practices, consulting and support, Gigya optimizes every implementation, delivering measurable social ROI.
 
 
