@@ -85,9 +85,11 @@ For question about installations or configuration, please contact your account m
 * Gigya debug log
 
 = 5.0 =
-* Plugin total rewrite, providing improved architecture, administration and security.
+* The Plugin has been rewritten, providing improved architecture, administration and security.
 * Gigya's <a href="http://developers.gigya.com/010_Developer_Guide/10_UM360/040_Raas" title="RaaS Integration">Registration-as-a-Service Integration</a>
 * Gigya's <a href="http://developers.gigya.com/010_Developer_Guide/18_Plugins/025_Rating_Reviews" title="Rating & Reviews">Rating & Reviews</a>
+* Added SEO support in the Comments and Rating&Reviews plugins, meaning the comments/reviews content is searchable by the main search engines. 
+* All Gigya social plugins are provides as WP widgets that can be placed anywhere on your site.
 
 
 == FAQ ==
