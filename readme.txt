@@ -1,9 +1,11 @@
 === Gigya - Social Infrastructure  ===
-Contributors: gigya.com, gilnoy
+
+Contributors:
 Tags: Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, Gigya, Social Infrastructure, feed
-Requires at least: 3.0
-Tested up to: 3.5
-Stable tag: 4.0.0
+Requires at least: 3.6
+Tested up to: 3.8
+Stable tag: 5.0.0
+License: GPLv2 or later
 
 Make your site social by integrating Gigya's Social Infrastructure into your WordPress site.
 
@@ -82,7 +84,9 @@ For question about installations or configuration, please contact your account m
 * Integrated Google Analytics
 * Gigya debug log
 
-
+= 5.0 =
+* Plugin total rewrite.
+* Gigya's <href="http://developers.gigya.com/010_Developer_Guide/10_UM360/040_Raas">RaaS Integration</a>
 
 == FAQ ==
 
