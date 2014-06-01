@@ -42,11 +42,11 @@ For question about installations or configuration, please contact your account m
 == Screenshots ==
 
 1. Wordpress Registration page with Gigya's Social Login
-2. Complete Registration by providing missing Email or linking to an existing account
+2. Registration-as-a-Service pop-up screen
 3. Gigya's administration panel
-4. Add more social network identities to your Wordpress profile.
+4. Gigya widgets
 5. Share with your social graph & comment on posts and articles.
-6. Advance Share.
+
 
 
 == Changelog ==
