@@ -3,7 +3,7 @@
 Contributors:
 Tags: Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, Gigya, Social Infrastructure, feed
 Requires at least: 3.6
-Tested up to: 3.8
+Tested up to: 3.9.1
 Stable tag: 5.0.0
 License: GPLv2 or later
 
@@ -85,8 +85,10 @@ For question about installations or configuration, please contact your account m
 * Gigya debug log
 
 = 5.0 =
-* Plugin total rewrite.
-* Gigya's <href="http://developers.gigya.com/010_Developer_Guide/10_UM360/040_Raas">RaaS Integration</a>
+* Plugin total rewrite, providing improved architecture, administration and security.
+* Gigya's <a href="http://developers.gigya.com/010_Developer_Guide/10_UM360/040_Raas" title="RaaS Integration">Registration-as-a-Service Integration</a>
+* Gigya's <a href="http://developers.gigya.com/010_Developer_Guide/18_Plugins/025_Rating_Reviews" title="Rating & Reviews">Rating & Reviews</a>
+
 
 == FAQ ==
 
