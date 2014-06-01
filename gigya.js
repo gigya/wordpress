@@ -26,7 +26,8 @@ var GigyaWp = GigyaWp || {};
 // --------------------------------------------------------------------
 
   GigyaWp.errHandle = function ( errEvent ) {
-    console.log( errEvent );
+//    console.log( errEvent );
+    return false;
   }
 
 // --------------------------------------------------------------------
