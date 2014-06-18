@@ -7,26 +7,39 @@ Tested up to: 3.9.1
 Stable tag: 5.0.0
 License: GPLv2 or later
 
-Make your site social by integrating Gigya's Social Infrastructure into your WordPress site.
+Integrate your WordPress Blog or Website with Gigya
 
 == Description ==
-Gigya makes websites social by integrating online businesses with the most popular social networks and implementing powerful social plugins into a single, comprehensive solution.
+Gigya’s WordPress plugin allows existing Gigya customers and trial users to integrate their existing WordPress blogs and websites with Gigya.
 
-Gigya is the #1 social choice for websites, integrating online businesses with the top social networks and identity providers including Facebook, Twitter and LinkedIn, consolidating the most powerful social features in a single solution.
-Gigya offers a suite of User Management to connect with consumers, harness rich data, and make marketing relevant.
-Make your site social with a comprehensive suite of social plugins such as Share, Comments and Gamification that create an engaging experience for your users as well as loyalty.
+If you don't have an account yet, <a href="https://console.gigya.com/register.aspx" title="sign up">sign up for a free trial</a>.
 
-Through analytics, best practices, consulting and support, Gigya optimizes every implementation, delivering measurable social ROI.
+**Add the Following Features to Your WordPress blog or website:**
+
+**Consumer Identity Management products**
+* Social Login - Allow users to quickly sign up to your blog or website using a preferred social network account. 
+
+* Registration-as-a-Service (RaaS) - Build, deploy and manage registration forms and profile management flows across your WordPress blog or Website.
 
 
-The Gigya plugin is fully configurable; it requires little time and no programming knowledge to install. The plug-in is scalable and secure, using a standard authentication techniques to prevent account spoofing.
-The plug-in code is also GPL licensed.
+**Social Plugins**
+* Share Bar - Allow your site visitors to easily share posts with their social network friends.
+
+* Comments - Enable your site visitors to post comments and have discussions about published content on your site.
+
+* Rating & Reviews - Give your customers an easy way to provide feedback on products and content across your site and share that feedback with friends in their social networks. 
+
+* Gamification - Motivate your users to take valuable actions by offering rewards such as higher status, special offers, badges, points and more.
+
+* Reactions - Make it easy for users to react to content on your site and share their reactions with friends on social networks.
+
+* Activity Feed - Provide you site visitors with visibility into the real-time activity that is happening on your WordPress blog or website. 
+
+* Follow Bar - Easily add links for users to Like you on Facebook, follow you on Twitter, or otherwise engage with you across a range of social channels.
 
 
-Important Links:
-* <a href="http://www.gigya.com" title="Gigya website">Gigya website</a>
-* <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin" title="Installation and Configuration guide">Gigya's Wordpress plugin - Installation and Configuration guide</a>
-* <a href="https://platform.gigya.com/" title="Gigya Management Console">Gigya Management Console - Create and configure your Gigya account</a>
+For more information, installation steps and configuration options - please refer to Gigya's documentatio:
+<a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin" title="Installation and Configuration guide">Gigya's Wordpress plugin - Installation and Configuration guide</a>
 
 
 == Installation ==
