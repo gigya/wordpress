@@ -21,6 +21,7 @@ If you don't have an account yet, <a href="https://console.gigya.com/register.as
 
 * Registration-as-a-Service (RaaS) - Build, deploy and manage registration forms and profile management flows across your WordPress blog or Website.
 
+
 **Social Plugins**
 * Share Bar - Allow your site visitors to easily share posts with their social network friends.
 
@@ -37,10 +38,8 @@ If you don't have an account yet, <a href="https://console.gigya.com/register.as
 * Follow Bar - Easily add links for users to Like you on Facebook, follow you on Twitter, or otherwise engage with you across a range of social channels.
 
 
-Important Links:
-* <a href="http://www.gigya.com" title="Gigya website">Gigya website</a>
-* <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin" title="Installation and Configuration guide">Gigya's Wordpress plugin - Installation and Configuration guide</a>
-* <a href="https://platform.gigya.com/" title="Gigya Management Console">Gigya Management Console - Create and configure your Gigya account</a>
+For more information, installation steps and configuration options - please refer to Gigya's documentatio:
+<a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin" title="Installation and Configuration guide">Gigya's Wordpress plugin - Installation and Configuration guide</a>
 
 
 == Installation ==
