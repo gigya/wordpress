@@ -17,11 +17,13 @@ If you don't have an account yet, <a href="https://console.gigya.com/register.as
 **Add the Following Features to Your WordPress blog or website:**
 
 **Consumer Identity Management products**
+
 * Social Login - Allow users to quickly sign up to your blog or website using a preferred social network account.
 
 * Registration-as-a-Service (RaaS) - Build, deploy and manage registration forms and profile management flows across your WordPress blog or Website.
 
 **Social Plugins**
+
 * Share Bar - Allow your site visitors to easily share posts with their social network friends.
 
 * Comments - Enable your site visitors to post comments and have discussions about published content on your site.
