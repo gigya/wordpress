@@ -19,23 +19,16 @@ If you don't have an account yet, <a href="https://console.gigya.com/register.as
 **Consumer Identity Management products**
 
 * Social Login - Allow users to quickly sign up to your blog or website using a preferred social network account.
-
 * Registration-as-a-Service (RaaS) - Build, deploy and manage registration forms and profile management flows across your WordPress blog or Website.
 
 **Social Plugins**
 
 * Share Bar - Allow your site visitors to easily share posts with their social network friends.
-
 * Comments - Enable your site visitors to post comments and have discussions about published content on your site.
-
 * Rating & Reviews - Give your customers an easy way to provide feedback on products and content across your site and share that feedback with friends in their social networks.
-
 * Gamification - Motivate your users to take valuable actions by offering rewards such as higher status, special offers, badges, points and more.
-
 * Reactions - Make it easy for users to react to content on your site and share their reactions with friends on social networks.
-
 * Activity Feed - Provide you site visitors with visibility into the real-time activity that is happening on your WordPress blog or website.
-
 * Follow Bar - Easily add links for users to Like you on Facebook, follow you on Twitter, or otherwise engage with you across a range of social channels.
 
 
