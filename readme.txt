@@ -10,7 +10,9 @@ License: GPLv2 or later
 Integrate your WordPress Blog or Website with Gigya
 
 == Description ==
-Gigya’s WordPress plugin allows existing Gigya customers and trial users to integrate their existing WordPress blogs and websites with Gigya.
+Gigya's Customer Identity Management Platform helps companies build better customer relationships by turning unknown visitors into known, loyal and engaged customers. With Gigya’s technology, businesses increase registrations and identify customers across devices, consolidate data into rich customer profiles, and provide better service, products and experiences by integrating data into marketing and service applications.
+ 
+More than 700 of the world’s leading businesses such as Fox, Forbes, and Verizon rely on Gigya to build identity-driven relationships and to provide scalable, secure Customer Identity Management.
 
 If you don't have an account yet, <a href="https://console.gigya.com/register.aspx" title="sign up">sign up for a free trial</a>.
 
