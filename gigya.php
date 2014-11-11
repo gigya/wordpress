@@ -657,4 +657,5 @@ function gigyaSyncLoginSession() {
     return (int) apply_filters( 'auth_cookie_expiration', 2 * DAY_IN_SECONDS, 777, false );
 }
 
+
 // --------------------------------------------------------------------
