@@ -650,7 +650,6 @@ function _gigya_error_log( $new_log ) {
 
 /**
  * Get Login sesssion time from wordpress to set in gigya
- *
  */
 
 function gigyaSyncLoginSession() {
