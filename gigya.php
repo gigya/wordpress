@@ -112,7 +112,7 @@ class GigyaAction {
 				'jsonExampleURL'              => GIGYA__PLUGIN_URL . 'admin/forms/json/advance_example.json',
 				'enabledProviders'            => _gigParam( $this->global_options, 'enabledProviders', '*' ),
 				'lang'                        => _gigParam( $this->global_options, 'lang', 'en' ),
-                        'sessionExpiration'           => gigyaSyncLoginSession()
+				'sessionExpiration'           => gigyaSyncLoginSession()
 		);
 
 		// Add advanced parameters if exist.
