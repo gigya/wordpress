@@ -111,7 +111,8 @@ class GigyaAction {
 				'connectWithoutLoginBehavior' => _gigParam( $this->login_options, 'connectWithoutLoginBehavior', 'loginExistingUser' ),
 				'jsonExampleURL'              => GIGYA__PLUGIN_URL . 'admin/forms/json/advance_example.json',
 				'enabledProviders'            => _gigParam( $this->global_options, 'enabledProviders', '*' ),
-				'lang'                        => _gigParam( $this->global_options, 'lang', 'en' )
+				'lang'                        => _gigParam( $this->global_options, 'lang', 'en' ),
+                'sessionExpiration'           => gigyaSyncLoginSession()
 		);
 
 		// Add advanced parameters if exist.
@@ -643,6 +644,17 @@ function _gigya_error_log( $new_log ) {
 		// Update the DB with new entries.
 		update_option( 'gigya_log', $log );
 	}
+}
+
+// --------------------------------------------------------------------
+
+/**
+ * Get Login sesssion time from wordpress to set in gigya
+ *
+ */
+
+function gigyaSyncLoginSession() {
+    return (int) apply_filters( 'auth_cookie_expiration', 2 * DAY_IN_SECONDS, 777, false );
 }
 
 // --------------------------------------------------------------------
