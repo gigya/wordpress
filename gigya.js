@@ -4,12 +4,7 @@ var GigyaWp = GigyaWp || {};
 
 // --------------------------------------------------------------------
 
-  window.__gigyaConf = {
-    connectWithoutLoginBehavior: gigyaParams.connectWithoutLoginBehavior,
-    enabledProviders           : gigyaParams.enabledProviders,
-    lang                       : gigyaParams.lang
-  }
-
+  window.__gigyaConf = gigyaParams;
 // --------------------------------------------------------------------
 
   $( document ).ready( function () {
