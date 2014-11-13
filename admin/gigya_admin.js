@@ -207,5 +207,33 @@
 
 // --------------------------------------------------------------------
 
+      /*
+       * General settings page - data centers select
+       * show/hide 'other' data center text field
+       * update data center value according to input selction
+       */
+
+      // Hide the other data center field by default if other is not selected
+      if ( $( "#gigya_data_center option:selected" ).val() != 'other' )  {
+          $( '.other_dataCenter' ).hide();
+      }
+
+      // Show other data center input field on 'other' selection
+      $( '.data_center select' ).change( function() {
+          if ( $( "#gigya_data_center option:selected" ).text() == 'Other' ) {
+              $( '.other_dataCenter' ).show();
+          } else {
+              $( '.other_dataCenter' ).hide();
+          }
+      });
+
+      // on filling other data center set the selected value to the input
+      $( '#other_ds' ).focusout( function() {
+          $( "#gigya_data_center option:selected" ).val( $( '#other_ds' ).val() );
+
+      });
+
+// --------------------------------------------------------------------
+
   } );
 })( jQuery );

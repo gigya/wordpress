@@ -72,3 +72,7 @@ input[type=checkbox] {
 	border-color: #999;
 	color: #222;
 }
+
+.other_dataCenter input{
+    padding-top: 2px;
+}
