@@ -31,6 +31,7 @@ class GigyaFeedSet {
 				'height'   => _gigParam( $this->feed_options, 'height', '270' ),
 				'siteName' => get_option( 'blogname', '' )
 		);
+		$params = array_merge($params, json_decode($this->feed_options['advanced'], true));
 
 		// Let others plugins to modify the comments parameters.
 		$params = apply_filters( 'gigya_feed_params', $params );
