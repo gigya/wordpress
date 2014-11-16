@@ -102,10 +102,7 @@ class GigyaCMS {
 
 		$request->setAPIDomain( $api_domain );
 		$request->setParam( 'url', 'http://gigya.com' );
-
-		$res = $request->send();
-
-		return json_decode( $res->getResponseText() );
+		return $request->send();
 	}
 
 	/**
