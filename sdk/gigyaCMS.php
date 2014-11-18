@@ -58,6 +58,7 @@ class GigyaCMS {
 			if ( function_exists( '_gigya_error_log' ) ) {
 				$log = explode( "\r\n", $response->getLog() );
 				_gigya_error_log( $log );
+				return new WP_Error($err_code, $response->getErrorMessage());
 			}
 		} else {
 			if ( ! empty( $user_info ) ) {

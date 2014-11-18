@@ -47,6 +47,10 @@ class GigyaRaasAjax {
 		// Initialize Gigya account.
 		$gigyaCMS            = new GigyaCMS();
 		$this->gigya_account = $gigyaCMS->getAccount( $data['UID'] );
+		if ( is_wp_error($this->gigya_account) ) {
+			$prm = array( 'msg' => __( 'Oops! Something went wrong during your login process. Please try to login again.' ) );
+			wp_send_json_error( $prm );
+		}
 
 		// Check if there already WP user with the same email.
 		$wp_user = get_user_by( 'email', $this->gigya_account['profile']['email'] );
