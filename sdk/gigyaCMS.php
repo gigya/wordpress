@@ -352,7 +352,9 @@ class GigyaCMS {
 		$res = $this->call( 'accounts.search', array( 'query' => $query ) );
 
 		// Logout the user.
-		$this->call( 'accounts.logout', array( 'UID' => $res['results'][0]['UID'] ) );
+		if ( !is_wp_error($res)) {
+			$this->call( 'accounts.logout', array( 'UID' => $res['results'][0]['UID'] ) );
+		}
 
 	}
 
@@ -368,7 +370,9 @@ class GigyaCMS {
 		$res = $this->call( 'accounts.search', array( 'query' => $query ) );
 
 		// Delete the user.
-		$this->call( 'accounts.deleteAccount', array( 'UID' => $res['results'][0]['UID'] ) );
+		if (!is_wp_error($res)) {
+			$this->call( 'accounts.deleteAccount', array( 'UID' => $res['results'][0]['UID'] ) );
+		}
 
 	}
 
@@ -397,11 +401,13 @@ class GigyaCMS {
 
 		$search_res = $this->call( 'accounts.search', array( 'query' => $query ) );
 
-		// Returns the primary provider, and the secondary (current).
-		return array(
+		if ( !is_wp_error($search_res)) {
+			// Returns the primary provider, and the secondary (current).
+			return array(
 				'primary'   => $search_res['results'][0]['loginProvider'],
 				'secondary' => $account['loginProvider']
-		);
+			);
+		}
 	}
 
 	/**
