@@ -106,6 +106,11 @@ class GigyaSettings {
 						'func'  => 'feedSettingsForm',
 						'slug'  => 'gigya_feed_settings'
 				),
+				'gigya_follow_settings'      => array(
+					'title' => 'Follow Bar Settings',
+					'func'  => 'followSettingsForm',
+					'slug'  => 'gigya_follow_settings'
+				),
 		);
 	}
 

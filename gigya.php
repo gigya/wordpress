@@ -29,6 +29,7 @@ define( 'GIGYA__LOG_LIMIT', 50 );
 define( 'GIGYA__SETTINGS_GLOBAL', 'gigya_global_settings' );
 define( 'GIGYA__SETTINGS_LOGIN', 'gigya_login_settings' );
 define( 'GIGYA__SETTINGS_SHARE', 'gigya_share_settings' );
+define( 'GIGYA__SETTINGS_FOLLOW', 'gigya_follow_settings' );
 define( 'GIGYA__SETTINGS_COMMENTS', 'gigya_comments_settings' );
 define( 'GIGYA__SETTINGS_REACTIONS', 'gigya_reactions_settings' );
 define( 'GIGYA__SETTINGS_GM', 'gigya_gm_settings' );
@@ -632,6 +633,7 @@ function _gigParam( $array, $key, $default = null ) {
 	} elseif ( is_object( $array ) ) {
 		return ! empty( $array->$key ) ? $array->$key : $default;
 	}
+	return $default;
 }
 
 // --------------------------------------------------------------------

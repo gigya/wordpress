@@ -43,8 +43,17 @@ class GigyaFollow_Widget extends WP_Widget {
 		$title  = apply_filters( 'widget_title', $instance['title'] );
 
 		// Get the data from the argument.
-		foreach ( $instance as $key => $value ) {
-			$data[$key] = $value;
+		require_once GIGYA__PLUGIN_DIR . 'features/follow/GigyaFollowSet.php';
+		$follow = new GigyaFollowSet();
+		$data = $follow->getParams();
+
+		// Override params or take the defaults.
+		if ( ! empty( $instance['override'] ) ) {
+			foreach ( $instance as $key => $value ) {
+				if ( ! empty( $value ) ) {
+					$data[$key] = esc_attr( $value );
+				}
+			}
 		}
 
 		// Set the output.
@@ -79,6 +88,14 @@ class GigyaFollow_Widget extends WP_Widget {
 				'label' => __( 'Title' ),
 				'class' => 'size',
 				'name'  => $this->get_field_name( 'title' )
+		);
+
+		$form[$this->get_field_id( 'override' )] = array(
+			'type'  => 'checkbox',
+			'value' => esc_attr( _gigParam( $instance, 'override', '' ) ),
+			'label' => __( 'Override' ),
+			'class' => 'gigya-widget-override',
+			'name'  => $this->get_field_name( 'override' )
 		);
 
 		$form[$this->get_field_id( 'iconSize' )] = array(
