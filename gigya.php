@@ -80,6 +80,7 @@ class GigyaAction {
 		add_action( 'wp_ajax_debug_log', array( $this, 'ajaxDebugLog' ) );
 		add_action( 'wp_ajax_clean_db', array( $this, 'ajaxCleanDB' ) );
 		add_action( 'wp_ajax_gigya_logout', array( $this, 'ajaxLogout' ) );
+		add_action( 'wp_ajax_raas_update_profile', array( $this, 'ajaxUpdateProfile' ) );
 		add_action( 'wp_login', array( $this, 'wpLogin' ), 10, 2 );
 		add_action( 'user_register', array( $this, 'userRegister' ), 10, 1 );
 		add_action( 'wp_logout', array( $this, 'wpLogout' ) );
@@ -88,6 +89,7 @@ class GigyaAction {
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 		add_filter( 'the_content', array( $this, 'theContent' ) );
 		add_filter( 'comments_template', array( $this, 'commentsTemplate' ) );
+		add_filter( 'get_avatar', array( $this, 'getGigyaAvatar'), 10, 5);
 	}
 
 	/**
@@ -193,6 +195,15 @@ class GigyaAction {
 		require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasAjax.php';
 		$gigyaLoginAjax = new GigyaRaasAjax;
 		$gigyaLoginAjax->init();
+	}
+
+	public  function ajaxUpdateProfile() {
+
+		// Loads Gigya's RaaS class.
+		require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasAjax.php';
+		$gigyaAjax = new GigyaRaasAjax;
+		$data = $_POST['data'];
+		$gigyaAjax->updateProfile($data);
 	}
 
 	/**
@@ -476,6 +487,27 @@ class GigyaAction {
 		}
 	}
 
+	public  function getGigyaAvatar($avatar, $id_or_email, $size, $default, $alt) {
+		if ( empty($id_or_email) ) {
+			$id = get_current_user_id();
+		} else {
+			if ( is_numeric( $id_or_email ) ) {
+				$id = $id_or_email;
+			} elseif(is_string( $id_or_email)) {
+				$user = get_user_by( 'email', $id_or_email );
+				$id   = $user->ID;
+			} else {
+				return $avatar;
+			}
+		}
+		$url = get_user_meta($id, "profile_image", true);
+		if ( empty($url) ) {
+			return $avatar;
+		}
+		$alt = empty( $alt ) ? get_user_meta($id, "first_name", true) : $alt;
+		return "<img src='{$url}' alt='{$alt}' width='{$size}' height='{$size}'>";
+	}
+
 }
 
 if ( ! function_exists( 'wp_new_user_notification' ) ) {
@@ -657,3 +689,33 @@ function gigyaSyncLoginSession() {
 }
 
 // --------------------------------------------------------------------
+
+function _gigya_add_to_wp_user_meta($gigya_object, $user_id) {
+	$login_opts = get_option( GIGYA__SETTINGS_LOGIN );
+	if ($login_opts['mode'] == "wp_sl") {
+		$prefix = "map_social_";
+	} elseif ($login_opts['mode'] == "raas") {
+		$prefix = "map_raas_";
+	} else {
+		return;
+	}
+	// Get all mapping options
+	foreach ( $login_opts as $key => $opt ) {
+		if (strpos($key, $prefix) === 0 && $opt == 1) {
+			$k = str_replace($prefix, "",$key);
+			$gigya_key = _wp_key_to_gigya_key($k);
+			update_user_meta($user_id, $k, sanitize_text_field($gigya_object[$gigya_key]));
+		}
+	}
+}
+
+function _wp_key_to_gigya_key( $wp_key ) {
+	$convert = array(
+		'first_name'   => 'firstName',
+		'last_name'    => 'lastName',
+		'display_name' => 'nickname',
+		'description'  => 'bio',
+	    'profile_image' => 'photoURL'
+	);
+	return empty($convert[$wp_key]) ? $wp_key : $convert[$wp_key];
+}

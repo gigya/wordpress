@@ -113,6 +113,43 @@ function loginSettingsForm() {
 			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="http://developers.gigya.com/020_Client_API/020_Methods/socialize.showAddConnectionsUI" target="_blank">' . __( 'parameters' ) . '</a>'
 	);
 
+	$form['map_social_first_name'] = array(
+		'type'  => 'checkbox',
+		'label' => __( 'Map gigya first name' ),
+		'value' => _gigParam( $values, 'map_social_first_name', 1 ),
+		'desc'  => __( "Check this checkbox to map first name" )
+	);
+	$form['map_social_last_name'] = array(
+		'type'  => 'checkbox',
+		'label' => __( 'Map gigya last name' ),
+		'value' => _gigParam( $values, 'map_social_last_name', 1 ),
+		'desc'  => __( "Check this checkbox to map last name" )
+	);
+	$form['map_social_display_name'] = array(
+		'type'  => 'checkbox',
+		'label' => __( 'Map gigya display name' ),
+		'value' => _gigParam( $values, 'map_social_display_name', 1 ),
+		'desc'  => __( "Check this checkbox to map display name" )
+	);
+	$form['map_social_nickname'] = array(
+		'type'  => 'checkbox',
+		'label' => __( 'Map gigya nickname' ),
+		'value' => _gigParam( $values, 'map_social_nickname', 1 ),
+		'desc'  => __( "Check this checkbox to map first name" )
+	);
+	$form['map_social_profile_image'] = array(
+		'type'  => 'checkbox',
+		'label' => __( 'Map gigya profile image' ),
+		'value' => _gigParam( $values, 'map_social_profile_image', 1 ),
+		'desc'  => __( "Check this checkbox to map profile image" )
+	);
+	$form['map_social_description'] = array(
+		'type'  => 'checkbox',
+		'label' => __( 'Map gigya Biographical Info' ),
+		'value' => _gigParam( $values, 'map_social_description', 1 ),
+		'desc'  => __( "Check this checkbox to map Biographical Info" )
+	);
+
 	$form['sl_end'] = array(
 			'markup' => '</div>'
 	);
@@ -132,13 +169,13 @@ function loginSettingsForm() {
 	$form['raasWebScreen'] = array(
 			'type'  => 'text',
 			'label' => __( 'Web Screen Set ID' ),
-			'value' => _gigParam( $values, 'raasWebScreen', 'Login-web' )
+			'value' => _gigParam( $values, 'raasWebScreen', 'Default-RegistrationLogin' )
 	);
 
 	$form['raasMobileScreen'] = array(
 			'type'  => 'text',
 			'label' => __( 'Mobile Screen Set ID' ),
-			'value' => _gigParam( $values, 'raasMobileScreen', 'Mobile-login' )
+			'value' => _gigParam( $values, 'raasMobileScreen', 'DefaultMobile-RegistrationLogin' )
 	);
 
 	$form['raasLoginScreen'] = array(
@@ -160,13 +197,13 @@ function loginSettingsForm() {
 	$form['raasProfileWebScreen'] = array(
 			'type'  => 'text',
 			'label' => __( 'Web Screen Set ID' ),
-			'value' => _gigParam( $values, 'raasProfileWebScreen', 'Profile-web' )
+			'value' => _gigParam( $values, 'raasProfileWebScreen', 'Default-ProfileUpdate' )
 	);
 
 	$form['raasProfileMobileScreen'] = array(
 			'type'  => 'text',
 			'label' => __( 'Mobile Screen Set ID' ),
-			'value' => _gigParam( $values, 'raasProfileMobileScreen', 'Profile-mobile' )
+			'value' => _gigParam( $values, 'raasProfileMobileScreen', 'DefaultMobile-ProfileUpdate' )
 	);
 
 	$form['raasOverrideLinks'] = array(
@@ -198,9 +235,52 @@ function loginSettingsForm() {
 			'value' => _gigParam( $values, 'raasProfileDiv', 'profile-page' )
 	);
 
+	$form['map_raas_first_name'] = array(
+		'type'  => 'checkbox',
+		'label' => __( 'Map gigya first name' ),
+		'value' => _gigParam( $values, 'map_raas_first_name', 1 ),
+		'desc'  => __( "Check this checkbox to map first name" )
+	);
+
+	$form['map_raas_last_name'] = array(
+		'type'  => 'checkbox',
+		'label' => __( 'Map gigya last name' ),
+		'value' => _gigParam( $values, 'map_raas_last_name', 1 ),
+		'desc'  => __( "Check this checkbox to map last name" )
+	);
+
+	$form['map_raas_display_name'] = array(
+		'type'  => 'checkbox',
+		'label' => __( 'Map gigya display name' ),
+		'value' => _gigParam( $values, 'map_raas_display_name', 1 ),
+		'desc'  => __( "Check this checkbox to map display name" )
+	);
+
+	$form['map_raas_nickname'] = array(
+		'type'  => 'checkbox',
+		'label' => __( 'Map gigya nickname' ),
+		'value' => _gigParam( $values, 'map_raas_nickname', 1 ),
+		'desc'  => __( "Check this checkbox to map first name" )
+	);
+
+	$form['map_raas_profile_image'] = array(
+		'type'  => 'checkbox',
+		'label' => __( 'Map gigya profile image' ),
+		'value' => _gigParam( $values, 'map_raas_profile_image', 1 ),
+		'desc'  => __( "Check this checkbox to map profile image" )
+	);
+
+	$form['map_raas_description'] = array(
+		'type'  => 'checkbox',
+		'label' => __( 'Map gigya Biographical Info' ),
+		'value' => _gigParam( $values, 'map_raas_description', 1 ),
+		'desc'  => __( "Check this checkbox to map Biographical Info" )
+	);
+
 	$form['raas_end'] = array(
 			'markup' => '</div>'
 	);
+
 
 	echo _gigya_form_render( $form, GIGYA__SETTINGS_LOGIN );
 }

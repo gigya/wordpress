@@ -93,6 +93,7 @@ class GigyaRaasAjax {
 		wp_set_current_user( $wp_user->ID );
 		wp_set_auth_cookie( $wp_user->ID );
 
+		_gigya_add_to_wp_user_meta($this->{"gigya_account"}, $wp_user->ID);
 		// Hook for changing WP user metadata from Gigya's user.
 		do_action( 'gigya_after_raas_login', $this->gigya_account, $wp_user );
 
@@ -134,9 +135,16 @@ class GigyaRaasAjax {
 			// Return JSON to client.
 			wp_send_json_error( array( 'msg' => $msg ) );
 		}
+		_gigya_add_to_wp_user_meta($this->gigya_account['profile'], $user_id);
 
 		// Login the user.
 		$wp_user = get_userdata( $user_id );
 		$this->login( $wp_user );
+	}
+
+	public function updateProfile( $profile ) {
+		if ( is_user_logged_in() ) {
+			_gigya_add_to_wp_user_meta($profile, get_current_user_id());
+		}
 	}
 }
