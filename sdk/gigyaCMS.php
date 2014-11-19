@@ -253,6 +253,10 @@ class GigyaCMS {
 
 		// Request.
 		$response = $this->call( 'socialize.notifyLogin', $params );
+		// If error return message
+		if ( is_wp_error($response)) {
+			return $response->get_error_message();
+		}
 
 		//Set  Gigya cookie.
 		try {
@@ -331,7 +335,7 @@ class GigyaCMS {
 
 		$req_params = array(
 				'UID'     => $guid,
-				'include' => 'profile, data, loginIDs'
+				'include' => 'profile,data,loginIDs'
 		);
 
 		// Because we can only trust the UID parameter from the origin object,
