@@ -104,8 +104,9 @@ class GigyaCMS {
 		$request->setAPIDomain( $api_domain );
 		$request->setParam( 'url', 'http://gigya.com' );
 		ini_set('arg_separator.output', '&');
-		return $request->send();
+		$res = $request->send();
 		ini_restore ( 'arg_separator.output' );
+		return $res;
 	}
 
 	/**
