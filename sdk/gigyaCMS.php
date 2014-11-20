@@ -322,7 +322,7 @@ class GigyaCMS {
 	public function isRaaS() {
 		$res = $this->call( 'accounts.getSchema', array() );
 		if ( is_wp_error($res)) {
-			if ( $res->get_error_code === 403036) {
+			if ( $res->get_error_code() === 403036) {
 				return false;
 			}
 		}
