@@ -89,7 +89,6 @@ class GigyaLoginAjax {
 		wp_set_auth_cookie( $wp_user->ID );
 
 		// Hook for changing WP user metadata from Gigya's user.
-		_gigya_add_to_wp_user_meta($this->{"gigya_user"}, $wp_user->ID);
 		do_action( 'gigya_after_social_login', $this->gigya_user, $wp_user );
 
 		// Do others login Implementations.

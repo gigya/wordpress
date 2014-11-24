@@ -67,7 +67,7 @@ function gmSettingsForm() {
 		'type'  => 'textarea',
 		'value' => _gigParam( $values, 'advanced_notification', '' ),
 		'label' => __( 'Additional Parameters (advanced) showNotifications' ),
-		'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="http://developers.gigya.com/020_Client_API/040_GM/gm.showUserStatusUI" target="_blank">' . __( 'parameters' ) . '</a>'
+		'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="http://developers.gigya.com/020_Client_API/040_GM/gm.showNotifications" target="_blank">' . __( 'parameters' ) . '</a>'
 	);
 	echo _gigya_form_render( $form, GIGYA__SETTINGS_GM );
 }
