@@ -28,13 +28,14 @@ function globalSettingsForm() {
 	if (!array_key_exists($dataCenter, $options)) {
 	     $dataCenter = "other";
 	}
+	$val = $dataCenter == "other" ? current(explode('.', $values['data_center'])) : "";
 	$form['data_center'] = array(
 			'type'    => 'select',
 			'options' => $options,
 			'label'   => __( 'Data Center' ),
 			'class'   => 'data_center',
 			'value'   => $dataCenter,
-			'markup' => "<span class='other_dataCenter'><input type='text' size='5' maxlength='5' class='input-xlarge' id='other_ds' name='other_ds' value='" . current(explode('.', $values['data_center'])) . "' /> <span>.gigya.com</span><p>Please specify the Gigya data center in which your site is defined. For example: 'EU1'. To verify your site location contact your Gigya implementation manager.</p></span>"
+			'markup' => "<span class='other_dataCenter'><input type='text' size='5' maxlength='5' class='input-xlarge' id='other_ds' name='other_ds' value='" . $val . "' /> <span>.gigya.com</span><p>Please specify the Gigya data center in which your site is defined. For example: 'EU1'. To verify your site location contact your Gigya implementation manager.</p></span>"
 	);
 
 	$form['enabledProviders'] = array(
