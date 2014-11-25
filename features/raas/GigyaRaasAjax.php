@@ -148,7 +148,7 @@ class GigyaRaasAjax {
 
 	public function updateProfile( $profile ) {
 		if ( is_user_logged_in() ) {
-			_gigya_add_to_wp_user_meta($profile, get_current_user_id());
+			_gigya_add_to_wp_user_meta(array('profile' => $profile), get_current_user_id());
 		}
 	}
 }
