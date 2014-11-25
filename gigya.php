@@ -91,6 +91,21 @@ class GigyaAction {
 		add_filter( 'the_content', array( $this, 'theContent' ) );
 		add_filter( 'comments_template', array( $this, 'commentsTemplate' ) );
 		add_filter( 'get_avatar', array( $this, 'getGigyaAvatar'), 10, 5);
+		// Plugins shortcode
+		require_once GIGYA__PLUGIN_DIR . 'features/gigyaPluginsShortcodes.php';
+		$shortcodes_class = new gigyaPluginsShortcodes();
+		add_shortcode( 'gigya-comments',  array( $shortcodes_class, 'gigyaCommentsScode'));
+		add_shortcode( 'gigya-activity-feed',  array( $shortcodes_class, 'gigyaFeedScode'));
+		add_shortcode( 'gigya-follow-bar',  array( $shortcodes_class, 'gigyaFollowBarScode'));
+		add_shortcode( 'gigya-reactions',  array( $shortcodes_class, 'gigyaReactionsScode'));
+		add_shortcode( 'gigya-share-bar',  array( $shortcodes_class, 'gigyaShareBarScode'));
+		add_shortcode( 'gigya-social-login',  array( $shortcodes_class, 'gigyaSocialLoginScode'));
+		add_shortcode( 'gigya-gm-achievements',  array( $shortcodes_class, 'gigyaGmScode'));
+		add_shortcode( 'gigya-gm-challenge-status',  array( $shortcodes_class, 'gigyaGmScode'));
+		add_shortcode( 'gigya-gm-leaderboard',  array( $shortcodes_class, 'gigyaGmScode'));
+		add_shortcode( 'gigya-gm-user-status',  array( $shortcodes_class, 'gigyaGmScode'));
+		add_shortcode( 'gigya-raas-login',  array( $shortcodes_class, 'gigyaRaas'));
+		add_shortcode( 'gigya-raas-profile',  array( $shortcodes_class, 'gigyaRaas'));
 	}
 
 	/**
@@ -720,4 +735,17 @@ function _wp_key_to_gigya_key( $wp_key ) {
 	    'profile_image' => 'photoURL'
 	);
 	return empty($convert[$wp_key]) ? $wp_key : $convert[$wp_key];
+}
+
+function _underscore_to_camelcase( $str ) {
+	$parts = explode('_', $str);
+	$string = $parts[0];
+	for ( $i = 1; $i <= count($parts); $i ++ ) {
+		if ($parts[$i] == 'id') {
+			$string .= strtoupper($parts[$i]);
+		} else {
+			$string .= ucfirst( $parts[ $i ] );
+		}
+	}
+	return $string;
 }

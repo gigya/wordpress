@@ -475,7 +475,7 @@ class GigyaCMS {
 			return $msg;
 		}
 
-		// Everything is OK.Return obj.
+		// Everything is OK.Return associative array.
 		return $result;
 	}
 
