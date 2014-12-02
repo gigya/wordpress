@@ -47,30 +47,32 @@ class GigyaFollow_Widget extends WP_Widget {
 		$follow = new GigyaFollowSet();
 		$data = $follow->getParams();
 
-		// Override params or take the defaults.
-		if ( ! empty( $instance['override'] ) ) {
-			foreach ( $instance as $key => $value ) {
-				if ( ! empty( $value ) ) {
-					if ($key == 'buttons') {
-						$data[$key] =  $value;
-					} else {
-						$data[ $key ] = esc_attr( $value );
+		if (!empty($data['on'])) {
+			// Override params or take the defaults.
+			if ( ! empty( $instance['override'] ) ) {
+				foreach ( $instance as $key => $value ) {
+					if ( ! empty( $value ) ) {
+						if ( $key == 'buttons' ) {
+							$data[ $key ] = $value;
+						} else {
+							$data[ $key ] = esc_attr( $value );
+						}
 					}
 				}
 			}
+
+			// Set the output.
+			$output .= $args['before_widget'];
+			if ( ! empty( $title ) ) {
+				$output .= $args['before_title'] . $title . $args['after_title'];
+			}
+			$output .= '<div class="gigya-follow-widget"></div>';
+			$output .= '<script class="data-follow" type="application/json">' . json_encode( $data ) . '</script>';
+
+			$output .= $args['after_widget'];
+
+			return $output;
 		}
-
-		// Set the output.
-		$output .= $args['before_widget'];
-		if ( ! empty( $title ) ) {
-			$output .= $args['before_title'] . $title . $args['after_title'];
-		}
-		$output .= '<div class="gigya-follow-widget"></div>';
-		$output .= '<script class="data-follow" type="application/json">' . json_encode( $data ) . '</script>';
-
-		$output .= $args['after_widget'];
-
-		return $output;
 	}
 
 	/**

@@ -26,6 +26,7 @@ class GigyaFollowSet {
 
 		// The parameters array.
 		$params = array(
+				'on' => _gigParam( $this->follow_options, 'on', true ),
 				'layout' => _gigParam( $this->follow_options, 'layout', 'horizontal' ),
 				'iconSize'    => _gigParam( $this->follow_options, 'iconSize', '32' ),
 				'buttons'   => _gigParam( $this->follow_options, 'followButtons', _gigya_get_json( 'admin/forms/json/default_follow') ),
