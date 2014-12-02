@@ -122,7 +122,7 @@ class GigyaFollow_Widget extends WP_Widget {
 				'name'    => $this->get_field_name( 'layout' )
 		);
 
-		$form[$this->get_field_id( 'buttons' )] = array(
+		$form[$this->get_field_id( 'followButtons' )] = array(
 				'type'  => 'textarea',
 				'value' => _gigParam( $instance, 'buttons', _gigya_get_json( 'admin/forms/json/default_follow' ) ),
 				'label' => __( 'Follow Bar buttons' ),

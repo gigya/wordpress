@@ -28,7 +28,7 @@ class GigyaFollowSet {
 		$params = array(
 				'layout' => _gigParam( $this->follow_options, 'layout', 'horizontal' ),
 				'iconSize'    => _gigParam( $this->follow_options, 'iconSize', '32' ),
-				'buttons'   => _gigParam( $this->follow_options, 'buttons', _gigya_get_json( 'admin/forms/json/default_follow') ),
+				'buttons'   => _gigParam( $this->follow_options, 'followButtons', _gigya_get_json( 'admin/forms/json/default_follow') ),
 		);
 		if ( !empty($this->follow_options['advanced']) ) {
 			$params = array_merge( $params, json_decode( $this->follow_options['advanced'], true ) );
