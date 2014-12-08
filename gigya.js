@@ -42,7 +42,18 @@ var GigyaWp = GigyaWp || {};
       // Refresh.
       location.reload();
     }
-  }
+  };
+    GigyaWp.getEssentialParams = function(gigyaObj) {
+        var esData = {};
+        var primitive = ['string', 'number', 'boolean'];
+        $.each(gigyaObj.response, function(key, val) {
+            if ($.inArray($.type(val), primitive) >= 0) {
+                esData[key] = val;
+            }
+        });
+        return esData;
+    };
+
 
 // --------------------------------------------------------------------
 

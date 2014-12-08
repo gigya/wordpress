@@ -337,8 +337,9 @@ class GigyaCMS {
 	public function getAccount( $guid ) {
 
 		$req_params = array(
-				'UID'     => $guid,
-				'include' => 'profile,data,loginIDs'
+			'UID'                => $guid,
+			'include'            => 'profile,data,loginIDs',
+			'extraProfileFields' => "languages,address,phones,education,honors,publications,patents,certifications,professionalHeadline,bio,industry,specialties,work,skills,religion,politicalView,interestedIn,relationshipStatus,hometown,favorites,followersCount,followingCount,username,locale,verified,timezone,likes"
 		);
 
 		// Because we can only trust the UID parameter from the origin object,

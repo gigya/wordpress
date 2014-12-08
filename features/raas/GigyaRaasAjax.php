@@ -146,9 +146,21 @@ class GigyaRaasAjax {
 		$this->login( $wp_user );
 	}
 
-	public function updateProfile( $profile ) {
+	public function updateProfile( $data ) {
 		if ( is_user_logged_in() ) {
-			_gigya_add_to_wp_user_meta(array('profile' => $profile), get_current_user_id());
+			$is_sig_validate = SigUtils::validateUserSignature(
+				$data['UID'],
+				$data['signatureTimestamp'],
+				GIGYA__API_SECRET,
+				$data['UIDSignature']
+			);
+			if ($is_sig_validate) {
+				$gigyaCMS = new GigyaCMS();
+				$gigya_account = $gigyaCMS->getAccount($data['UID']);
+				if (!is_wp_error($gigya_account)) {
+					_gigya_add_to_wp_user_meta( $gigya_account['profile'], get_current_user_id() );
+				}
+			}
 		}
 	}
 }

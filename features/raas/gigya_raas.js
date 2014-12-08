@@ -147,12 +147,13 @@
       };
 
       var raasUpdatedProfile = function (res) {
+          var esData = GigyaWp.getEssentialParams(res);
           var options = {
               url     : gigyaParams.ajaxurl,
               type    : 'POST',
               dataType: 'json',
               data    : {
-                  data  : res.profile,
+                  data  : esData,
                   action: 'raas_update_profile'
               }
           };
