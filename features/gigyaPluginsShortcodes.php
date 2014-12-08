@@ -11,8 +11,9 @@ class gigyaPluginsShortcodes {
 	public function gigyaCommentsScode( $attrs ) {
 		require_once GIGYA__PLUGIN_DIR . 'features/comments/GigyaCommentsSet.php';
 		$comments = new GigyaCommentsSet();
+		$defaults = $comments->getParams();
 		if ( empty( $attrs ) ) {
-			$attrs = $comments->getParams();
+			$attrs = $defaults;
 			if ( isset( $attrs['advanced'] )) {
 				$advanced = gigyaCms::jsonToArray( $attrs['advanced'] );
 				if ( is_array( $advanced ) ) {
@@ -21,6 +22,8 @@ class gigyaPluginsShortcodes {
 					_gigya_error_log( "Error in " . __FUNCTION__ . " shortcode advanced parameters message: " . $advanced );
 				}
 			}
+		} else {
+			$attrs = array_merge($defaults, $attrs);
 		}
 		$attrs = $this->attrs_to_gigya($attrs);
 		return _gigya_render_tpl( 'admin/tpl/comments.tpl.php', array( 'data' => $attrs ) );
@@ -29,8 +32,9 @@ class gigyaPluginsShortcodes {
 	public function gigyaFeedScode( $attrs) {
 		require_once GIGYA__PLUGIN_DIR . 'features/feed/GigyaFeedSet.php';
 		$feed = new GigyaFeedSet();
+		$defaults = $feed->getParams();
 		if (empty( $attrs )) {
-			$attrs = $feed->getParams();
+			$attrs = $defaults;
 			if ( isset( $attrs['advanced'] )) {
 				$advanced = gigyaCms::jsonToArray( $attrs['advanced'] );
 				if ( is_array( $advanced ) ) {
@@ -40,6 +44,8 @@ class gigyaPluginsShortcodes {
 					                  . $advanced );
 				}
 			}
+		} else {
+			$attrs = array_merge($defaults, $attrs);
 		}
 		$attrs = $this->attrs_to_gigya($attrs);
 		$output = '<div class="gigya-feed-widget"></div>';
@@ -50,8 +56,9 @@ class gigyaPluginsShortcodes {
 	public function gigyaFollowBarScode( $attrs ) {
 		require_once GIGYA__PLUGIN_DIR . 'features/follow/GigyaFollowSet.php';
 		$follow = new GigyaFollowSet();
+		$defaults = $follow->getParams();
 		if (empty( $attrs )) {
-			$attrs = $follow->getParams();
+			$attrs = $defaults;
 			if ( isset( $attrs['advanced'] )) {
 				$advanced = gigyaCms::jsonToArray( $attrs['advanced'] );
 				if ( is_array( $advanced ) ) {
@@ -61,6 +68,8 @@ class gigyaPluginsShortcodes {
 					                  . $advanced );
 				}
 			}
+		} else {
+			$attrs = array_merge($defaults, $attrs);
 		}
 		$attrs = $this->attrs_to_gigya($attrs);
 		$output = '<div class="gigya-follow-widget"></div>';
@@ -98,6 +107,7 @@ class gigyaPluginsShortcodes {
 				}
 			}
 		}
+		$attrs['type'] = $type;
 		$attrs = $this->attrs_to_gigya($attrs);
 		$output = '<div class="gigya-gamification-widget"></div>';
 		$output .= '<script class="data-gamification" type="application/json">' . json_encode( $attrs ) . '</script>';
@@ -107,8 +117,9 @@ class gigyaPluginsShortcodes {
 	public function gigyaReactionsScode ( $attrs) {
 		require_once GIGYA__PLUGIN_DIR . 'features/reactions/GigyaReactionsSet.php';
 		$recations = new GigyaReactionsSet();
+		$defaults = $recations->getParams();
 		if (empty( $attrs )) {
-			$attrs = $recations->getParams();
+			$attrs = $defaults;
 			if ( isset( $attrs['advanced'] )) {
 				$advanced = gigyaCms::jsonToArray( $attrs['advanced'] );
 				if ( is_array( $advanced ) ) {
@@ -118,6 +129,8 @@ class gigyaPluginsShortcodes {
 					                  . $advanced );
 				}
 			}
+		} else {
+			$attrs = array_merge($defaults, $attrs);
 		}
 		$attrs = $this->attrs_to_gigya($attrs);
 		$output = '<div class="gigya-reactions-widget"></div>';
@@ -129,8 +142,9 @@ class gigyaPluginsShortcodes {
 	public function gigyaShareBarScode ( $attrs) {
 		require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareSet.php';
 		$share = new GigyaShareSet();
+		$defaults = $share->getParams();
 		if (empty( $attrs )) {
-			$attrs = $share->getParams();
+			$attrs = $defaults;
 			if ( isset( $attrs['advanced'] )) {
 				$advanced = gigyaCms::jsonToArray( $attrs['advanced'] );
 				if ( is_array( $advanced ) ) {
@@ -140,6 +154,8 @@ class gigyaPluginsShortcodes {
 					                  . $advanced );
 				}
 			}
+		} else {
+			$attrs = array_merge($defaults, $attrs);
 		}
 		$attrs = $this->attrs_to_gigya($attrs);
 		$output = '<div class="gigya-share-widget"></div>';
@@ -151,8 +167,9 @@ class gigyaPluginsShortcodes {
 	public function gigyaSocialLoginScode ( $attrs) {
 		require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginSet.php';
 		$login = new GigyaLoginSet();
+		$defaults = $login->getParams();
 		if (empty( $attrs )) {
-			$attrs = $login->getParams();
+			$attrs = $defaults;
 			if ( isset( $attrs['advanced'] )) {
 				$advanced = gigyaCms::jsonToArray( $attrs['advanced'] );
 				if ( is_array( $advanced ) ) {
@@ -162,6 +179,8 @@ class gigyaPluginsShortcodes {
 					                  . $advanced );
 				}
 			}
+		} else {
+			$attrs = array_merge($defaults, $attrs);
 		}
 		$attrs = $this->attrs_to_gigya($attrs);
 		if ( ! is_user_logged_in() ) {
