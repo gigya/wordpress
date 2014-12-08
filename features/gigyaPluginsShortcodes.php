@@ -47,7 +47,7 @@ class gigyaPluginsShortcodes {
 		return $output;
 	}
 
-	public function gigyaFolowBarScode( $attrs ) {
+	public function gigyaFollowBarScode( $attrs ) {
 		require_once GIGYA__PLUGIN_DIR . 'features/follow/GigyaFollowSet.php';
 		$follow = new GigyaFollowSet();
 		if (empty( $attrs )) {
@@ -207,7 +207,7 @@ class gigyaPluginsShortcodes {
 		foreach ( $attrs as $key => $val ) {
 			$new_key = _underscore_to_camelcase($key);
 			unset($attrs[$key]);
-			$attrs[$new_key] = $val;
+			$attrs[$new_key] =  _underscore_to_camelcase($val);
 		}
 		return $attrs;
 	}
