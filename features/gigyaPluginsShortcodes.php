@@ -23,9 +23,9 @@ class gigyaPluginsShortcodes {
 				}
 			}
 		} else {
+			$attrs = $this->attrs_to_gigya($attrs);
 			$attrs = array_merge($defaults, $attrs);
 		}
-		$attrs = $this->attrs_to_gigya($attrs);
 		return _gigya_render_tpl( 'admin/tpl/comments.tpl.php', array( 'data' => $attrs ) );
 	}
 
@@ -45,9 +45,9 @@ class gigyaPluginsShortcodes {
 				}
 			}
 		} else {
+			$attrs = $this->attrs_to_gigya($attrs);
 			$attrs = array_merge($defaults, $attrs);
 		}
-		$attrs = $this->attrs_to_gigya($attrs);
 		$output = '<div class="gigya-feed-widget"></div>';
 		$output .= '<script class="data-feed" type="application/json">' . json_encode( $attrs ) . '</script>';
 		return $output;
@@ -130,9 +130,9 @@ class gigyaPluginsShortcodes {
 				}
 			}
 		} else {
+			$attrs = $this->attrs_to_gigya($attrs);
 			$attrs = array_merge($defaults, $attrs);
 		}
-		$attrs = $this->attrs_to_gigya($attrs);
 		$output = '<div class="gigya-reactions-widget"></div>';
 		$output .= '<script class="data-reactions" type="application/json">' . json_encode( $attrs ) . '</script>';
 		return $output;
@@ -155,9 +155,9 @@ class gigyaPluginsShortcodes {
 				}
 			}
 		} else {
+			$attrs = $this->attrs_to_gigya($attrs);
 			$attrs = array_merge($defaults, $attrs);
 		}
-		$attrs = $this->attrs_to_gigya($attrs);
 		$output = '<div class="gigya-share-widget"></div>';
 		$output .= '<script class="data-share" type="application/json">' . json_encode( $attrs ) . '</script>';
 		return $output;
@@ -180,9 +180,9 @@ class gigyaPluginsShortcodes {
 				}
 			}
 		} else {
+			$attrs = $this->attrs_to_gigya($attrs);
 			$attrs = array_merge($defaults, $attrs);
 		}
-		$attrs = $this->attrs_to_gigya($attrs);
 		if ( ! is_user_logged_in() ) {
 			$output = '<div class="gigya-login-widget"></div>';
 			$output .= '<script class="data-login" type="application/json">' . json_encode( $attrs ) . '</script>';
