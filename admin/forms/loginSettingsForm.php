@@ -260,7 +260,7 @@ function loginSettingsForm() {
 		'type'  => 'checkbox',
 		'label' => __( 'Map gigya nickname' ),
 		'value' => _gigParam( $values, 'map_raas_nickname', 1 ),
-		'desc'  => __( "Check this checkbox to map first name" )
+		'desc'  => __( "Check this checkbox to map nick name" )
 	);
 
 	$form['map_raas_profile_image'] = array(

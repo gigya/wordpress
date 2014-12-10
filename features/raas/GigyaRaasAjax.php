@@ -40,7 +40,7 @@ class GigyaRaasAjax {
 
 		// Gigya user validate trap.
 		if ( empty( $is_sig_validate ) ) {
-			$prm = array( 'msg' => __( 'There a problem to validate your user' ) );
+			$prm = array( 'msg' => __( 'There is a problem validating your user' ) );
 			wp_send_json_error( $prm );
 		}
 
@@ -111,10 +111,14 @@ class GigyaRaasAjax {
 	private function register() {
 
 		// Register a new user to WP with params from Gigya.
-		$name  = $this->gigya_account['profile']['firstName'] . ' ' . $this->gigya_account['profile']['lastName'];
+		if ( isset($this->gigya_account['profile']['username']) ) {
+			$name = $this->gigya_account['profile']['username'];
+		} else {
+			$name  = $this->gigya_account['profile']['firstName'] . '_' . $this->gigya_account['profile']['lastName'];
+		}
 		$email = $this->gigya_account['profile']['email'];
 
-		// If the name of the new user is already exist in the system,
+		// If the name of the new user already exists in the system,
 		// WP will reject the registration and return an error. to prevent this
 		// we attach an extra value to the name to make it unique.
 		$username_exist = username_exists( $name );
