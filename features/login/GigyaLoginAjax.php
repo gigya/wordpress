@@ -25,7 +25,7 @@ class GigyaLoginAjax {
 
 		// Trap for login users
 		if ( is_user_logged_in() ) {
-			wp_send_json_error( array( 'msg' => __( 'There already a logged in user' ) ) );
+			wp_send_json_error( array( 'msg' => __( 'There is already a logged in user' ) ) );
 		}
 
 		// Check Gigya's signature validation.
@@ -114,7 +114,7 @@ class GigyaLoginAjax {
 			) );
 		}
 
-		// If the name of the new user is already exist in the system,
+		// If the name of the new user already exists in the system,
 		// WP will reject the registration and return an error. to prevent this
 		// we attach an extra value to the name to make it unique.
 		$username_exist = username_exists( $this->gigya_user['nickname'] );
@@ -149,6 +149,7 @@ class GigyaLoginAjax {
 			// Return JSON to client.
 			wp_send_json_error( array( 'msg' => $msg ) );
 		}
+		// map user social fields to wordpress user
 		_gigya_add_to_wp_user_meta($this->{"gigya_user"}, $user_id);
 
 		$wp_user = get_userdata( $user_id );

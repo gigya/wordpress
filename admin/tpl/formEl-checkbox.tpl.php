@@ -4,6 +4,11 @@
  * Render with @see _gigya_render_tpl().
  */
 ?>
+<?php if ($position == '0') {
+	echo "<h3>Select roles to allow admin access through wordpress login page:</h3>";
+	echo "<p>If you have chosen to disable RAAS login in wp-login.php page, you can select the roles that will be allowed to login in that page. all other roles will be denied access at the worpdress login page.</p>";
+}
+?>
 <div class="row checkbox <?php echo $class ?>">
 	<label for="gigya_<?php echo $id; ?>">
 		<input type="hidden" value="0" name="<?php echo $name ?>" />

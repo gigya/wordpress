@@ -277,10 +277,23 @@ function loginSettingsForm() {
 		'desc'  => __( "Check this checkbox to map Biographical Info" )
 	);
 
+	// create checkbox foe each role in site
+	$roles = get_editable_roles();
+	$i = 0;
+	foreach ( $roles as $role ) {
+		$form["raas_allowed_admin_{$role['name']}"] = array(
+			'type'  => 'checkbox',
+			'label' => __( $role['name'] ),
+			'value' => _gigParam( $values, "raas_allowed_admin_{$role['name']}", 1 ),
+			'position' => $i
+		);
+		$i++;
+	}
+
 	$form['raas_end'] = array(
 			'markup' => '</div>'
 	);
 
-
 	echo _gigya_form_render( $form, GIGYA__SETTINGS_LOGIN );
 }
+

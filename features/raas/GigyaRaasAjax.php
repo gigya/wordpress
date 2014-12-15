@@ -52,7 +52,7 @@ class GigyaRaasAjax {
 			wp_send_json_error( $prm );
 		}
 
-		// Check if there already WP user with the same email.
+		// Check if there is already a WP user with the same email.
 		$wp_user = get_user_by( 'email', $this->gigya_account['profile']['email'] );
 		if ( ! empty( $wp_user ) ) {
 
@@ -101,8 +101,10 @@ class GigyaRaasAjax {
 		// Hook for changing WP user metadata from Gigya's user.
 		do_action( 'gigya_after_raas_login', $this->gigya_account, $wp_user );
 
-		// Do others login Implementations.
+		// Do other login Implementations.
+
 		do_action( 'wp_login', $wp_user->data->user_login, $wp_user );
+
 	}
 
 	/**
