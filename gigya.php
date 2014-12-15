@@ -263,20 +263,19 @@ class GigyaAction {
 		// Login through WP form.
 		if ( isset( $_POST['log'] ) && isset( $_POST['pwd'] ) ) {
 
-			// Trap for non-admin user who tries to
-			// login through WP form on RaaS mode.
-		//	$_is_allowed_user = array_intersect( $_capabilities , $account->roles );
+			// Trap for non-admin user who tries to login through WP form on RaaS mode.
+
 			$_is_allowed_user = $this->check_raas_allowed_user_role($account->roles[0]);
 			if ( $this->login_options['mode'] == 'raas' && (!$_is_allowed_user) ) {
 				wp_logout();
-				wp_safe_redirect( $_SERVER['REQUEST_URI'].'?rperm=1' );
+				wp_safe_redirect( $_SERVER['REQUEST_URI'].'?rperm=1' ); // rperm used to create custom error message in wp login screen
 				exit;
 			}
 
 			// Notify Gigya socialize.notifyLogin
 			// for a return user logged in from WP login form.
 			$gigyaCMS = new GigyaCMS();
-			$response = $gigyaCMS->notifyLogin( $account->ID );
+			$gigyaCMS->notifyLogin( $account->ID );
 
 		}
 
@@ -700,7 +699,6 @@ function _gigParam( $array, $key, $default = null ) {
 
 // --------------------------------------------------------------------
 
-
 /**
  * Helper
  */
@@ -756,7 +754,7 @@ function gigyaSyncLoginSession() {
 // --------------------------------------------------------------------
 
 /**
- * Mapping social user fields to worpdress user fields
+ * Map social user fields to worpdress user fields
  * @param $gigya_object
  * @param $user_id
  */
