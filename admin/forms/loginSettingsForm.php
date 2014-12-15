@@ -4,6 +4,7 @@
  */
 function loginSettingsForm() {
 	$values = get_option( GIGYA__SETTINGS_LOGIN );
+	$roles = get_editable_roles();
 	$form   = array();
 
 	$form['mode'] = array(
@@ -214,7 +215,7 @@ function loginSettingsForm() {
 	);
 
 	$form['raas_divs'] = array(
-			'markup' => '<h4>DIV IDs</h4><small>' . __( 'Specify the DIV IDs in which to embed the screen-sets.' ) . '<small>'
+			'markup' => '<h4>DIV IDs</h4><small>' . __( 'Specify the DIV IDs in which to embed the screen-sets.' ) . '</small>'
 	);
 
 	$form['raasLoginDiv'] = array(
@@ -235,59 +236,57 @@ function loginSettingsForm() {
 			'value' => _gigParam( $values, 'raasProfileDiv', 'profile-page' )
 	);
 
+	$form['map_rass_title'] = array(
+		'markup' => __('<h4>Mapping Gigya User Fields to WordPress Fields</h4><p>Define which fields to map from Gigya to WordPress. The WordPress mapped target fields will be populated with data copied from the corresponding source fields. Learn more <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin#User_Management_Settings" target="_blank"/>here</a></p>')
+	);
+
 	$form['map_raas_first_name'] = array(
 		'type'  => 'checkbox',
-		'label' => __( 'Map gigya first name' ),
-		'value' => _gigParam( $values, 'map_raas_first_name', 1 ),
-		'desc'  => __( "Check this checkbox to map first name" )
+		'label' => __( 'First Name' ),
+		'value' => _gigParam( $values, 'map_raas_first_name', 1 )
 	);
 
 	$form['map_raas_last_name'] = array(
 		'type'  => 'checkbox',
-		'label' => __( 'Map gigya last name' ),
-		'value' => _gigParam( $values, 'map_raas_last_name', 1 ),
-		'desc'  => __( "Check this checkbox to map last name" )
+		'label' => __( 'Last Name' ),
+		'value' => _gigParam( $values, 'map_raas_last_name', 1 )
 	);
 
 	$form['map_raas_display_name'] = array(
 		'type'  => 'checkbox',
-		'label' => __( 'Map gigya display name' ),
-		'value' => _gigParam( $values, 'map_raas_display_name', 1 ),
-		'desc'  => __( "Check this checkbox to map display name" )
+		'label' => __( 'Display Name' ),
+		'value' => _gigParam( $values, 'map_raas_display_name', 1 )
 	);
 
 	$form['map_raas_nickname'] = array(
 		'type'  => 'checkbox',
-		'label' => __( 'Map gigya nickname' ),
-		'value' => _gigParam( $values, 'map_raas_nickname', 1 ),
-		'desc'  => __( "Check this checkbox to map nick name" )
+		'label' => __( 'Nickname' ),
+		'value' => _gigParam( $values, 'map_raas_nickname', 1 )
 	);
 
 	$form['map_raas_profile_image'] = array(
 		'type'  => 'checkbox',
-		'label' => __( 'Map gigya profile image' ),
-		'value' => _gigParam( $values, 'map_raas_profile_image', 1 ),
-		'desc'  => __( "Check this checkbox to map profile image" )
+		'label' => __( 'Profile image (avatar)' ),
+		'value' => _gigParam( $values, 'map_raas_profile_image', 1 )
 	);
 
 	$form['map_raas_description'] = array(
 		'type'  => 'checkbox',
-		'label' => __( 'Map gigya Biographical Info' ),
-		'value' => _gigParam( $values, 'map_raas_description', 1 ),
-		'desc'  => __( "Check this checkbox to map Biographical Info" )
+		'label' => __( 'Biographical Info' ),
+		'value' => _gigParam( $values, 'map_raas_description', 1 )
 	);
 
-	// create checkbox foe each role in site
-	$roles = get_editable_roles();
-	$i = 0;
+	$form['raas_admin_roles_title'] = array(
+		'markup' => __('<h4>Select below which <a target="_blank" href=http://codex.wordpress.org/Roles_and_Capabilities#Roles>Roles</a> should be permitted to login via the default WordPress login UI in /wp-login.php</h4>')
+	);
+
+	// create checkbox for each role in site
 	foreach ( $roles as $role ) {
 		$form["raas_allowed_admin_{$role['name']}"] = array(
 			'type'  => 'checkbox',
 			'label' => __( $role['name'] ),
-			'value' => _gigParam( $values, "raas_allowed_admin_{$role['name']}", 1 ),
-			'position' => $i
+			'value' => _gigParam( $values, "raas_allowed_admin_{$role['name']}", 1 )
 		);
-		$i++;
 	}
 
 	$form['raas_end'] = array(
