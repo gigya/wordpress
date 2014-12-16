@@ -101,6 +101,7 @@ class GigyaAction {
 		add_shortcode( 'gigya-raas-profile',  array( $shortcodes_class, 'gigyaRaas'));
 		add_shortcode( 'gigya-social-login',  array( $shortcodes_class, 'gigyaSocialLoginScode'));
 
+		/*
 		$comments_switch = get_option(GIGYA__SETTINGS_COMMENTS);
 		if ( $comments_switch['on'] == true ) {
 			add_shortcode( 'gigya-comments', array( $shortcodes_class, 'gigyaCommentsScode' ) );
@@ -123,7 +124,7 @@ class GigyaAction {
 			add_shortcode( 'gigya-gm-leaderboard',  array( $shortcodes_class, 'gigyaGmScode'));
 			add_shortcode( 'gigya-gm-user-status',  array( $shortcodes_class, 'gigyaGmScode'));
 		}
-
+*/
 	}
 
 	/**
