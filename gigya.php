@@ -7,7 +7,6 @@
  * Author: Gigya
  * Author URI: http://gigya.com
  * License: GPL2+
- * ++
  */
 
 // --------------------------------------------------------------------
@@ -269,7 +268,7 @@ class GigyaAction {
 	/**
 	 * Hook to wp user login.
 	 * If user logs in with wp form, check if raas is enabled,
-	 * if so check if user has allowd capabilities
+	 * if so check if user has allowed capabilities
 	 * if not log user out, if yes notify gigya.
 	 *
 	 * @param $user_login
@@ -282,7 +281,7 @@ class GigyaAction {
 
 			// Trap for non-admin user who tries to login through WP form on RaaS mode.
 
-			$_is_allowed_user = $this->check_raas_allowed_user_role($account->roles[0]);
+			$_is_allowed_user = $this->check_raas_allowed_user_role($account->roles);
 			if ( $this->login_options['mode'] == 'raas' && (!$_is_allowed_user) ) {
 				wp_logout();
 				wp_safe_redirect( $_SERVER['REQUEST_URI'].'?rperm=1' ); // rperm used to create custom error message in wp login screen
@@ -315,17 +314,24 @@ class GigyaAction {
 	 * @param string $user_role
 	 * @return bool $allowed
 	 */
-	public function check_raas_allowed_user_role($user_role) {
+	public function check_raas_allowed_user_role($user_roles) {
 
-		$user_role = "raas_allowed_admin_".ucfirst($user_role);
+		$allowed = false;
 		$login_options = get_option( GIGYA__SETTINGS_LOGIN );
-		// now find if user role key exists and positive in options array
-		if ( array_key_exists($user_role, $login_options ) ) {
-			$allowed = $login_options[$user_role];
-		} else {
-			$allowed = false;
+		foreach ( $user_roles as $role ) {
+			$user_role = "raas_allowed_admin_".ucfirst($role);
+			// find if user role key exists and positive in options array
+			if ( array_key_exists($user_role, $login_options ) ) {
+				$allowed = $login_options[ $user_role ];
+				if ($allowed) {
+					return $allowed;
+					exit;
+				}
+			}
 		}
-		return $allowed;
+		// if no role match then the user is not allowed login
+		return false;
+
 	}
 
 	/*
