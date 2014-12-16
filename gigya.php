@@ -101,7 +101,8 @@ class GigyaAction {
 		add_shortcode( 'gigya-raas-profile',  array( $shortcodes_class, 'gigyaRaas'));
 		add_shortcode( 'gigya-social-login',  array( $shortcodes_class, 'gigyaSocialLoginScode'));
 
-		if ( get_option(GIGYA__SETTINGS_COMMENTS)['on'] == true ) {
+		$comments_switch = get_option(GIGYA__SETTINGS_COMMENTS);
+		if ( $comments_switch['on'] == true ) {
 			add_shortcode( 'gigya-comments', array( $shortcodes_class, 'gigyaCommentsScode' ) );
 		}
 		if ( get_option(GIGYA__SETTINGS_FEED)['on'] == true ) {
