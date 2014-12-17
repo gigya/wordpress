@@ -93,7 +93,7 @@ class GigyaAction {
 		add_filter( 'get_avatar', array( $this, 'getGigyaAvatar'), 10, 5);
 		add_filter( 'login_message', array( $this, 'rass_wp_login_custom_message') );
 
-		// Plugins shortcode
+		// Plugins shortcode activation switches
 		require_once GIGYA__PLUGIN_DIR . 'features/gigyaPluginsShortcodes.php';
 		$shortcodes_class = new gigyaPluginsShortcodes();
 
@@ -101,30 +101,34 @@ class GigyaAction {
 		add_shortcode( 'gigya-raas-profile',  array( $shortcodes_class, 'gigyaRaas'));
 		add_shortcode( 'gigya-social-login',  array( $shortcodes_class, 'gigyaSocialLoginScode'));
 
-		/*
 		$comments_switch = get_option(GIGYA__SETTINGS_COMMENTS);
 		if ( $comments_switch['on'] == true ) {
 			add_shortcode( 'gigya-comments', array( $shortcodes_class, 'gigyaCommentsScode' ) );
 		}
-		if ( get_option(GIGYA__SETTINGS_FEED)['on'] == true ) {
+		$feed_switch = get_option(GIGYA__SETTINGS_FEED);
+		if ( $feed_switch['on'] == true ) {
 			add_shortcode( 'gigya-activity-feed', array( $shortcodes_class, 'gigyaFeedScode' ) );
 		}
-		if ( get_option(GIGYA__SETTINGS_FOLLOW)['on'] == true ) {
+		$follow_bar_switch = get_option(GIGYA__SETTINGS_FOLLOW);
+		if ( $follow_bar_switch['on'] == true ) {
 			add_shortcode( 'gigya-follow-bar',  array( $shortcodes_class, 'gigyaFollowBarScode'));
 		}
-		if ( get_option(GIGYA__SETTINGS_REACTIONS)['on'] == true ) {
+		$reaction_switch = get_option(GIGYA__SETTINGS_REACTIONS);
+		if ( $reaction_switch['on'] == true ) {
 			add_shortcode( 'gigya-reactions',  array( $shortcodes_class, 'gigyaReactionsScode'));
 		}
-		if ( get_option(GIGYA__SETTINGS_SHARE)['on'] == true ) {
+		$share_switch = get_option(GIGYA__SETTINGS_SHARE);
+		if ( $share_switch['on'] == true ) {
 			add_shortcode( 'gigya-share-bar',  array( $shortcodes_class, 'gigyaShareBarScode'));
 		}
-		if ( get_option(GIGYA__SETTINGS_GM)['on'] == true ) {
+		$gm_switch = get_option(GIGYA__SETTINGS_GM);
+		if ( $gm_switch['on'] == true ) {
 			add_shortcode( 'gigya-gm-achievements',  array( $shortcodes_class, 'gigyaGmScode'));
 			add_shortcode( 'gigya-gm-challenge-status',  array( $shortcodes_class, 'gigyaGmScode'));
 			add_shortcode( 'gigya-gm-leaderboard',  array( $shortcodes_class, 'gigyaGmScode'));
 			add_shortcode( 'gigya-gm-user-status',  array( $shortcodes_class, 'gigyaGmScode'));
 		}
-*/
+		// End plugins shortcodes activation switches
 	}
 
 	/**

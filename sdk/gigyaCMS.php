@@ -328,6 +328,10 @@ class GigyaCMS {
 		}
 		return true;
 	}
+//	public function isIDS() {
+//		$res = $this->call( 'ids.getSchema', array());
+//
+//	}
 
 	/**
 	 * @param $guid

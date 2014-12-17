@@ -20,6 +20,7 @@ function loginSettingsForm() {
 
 	$c       = new GigyaCMS();
 	$is_raas = $c->isRaaS();
+//	$is_ids = $c->isIDS();
 	if ( ! empty( $is_raas ) ) {
 		$form['mode']['class'] = 'raas_enabled';
 	}
