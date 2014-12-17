@@ -18,10 +18,12 @@ function loginSettingsForm() {
 			'class'   => 'raas_disabled'
 	);
 
+	// check if raas is enabled, and add the raas_enabled class to the form mode element
 	$c       = new GigyaCMS();
 	$is_raas = $c->isRaaS();
 //	$is_ids = $c->isIDS();
-	if ( ! empty( $is_raas ) ) {
+
+	if ( $is_raas ) {
 		$form['mode']['class'] = 'raas_enabled';
 	}
 
@@ -281,13 +283,15 @@ function loginSettingsForm() {
 		'markup' => __('<h4>Select below which <a target="_blank" href=http://codex.wordpress.org/Roles_and_Capabilities#Roles>Roles</a> should be permitted to login via the default WordPress login UI in /wp-login.php</h4>')
 	);
 
-	// create checkbox for each role in site
+	// create checkbox for each role in site (except admin & super admin)
 	foreach ( $roles as $role ) {
-		$form["raas_allowed_admin_{$role['name']}"] = array(
-			'type'  => 'checkbox',
-			'label' => __( $role['name'] ),
-			'value' => _gigParam( $values, "raas_allowed_admin_{$role['name']}", 1 )
-		);
+		if ( $role['name'] != "Administrator" && $role['name'] != "Super Admin") {
+			$form["raas_allowed_admin_{$role['name']}"] = array(
+				'type'  => 'checkbox',
+				'label' => __( $role['name'] ),
+				'value' => _gigParam( $values, "raas_allowed_admin_{$role['name']}", 1 )
+			);
+		}
 	}
 
 	$form['raas_end'] = array(

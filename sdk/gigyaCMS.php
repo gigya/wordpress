@@ -328,9 +328,17 @@ class GigyaCMS {
 		}
 		return true;
 	}
+	/*
+	 * Check if IDentity storage is enabled
+	 */
 //	public function isIDS() {
 //		$res = $this->call( 'ids.getSchema', array());
-//
+//		if ( is_wp_error($res)) {
+//			if ( $res->get_error_code() === 403036) {
+//				return false;
+//			}
+//		}
+//		return true;
 //	}
 
 	/**
