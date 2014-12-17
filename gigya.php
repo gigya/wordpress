@@ -327,8 +327,8 @@ class GigyaAction {
 		foreach ( $user_roles as $role ) {
 
 			// first auto allow Administrator or Super Admin roles
-			if ( $role == "Administrator" || $role == "Super Admin" || $role == "super_admin" ) {
-				return $allowed = "1";
+			if ( $role == "administrator" || $role == "super_admin" ) {
+				return $allowed = true;
 				exit;
 			}
 
@@ -746,6 +746,28 @@ function _gigParam( $array, $key, $default = null ) {
  */
 function _gigParamDefaultOn( $array, $key ) {
 	return ( isset( $array[$key] ) && $array[$key] === '0' ) ? '0' : '1';
+}
+
+// --------------------------------------------------------------------
+
+/*
+ * Helper for form formatting, check for default values and set selected values
+ *     check if role belongs to default. if so set default value to checked, for all other roles set default to not-checked.
+ *	   set selected value (using _gigparam )
+ *
+ * @param array $values - gigya login settings
+ * @param string $role
+ * @param string $setting_role_name
+ *
+ * @return bool $value
+ */
+function _DefaultAdminValue( $values, $role, $settings_role_name ) {
+	if ( $role == 'Editor' || $role == 'Author' || $role == 'Contributor' ) {
+		$value = _gigParam( $values, $settings_role_name, 1 );
+	} else {
+		$value = _gigParam( $values, $settings_role_name, 0 );
+	}
+	return $value;
 }
 
 // --------------------------------------------------------------------

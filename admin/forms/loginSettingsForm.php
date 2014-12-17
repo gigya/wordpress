@@ -286,10 +286,12 @@ function loginSettingsForm() {
 	// create checkbox for each role in site (except admin & super admin)
 	foreach ( $roles as $role ) {
 		if ( $role['name'] != "Administrator" && $role['name'] != "Super Admin") {
-			$form["raas_allowed_admin_{$role['name']}"] = array(
+			$settings_role_name = "raas_allowed_admin_{$role['name']}";
+			$form[ $settings_role_name ] = array(
 				'type'  => 'checkbox',
 				'label' => __( $role['name'] ),
-				'value' => _gigParam( $values, "raas_allowed_admin_{$role['name']}", 1 )
+			//	'value' => _gigParam( $values, "raas_allowed_admin_{$role['name']}", 1 )
+				'value' => _DefaultAdminValue( $values, $role['name'], $settings_role_name )
 			);
 		}
 	}
@@ -300,4 +302,3 @@ function loginSettingsForm() {
 
 	echo _gigya_form_render( $form, GIGYA__SETTINGS_LOGIN );
 }
-
