@@ -325,15 +325,28 @@ class GigyaAction {
 		$allowed = false;
 		$login_options = get_option( GIGYA__SETTINGS_LOGIN );
 		foreach ( $user_roles as $role ) {
-			$user_role = "raas_allowed_admin_".ucfirst($role);
+
+			// first auto allow Administrator or Super Admin roles
+			if ( $role == "Administrator" || $role == "Super Admin" || $role == "super_admin" ) {
+				return $allowed = "1";
+				exit;
+			}
+
+			// if this is not an Admin or super admin
+			// first format role name to match options array
+			$role = str_replace( '_', ' ', $role );
+			$role = ucwords($role);
+			$user_role = "raas_allowed_admin_".$role;
+
 			// find if user role key exists and positive in options array
-			if ( array_key_exists($user_role, $login_options ) ) {
+			if ( array_key_exists( $user_role, $login_options ) ) {
 				$allowed = $login_options[ $user_role ];
 				if ($allowed) {
 					return $allowed;
 					exit;
 				}
 			}
+
 		}
 		// if no role match then the user is not allowed login
 		return false;
