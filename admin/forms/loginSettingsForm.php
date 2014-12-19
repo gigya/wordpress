@@ -280,7 +280,7 @@ function loginSettingsForm() {
 	);
 
 	$form['raas_admin_roles_title'] = array(
-		'markup' => __('<h4>Select below which <a target="_blank" href=http://codex.wordpress.org/Roles_and_Capabilities#Roles>Roles</a> should be permitted to login via the default WordPress login UI in /wp-login.php</h4>')
+		'markup' => __('<h4>Admin Login Roles</h4><p>Select below which <a target="_blank" href=http://codex.wordpress.org/Roles_and_Capabilities#Roles>Roles</a> should be permitted to login via the default WordPress login UI in /wp-login.php <br/>For more information, please refer to <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin/020_RaaS#Admin_Users.2C_Roles_.26_Permissions" target="_blank">Users, Roles & Permissions</a> section in Gigya documentation.</p>')
 	);
 
 	// create checkbox for each role in site (except admin & super admin)
