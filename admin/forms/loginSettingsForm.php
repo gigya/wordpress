@@ -143,7 +143,7 @@ function loginSettingsForm() {
 	);
 	$form['map_social_profile_image'] = array(
 		'type'  => 'checkbox',
-		'label' => __( 'Profile Image' ),
+		'label' => __( 'Profile Image (avatar)' ),
 		'value' => _gigParam( $values, 'map_social_profile_image', 1 )
 	);
 	$form['map_social_description'] = array(
