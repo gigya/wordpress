@@ -289,7 +289,7 @@ function loginSettingsForm() {
 	$form['raas_allowed_admin_checkall'] = array(
 		'type'  => 'checkbox',
 		'label' => __( 'Check All' ),
-		'value' => _gigParam( $values, 'raas_allowed_admin_checkall', 0 ),
+		'value' => 0,
 		'class' => 'raas_allowed_admin_checkall'
 	);
 	// create the roles checkboxes

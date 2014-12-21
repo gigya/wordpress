@@ -239,9 +239,9 @@
      * User management page : Toggle raas admin login roles check all
      */
     // on page load check if checkall is checked, if yes check all roles.
-    if ( $('#gigya_raas_allowed_admin_checkall').is(':checked') ) {
-      $('.gigya_raas_allowed_admin_roles input').attr('checked', true);
-    }
+    //if ( $('#gigya_raas_allowed_admin_checkall').is(':checked') ) {
+    //  $('.gigya_raas_allowed_admin_roles input').attr('checked', true);
+    //}
     // capture checkall checking event to toggle roles checkboxes.
     $('#gigya_raas_allowed_admin_checkall').change(function() {
       if ( $(this).is(':checked') ) {

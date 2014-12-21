@@ -356,7 +356,6 @@ class GigyaAction {
 		}
 		// if no role match then the user is not allowed login
 		return $allowed;
-
 	}
 
 	/*
