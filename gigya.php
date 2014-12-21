@@ -346,7 +346,7 @@ class GigyaAction {
                 foreach ( $login_options as $key => $value ) {
 					$key = str_replace(' ', '_', $key);
                     if ( $user_role ==  $key ) {
-                        if ( isset($value) ) {
+                        if ( $value == "1" || $value == true ) {
 							$allowed = true;
                             continue;
                         }
