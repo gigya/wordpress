@@ -117,41 +117,39 @@ function loginSettingsForm() {
 			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="http://developers.gigya.com/020_Client_API/020_Methods/socialize.showAddConnectionsUI" target="_blank">' . __( 'parameters' ) . '</a>'
 	);
 
+	$form['map_social_title'] = array(
+		'markup' => __('<h4>Mapping Gigya User Fields to WordPress Fields</h4><p>Define which fields to map from Gigya to WordPress. The WordPress mapped target fields will be populated with data copied from the corresponding source fields. Learn more <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin#User_Management_Settings" target="_blank"/>here</a></p>')
+	);
+
 	$form['map_social_first_name'] = array(
 		'type'  => 'checkbox',
-		'label' => __( 'Map gigya first name' ),
-		'value' => _gigParam( $values, 'map_social_first_name', 1 ),
-		'desc'  => __( "Check this checkbox to map first name" )
+		'label' => __( 'First Name' ),
+		'value' => _gigParam( $values, 'map_social_first_name', 1 )
 	);
 	$form['map_social_last_name'] = array(
 		'type'  => 'checkbox',
-		'label' => __( 'Map gigya last name' ),
-		'value' => _gigParam( $values, 'map_social_last_name', 1 ),
-		'desc'  => __( "Check this checkbox to map last name" )
+		'label' => __( 'Last Name' ),
+		'value' => _gigParam( $values, 'map_social_last_name', 1 )
 	);
 	$form['map_social_display_name'] = array(
 		'type'  => 'checkbox',
-		'label' => __( 'Map gigya display name' ),
-		'value' => _gigParam( $values, 'map_social_display_name', 1 ),
-		'desc'  => __( "Check this checkbox to map display name" )
+		'label' => __( 'Display Name' ),
+		'value' => _gigParam( $values, 'map_social_display_name', 1 )
 	);
 	$form['map_social_nickname'] = array(
 		'type'  => 'checkbox',
-		'label' => __( 'Map gigya nickname' ),
-		'value' => _gigParam( $values, 'map_social_nickname', 1 ),
-		'desc'  => __( "Check this checkbox to map first name" )
+		'label' => __( 'Nickname' ),
+		'value' => _gigParam( $values, 'map_social_nickname', 1 )
 	);
 	$form['map_social_profile_image'] = array(
 		'type'  => 'checkbox',
-		'label' => __( 'Map gigya profile image' ),
-		'value' => _gigParam( $values, 'map_social_profile_image', 1 ),
-		'desc'  => __( "Check this checkbox to map profile image" )
+		'label' => __( 'Profile Image' ),
+		'value' => _gigParam( $values, 'map_social_profile_image', 1 )
 	);
 	$form['map_social_description'] = array(
 		'type'  => 'checkbox',
-		'label' => __( 'Map gigya Biographical Info' ),
-		'value' => _gigParam( $values, 'map_social_description', 1 ),
-		'desc'  => __( "Check this checkbox to map Biographical Info" )
+		'label' => __( 'Biographical Info' ),
+		'value' => _gigParam( $values, 'map_social_description', 1 )
 	);
 
 	$form['sl_end'] = array(
