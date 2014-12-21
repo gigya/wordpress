@@ -314,9 +314,10 @@ class GigyaAction {
 		}
 	}
 
-	/*
-	 *  Check if user role is marked by admin as allowed role for wp login access (raas mode)
+	/*  Raas admin login
+	 *  Check if user role is marked by admin as allowed role for wp login access
 	 *  For unified comparison transform values to _lowercase_
+	 *  admin roles are auto allowed, subscriber role is auto denied.
 	 *
 	 * @param string $user_role
 	 * @return bool $allowed
@@ -333,6 +334,9 @@ class GigyaAction {
 			// first auto allow Administrator or Super Admin roles
 			if ( $role == "administrator" || $role == "super_admin" ) {
 				$allowed = true;
+				continue;
+			} elseif ( $role == "subscriber" ) {
+				$allowed = false;
 				continue;
 			} else {
 				// if this is not an Admin or super admin

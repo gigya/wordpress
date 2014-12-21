@@ -284,14 +284,23 @@ function loginSettingsForm() {
 	);
 
 	// create checkbox for each role in site (except admin & super admin)
+
+	// Check/Uncheck all roles
+	$form['raas_allowed_admin_checkall'] = array(
+		'type'  => 'checkbox',
+		'label' => __( 'Check All' ),
+		'value' => _gigParam( $values, 'raas_allowed_admin_checkall', 0 ),
+		'class' => 'raas_allowed_admin_checkall'
+	);
+	// create the roles checkboxes
 	foreach ( $roles as $role ) {
-		if ( $role['name'] != "Administrator" && $role['name'] != "Super Admin") {
+		if ( $role['name'] != "Administrator" && $role['name'] != "Super Admin" && $role['name'] != "Subscriber" ) {
 			$settings_role_name = "raas_allowed_admin_{$role['name']}";
 			$form[ $settings_role_name ] = array(
 				'type'  => 'checkbox',
 				'label' => __( $role['name'] ),
-			//	'value' => _gigParam( $values, "raas_allowed_admin_{$role['name']}", 1 )
-				'value' => _DefaultAdminValue( $values, $role['name'], $settings_role_name )
+				'value' => _DefaultAdminValue( $values, $role['name'], $settings_role_name ),
+				'class' => 'gigya_raas_allowed_admin_roles'
 			);
 		}
 	}
