@@ -107,7 +107,7 @@ For question about installations or configuration, please contact your account m
 * RaaS: Admin Login Roles configuration - enables you to configure which roles are permitted to login via regular WP login UI, rather then RaaS login.
 * Social Login & Add-Connection widgets upgraded to V2
 * Support WP 4.0 and 4.1
-* Support Austrelia data center and "other" data centers.
+* Support Australia data center and "other" data centers.
 * RaaS: updated to new screensets
 * Support Follow Bar in administration
 
