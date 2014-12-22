@@ -108,7 +108,9 @@ For question about installations or configuration, please contact your account m
 * Social Login & Add-Connection widgets upgraded to V2
 * Support WP 4.0 and 4.1
 * Support Austrelia data center and "other" data centers.
-* 
+* RaaS: updated to new screensets
+* Support Follow Bar in administration
+
 
 == FAQ ==
 
