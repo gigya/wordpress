@@ -253,12 +253,6 @@ function loginSettingsForm() {
 		'value' => _gigParam( $values, 'map_raas_last_name', 1 )
 	);
 
-	$form['map_raas_display_name'] = array(
-		'type'  => 'checkbox',
-		'label' => __( 'Display Name' ),
-		'value' => _gigParam( $values, 'map_raas_display_name', 1 )
-	);
-
 	$form['map_raas_nickname'] = array(
 		'type'  => 'checkbox',
 		'label' => __( 'Nickname' ),
