@@ -275,16 +275,19 @@
     // When link accounts form (social) is open,
     // If the user is closing the form without entering email, log Gigya user out
     function gigyaDisconnectOnClose() {
+
       $(".login-action-login button[title='Close']").click( function () {
         gigya.socialize.logout();
       });
-      $()
+
+      $(document).keydown(function(e) {
+        if (e.keyCode == 27) { // ESCAPE key pressed
+          gigya.socialize.logout();
+        }
+      });
+
     }
-    $(document).keydown(function(e) {
-      if (e.keyCode == 27) { // ESCAPE key pressed
-        gigya.socialize.logout();
-      }
-    });
+
 
   } );
 })( jQuery );
