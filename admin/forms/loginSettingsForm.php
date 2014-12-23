@@ -20,8 +20,8 @@ function loginSettingsForm() {
 
 	// check if raas is enabled, and add the raas_enabled class to the form mode element
 	$c       = new GigyaCMS();
-	$is_raas = $c->isRaaS();
-//	$is_ids = $c->isIDS();
+//	$is_raas = $c->isRaaS();
+	$is_raas = $c->isRaaNotIds($values);
 
 	if ( $is_raas ) {
 		$form['mode']['class'] = 'raas_enabled';
@@ -117,41 +117,39 @@ function loginSettingsForm() {
 			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="http://developers.gigya.com/020_Client_API/020_Methods/socialize.showAddConnectionsUI" target="_blank">' . __( 'parameters' ) . '</a>'
 	);
 
+	$form['map_social_title'] = array(
+		'markup' => __('<h4>Mapping Gigya User Fields to WordPress Fields</h4><p>Define which fields to map from Gigya to WordPress. The WordPress mapped target fields will be populated with data copied from the corresponding source fields. Learn more <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin#User_Management_Settings" target="_blank"/>here</a></p>')
+	);
+
 	$form['map_social_first_name'] = array(
 		'type'  => 'checkbox',
-		'label' => __( 'Map gigya first name' ),
-		'value' => _gigParam( $values, 'map_social_first_name', 1 ),
-		'desc'  => __( "Check this checkbox to map first name" )
+		'label' => __( 'First Name' ),
+		'value' => _gigParam( $values, 'map_social_first_name', 1 )
 	);
 	$form['map_social_last_name'] = array(
 		'type'  => 'checkbox',
-		'label' => __( 'Map gigya last name' ),
-		'value' => _gigParam( $values, 'map_social_last_name', 1 ),
-		'desc'  => __( "Check this checkbox to map last name" )
+		'label' => __( 'Last Name' ),
+		'value' => _gigParam( $values, 'map_social_last_name', 1 )
 	);
 	$form['map_social_display_name'] = array(
 		'type'  => 'checkbox',
-		'label' => __( 'Map gigya display name' ),
-		'value' => _gigParam( $values, 'map_social_display_name', 1 ),
-		'desc'  => __( "Check this checkbox to map display name" )
+		'label' => __( 'Display Name' ),
+		'value' => _gigParam( $values, 'map_social_display_name', 1 )
 	);
 	$form['map_social_nickname'] = array(
 		'type'  => 'checkbox',
-		'label' => __( 'Map gigya nickname' ),
-		'value' => _gigParam( $values, 'map_social_nickname', 1 ),
-		'desc'  => __( "Check this checkbox to map first name" )
+		'label' => __( 'Nickname' ),
+		'value' => _gigParam( $values, 'map_social_nickname', 1 )
 	);
 	$form['map_social_profile_image'] = array(
 		'type'  => 'checkbox',
-		'label' => __( 'Map gigya profile image' ),
-		'value' => _gigParam( $values, 'map_social_profile_image', 1 ),
-		'desc'  => __( "Check this checkbox to map profile image" )
+		'label' => __( 'Profile Image (avatar)' ),
+		'value' => _gigParam( $values, 'map_social_profile_image', 1 )
 	);
 	$form['map_social_description'] = array(
 		'type'  => 'checkbox',
-		'label' => __( 'Map gigya Biographical Info' ),
-		'value' => _gigParam( $values, 'map_social_description', 1 ),
-		'desc'  => __( "Check this checkbox to map Biographical Info" )
+		'label' => __( 'Biographical Info' ),
+		'value' => _gigParam( $values, 'map_social_description', 1 )
 	);
 
 	$form['sl_end'] = array(
@@ -255,12 +253,6 @@ function loginSettingsForm() {
 		'value' => _gigParam( $values, 'map_raas_last_name', 1 )
 	);
 
-	$form['map_raas_display_name'] = array(
-		'type'  => 'checkbox',
-		'label' => __( 'Display Name' ),
-		'value' => _gigParam( $values, 'map_raas_display_name', 1 )
-	);
-
 	$form['map_raas_nickname'] = array(
 		'type'  => 'checkbox',
 		'label' => __( 'Nickname' ),
@@ -280,18 +272,27 @@ function loginSettingsForm() {
 	);
 
 	$form['raas_admin_roles_title'] = array(
-		'markup' => __('<h4>Select below which <a target="_blank" href=http://codex.wordpress.org/Roles_and_Capabilities#Roles>Roles</a> should be permitted to login via the default WordPress login UI in /wp-login.php</h4>')
+		'markup' => __('<h4>Admin Login Roles</h4><p>Select below which <a target="_blank" href=http://codex.wordpress.org/Roles_and_Capabilities#Roles>Roles</a> should be permitted to login via the default WordPress login UI in /wp-login.php <br/>For more information, please refer to <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin/020_RaaS#Admin_Users.2C_Roles_.26_Permissions" target="_blank">Users, Roles & Permissions</a> section in Gigya documentation.</p>')
 	);
 
 	// create checkbox for each role in site (except admin & super admin)
+
+	// Check/Uncheck all roles
+	$form['raas_allowed_admin_checkall'] = array(
+		'type'  => 'checkbox',
+		'label' => __( 'Check All' ),
+		'value' => 0,
+		'class' => 'raas_allowed_admin_checkall'
+	);
+	// create the roles checkboxes
 	foreach ( $roles as $role ) {
-		if ( $role['name'] != "Administrator" && $role['name'] != "Super Admin") {
+		if ( $role['name'] != "Administrator" && $role['name'] != "Super Admin" && $role['name'] != "Subscriber" ) {
 			$settings_role_name = "raas_allowed_admin_{$role['name']}";
 			$form[ $settings_role_name ] = array(
 				'type'  => 'checkbox',
 				'label' => __( $role['name'] ),
-			//	'value' => _gigParam( $values, "raas_allowed_admin_{$role['name']}", 1 )
-				'value' => _DefaultAdminValue( $values, $role['name'], $settings_role_name )
+				'value' => _DefaultAdminValue( $values, $role['name'], $settings_role_name ),
+				'class' => 'gigya_raas_allowed_admin_roles'
 			);
 		}
 	}

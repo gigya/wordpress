@@ -96,8 +96,7 @@ class GigyaRaasAjax {
 		wp_clear_auth_cookie();
 		wp_set_current_user( $wp_user->ID );
 		wp_set_auth_cookie( $wp_user->ID );
-
-		_gigya_add_to_wp_user_meta($this->{"gigya_account"}, $wp_user->ID);
+		_gigya_add_to_wp_user_meta($this->gigya_account['profile'], $wp_user->ID);
 		// Hook for changing WP user metadata from Gigya's user.
 		do_action( 'gigya_after_raas_login', $this->gigya_account, $wp_user );
 

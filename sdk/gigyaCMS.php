@@ -328,6 +328,16 @@ class GigyaCMS {
 		}
 		return true;
 	}
+
+	public function isRaaNotIds( ) {
+		$res = $this->call( 'accounts.getScreenSets', array() );
+		if ( is_wp_error($res)) {
+			if ( $res->get_error_code() === 403036) {
+				return false;
+			}
+		}
+		return true;
+	}
 	/*
 	 * Check if IDentity storage is enabled
 	 */

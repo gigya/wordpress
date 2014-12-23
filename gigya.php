@@ -8,7 +8,7 @@
  * Author URI: http://gigya.com
  * License: GPL2+
  */
-
+//
 // --------------------------------------------------------------------
 
 /**
@@ -314,8 +314,10 @@ class GigyaAction {
 		}
 	}
 
-	/*
-	 *  Check if user role is marked by admin as allowed role for wp login access (raas mode)
+	/*  Raas admin login
+	 *  Check if user role is marked by admin as allowed role for wp login access
+	 *  For unified comparison transform values to _lowercase_
+	 *  admin roles are auto allowed, subscriber role is auto denied.
 	 *
 	 * @param string $user_role
 	 * @return bool $allowed
@@ -323,34 +325,37 @@ class GigyaAction {
 	public function check_raas_allowed_user_role($user_roles) {
 
 		$allowed = false;
-		$login_options = get_option( GIGYA__SETTINGS_LOGIN );
+		$login_options = array_change_key_case( get_option( GIGYA__SETTINGS_LOGIN ) );
+
 		foreach ( $user_roles as $role ) {
 
+			$role = strtolower($role);
+			$role = str_replace(' ', '_', $role);
 			// first auto allow Administrator or Super Admin roles
 			if ( $role == "administrator" || $role == "super_admin" ) {
-				return $allowed = true;
-				exit;
+				$allowed = true;
+				continue;
+			} elseif ( $role == "subscriber" ) {
+				$allowed = false;
+				continue;
+			} else {
+				// if this is not an Admin or super admin
+				$user_role = "raas_allowed_admin_{$role}";
+
+				// find if user role key exists and positive in options array
+                foreach ( $login_options as $key => $value ) {
+					$key = str_replace(' ', '_', $key);
+                    if ( $user_role ==  $key ) {
+                        if ( $value == "1" || $value == true ) {
+							$allowed = true;
+                            continue;
+                        }
+                    }
+                }
 			}
-
-			// if this is not an Admin or super admin
-			// first format role name to match options array
-			$role = str_replace( '_', ' ', $role );
-			$role = ucwords($role);
-			$user_role = "raas_allowed_admin_".$role;
-
-			// find if user role key exists and positive in options array
-			if ( array_key_exists( $user_role, $login_options ) ) {
-				$allowed = $login_options[ $user_role ];
-				if ($allowed) {
-					return $allowed;
-					exit;
-				}
-			}
-
 		}
 		// if no role match then the user is not allowed login
-		return false;
-
+		return $allowed;
 	}
 
 	/*

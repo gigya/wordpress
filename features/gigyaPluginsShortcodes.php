@@ -181,7 +181,11 @@ class gigyaPluginsShortcodes {
 			}
 		} else {
 			$attrs = $this->attrs_to_gigya($attrs);
-			$attrs = array_merge($defaults, $attrs);
+			// If custom attributes are passed with shortcode, use them to replace the ui array of the default ui values
+			$ui_arr = $defaults['ui'];
+			$ui_arr_updated = array_replace( $ui_arr, $attrs );
+			$defaults['ui'] = $ui_arr_updated;
+			$attrs = $defaults;
 		}
 		if ( ! is_user_logged_in() ) {
 			$output = '<div class="gigya-login-widget"></div>';
