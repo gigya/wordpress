@@ -72,3 +72,20 @@ input[type=checkbox] {
 	border-color: #999;
 	color: #222;
 }
+
+.other_dataCenter input{
+    padding-top: 2px;
+}
+label[for=gigya_raasOverrideLinks] {
+    font-size: 109%;
+    font-weight: bold;
+    margin-top: 2em;
+}
+.raas_allowed_admin_checkall label {
+	display: inline-block;
+	padding: 5px 10px 5px 5px;
+	background-color: #e3e7e8 ;
+	color: #585959;
+	font-style: italic;
+	font-size: 95%;
+}

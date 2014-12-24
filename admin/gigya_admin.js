@@ -207,5 +207,50 @@
 
 // --------------------------------------------------------------------
 
+      /*
+       * General settings page - data centers select
+       * show/hide 'other' data center text field
+       * update data center value according to input selction
+       */
+
+      // Hide the other data center field by default if other is not selected
+      if ( $( "#gigya_data_center").find( "option:selected" ).val() != 'other' )  {
+          $( '.other_dataCenter' ).hide();
+      }
+
+      // Show other data center input field on 'other' selection
+      $( '.data_center select' ).change( function() {
+          if ( $( "#gigya_data_center").find( "option:selected" ).text() == 'Other' ) {
+              $( '.other_dataCenter' ).show();
+          } else {
+              $( '.other_dataCenter' ).hide();
+          }
+      });
+
+      // on filling other data center set the selected value to the input
+      $( '#other_ds' ).focusout( function() {
+          $( "#gigya_data_center").find("option:selected" ).val( $( '#other_ds' ).val() + ".gigya.com" );
+
+      });
+
+// --------------------------------------------------------------------
+
+    /*
+     * User management page : Toggle raas admin login roles check all
+     */
+    // on page load check if checkall is checked, if yes check all roles.
+    //if ( $('#gigya_raas_allowed_admin_checkall').is(':checked') ) {
+    //  $('.gigya_raas_allowed_admin_roles input').attr('checked', true);
+    //}
+    // capture checkall checking event to toggle roles checkboxes.
+    $('#gigya_raas_allowed_admin_checkall').change(function() {
+      if ( $(this).is(':checked') ) {
+        $('.gigya_raas_allowed_admin_roles input').attr('checked', true);
+      } else {
+        $('.gigya_raas_allowed_admin_roles input').attr('checked', false);
+      }
+    });
+// --------------------------------------------------------------------
+
   } );
 })( jQuery );

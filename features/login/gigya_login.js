@@ -105,7 +105,6 @@
           action: gigyaLoginParams.actionLogin
         }
       };
-
       var req = $.ajax( options );
       $( 'body' ).prepend( '<span class="spinner"></span>' );
       $( '.spinner' ).show();
@@ -116,7 +115,7 @@
 
             // The user didn't register, and need more field to fill.
             $( '#dialog-modal' ).html( res.data.html ).dialog( { modal: true } );
-
+            gigyaDisconnectOnClose(); // if dialog is closed without linking accounts, log user out
           }
           else {
             GigyaWp.redirect();
@@ -124,7 +123,6 @@
         }
         else {
           if ( typeof res.data != 'undefined' ) {
-
             // Message modal.
             $( '#dialog-modal' ).html( res.data.msg ).dialog( { modal: true } );
           }
@@ -154,11 +152,11 @@
         return false;
       }
 
-      // We check there an email field.
+      // We check there is an email field.
       // Only for the first time.
       if ( ( response.user.email.length === 0 ) && ( response.user.isSiteUID !== true ) ) {
 
-        // Building an 'get email' form.
+        // Building a 'get email' form.
         var html =
             '<div class="form-get-email">' +
                 '<div class="description">' +
@@ -273,6 +271,24 @@
     } );
 
 // --------------------------------------------------------------------
+
+    // When link accounts form (social) is open,
+    // If the user is closing the form without entering email, log Gigya user out
+    function gigyaDisconnectOnClose() {
+
+      $(".login-action-login button[title='Close']").click( function () {
+        gigya.socialize.logout();
+      });
+
+      $(document).keydown(function(e) {
+        if (e.keyCode == 27) { // ESCAPE key pressed
+          gigya.socialize.logout();
+        }
+      });
+
+    }
+
+
   } );
 })( jQuery );
 

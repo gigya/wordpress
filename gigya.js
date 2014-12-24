@@ -4,11 +4,7 @@ var GigyaWp = GigyaWp || {};
 
 // --------------------------------------------------------------------
 
-  window.__gigyaConf = {
-    connectWithoutLoginBehavior: gigyaParams.connectWithoutLoginBehavior,
-    enabledProviders           : gigyaParams.enabledProviders,
-    lang                       : gigyaParams.lang
-  }
+  window.__gigyaConf = gigyaParams;
 
 // --------------------------------------------------------------------
 
@@ -46,9 +42,23 @@ var GigyaWp = GigyaWp || {};
       // Refresh.
       location.reload();
     }
-  }
+  };
+    GigyaWp.getEssentialParams = function(gigyaObj) {
+        var esData = {};
+        var primitive = ['string', 'number', 'boolean'];
+        $.each(gigyaObj.response, function(key, val) {
+            if ($.inArray($.type(val), primitive) >= 0) {
+                esData[key] = val;
+            }
+        });
+        return esData;
+    };
 
 // --------------------------------------------------------------------
+
+
+
+
 
 })( jQuery );
 

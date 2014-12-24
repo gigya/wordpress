@@ -46,6 +46,7 @@ class GigyaLoginSet {
 
 		$params['ui']                  = array();
 		$params['ui']['showTermsLink'] = false;
+		$params['ui']['version']       = 2;
 
 		if ( ! empty ( $this->login_options['width'] ) ) {
 			$params['ui']['width'] = $this->login_options['width'];

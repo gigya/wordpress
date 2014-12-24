@@ -1,13 +1,13 @@
 === Gigya - Social Infrastructure  ===
 
 Contributors: gigya.com, konforti
-Tags: Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, Gigya, Social Infrastructure, feed
+Tags: Registration, Social Login, Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, Gigya, Social Infrastructure, feed
 Requires at least: 3.6
-Tested up to: 3.9.1
-Stable tag: 5.0.0
+Tested up to: 4.1.0
+Stable tag: 5.1.0
 License: GPLv2 or later
 
-Integrate your WordPress Blog or Website with Gigya
+Integrate your WordPress site with Gigya
 
 == Description ==
 Gigya's Customer Identity Management Platform helps companies build better customer relationships by turning unknown visitors into known, loyal and engaged customers. With Gigya’s technology, businesses increase registrations and identify customers across devices, consolidate data into rich customer profiles, and provide better service, products and experiences by integrating data into marketing and service applications.
@@ -34,7 +34,7 @@ If you don't have an account yet, <a href="https://console.gigya.com/register.as
 * Follow Bar - Easily add links for users to Like you on Facebook, follow you on Twitter, or otherwise engage with you across a range of social channels.
 
 
-For more information, installation steps and configuration options - please refer to Gigya's documentatio:
+For more information, installation steps and configuration options - please refer to Gigya's documentation:
 <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin" title="Installation and Configuration guide">Gigya's Wordpress plugin - Installation and Configuration guide</a>
 
 
@@ -100,6 +100,16 @@ For question about installations or configuration, please contact your account m
 * Gigya's <a href="http://developers.gigya.com/010_Developer_Guide/18_Plugins/025_Rating_Reviews" title="Rating & Reviews">Rating & Reviews</a>
 * Added SEO support in the Comments and Rating&Reviews plugins, meaning the comments/reviews content is searchable by the main search engines.
 * All Gigya social plugins are provides as WP widgets that can be placed anywhere on your site.
+
+= 5.1 =
+* Support Gigya Widgets as shortcodes. Enabling you to embed the widgets anywhere on your site.
+* Mapping Gigya User Fields to WordPress Fields via admin UI - You can configure which fields to map. As a consequence, when a user registers the data will be copied from the Gigya fields to the corresponding mapped WP fields.
+* RaaS: Admin Login Roles configuration - enables you to configure which roles are permitted to login via regular WP login UI, rather then RaaS login.
+* Social Login & Add-Connection widgets upgraded to V2
+* Support WP 4.0 and 4.1
+* Support Australia data center and "other" data centers.
+* RaaS: updated to new screensets
+* Support Follow Bar in administration
 
 
 == FAQ ==

@@ -58,6 +58,7 @@ class GigyaCMS {
 			if ( function_exists( '_gigya_error_log' ) ) {
 				$log = explode( "\r\n", $response->getLog() );
 				_gigya_error_log( $log );
+				return new WP_Error($err_code, $response->getErrorMessage());
 			}
 		} else {
 			if ( ! empty( $user_info ) ) {
@@ -102,10 +103,10 @@ class GigyaCMS {
 
 		$request->setAPIDomain( $api_domain );
 		$request->setParam( 'url', 'http://gigya.com' );
-
+		ini_set('arg_separator.output', '&');
 		$res = $request->send();
-
-		return json_decode( $res->getResponseText() );
+		ini_restore ( 'arg_separator.output' );
+		return $res;
 	}
 
 	/**
@@ -255,6 +256,10 @@ class GigyaCMS {
 
 		// Request.
 		$response = $this->call( 'socialize.notifyLogin', $params );
+		// If error return message
+		if ( is_wp_error($response)) {
+			return $response->get_error_message();
+		}
 
 		//Set  Gigya cookie.
 		try {
@@ -316,12 +321,35 @@ class GigyaCMS {
 
 	public function isRaaS() {
 		$res = $this->call( 'accounts.getSchema', array() );
-		if ( $res['errorCode'] === 403036 ) {
-			return false;
+		if ( is_wp_error($res)) {
+			if ( $res->get_error_code() === 403036) {
+				return false;
+			}
 		}
-
 		return true;
 	}
+
+	public function isRaaNotIds( ) {
+		$res = $this->call( 'accounts.getScreenSets', array() );
+		if ( is_wp_error($res)) {
+			if ( $res->get_error_code() === 403036) {
+				return false;
+			}
+		}
+		return true;
+	}
+	/*
+	 * Check if IDentity storage is enabled
+	 */
+//	public function isIDS() {
+//		$res = $this->call( 'ids.getSchema', array());
+//		if ( is_wp_error($res)) {
+//			if ( $res->get_error_code() === 403036) {
+//				return false;
+//			}
+//		}
+//		return true;
+//	}
 
 	/**
 	 * @param $guid
@@ -331,8 +359,9 @@ class GigyaCMS {
 	public function getAccount( $guid ) {
 
 		$req_params = array(
-				'UID'     => $guid,
-				'include' => 'profile, data, loginIDs'
+			'UID'                => $guid,
+			'include'            => 'profile,data,loginIDs',
+			'extraProfileFields' => "languages,address,phones,education,honors,publications,patents,certifications,professionalHeadline,bio,industry,specialties,work,skills,religion,politicalView,interestedIn,relationshipStatus,hometown,favorites,followersCount,followingCount,username,locale,verified,timezone,likes"
 		);
 
 		// Because we can only trust the UID parameter from the origin object,
@@ -353,7 +382,9 @@ class GigyaCMS {
 		$res = $this->call( 'accounts.search', array( 'query' => $query ) );
 
 		// Logout the user.
-		$this->call( 'accounts.logout', array( 'UID' => $res['results'][0]['UID'] ) );
+		if ( !is_wp_error($res)) {
+			$this->call( 'accounts.logout', array( 'UID' => $res['results'][0]['UID'] ) );
+		}
 
 	}
 
@@ -369,7 +400,9 @@ class GigyaCMS {
 		$res = $this->call( 'accounts.search', array( 'query' => $query ) );
 
 		// Delete the user.
-		$this->call( 'accounts.deleteAccount', array( 'UID' => $res['results'][0]['UID'] ) );
+		if (!is_wp_error($res)) {
+			$this->call( 'accounts.deleteAccount', array( 'UID' => $res['results'][0]['UID'] ) );
+		}
 
 	}
 
@@ -398,11 +431,13 @@ class GigyaCMS {
 
 		$search_res = $this->call( 'accounts.search', array( 'query' => $query ) );
 
-		// Returns the primary provider, and the secondary (current).
-		return array(
+		if ( !is_wp_error($search_res)) {
+			// Returns the primary provider, and the secondary (current).
+			return array(
 				'primary'   => $search_res['results'][0]['loginProvider'],
 				'secondary' => $account['loginProvider']
-		);
+			);
+		}
 	}
 
 	/**
@@ -463,7 +498,7 @@ class GigyaCMS {
 			return $msg;
 		}
 
-		// Everything is OK.Return obj.
+		// Everything is OK.Return associative array.
 		return $result;
 	}
 

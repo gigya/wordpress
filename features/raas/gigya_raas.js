@@ -35,7 +35,7 @@
         else if ( path.indexOf( 'profile.php' ) != -1 && gigyaRaasParams.canEditUsers != 1 ) {
 
           // Profile page
-          gigya.accounts.showScreenSet( {screenSet: gigyaRaasParams.raasProfileWebScreen, mobileScreenSet: gigyaRaasParams.raasProfileMobileScreen} );
+          gigya.accounts.showScreenSet( {screenSet: gigyaRaasParams.raasProfileWebScreen, mobileScreenSet: gigyaRaasParams.raasProfileMobileScreen, onAfterSubmit: raasUpdatedProfile} );
           e.preventDefault();
         }
       } );
@@ -122,7 +122,7 @@
           gigya.accounts.showScreenSet( {screenSet: gigyaRaasParams.raasWebScreen, mobileScreenSet: gigyaRaasParams.raasMobileScreen, startScreen: gigyaRaasParams.raasRegisterScreen, containerID: gigyaRaasParams.raasRegisterDiv} );
 
           if ( gigyaRaasParams.canEditUsers != 1 ) {
-            gigya.accounts.showScreenSet( {screenSet: gigyaRaasParams.raasProfileWebScreen, mobileScreenSet: gigyaRaasParams.raasProfileMobileScreen, containerID: gigyaRaasParams.raasProfileDiv} );
+            gigya.accounts.showScreenSet( {screenSet: gigyaRaasParams.raasProfileWebScreen, mobileScreenSet: gigyaRaasParams.raasProfileMobileScreen, containerID: gigyaRaasParams.raasProfileDiv, onAfterSubmit: raasUpdatedProfile} );
           }
         }
         else {
@@ -144,7 +144,21 @@
 
           GigyaWp.regEvents = true;
         }
-      }
+      };
+
+      var raasUpdatedProfile = function (res) {
+          var esData = GigyaWp.getEssentialParams(res);
+          var options = {
+              url     : gigyaParams.ajaxurl,
+              type    : 'POST',
+              dataType: 'json',
+              data    : {
+                  data  : esData,
+                  action: 'raas_update_profile'
+              }
+          };
+          var req = $.ajax( options);
+      };
 
 // --------------------------------------------------------------------
 

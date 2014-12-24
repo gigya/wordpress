@@ -2,12 +2,18 @@
 /**
  * Gigya comments anchor.
  */
-$comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
 if ( empty ( $data ) ) {
+	$comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
 	// Get the data from the argument.
 	require_once GIGYA__PLUGIN_DIR . 'features/comments/GigyaCommentsSet.php';
 	$comments = new GigyaCommentsSet();
 	$data     = $comments->getParams();
+} else {
+	if (isset( $data['rating'] )) {
+		$comments_options['rating'] = $data['rating'];
+	}
+	// Just so we would render the comments plugins
+	$comments_options['position'] = "here";
 }
 ?>
 <?php if ( $comments_options['position'] !== 'none' ) : ?>

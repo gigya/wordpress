@@ -25,7 +25,7 @@ class GigyaLoginAjax {
 
 		// Trap for login users
 		if ( is_user_logged_in() ) {
-			wp_send_json_error( array( 'msg' => __( 'There already a logged in user' ) ) );
+			wp_send_json_error( array( 'msg' => __( 'There is already a logged in user' ) ) );
 		}
 
 		// Check Gigya's signature validation.
@@ -38,14 +38,14 @@ class GigyaLoginAjax {
 
 		// Gigya user validate trap.
 		if ( empty( $is_sig_validate ) ) {
-			wp_send_json_error( array( 'msg' => __( 'There a problem to validate your user' ) ) );
+			wp_send_json_error( array( 'msg' => __( 'There was a problem validating your user' ) ) );
 		}
 
 		// Initialize Gigya user.
 		$this->gigya_user = $data['user'];
 
 		// Checking if the Gigya UID is a number.
-		// When the Gigya UID is a number, it's mean
+		// When the Gigya UID is a number, it means
 		// we already notifyRegistration for Gigya
 		// and the Gigya UID is the WP UID.
 		if ( is_numeric( $this->gigya_user['UID'] ) && $this->gigya_user['isSiteUID'] == true && ( is_object( $wp_user = get_userdata( $this->gigya_user['UID'] ) ) ) ) {
@@ -56,7 +56,7 @@ class GigyaLoginAjax {
 		} else {
 
 			// There might be a user who never verified his email.
-			// So we looking for a user who have 'gigya_uid' meta
+			// So we are looking for a user who has 'gigya_uid' meta
 			// with the value of the original (NOT-number) Gigya UID.
 			$users = get_users( 'meta_key=gigya_uid&meta_value=' . $this->gigya_user['UID'] );
 
@@ -101,7 +101,7 @@ class GigyaLoginAjax {
 	private function register() {
 
 		// Before we insert new user to the system, we check
-		// if there a user with the same email in our DB.
+		// if there is a user with the same email in our DB.
 		// When there is we ask the user login in the
 		// previous account and link it to the new one.
 		$email_exists = email_exists( $this->gigya_user['email'] );
@@ -114,7 +114,7 @@ class GigyaLoginAjax {
 			) );
 		}
 
-		// If the name of the new user is already exist in the system,
+		// If the name of the new user already exists in the system,
 		// WP will reject the registration and return an error. to prevent this
 		// we attach an extra value to the name to make it unique.
 		$username_exist = username_exists( $this->gigya_user['nickname'] );
@@ -149,11 +149,13 @@ class GigyaLoginAjax {
 			// Return JSON to client.
 			wp_send_json_error( array( 'msg' => $msg ) );
 		}
+		// map user social fields to wordpress user
+		_gigya_add_to_wp_user_meta($this->{"gigya_user"}, $user_id);
 
 		$wp_user = get_userdata( $user_id );
 
-		// If we got to here, the user is already register.
-		// But if we have the 'email_not_verified' flag turn on,
+		// If we got here, the user is already registered.
+		// But if we have the 'email_not_verified' flag turned on,
 		// we can't auto login, and we need to verify the email first.
 		if ( ! empty( $this->gigya_user['email_not_verified'] ) ) {
 			// Return JSON with login form to client.

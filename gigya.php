@@ -3,12 +3,12 @@
  * Plugin Name: Gigya - Make Your Site Social
  * Plugin URI: http://gigya.com
  * Description: Allows sites to utilize the Gigya API for authentication and social network updates.
- * Version: 5.0
+ * Version: 5.1
  * Author: Gigya
  * Author URI: http://gigya.com
  * License: GPL2+
  */
-
+//
 // --------------------------------------------------------------------
 
 /**
@@ -16,7 +16,7 @@
  */
 define( 'GIGYA__MINIMUM_WP_VERSION', '3.5' );
 define( 'GIGYA__MINIMUM_PHP_VERSION', '5.2' );
-define( 'GIGYA__VERSION', '5.0' );
+define( 'GIGYA__VERSION', '5.1' );
 define( 'GIGYA__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GIGYA__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'GIGYA__CDN_PROTOCOL', ! empty( $_SERVER['HTTPS'] ) ? 'https://cdns' : 'http://cdn' );
@@ -29,6 +29,7 @@ define( 'GIGYA__LOG_LIMIT', 50 );
 define( 'GIGYA__SETTINGS_GLOBAL', 'gigya_global_settings' );
 define( 'GIGYA__SETTINGS_LOGIN', 'gigya_login_settings' );
 define( 'GIGYA__SETTINGS_SHARE', 'gigya_share_settings' );
+define( 'GIGYA__SETTINGS_FOLLOW', 'gigya_follow_settings' );
 define( 'GIGYA__SETTINGS_COMMENTS', 'gigya_comments_settings' );
 define( 'GIGYA__SETTINGS_REACTIONS', 'gigya_reactions_settings' );
 define( 'GIGYA__SETTINGS_GM', 'gigya_gm_settings' );
@@ -80,6 +81,7 @@ class GigyaAction {
 		add_action( 'wp_ajax_debug_log', array( $this, 'ajaxDebugLog' ) );
 		add_action( 'wp_ajax_clean_db', array( $this, 'ajaxCleanDB' ) );
 		add_action( 'wp_ajax_gigya_logout', array( $this, 'ajaxLogout' ) );
+		add_action( 'wp_ajax_raas_update_profile', array( $this, 'ajaxUpdateProfile' ) );
 		add_action( 'wp_login', array( $this, 'wpLogin' ), 10, 2 );
 		add_action( 'user_register', array( $this, 'userRegister' ), 10, 1 );
 		add_action( 'wp_logout', array( $this, 'wpLogout' ) );
@@ -88,6 +90,45 @@ class GigyaAction {
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 		add_filter( 'the_content', array( $this, 'theContent' ) );
 		add_filter( 'comments_template', array( $this, 'commentsTemplate' ) );
+		add_filter( 'get_avatar', array( $this, 'getGigyaAvatar'), 10, 5);
+		add_filter( 'login_message', array( $this, 'rass_wp_login_custom_message') );
+
+		// Plugins shortcode activation switches
+		require_once GIGYA__PLUGIN_DIR . 'features/gigyaPluginsShortcodes.php';
+		$shortcodes_class = new gigyaPluginsShortcodes();
+
+		add_shortcode( 'gigya-raas-login',  array( $shortcodes_class, 'gigyaRaas'));
+		add_shortcode( 'gigya-raas-profile',  array( $shortcodes_class, 'gigyaRaas'));
+		add_shortcode( 'gigya-social-login',  array( $shortcodes_class, 'gigyaSocialLoginScode'));
+
+		$comments_switch = get_option(GIGYA__SETTINGS_COMMENTS);
+		if ( $comments_switch['on'] == true || $comments_switch['on'] == '1') {
+			add_shortcode( 'gigya-comments', array( $shortcodes_class, 'gigyaCommentsScode' ) );
+		}
+		$feed_switch = get_option(GIGYA__SETTINGS_FEED);
+		if ( $feed_switch['on'] == true || $feed_switch['on'] == '1' ) {
+			add_shortcode( 'gigya-activity-feed', array( $shortcodes_class, 'gigyaFeedScode' ) );
+		}
+		$follow_bar_switch = get_option(GIGYA__SETTINGS_FOLLOW);
+		if ( $follow_bar_switch['on'] == true  || $follow_bar_switch['on'] == '1' ) {
+			add_shortcode( 'gigya-follow-bar',  array( $shortcodes_class, 'gigyaFollowBarScode'));
+		}
+		$reaction_switch = get_option(GIGYA__SETTINGS_REACTIONS);
+		if ( $reaction_switch['on'] == true || $reaction_switch['on'] == '1' ) {
+			add_shortcode( 'gigya-reactions',  array( $shortcodes_class, 'gigyaReactionsScode'));
+		}
+		$share_switch = get_option(GIGYA__SETTINGS_SHARE);
+		if ( $share_switch['on'] == true || $share_switch['on'] == '1' ) {
+			add_shortcode( 'gigya-share-bar',  array( $shortcodes_class, 'gigyaShareBarScode'));
+		}
+		$gm_switch = get_option(GIGYA__SETTINGS_GM);
+		if ( $gm_switch['on'] == true || $gm_switch['on'] == '1' ) {
+			add_shortcode( 'gigya-gm-achievements',  array( $shortcodes_class, 'gigyaGmScode'));
+			add_shortcode( 'gigya-gm-challenge-status',  array( $shortcodes_class, 'gigyaGmScode'));
+			add_shortcode( 'gigya-gm-leaderboard',  array( $shortcodes_class, 'gigyaGmScode'));
+			add_shortcode( 'gigya-gm-user-status',  array( $shortcodes_class, 'gigyaGmScode'));
+		}
+		// End plugins shortcodes activation switches
 	}
 
 	/**
@@ -111,7 +152,8 @@ class GigyaAction {
 				'connectWithoutLoginBehavior' => _gigParam( $this->login_options, 'connectWithoutLoginBehavior', 'loginExistingUser' ),
 				'jsonExampleURL'              => GIGYA__PLUGIN_URL . 'admin/forms/json/advance_example.json',
 				'enabledProviders'            => _gigParam( $this->global_options, 'enabledProviders', '*' ),
-				'lang'                        => _gigParam( $this->global_options, 'lang', 'en' )
+				'lang'                        => _gigParam( $this->global_options, 'lang', 'en' ),
+				'sessionExpiration'           => gigyaSyncLoginSession()
 		);
 
 		// Add advanced parameters if exist.
@@ -194,6 +236,15 @@ class GigyaAction {
 		$gigyaLoginAjax->init();
 	}
 
+	public  function ajaxUpdateProfile() {
+
+		// Loads Gigya's RaaS class.
+		require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasAjax.php';
+		$gigyaAjax = new GigyaRaasAjax;
+		$data = $_POST['data'];
+		$gigyaAjax->updateProfile($data);
+	}
+
 	/**
 	 * Hook AJAX Custom forms login.
 	 */
@@ -221,7 +272,10 @@ class GigyaAction {
 	}
 
 	/**
-	 * Hook user login.
+	 * Hook to wp user login.
+	 * If user logs in with wp form, check if raas is enabled,
+	 * if so check if user has allowed capabilities
+	 * if not log user out, if yes notify gigya.
 	 *
 	 * @param $user_login
 	 * @param $account
@@ -231,11 +285,12 @@ class GigyaAction {
 		// Login through WP form.
 		if ( isset( $_POST['log'] ) && isset( $_POST['pwd'] ) ) {
 
-			// Trap for non-admin user how try to
-			// login through WP form on RaaS mode.
-			if ( $this->login_options['mode'] == 'raas' && ! in_array( 'administrator', $account->roles ) ) {
+			// Trap for non-admin user who tries to login through WP form on RaaS mode.
+
+			$_is_allowed_user = $this->check_raas_allowed_user_role($account->roles);
+			if ( $this->login_options['mode'] == 'raas' && (!$_is_allowed_user) ) {
 				wp_logout();
-				wp_safe_redirect( $_SERVER['REQUEST_URI'] );
+				wp_safe_redirect( $_SERVER['REQUEST_URI'].'?rperm=1' ); // rperm used to create custom error message in wp login screen
 				exit;
 			}
 
@@ -243,6 +298,7 @@ class GigyaAction {
 			// for a return user logged in from WP login form.
 			$gigyaCMS = new GigyaCMS();
 			$gigyaCMS->notifyLogin( $account->ID );
+
 		}
 
 		// This post vars available when there is the same email on the site,
@@ -258,6 +314,64 @@ class GigyaAction {
 		}
 	}
 
+	/*  Raas admin login
+	 *  Check if user role is marked by admin as allowed role for wp login access
+	 *  For unified comparison transform values to _lowercase_
+	 *  admin roles are auto allowed, subscriber role is auto denied.
+	 *
+	 * @param string $user_role
+	 * @return bool $allowed
+	 */
+	public function check_raas_allowed_user_role($user_roles) {
+
+		$allowed = false;
+		$login_options = array_change_key_case( get_option( GIGYA__SETTINGS_LOGIN ) );
+
+		foreach ( $user_roles as $role ) {
+
+			$role = strtolower($role);
+			$role = str_replace(' ', '_', $role);
+			// first auto allow Administrator or Super Admin roles
+			if ( $role == "administrator" || $role == "super_admin" ) {
+				$allowed = true;
+				continue;
+			} elseif ( $role == "subscriber" ) {
+				$allowed = false;
+				continue;
+			} else {
+				// if this is not an Admin or super admin
+				$user_role = "raas_allowed_admin_{$role}";
+
+				// find if user role key exists and positive in options array
+                foreach ( $login_options as $key => $value ) {
+					$key = str_replace(' ', '_', $key);
+                    if ( $user_role ==  $key ) {
+                        if ( $value == "1" || $value == true ) {
+							$allowed = true;
+                            continue;
+                        }
+                    }
+                }
+			}
+		}
+		// if no role match then the user is not allowed login
+		return $allowed;
+	}
+
+	/*
+	 * Custom error message in case raas user tries to log in via wordpress wp-login screen.
+	 * Used by hook wp_login
+	 *
+	 * @return string $message
+	 */
+	public function rass_wp_login_custom_message() {
+		if (isset($_GET['rperm']) ) {
+			$message = "<div id='login_error'><strong>Access denied: </strong>
+			this login requires administrator permission. <br/>Click <a href='/wp-login.php'>here</a> to login to the site.</div>";
+			return $message;
+		}
+	}
+
 	/**
 	 * Hook user register.
 	 *
@@ -265,12 +379,12 @@ class GigyaAction {
 	 */
 	public function userRegister( $uid ) {
 
-		// New user was register through our custom extra-details form.
+		// New user was registered through our custom extra-details form.
 		if ( $_POST['form_name'] == 'registerform-gigya-extra' && ! empty( $_POST['gigyaUID'] ) ) {
 			add_user_meta( $uid, 'gigya_uid', $_POST['gigyaUID'] );
 		}
 
-		// New user was register through Gigya social login.
+		// New user was registered through Gigya social login.
 		// $_POST['action'] == 'gigya_login';
 		if ( $this->login_options['mode'] == 'wp_sl' ) {
 			if ( ! empty( $_POST['data'] ) && ! empty( $_POST['data']['UID'] ) ) {
@@ -288,12 +402,12 @@ class GigyaAction {
 			}
 		}
 
-		// New user was register through WP form.
+		// New user was registered through WP form.
 		if ( isset( $_POST['user_login'] ) && isset( $_POST['user_email'] ) ) {
 			// We notify to Gigya's 'socialize.notifyLogin'
 			// with a 'is_new_user' flag.
 			$gigyaCMS = new GigyaCMS();
-			$gigyaCMS->notifyLogin( $uid, TRUE );
+			$result = $gigyaCMS->notifyLogin( $uid, TRUE );
 		}
 	}
 
@@ -475,9 +589,30 @@ class GigyaAction {
 		}
 	}
 
+	public  function getGigyaAvatar($avatar, $id_or_email, $size, $default, $alt) {
+		if ( empty($id_or_email) ) {
+			$id = get_current_user_id();
+		} else {
+			if ( is_numeric( $id_or_email ) ) {
+				$id = $id_or_email;
+			} elseif(is_string( $id_or_email)) {
+				$user = get_user_by( 'email', $id_or_email );
+				$id   = $user->ID;
+			} else {
+				return $avatar;
+			}
+		}
+		$url = get_user_meta($id, "profile_image", true);
+		if ( empty($url) ) {
+			return $avatar;
+		}
+		$alt = empty( $alt ) ? get_user_meta($id, "first_name", true) : $alt;
+		return "<img src='{$url}' alt='{$alt}' width='{$size}' height='{$size}'>";
+	}
+
 }
 
-if ( ! function_exists( 'wp_new_user_notification' ) ) {
+ if ( ! function_exists( 'wp_new_user_notification' ) ) {
 	$login_opts = get_option( GIGYA__SETTINGS_LOGIN );
 	if ( $login_opts['mode'] == 'raas' ) {
 		/**
@@ -592,13 +727,21 @@ function _gigya_get_json( $file ) {
 
 /**
  * Helper
+ * return value for given key in input array or object
+ *
+ * @param array, object $array
+ * @param string $key
+ * @param string, int $default
+ *
+ * @return $default - $array value (if $array is not empty)
  */
 function _gigParam( $array, $key, $default = null ) {
 	if ( is_array( $array ) ) {
-		return ! empty( $array[$key] ) ? $array[$key] : $default;
+		return ! empty( $array[$key] ) || $array[$key] === "0" ? $array[$key] : $default;
 	} elseif ( is_object( $array ) ) {
-		return ! empty( $array->$key ) ? $array->$key : $default;
+		return ! empty( $array->$key ) || $array->key === "0" ? $array->$key : $default;
 	}
+	return $default;
 }
 
 // --------------------------------------------------------------------
@@ -608,6 +751,28 @@ function _gigParam( $array, $key, $default = null ) {
  */
 function _gigParamDefaultOn( $array, $key ) {
 	return ( isset( $array[$key] ) && $array[$key] === '0' ) ? '0' : '1';
+}
+
+// --------------------------------------------------------------------
+
+/*
+ * Helper for form formatting, check for default values and set selected values
+ *     check if role belongs to default. if so set default value to checked, for all other roles set default to not-checked.
+ *	   set selected value (using _gigparam )
+ *
+ * @param array $values - gigya login settings
+ * @param string $role
+ * @param string $setting_role_name
+ *
+ * @return bool $value
+ */
+function _DefaultAdminValue( $values, $role, $settings_role_name ) {
+	if ( $role == 'Editor' || $role == 'Author' || $role == 'Contributor' ) {
+		$value = _gigParam( $values, $settings_role_name, 1 );
+	} else {
+		$value = _gigParam( $values, $settings_role_name, 0 );
+	}
+	return $value;
 }
 
 // --------------------------------------------------------------------
@@ -646,3 +811,62 @@ function _gigya_error_log( $new_log ) {
 }
 
 // --------------------------------------------------------------------
+
+/**
+ * Get Login sesssion time from wordpress to set in gigya
+ */
+
+function gigyaSyncLoginSession() {
+    return (int) apply_filters( 'auth_cookie_expiration', 2 * DAY_IN_SECONDS, 777, false );
+}
+
+// --------------------------------------------------------------------
+
+/**
+ * Map social user fields to worpdress user fields
+ * @param $gigya_object
+ * @param $user_id
+ */
+function _gigya_add_to_wp_user_meta($gigya_object, $user_id) {
+	$login_opts = get_option( GIGYA__SETTINGS_LOGIN );
+	if ($login_opts['mode'] == "wp_sl") {
+		$prefix = "map_social_";
+	} elseif ($login_opts['mode'] == "raas") {
+		$prefix = "map_raas_";
+	} else {
+		return;
+	}
+	// Get all mapping options
+	foreach ( $login_opts as $key => $opt ) {
+		if (strpos($key, $prefix) === 0 && $opt == 1) {
+			$k = str_replace($prefix, "",$key);
+			$gigya_key = _wp_key_to_gigya_key($k);
+			update_user_meta($user_id, $k, sanitize_text_field($gigya_object[$gigya_key]));
+		}
+	}
+
+}
+
+function _wp_key_to_gigya_key( $wp_key ) {
+	$convert = array(
+		'first_name'   => 'firstName',
+		'last_name'    => 'lastName',
+		'display_name' => 'nickname',
+		'description'  => 'bio',
+	    'profile_image' => 'photoURL'
+	);
+	return empty($convert[$wp_key]) ? $wp_key : $convert[$wp_key];
+}
+
+function _underscore_to_camelcase( $str ) {
+	$parts = explode('_', $str);
+	$string = $parts[0];
+	for ( $i = 1; $i <= count($parts); $i ++ ) {
+		if ($parts[$i] == 'id') {
+			$string .= strtoupper($parts[$i]);
+		} else {
+			$string .= ucfirst( $parts[ $i ] );
+		}
+	}
+	return $string;
+}
