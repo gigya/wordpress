@@ -376,8 +376,7 @@ class GigyaCMS {
 	public function accountLogout( $account ) {
 
 		// Get info about the primary account.
-	//	$query = 'select UID from accounts where loginIDs.emails = ' . $account->data->user_email;
-		$query = "select UID from accounts where loginIDs.emails =  '{$account->data->user_email}'";
+		$query = 'select UID from accounts where loginIDs.emails = ' . $account->data->user_email;
 
 		// Get the UID from Email.
 		$res = $this->call( 'accounts.search', array( 'query' => $query ) );
@@ -395,7 +394,7 @@ class GigyaCMS {
 	public function deleteAccount( $account ) {
 
 		// Get info about the primary account.
-		$query = "select UID from accounts where loginIDs.emails = '{$account->data->user_email}'";
+		$query = 'select UID from accounts where loginIDs.emails = ' . $account->data->user_email;
 
 		// Get the UID from Email.
 		$res = $this->call( 'accounts.search', array( 'query' => $query ) );
@@ -428,7 +427,7 @@ class GigyaCMS {
 	public function getProviders( $account ) {
 
 		// Get info about the primary account.
-		$query = "select loginProvider from accounts where loginIDs.emails = '{$account['profile']['email']}'";
+		$query = "select loginProvider from accounts where loginIDs.emails =  '{$account['profile']['email']}'";
 
 		$search_res = $this->call( 'accounts.search', array( 'query' => $query ) );
 
