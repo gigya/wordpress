@@ -376,7 +376,6 @@ class GigyaCMS {
 	public function accountLogout( $account ) {
 
 		// Get info about the primary account.
-	//	$query = 'select UID from accounts where loginIDs.emails = ' . $account->data->user_email;
 		$query = "select UID from accounts where loginIDs.emails =  '{$account->data->user_email}'";
 
 		// Get the UID from Email.
