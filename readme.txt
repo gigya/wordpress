@@ -1,6 +1,6 @@
 === Gigya - Social Infrastructure  ===
 
-Contributors: gigya.com, konforti
+Contributors: gigya.com, konforti, luciodiri
 Tags: Registration, Social Login, Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, Gigya, Social Infrastructure, feed
 Requires at least: 3.6
 Tested up to: 4.1.0
