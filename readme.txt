@@ -4,7 +4,7 @@ Contributors: gigya.com, konforti, luciodiri
 Tags: Registration, Social Login, Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, Gigya, Social Infrastructure, feed
 Requires at least: 3.6
 Tested up to: 4.1.0
-Stable tag: 5.1.0
+Stable tag: 5.1.1
 License: GPLv2 or later
 
 Integrate your WordPress site with Gigya
@@ -111,6 +111,8 @@ For question about installations or configuration, please contact your account m
 * RaaS: updated to new screensets
 * Support Follow Bar in administration
 
+= 5.1.1 =
+* Fixed a Gigya breaking change:  <a href="http://developers.gigya.com/010_Developer_Guide/Guides/Breaking_Changes#1._Strings_must_be_enclosed_with_quotes" >Strings must be enclosed with quotes in search queries</a>
 
 == FAQ ==
 
