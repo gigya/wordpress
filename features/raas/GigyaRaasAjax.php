@@ -64,9 +64,7 @@ class GigyaRaasAjax {
 
 				$gigyaCMS->deleteAccountByGUID( $this->gigya_account['UID'] );
 
-				$providers = $gigyaCMS->getProviders( $this->gigya_account );
-
-				$msg = sprintf( __( 'We found your email in our system.<br>Please login to your existing account using your <strong>%1$s</strong> identity.' ), $providers['primary'], $providers['secondary'] );
+				$msg =  __( 'We found your email in our system.<br />Please use your existing account to login to the site, or create a new account using a different email address.' );
 
 				$prm = array( 'msg' => $msg );
 				wp_send_json_error( $prm );

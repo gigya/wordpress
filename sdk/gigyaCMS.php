@@ -376,7 +376,8 @@ class GigyaCMS {
 	public function accountLogout( $account ) {
 
 		// Get info about the primary account.
-		$query = "select UID from accounts where loginIDs.emails =  '{$account->data->user_email}'";
+		$email = $this->cleanEmail($account->data->user_email);
+		$query = "select UID from accounts where loginIDs.emails =  '{$email}'";
 
 		// Get the UID from Email.
 		$res = $this->call( 'accounts.search', array( 'query' => $query ) );
@@ -394,7 +395,8 @@ class GigyaCMS {
 	public function deleteAccount( $account ) {
 
 		// Get info about the primary account.
-		$query = "select UID from accounts where loginIDs.emails = '{$account->data->user_email}'";
+		$email = $this->cleanEmail($account->data->user_email);
+		$query = "select UID from accounts where loginIDs.emails = '{$email}'";
 
 		// Get the UID from Email.
 		$res = $this->call( 'accounts.search', array( 'query' => $query ) );
@@ -414,30 +416,6 @@ class GigyaCMS {
 		// Delete the user.
 		$this->call( 'accounts.deleteAccount', array( 'UID' => $guid ) );
 
-	}
-
-	/**
-	 * @param $account
-	 * Gigya's RaaS account as we get from:
-	 *
-	 * @See getAccount
-	 *
-	 * @return array
-	 */
-	public function getProviders( $account ) {
-
-		// Get info about the primary account.
-		$query = "select loginProvider from accounts where loginIDs.emails = '{$account['profile']['email']}'";
-
-		$search_res = $this->call( 'accounts.search', array( 'query' => $query ) );
-
-		if ( !is_wp_error($search_res)) {
-			// Returns the primary provider, and the secondary (current).
-			return array(
-				'primary'   => $search_res['results'][0]['loginProvider'],
-				'secondary' => $account['loginProvider']
-			);
-		}
 	}
 
 	/**
@@ -544,5 +522,17 @@ class GigyaCMS {
 		}
 		return FALSE;
 	}
+
+  /*
+   * Prepare email string to be sent via HTTP
+   *
+   * @param string email
+   * @Return string clean_email
+   */
+  protected function cleanEmail($email) {
+	  $email = str_replace(' ', '', $email);
+	  $clean_email = htmlspecialchars(($email));
+	  return $clean_email;
+  }
 
 }
