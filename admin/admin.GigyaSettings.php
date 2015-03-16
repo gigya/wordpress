@@ -155,20 +155,16 @@ class GigyaSettings {
 			$cms = new gigyaCMS();
 			$res = $cms->apiValidate( $_POST['gigya_global_settings']['api_key'], $_POST['gigya_global_settings']['api_secret'], $_POST['gigya_global_settings']['data_center'] );
 			if (!empty($res)) {
-				$errorCode = $res->getErrorCode();
-				if ( $errorCode == 301001 ) {
-					$_POST['gigya_global_settings']['data_center'] = $res->apiDomain;
-					$msg
-					                                               =
-						$res->getErrorMessage() . '. ' . 'This API key is served by: ' . $res->apiDomain;
-					add_settings_error( 'gigiya_data_canter', 'validation', $msg, 'error' );
-				} elseif ( $errorCode > 0 ) {
-					add_settings_error( 'General setting error', $errorCode, $res->getErrorMessage(), 'error' );
+				$gigyaErrCode = $res->getErrorCode();
+				$gigyaErrMsg = $res->getErrorMessage();
+				$errorsLink = "<a href='http://developers.gigya.com/037_API_reference/zz_Response_Codes_and_Errors' target='_blank'>Response_Codes_and_Errors</a>";
+				$message = "Gigya API error: {$gigyaErrCode} - {$gigyaErrMsg}. For more information please refer to {$errorsLink}";
+				if ( $gigyaErrCode > 0 ) {
+					add_settings_error( 'gigya_global_settings', 'api_validate', $message, 'error' );
 				}
-			} else{
-				add_settings_error( 'General setting error', -1, 'Error sending request to gigya', 'error' );
+			} else {
+				add_settings_error( 'gigya_global_settings', 'api_validate', 'Error sending request to gigya', 'error' );
 			}
-
 		}
 	}
 
