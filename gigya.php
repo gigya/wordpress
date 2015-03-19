@@ -43,6 +43,7 @@ function registerActivationHook() {
 	require_once GIGYA__PLUGIN_DIR . 'install.php';
 	$install = new GigyaInstall();
 	$install->init();
+	$install->add_gigya_caps();
 }
 
 /**

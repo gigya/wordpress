@@ -365,5 +365,11 @@ class GigyaInstall {
 		wp_send_json_success( array( 'msg' => __( 'The database cleaned successfully' ) ) );
 	}
 
+	public function add_gigya_caps() {
+		$role = get_role('administrator');
+		$role->add_cap('edit_gigya');
+		$role->add_cap('edit_gigya_secret');
+	}
+
 }
 

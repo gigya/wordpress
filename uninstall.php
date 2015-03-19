@@ -22,6 +22,11 @@ delete_option( 'widget_gigya_gamification' );
 delete_option( 'widget_gigya_feed' );
 delete_option( 'widget_gigya_follow' );
 
+// Remove custom Gigya capabilities
+$role = get_role('administrator');
+$role->remove_cap('edit_gigya');
+$role->remove_cap('edit_gigya_secret');
+
 // Remove old widgets if still there.
 global $wpdb;
 $wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->wp_options WHERE option_name LIKE '%widget_gigya%'" ) );
