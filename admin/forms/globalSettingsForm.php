@@ -11,6 +11,7 @@ function globalSettingsForm() {
 			'label' => __( 'Gigya API Key' ),
 			'value' => _gigParam( $values, 'api_key', '' )
 	);
+
  	if ( current_user_can( GIGYA__SECRET_PERMISSION_LEVEL ) || current_user_can( CUSTOM_GIGYA_EDIT_SECRET ) ) {
 		$form['api_secret'] = array(
 			'type'  => 'text',

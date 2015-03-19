@@ -1,6 +1,6 @@
 <?php
 define( "GIGYA__PERMISSION_LEVEL", "manage_options" );
-define( "GIGYA__SECRET_PERMISSION_LEVEL", "update_plugins" ); // Network super admin + single site admin
+define( "GIGYA__SECRET_PERMISSION_LEVEL", "install_plugins" ); // Network super admin + single site admin
 // custom Gigya capabilities are added separately on installation
 define( "CUSTOM_GIGYA_EDIT", 'edit_gigya' );
 define( "CUSTOM_GIGYA_EDIT_SECRET", 'edit_gigya_secret' );

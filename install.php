@@ -368,7 +368,9 @@ class GigyaInstall {
 	public function add_gigya_caps() {
 		$role = get_role('administrator');
 		$role->add_cap('edit_gigya');
-		$role->add_cap('edit_gigya_secret');
+		if ( !is_multisite() ) { // normal site administrators
+			$role->add_cap('edit_gigya_secret');
+		}
 	}
 
 }
