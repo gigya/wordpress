@@ -871,3 +871,28 @@ function _underscore_to_camelcase( $str ) {
 	}
 	return $string;
 }
+
+/**
+ * Check if this is Multi site setup,
+ *  if multi site, check if settings were already saved once in the sub site
+ *   if so set default values to main site values
+ *   Once settings are saved on sub site once, they are independent from main site.
+ *
+ * @param string $settings_section
+ * @return array $values
+ */
+function _getGigyaSettingsValues( $settings_section ) {
+    // get section settings for the site
+    $section_values = get_option( $settings_section );
+    if (is_multisite()) {
+        $sub_site_settings_saved = $section_values['sub_site_settings_saved'];
+        if ($sub_site_settings_saved == TRUE) {
+            $values = $section_values;
+        } else {
+            $values = get_blog_option( 1, GIGYA__SETTINGS_GLOBAL );
+        }
+    } else { // this is a standard installation, so just use site values
+        $values = $section_values;
+    }
+    return $values;
+}

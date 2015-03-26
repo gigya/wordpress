@@ -297,6 +297,18 @@ function loginSettingsForm() {
 		}
 	}
 
+    // use this field in multisite to flag when sub site settings are saved locally for site
+    if ( is_multisite() && !$values['sub_site_settings_saved'] ) {
+        $form['sub_site_settings_saved'] = array(
+            'type' => 'hidden',
+            'id' => 'sub_site_settings_saved',
+            'value' => 1,
+            'msg' => 1,
+            'msg_txt' => 'Settings are set to match the main site. once saved they will become independent',
+            'class' => 'gigya-raas-warn'
+        );
+    }
+
 	$form['raas_end'] = array(
 			'markup' => '</div>'
 	);

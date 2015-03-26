@@ -51,5 +51,17 @@ function commentsSettingsForm() {
 			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="http://developers.gigya.com/020_Client_API/030_Comments/comments.showCommentsUI" target="_blank">' . __( 'parameters' ) . '</a>'
 	);
 
+    // use this field in multisite to flag when sub site settings are saved locally for site
+    if ( is_multisite() && !$values['sub_site_settings_saved'] ) {
+        $form['sub_site_settings_saved'] = array(
+            'type' => 'hidden',
+            'id' => 'sub_site_settings_saved',
+            'value' => 1,
+            'msg' => 1,
+            'msg_txt' => 'Settings are set to match the main site. once saved they will become independent',
+            'class' => 'gigya-raas-warn'
+        );
+    }
+
 	echo _gigya_form_render( $form, GIGYA__SETTINGS_COMMENTS );
 }

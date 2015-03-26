@@ -3,7 +3,8 @@
  * Form builder for 'Global Settings' configuration page.
  */
 function globalSettingsForm() {
-	$values = get_option( GIGYA__SETTINGS_GLOBAL );
+
+    $values = _getGigyaSettingsValues( GIGYA__SETTINGS_GLOBAL );
 	$form   = array();
 
 	$form['api_key'] = array(
@@ -113,6 +114,18 @@ function globalSettingsForm() {
 			'value' => _gigParam( $values, 'debug', 0 ),
 			'desc'  => __( 'Log all Gigya\'s requests and responses. You can then find the log' ) . ' <a href="javascript:void(0)" class="gigya-debug-log">' . __( 'here' ) . '</a>'
 	);
+
+    // use this field in multisite to flag when sub site settings are saved locally for site
+    if ( is_multisite() && !$values['sub_site_settings_saved'] ) {
+        $form['sub_site_settings_saved'] = array(
+            'type' => 'hidden',
+            'id' => 'sub_site_settings_saved',
+            'value' => 1,
+            'msg' => 1,
+            'msg_txt' => 'Settings are set to match the main site. once saved they will become independent',
+            'class' => 'gigya-raas-warn'
+        );
+    }
 
 	if ( get_option( 'gigya_settings_fields' ) ) {
 		$form['clean_db'] = array(
