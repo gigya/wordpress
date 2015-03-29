@@ -176,11 +176,13 @@ class GigyaSettings {
 			$res = $cms->apiValidate( $_POST['gigya_global_settings']['api_key'], $_POST['gigya_global_settings']['api_secret'], $_POST['gigya_global_settings']['data_center'] );
 			if (!empty($res)) {
 				$gigyaErrCode = $res->getErrorCode();
-				$gigyaErrMsg = $res->getErrorMessage();
-				$errorsLink = "<a href='http://developers.gigya.com/037_API_reference/zz_Response_Codes_and_Errors' target='_blank'>Response_Codes_and_Errors</a>";
-				$message = "Gigya API error: {$gigyaErrCode} - {$gigyaErrMsg}. For more information please refer to {$errorsLink}";
 				if ( $gigyaErrCode > 0 ) {
+                    $gigyaErrMsg = $res->getErrorMessage();
+                    $errorsLink = "<a href='http://developers.gigya.com/037_API_reference/zz_Response_Codes_and_Errors' target='_blank'>Response_Codes_and_Errors</a>";
+                    $message = "Gigya API error: {$gigyaErrCode} - {$gigyaErrMsg}. For more information please refer to {$errorsLink}";
 					add_settings_error( 'gigya_global_settings', 'api_validate', $message, 'error' );
+                    // prevent updating values
+                    STATIC::_keepOldApiValues();
 				}
 			} else {
 				add_settings_error( 'gigya_global_settings', 'api_validate', 'Error sending request to gigya', 'error' );
@@ -191,19 +193,36 @@ class GigyaSettings {
 	/**
 	 * Set the POST'ed secret key.
 	 * If its not submitted, take it from DB.
-	 * if it's multisite, then from main site DB
 	 *
 	 * @param obj $cms
 	 */
 	public static function _setSecret() {
 		if ( empty($_POST['gigya_global_settings']['api_secret']) ) {
-			if ( is_multisite() ) {
-				$options = get_blog_option( 1, GIGYA__SETTINGS_GLOBAL );
-			} else {
-				$options = get_option( GIGYA__SETTINGS_GLOBAL );
-			}
+			$options = STATIC::_setSiteOptions();
 			$_POST['gigya_global_settings']['api_secret'] = $options['api_secret'];
 		}
 	}
+
+    /**
+     * Set the posted api related values to the old (from DB) values
+     */
+    public static function _keepOldApiValues() {
+        $options = STATIC::_setSiteOptions();
+        $_POST['gigya_global_settings']['api_key'] = $options['api_key'];
+        $_POST['gigya_global_settings']['api_secret'] = $options['api_secret'];
+        $_POST['gigya_global_settings']['data_center'] = $options['data_center'];
+    }
+
+    /**
+     * If multisite, get options from main site, else from current site
+     */
+    public static function _setSiteOptions() {
+        if ( is_multisite() ) {
+            $options = get_blog_option( 1, GIGYA__SETTINGS_GLOBAL );
+        } else {
+            $options = get_option( GIGYA__SETTINGS_GLOBAL );
+        }
+        return $options;
+    }
 
 }
