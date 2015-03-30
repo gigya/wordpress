@@ -255,6 +255,7 @@ class GigyaLoginAjax {
 	private function linkAccountForm( $uid ) {
 		$wp_user      = get_userdata( $uid );
 		$wp_user_name = $wp_user->data->user_login;
+        $forgot_pass_link =  wp_lostpassword_url( get_permalink() );
 
 		$output = '';
 		$output .= '<form id="link-accounts-form">';
@@ -262,15 +263,16 @@ class GigyaLoginAjax {
 		// Set form elements.
 		$form            = array();
 		$form['message'] = array(
-				'markup' => __( 'Your Email address' ) . ': <strong>' . $this->gigya_user['email'] . '</strong> ' . __( 'already exists. If you have previously registered, please login with your site credentials to link the accounts. Otherwise, please use a different Email address' ) . '<br><br>'
-		);
+				'markup' => __( "<h3>Already a Member:</h3>
+                                 <p>We found your email: <strong>{$this->gigya_user['email']}</strong> in our system</p>
+                                 <p>Please provide your site password to link to your existing account</p><br><br>" )
+        );
 		$form['log']     = array(
 				'type'  => 'hidden',
 				'label' => __( 'Username' ),
 				'value' => $wp_user_name,
 				'desc'  => __( 'Enter your' ) . ' ' . get_option( 'blogname' ) . ' ' . __( 'username' )
 		);
-
 		$form['pwd']       = array(
 				'type'  => 'password',
 				'label' => __( 'Password' ),
@@ -287,6 +289,7 @@ class GigyaLoginAjax {
 
 		// Render form elements.
 		$output .= _gigya_form_render( $form );
+        $output .= "<a class='forgot_pass' href={$forgot_pass_link}>Forgot password</a>";
 		$output .= '<input type="button" id="gigya-submit" class="button button-primary button-large" value="Log In" />';
 		$output .= '</form>';
 

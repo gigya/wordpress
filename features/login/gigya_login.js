@@ -160,7 +160,7 @@
         var html =
             '<div class="form-get-email">' +
                 '<div class="description">' +
-                'Hi ' + response.user.firstName + ', we still need some details from you, please provide your email address or link to an existing account.' +
+                'Hi ' + response.user.firstName + ', we still need some details from you, please provide your email address.' +
                 '<br><br>' +
                 '</div>' +
                 '<label for="email">Email</label>' +
