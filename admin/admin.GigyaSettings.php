@@ -1,4 +1,8 @@
 <?php
+
+/*
+ * Plugin editing permission levels
+ */
 define( "GIGYA__PERMISSION_LEVEL", "manage_options" );
 define( "GIGYA__SECRET_PERMISSION_LEVEL", "install_plugins" ); // Network super admin + single site admin
 // custom Gigya capabilities are added separately on installation
@@ -31,10 +35,19 @@ class GigyaSettings {
 
 		// Add settings sections.
 		foreach ( $this->getSections() as $id => $section ) {
+            $option_group = $section['slug'] . '-group';
 			add_settings_section( $id, $section['title'], $section['func'], $section['slug'] );
-			register_setting( $section['slug'] . '-group', $section['slug'], array( $this, 'validate' ) );
+			register_setting( $option_group, $section['slug'], array( $this, 'validate' ) );
+            add_filter("option_page_capability_{$option_group}", array( $this, 'addGigyaCapabilities') );
 		}
 	}
+
+    /**
+     * Add gigya edit capability to allow custom roles to edit Gigya
+     */
+    public function addGigyaCapabilities() {
+        return CUSTOM_GIGYA_EDIT;
+    }
 
 	/**
 	 * @param $input

@@ -6,5 +6,5 @@
 ?>
 <div class="row text-field <?php echo $class ?>">
 	<label for="gigya_<?php echo $id; ?>"><?php echo $label; ?></label>
-	<input type="text" size="60" class="input-xlarge" value="*************************" id="gigya_<?php echo $id; ?>" disabled" />
+	<input type="text" disabled size="60" class="input-xlarge" value="*************************" id="gigya_<?php echo $id; ?>" />
 </div>
