@@ -87,6 +87,7 @@ class GigyaAction {
 		add_action( 'user_register', array( $this, 'userRegister' ), 10, 1 );
 		add_action( 'wp_logout', array( $this, 'wpLogout' ) );
 		add_action( 'delete_user', array( $this, 'deleteUser' ) );
+		add_action( 'wpmu_delete_user', array( $this, 'deleteUser' ) );
 		add_action( 'widgets_init', array( $this, 'widgetsInit' ) );
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 		add_filter( 'the_content', array( $this, 'theContent' ) );

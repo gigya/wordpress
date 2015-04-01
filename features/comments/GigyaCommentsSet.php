@@ -39,7 +39,7 @@ class GigyaCommentsSet {
 			$params   = array_merge( $params, $advanced );
 		}
 
-		// Let others plugins to modify the comments parameters.
+		// Let other plugins modify the comments parameters.
 		// For example:
 		// $params['useSiteLogin'] = true;
 		// $params['onSiteLoginClicked'] = 'onSiteLoginHandler';
