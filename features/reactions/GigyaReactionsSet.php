@@ -83,7 +83,7 @@ class GigyaReactionsSet {
 	 * @return string
 	 */
 	public function setDefaultPosition( $content ) {
-		$position = $this->reactions_options['position'];
+		$position = isset($this->reactions_options['position']) ? $this->reactions_options['position'] : '' ;
 		if ( ! empty( $position ) && $position != 'none' ) {
 
 			// Get the reactions widget content.

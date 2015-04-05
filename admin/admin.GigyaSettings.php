@@ -101,7 +101,7 @@ class GigyaSettings {
 	 * Returns the form sections definition.
 	 * @return array
 	 */
-	public function getSections() {
+	public static function getSections() {
 		return array(
 				'gigya_global_settings'    => array(
 						'title' => 'Global Settings',
