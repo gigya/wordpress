@@ -91,9 +91,13 @@ class GigyaAction {
 		add_action( 'widgets_init', array( $this, 'widgetsInit' ) );
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 		add_filter( 'the_content', array( $this, 'theContent' ) );
-		add_filter( 'comments_template', array( $this, 'commentsTemplate' ) );
 		add_filter( 'get_avatar', array( $this, 'getGigyaAvatar'), 10, 5);
 		add_filter( 'login_message', array( $this, 'rass_wp_login_custom_message') );
+
+        $comments_on = $this->gigya_comments_on();
+        if ($comments_on) {
+            add_filter( 'comments_template', array( $this, 'commentsTemplate' ) );
+        }
 
 		// Plugins shortcode activation switches
 		require_once GIGYA__PLUGIN_DIR . 'features/gigyaPluginsShortcodes.php';
@@ -554,31 +558,34 @@ class GigyaAction {
 		return $content;
 	}
 
+    /**
+     * Check if the comments plugin is on
+     *
+     * @return bool plugin on/off
+     */
+    public function gigya_comments_on() {
+        $comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
+        $comments_on      = _gigParamDefaultOn( $comments_options, 'on' );
+        return !empty( $comments_on ) ? TRUE : FALSE;
+    }
+
 	/**
 	 * Hook comments_template.
 	 *
 	 * @param $comment_template
-	 *
 	 * @return string
 	 */
 	public function commentsTemplate( $comment_template ) {
+        // Spider trap.
+        // When a spider detect we render the comment in the HTML for SEO
+        $is_spider = gigyaCMS::isSpider();
+        if ( ! empty( $is_spider ) ) {
+            // Override default WP comments template with comment spider.
+            return GIGYA__PLUGIN_DIR . 'admin/tpl/comments-spider.tpl.php';
+        }
 
-		// Comments plugin.
-		$comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
-		$comments_on      = _gigParamDefaultOn( $comments_options, 'on' );
-		if ( ! empty( $comments_on ) ) {
-
-			// Spider trap.
-			// When a spider detect we render the comment in the HTML for SEO
-			$is_spider = gigyaCMS::isSpider();
-			if ( ! empty( $is_spider ) ) {
-				// Override default WP comments template with comment spider.
-				return GIGYA__PLUGIN_DIR . 'admin/tpl/comments-spider.tpl.php';
-			}
-
-			// Override default WP comments template.
-			return GIGYA__PLUGIN_DIR . 'admin/tpl/comments.tpl.php';
-		}
+        // Override default WP comments template.
+        return GIGYA__PLUGIN_DIR . 'admin/tpl/comments.tpl.php';
 	}
 
 	/**
