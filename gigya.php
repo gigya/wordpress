@@ -428,6 +428,7 @@ class GigyaAction {
 
 			// Social logout
 			if ( $this->login_options['mode'] == 'wp_sl' ) {
+                // Note: for SSO logout sync, when logout is clicked, first gigya logs out via front end (gigya.js)
 				$gigyaCMS = new GigyaCMS();
 				$gigyaCMS->userLogout( $account->ID );
 			} elseif ( $this->login_options['mode'] == 'raas' ) {

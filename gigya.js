@@ -17,6 +17,13 @@ var GigyaWp = GigyaWp || {};
         location.replace( gigyaParams.logoutUrl );
       }
     }
+    // SSO:
+    $('a[href*="action=logout"]').click( function (e)  {
+        e.preventDefault();
+        gigya.socialize.logout();
+        var url = $(this).attr("href");
+        setTimeout( function(){ window.location.href =  url; }, 100, url);
+      });
   } );
 
 // --------------------------------------------------------------------
