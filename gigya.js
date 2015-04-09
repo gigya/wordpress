@@ -19,10 +19,10 @@ var GigyaWp = GigyaWp || {};
     }
     // If user is logged out from gigya and logged in to WP, log out from WP
       if ( $('body').hasClass('logged-in') || $('body').hasClass('wp-admin')) {
-          var user = setTimeout( function() {
+          var Gigyauser = setTimeout( function() {
               gigya.socialize.getUserInfo();
           }, 500);
-          if ( typeof user === 'undefined' )  {
+          if ( typeof Gigyauser === 'undefined' )  {
               location.replace( gigyaParams.logoutUrl );
           }
       }
