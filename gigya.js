@@ -18,12 +18,18 @@ var GigyaWp = GigyaWp || {};
       }
     }
     // If user is logged out from gigya and logged in to WP, log out from WP
+      alert('start user test');
       if ( $('body').hasClass('logged-in') || $('body').hasClass('wp-admin')) {
+          alert('wp user logged in');
           var Gigyauser = setTimeout( function() {
               gigya.socialize.getUserInfo();
           }, 500);
+          alert("gigya.socialize.getUserInfo() user: " + Gigyauser);
           if ( typeof Gigyauser === 'undefined' )  {
-              location.replace( gigyaParams.logoutUrl );
+              alert("gigya.socialize.getUserInfo() - user is undefined ");
+              GigyaWp.logout();
+          } else {
+              alert("Gigya user logged in");
           }
       }
     // SSO:
