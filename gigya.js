@@ -18,19 +18,10 @@ var GigyaWp = GigyaWp || {};
       }
     }
     // If user is logged out from gigya and logged in to WP, log out from WP
-      alert('start user test');
       if ( $('body').hasClass('logged-in') || $('body').hasClass('wp-admin')) {
-          alert('wp user logged in');
-          var Gigyauser = setTimeout( function() {
-              gigya.socialize.getUserInfo();
+          GigyaWp.loggedUser = setTimeout( function() {
+              gigya.socialize.getUserInfo({ callback : GigyaWp.userLoggedIn });
           }, 500);
-          alert("gigya.socialize.getUserInfo() user: " + Gigyauser);
-          if ( typeof Gigyauser === 'undefined' )  {
-              alert("gigya.socialize.getUserInfo() - user is undefined ");
-              GigyaWp.logout();
-          } else {
-              alert("Gigya user logged in");
-          }
       }
     // SSO:
     //$('a[href*="action=logout"]').click( function (e)  {
@@ -39,6 +30,14 @@ var GigyaWp = GigyaWp || {};
     //    setTimeout( function(){ location.replace( gigyaParams.logoutUrl ); }, 500);
     //  });
   } );
+    
+  GigyaWp.userLoggedIn = function (response) {
+      GigyaWp.loggedUser = response.user.UID;
+      if (GigyaWp.loggedUser.length == 0) {
+          location.replace( gigyaParams.logoutUrl );
+      }
+      return GigyaWp.loggedUser;
+  }  
 
 // --------------------------------------------------------------------
 
