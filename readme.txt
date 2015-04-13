@@ -115,16 +115,11 @@ For question about installations or configuration, please contact your account m
 * Fixed a Gigya breaking change:  <a href="http://developers.gigya.com/010_Developer_Guide/Guides/Breaking_Changes#1._Strings_must_be_enclosed_with_quotes" >Strings must be enclosed with quotes in search queries</a>
 
 = 5.2 =
-* For security reasons, the Gigya Secret Key can now only be viewed or edited by privileged users. By default only by <strong>network admins</strong> (in a multi-site installation) or <strong>admins</strong> (in a single-site installation). Learn more in <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin#Roles_and_Permissions"  >Roles and Permissions</a>.
-*	Security enhancements
+* For security reasons, the Gigya Secret Key can now only be viewed or edited by privileged users. By default only by <strong>network admins</strong> (in a multi-site installation) or <strong>admins</strong> (in a single-site installation). Learn more in <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin#Roles_and_Permissions">Roles and Permissions</a>.
+* Security enhancements
 
 
 == FAQ ==
-
-How does the authentication part work?
-
-New visitors can register on your site using the built-in Gigya Social Login component. The site will create a Wordpress user account in the database and connect the social network account to that user.
-Existing site users can link their existing Wordpress account to their social network account or accounts.
 
 Can I configure the design of the Gigya component?
 
@@ -132,7 +127,7 @@ Yes, the design is fully configurable. You can read more about configuring the G
 
 How can I get support for the Gigya Plugin?
 
-We provide extensive support to customers that implement the Gigya Plug-in. Please contact your Gigya account manager, or contact us at: support@gigya-inc.com
+We provide extensive support to customers that implement the Gigya Plug-in. Please contact your Gigya Implementation Manager, or contact us at: support@gigya-inc.com
 
 Is the Gigya service free?
 
