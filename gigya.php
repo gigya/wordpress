@@ -89,6 +89,8 @@ class GigyaAction {
 		add_action( 'delete_user', array( $this, 'deleteUser' ) );
 		add_action( 'wpmu_delete_user', array( $this, 'deleteUser' ) );
 		add_action( 'widgets_init', array( $this, 'widgetsInit' ) );
+        add_action( 'send_headers', array($this, 'add_header_sso_xframe') );
+
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 		add_filter( 'the_content', array( $this, 'theContent' ) );
 		add_filter( 'get_avatar', array( $this, 'getGigyaAvatar'), 10, 5);
@@ -219,6 +221,10 @@ class GigyaAction {
 		require_once GIGYA__PLUGIN_DIR . 'admin/admin.GigyaSettings.php';
 		GigyaSettings::onSave();
 	}
+
+    function add_header_sso_xframe() {
+        header( 'X-Frame-Options: GOFORIT' );
+    }
 
 	/**
 	 * Hook AJAX login.

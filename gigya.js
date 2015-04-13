@@ -24,11 +24,11 @@ var GigyaWp = GigyaWp || {};
     //      }, 500);
     //  }
     // SSO:
-    //$('a[href*="action=logout"]').click( function (e)  {
-    //    e.preventDefault();
-    //    gigya.socialize.logout();
-    //    setTimeout( function(){ location.replace( gigyaParams.logoutUrl ); }, 500);
-    //  });
+    $('a[href*="action=logout"]').click( function (e)  {
+        e.preventDefault();
+        gigya.socialize.logout();
+        setTimeout( function(){ location.replace( gigyaParams.logoutUrl ); }, 500);
+      });
   } );
     
   GigyaWp.userLoggedIn = function (response) {
