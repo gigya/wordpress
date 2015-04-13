@@ -114,6 +114,11 @@ For question about installations or configuration, please contact your account m
 = 5.1.1 =
 * Fixed a Gigya breaking change:  <a href="http://developers.gigya.com/010_Developer_Guide/Guides/Breaking_Changes#1._Strings_must_be_enclosed_with_quotes" >Strings must be enclosed with quotes in search queries</a>
 
+= 5.2 =
+* For security reasons, the Gigya Secret Key can now only be viewed or edited by privileged users. By default only by <strong>network admins</strong> (in a multi-site installation) or <strong>admins</strong> (in a single-site installation). Learn more in <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin#Roles_and_Permissions"  >Roles and Permissions</a>.
+*	Security enhancements
+
+
 == FAQ ==
 
 How does the authentication part work?
