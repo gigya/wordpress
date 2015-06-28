@@ -179,10 +179,8 @@ class GigyaAction {
 		$api_key = GIGYA__API_KEY;
 		if ( ! empty( $api_key ) ) {
 			// Loads requirements for any Gigya's login.
-			if ( $this->login_options['mode'] != 'wp_only' ) {
 				// Load Gigya's socialize.js from CDN.
 				wp_enqueue_script( 'gigya_cdn', GIGYA__JS_CDN . GIGYA__API_KEY . '&lang=' . $params['lang'] );
-			}
 
 			// Loads requirements for any Gigya's social login.
 			if ( $this->login_options['mode'] == 'wp_sl' ) {
