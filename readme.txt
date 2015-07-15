@@ -35,7 +35,7 @@ If you don't have an account yet, <a href="https://console.gigya.com/register.as
 
 
 For more information, installation steps and configuration options - please refer to Gigya's documentation:
-<a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin" title="Installation and Configuration guide">Gigya's Wordpress plugin - Installation and Configuration guide</a>
+<a href="http://developers.gigya.com/display/GD/WordPress+Plugin" title="Installation and Configuration guide">Gigya's Wordpress plugin - Installation and Configuration guide</a>
 
 
 == Installation ==
