@@ -42,8 +42,9 @@ class GigyaRaasSet {
 
 			// Ajax action.
 				'actionRaas'              => 'gigya_raas',
-				'redirect'                => user_admin_url(),
-				'canEditUsers'            => current_user_can( 'edit_users' ),
+	//			'redirect'                => user_admin_url(),
+                'redirect'                => _gigParam( $this->login_options, 'redirect', user_admin_url() ),
+                'canEditUsers'            => current_user_can( 'edit_users' ),
 
 			// Screen set.
 				'raasWebScreen'           => _gigParam( $this->login_options, 'raasWebScreen', 'Default-RegistrationLogin' ),
