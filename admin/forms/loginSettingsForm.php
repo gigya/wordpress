@@ -205,7 +205,7 @@ function loginSettingsForm() {
 	$form['raasProfileMobileScreen'] = array(
 			'type'  => 'text',
 			'label' => __( 'Mobile Screen Set ID' ),
-			'value' => _gigParam( $values, 'raasProfileMobileScreen', 'DefaultMobile-ProfileUpdate' )
+			'value' => _gigParam( $values, 'raasProfileMobileScreen', '' )
 	);
 
 	$form['raasOverrideLinks'] = array(
