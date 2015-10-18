@@ -177,7 +177,8 @@ function loginSettingsForm() {
 	$form['raasMobileScreen'] = array(
 			'type'  => 'text',
 			'label' => __( 'Mobile Screen Set ID' ),
-			'value' => _gigParam( $values, 'raasMobileScreen', 'DefaultMobile-RegistrationLogin' )
+        'value' => _gigParam( $values, 'raasMobileScreen', '' )
+	//		'value' => _gigParam( $values, 'raasMobileScreen', 'DefaultMobile-RegistrationLogin' )
 	);
 
 	$form['raasLoginScreen'] = array(
