@@ -177,8 +177,8 @@ function loginSettingsForm() {
 	$form['raasMobileScreen'] = array(
 			'type'  => 'text',
 			'label' => __( 'Mobile Screen Set ID' ),
-        'value' => _gigParam( $values, 'raasMobileScreen', '' )
-	//		'value' => _gigParam( $values, 'raasMobileScreen', 'DefaultMobile-RegistrationLogin' )
+    //    'value' => _gigParam( $values, 'raasMobileScreen', '' )
+			'value' => _gigParam( $values, 'raasMobileScreen', 'DefaultMobile-RegistrationLogin' )
 	);
 
 	$form['raasLoginScreen'] = array(
@@ -206,7 +206,7 @@ function loginSettingsForm() {
 	$form['raasProfileMobileScreen'] = array(
 			'type'  => 'text',
 			'label' => __( 'Mobile Screen Set ID' ),
-			'value' => _gigParam( $values, 'raasProfileMobileScreen', '' )
+			'value' => _gigParam( $values, 'raasProfileMobileScreen', 'DefaultMobile-ProfileUpdate' )
 	);
 
 	$form['raasOverrideLinks'] = array(
