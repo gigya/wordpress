@@ -56,7 +56,7 @@ class GigyaRaasAjax {
 		$wp_user = get_user_by( 'email', $this->gigya_account['profile']['email'] );
 		if ( ! empty( $wp_user ) ) {
 
-			$primary_user = $gigyaCMS->isPrimaryUser( $this->gigya_account['loginIDs']['emails'], $wp_user->data->user_email );
+			$primary_user = $gigyaCMS->isPrimaryUser( $this->gigya_account['loginIDs']['emails'], strtolower($wp_user->data->user_email) );
 
 			// If this user is not the primary user account in Gigya
 			// we delete the account (we don't want two different users with the same email)

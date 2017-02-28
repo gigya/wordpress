@@ -421,8 +421,8 @@ class GigyaCMS {
 	/**
 	 * Checks if this email is the primary user email
 	 *
-	 * @param $gigya_emails
-	 * @param $wp_email The email from WP DB.
+	 * @param String $gigya_emails
+	 * @param String $wp_email email from WP DB.
 	 *
 	 * @internal param \The $userInfo user info from accounts.getUserInfo api call
 	 * @return bool
