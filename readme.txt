@@ -3,8 +3,8 @@
 Contributors: gigya.com, konforti, luciodiri
 Tags: Registration, Social Login, Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, Gigya, Social Infrastructure, feed
 Requires at least: 3.6
-Tested up to: 4.1.0
-Stable tag: 5.1.1
+Tested up to: 4.2.2
+Stable tag: 5.2.1
 License: GPLv2 or later
 
 Integrate your WordPress site with Gigya
@@ -35,7 +35,7 @@ If you don't have an account yet, <a href="https://console.gigya.com/register.as
 
 
 For more information, installation steps and configuration options - please refer to Gigya's documentation:
-<a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin" title="Installation and Configuration guide">Gigya's Wordpress plugin - Installation and Configuration guide</a>
+<a href="http://developers.gigya.com/display/GD/WordPress+Plugin" title="Installation and Configuration guide">Gigya's Wordpress plugin - Installation and Configuration guide</a>
 
 
 == Installation ==
@@ -118,6 +118,8 @@ For question about installations or configuration, please contact your account m
 * For security reasons, the Gigya Secret Key can now only be viewed or edited by privileged users. By default only by <strong>network admins</strong> (in a multi-site installation) or <strong>admins</strong> (in a single-site installation). Learn more in <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin#Roles_and_Permissions">Roles and Permissions</a>.
 * Security enhancements
 
+= 5.2.1 =
+* Bug fixes
 
 == FAQ ==
 
