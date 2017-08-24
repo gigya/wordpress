@@ -118,6 +118,8 @@ For question about installations or configuration, please contact your account m
 * For security reasons, the Gigya Secret Key can now only be viewed or edited by privileged users. By default only by <strong>network admins</strong> (in a multi-site installation) or <strong>admins</strong> (in a single-site installation). Learn more in <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin#Roles_and_Permissions">Roles and Permissions</a>.
 * Security enhancements
 
+= 5.2.1 =
+* Bug fixes
 
 == FAQ ==
 
