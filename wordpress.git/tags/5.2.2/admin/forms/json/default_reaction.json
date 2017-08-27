@@ -1,0 +1,20 @@
+[
+  {
+    "text"       : "Amazing",
+    "ID"         : "amazing",
+    "iconImgUp"  : "http://cdn.gigya.com/gs/i/reactions/icons/Amazing_Icon_Up.png",
+    "iconImgOver": "http://cdn.gigya.com/gs/i/reactions/icons/Amazing_Icon_Down.png",
+    "tooltip"    : "This item is amazing",
+    "feedMessage": "This is amazing!",
+    "headerText" : "Your reaction to this post is Amazing"
+  },
+  {
+    "text"       : "Geeky",
+    "ID"         : "geeky",
+    "iconImgUp"  : "http://cdn.gigya.com/gs/i/reactions/icons/Geeky_Icon_Up.png",
+    "iconImgOver": "http://cdn.gigya.com/gs/i/reactions/icons/Geeky_Icon_Down.png",
+    "tooltip"    : "This item is geeky",
+    "feedMessage": "This is geeky!",
+    "headerText" : "Your reaction to this post is Geeky"
+  }
+]

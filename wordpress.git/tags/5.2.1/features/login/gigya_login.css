@@ -1,0 +1,42 @@
+#login .gigya-login-or {
+	text-align: center;
+	font-size: 28px;
+	margin: 20px;
+}
+
+#gigya-login {
+	margin: 20px auto;
+	padding: 30px 0;
+	background: #fff;
+	-webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.13);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.13);
+}
+
+.gigya-register-extra .title {
+	margin-bottom: 10px;
+}
+
+#dialog-modal #loginform .login-username {
+	display: none;
+}
+
+.gigya-wp-account-widget .gigya-wp-avatar {
+	display: inline-block;
+	width: 48px;
+	height: auto;
+}
+
+.gigya-wp-account-widget .gigya-wp-avatar img {
+	width: 48px;
+	height: auto;
+}
+
+.gigya-wp-account-widget .gigya-wp-info {
+	display: inline-block;
+	margin: 10px;
+	vertical-align: middle;
+}
+
+.gigya-wp-account-widget .gigya-wp-name {
+	display: block;
+}
