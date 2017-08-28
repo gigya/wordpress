@@ -1,0 +1,118 @@
+/* Dialog 
+----------------------------------*/
+#dialog-header {
+	padding-bottom: 20px;
+	margin-bottom: 15px;
+	border-bottom: 1px solid #777777;
+	min-width: 680px;
+}
+
+#dialog-header img.thumbnail {
+	width  : 50px;
+	height : 50px;
+	float  : left; 
+}
+
+#dialog-header .text {
+	float  : left;
+	margin : 20px 10px 10px 10px;  
+}
+
+#gigya-account-linking-wrap {}
+
+#gigya-account-linking-wrap,
+#gigya-new-user-wrap {
+	float:left;
+	width: 280px;
+}
+
+#gigya-sep-wrap {
+	float:left;	
+	text-align: center;
+	width: 30px;
+	margin-left: 25px;
+	margin-right: 25px;
+}
+
+#gigya-sep-wrap h3 {
+	
+}
+
+#gigya-sep-wrap .sep-line {
+	width:1px;
+	background-color:#000000;
+	height:120px;
+	margin:auto;
+}
+
+#gigya-sep-wrap h3 {
+	margin-top: 5px;
+	margin-bottom: 5px;	
+}
+
+#login-dialog p.close {
+	margin: 10px 20px 20px;
+	text-align: right;
+}
+
+#login-dialog h3.label {
+	margin-bottom: 5px;
+	height       : 50px;
+	font-size    : 12px;
+}
+
+#login-dialog input.input {
+    background: none repeat scroll 0 0 #FBFBFB;
+    border: 1px solid #E5E5E5;
+    font-size: 24px;
+    margin-bottom: 16px;
+    margin-right: 6px;
+    margin-top: 2px;
+    padding: 3px;
+    width: 97%;
+}
+
+#login-dialog p.error {
+   	background-color: #FFEBE8;
+   	border-color: #CC0000;
+   	margin-left:0px;
+   	margin-bottom: 15px;
+}
+
+#login-dialog p {
+	margin-bottom: 5px;
+}
+
+#login-dialog .button-wrap {
+	margin-bottom: 5px;
+	text-align: right;
+}
+
+.ui-dialog-titlebar {
+	display: none;
+} 
+
+.float-left {
+	float:left;
+}
+
+#login-dialog {
+	display: none;
+	text-align: left;
+}
+
+#wpadminbar img.avatar {
+	width: 16px;
+	height: 16px;	
+}
+
+.gig-share-button-top {
+	margin: 0 0 10px 0;	
+}
+
+.gig-share-button-bottom {
+	margin: 0 0 10px 0;	
+}
+
+
+	
