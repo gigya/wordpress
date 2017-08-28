@@ -25,14 +25,14 @@ var GigyaWp = GigyaWp || {};
           location.replace( gigyaParams.logoutUrl );
       }
       return GigyaWp.loggedUser;
-  }  
+  };
 
 // --------------------------------------------------------------------
 
   GigyaWp.errHandle = function ( errEvent ) {
 //    console.log( errEvent );
     return false;
-  }
+  };
 
 // --------------------------------------------------------------------
 
