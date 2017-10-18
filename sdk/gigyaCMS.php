@@ -114,7 +114,7 @@ class GigyaCMS {
 	 *
 	 * @param $guid
 	 *
-	 * @return array || false
+	 * @return array | false
 	 *   the user info from Gigya.
 	 */
 	public function getUserInfo( $guid ) {
@@ -166,7 +166,7 @@ class GigyaCMS {
 	 *                      an associative array of params to pass to Gigya
 	 *
 	 * @see http://developers.gigya.com/020_Client_API/020_Methods/socialize.getFriends
-	 * @return array
+	 * @return array | false
 	 *      the response from gigya.
 	 */
 	public function getFriends( $guid, $params = array() ) {
@@ -486,7 +486,7 @@ class GigyaCMS {
 	 *
 	 * @param string $values
 	 *
-	 * @return array
+	 * @return array | false
 	 */
 	public static function advancedValuesParser( $values ) {
 
