@@ -86,7 +86,7 @@
 
 			// Attach the Gigya block.
 			gigya.socialize.showAddConnectionsUI(addConnectionsParams);
-		}
+		};
 
 // --------------------------------------------------------------------
 
@@ -258,7 +258,7 @@
 			req.fail(function (jqXHR, textStatus, errorThrown) {
 				console.log(jqXHR.statusCode());
 			});
-		}
+		};
 
 		// Email verify form.
 		$(document).on('click', '#email-verify-form #gigya-submit', function () {
@@ -287,8 +287,6 @@
 			});
 
 		}
-
-
 	});
 })(jQuery);
 
