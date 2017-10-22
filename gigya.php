@@ -455,7 +455,10 @@ class GigyaAction {
 	}
 
 	/**
-	 * shortcode for UserInfo.
+	 * Shortcode for UserInfo.
+	 *
+	 * @param	array	$atts
+	 * @param	$info
 	 */
 	private function shortcodeUserInfo( $atts, $info = NULL ) {
 
@@ -742,7 +745,7 @@ function _gigya_get_json( $file ) {
  * @param string $key
  * @param string, int $default
  *
- * @return $default - $array value (if $array is not empty)
+ * @return mixed $default - $array value (if $array is not empty) // FIXME: return value not actually mixed, it's one of two things (some type and null). Need to find the sometype
  */
 function _gigParam( $array, $key, $default = null ) {
 	if ( is_array( $array ) ) {
@@ -757,6 +760,11 @@ function _gigParam( $array, $key, $default = null ) {
 
 /**
  * Helper
+ *
+ * @param array	$array
+ * @param $key
+ *
+ * @return integer
  */
 function _gigParamDefaultOn( $array, $key ) {
 	return ( isset( $array[$key] ) && $array[$key] === '0' ) ? '0' : '1';
