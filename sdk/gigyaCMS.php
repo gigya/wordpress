@@ -372,12 +372,14 @@ class GigyaCMS {
 
 	/**
 	 * RaaS logout.
+	 *
+	 * @param	$account
 	 */
 	public function accountLogout( $account ) {
 
 		// Get info about the primary account.
 		$email = $this->cleanEmail($account->data->user_email);
-		$query = "select UID from accounts where loginIDs.emails =  '{$email}'";
+		$query = "select UID from accounts where loginIDs.emails = '{$email}'";
 
 		// Get the UID from Email.
 		$res = $this->call( 'accounts.search', array( 'query' => $query ) );

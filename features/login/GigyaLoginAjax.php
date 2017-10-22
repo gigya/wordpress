@@ -7,12 +7,14 @@
  */
 class GigyaLoginAjax {
 
-	public function __construct() {
+	protected $global_options;
+	protected $login_options;
+	protected $gigya_user;
 
+	public function __construct() {
 		// Get settings variables.
 		$this->global_options = get_option( GIGYA__SETTINGS_GLOBAL );
 		$this->login_options  = get_option( GIGYA__SETTINGS_LOGIN );
-
 	}
 
 	/**
