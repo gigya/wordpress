@@ -4,6 +4,7 @@
 
 // --------------------------------------------------------------------
 
+<<<<<<< HEAD
     /**
      * Override default WP links to use Gigya's RaaS behavior.
      */
@@ -51,6 +52,59 @@
       $( '#login #nav' ).hide();
     };
 
+=======
+			/**
+			 * Override default WP links to use Gigya's RaaS behavior.
+			 */
+			var overrideLinks = function () {
+				$(document).on('click', 'a[href]', function (e) {
+					var path = $(this)[0].pathname;
+					var search = $(this)[0].search;
+					if (path.indexOf('wp-login.php') !== -1) {
+						switch (search) {
+
+							case '':
+								// Login page
+								gigya.accounts.showScreenSet({
+									screenSet: gigyaRaasParams.raasWebScreen,
+									mobileScreenSet: gigyaRaasParams.raasMobileScreen,
+									startScreen: gigyaRaasParams.raasLoginScreen
+								});
+								e.preventDefault();
+								break;
+
+							case '?action=register':
+								// Register page
+								gigya.accounts.showScreenSet({
+									screenSet: gigyaRaasParams.raasWebScreen,
+									mobileScreenSet: gigyaRaasParams.raasMobileScreen,
+									startScreen: gigyaRaasParams.raasRegisterScreen
+								});
+								e.preventDefault();
+								break;
+
+							case '?action=lostpassword':
+								// Lost Password page
+								e.preventDefault();
+								break;
+						}
+					}
+					else if (path.indexOf('profile.php') != -1 && gigyaRaasParams.canEditUsers != 1) {
+
+						// Profile page
+						gigya.accounts.showScreenSet({
+							screenSet: gigyaRaasParams.raasProfileWebScreen,
+							mobileScreenSet: gigyaRaasParams.raasProfileMobileScreen,
+							onAfterSubmit: raasUpdatedProfile
+						});
+						e.preventDefault();
+					}
+				});
+
+				// Hide the WP login screens navigation.
+				$('#login #nav').hide();
+			};
+>>>>>>> f39641163c8f1268436156509cdab5ddc5448d41
 
 
 

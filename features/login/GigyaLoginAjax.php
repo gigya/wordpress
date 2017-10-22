@@ -7,12 +7,14 @@
  */
 class GigyaLoginAjax {
 
-	public function __construct() {
+	protected $global_options;
+	protected $login_options;
+	protected $gigya_user;
 
+	public function __construct() {
 		// Get settings variables.
 		$this->global_options = get_option( GIGYA__SETTINGS_GLOBAL );
 		$this->login_options  = get_option( GIGYA__SETTINGS_LOGIN );
-
 	}
 
 	/**
@@ -264,8 +266,8 @@ class GigyaLoginAjax {
 		$form            = array();
 		$form['message'] = array(
 				'markup' => __( "<h3>Already a Member:</h3>
-                                 <p>We found your email: <strong>{$this->gigya_user['email']}</strong> in our system</p>
-                                 <p>Please provide your site password to link to your existing account</p><br><br>" )
+								<p>We found your email: <strong>{$this->gigya_user['email']}</strong> in our system</p>
+								<p>Please provide your site password to link to your existing account</p><br><br>" )
         );
 		$form['log']     = array(
 				'type'  => 'hidden',

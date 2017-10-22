@@ -56,6 +56,9 @@ new GigyaAction;
  */
 class GigyaAction {
 
+	protected $login_options;
+	protected $global_options;
+
 	/**
 	 * Constructor.
 	 */
@@ -92,7 +95,7 @@ class GigyaAction {
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 		add_filter( 'the_content', array( $this, 'theContent' ) );
 		add_filter( 'get_avatar', array( $this, 'getGigyaAvatar'), 10, 5);
-		add_filter( 'login_message', array( $this, 'rass_wp_login_custom_message') );
+		add_filter( 'login_message', array( $this, 'raas_wp_login_custom_message') );
 
         $comments_on = $this->gigya_comments_on();
         if ($comments_on) {
@@ -230,7 +233,7 @@ class GigyaAction {
 	}
 
 	/**
-	 * Hook AJAX RAAS login.
+	 * Hook AJAX RaaS login.
 	 */
 	public function ajaxRaasLogin() {
 
@@ -368,7 +371,7 @@ class GigyaAction {
 	 *
 	 * @return string $message
 	 */
-	public function rass_wp_login_custom_message() {
+	public function raas_wp_login_custom_message() {
 		if (isset($_GET['rperm']) ) {
 			$message = "<div id='login_error'><strong>Access denied: </strong>
 			this login requires administrator permission. <br/>Click <a href='/wp-login.php'>here</a> to login to the site.</div>";
@@ -433,7 +436,10 @@ class GigyaAction {
 	}
 
 	/**
-	 * shortcode for UserInfo.
+	 * Shortcode for UserInfo.
+	 *
+	 * @param	array	$atts
+	 * @param	$info
 	 */
 	private function shortcodeUserInfo( $atts, $info = NULL ) {
 
@@ -452,7 +458,7 @@ class GigyaAction {
 	 */
 	public function widgetsInit() {
 
-		// RasS Widget.
+		// RaaS Widget.
 		$raas_on = $this->login_options['mode'] == 'raas';
 		if ( ! empty( $raas_on ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasWidget.php';
@@ -513,6 +519,10 @@ class GigyaAction {
 
 	/**
 	 * Hook content alter.
+	 *
+	 * @param	$content
+	 *
+	 * @return	string $content
 	 */
 	public function theContent( $content ) {
 		// Share plugin.
@@ -720,7 +730,7 @@ function _gigya_get_json( $file ) {
  * @param string $key
  * @param string, int $default
  *
- * @return $default - $array value (if $array is not empty)
+ * @return mixed $default - $array value (if $array is not empty) // FIXME: return value not actually mixed, it's one of two things (some type and null). Need to find the sometype
  */
 function _gigParam( $array, $key, $default = null ) {
 	if ( is_array( $array ) ) {
@@ -735,6 +745,11 @@ function _gigParam( $array, $key, $default = null ) {
 
 /**
  * Helper
+ *
+ * @param array	$array
+ * @param $key
+ *
+ * @return integer
  */
 function _gigParamDefaultOn( $array, $key ) {
 	return ( isset( $array[$key] ) && $array[$key] === '0' ) ? '0' : '1';
