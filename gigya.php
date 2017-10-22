@@ -56,6 +56,9 @@ new GigyaAction;
  */
 class GigyaAction {
 
+	protected $login_options;
+	protected $global_options;
+
 	/**
 	 * Constructor.
 	 */
