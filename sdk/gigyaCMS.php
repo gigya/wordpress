@@ -23,7 +23,7 @@ class GigyaCMS {
 	 * @param mixed $params
 	 *   The method parameters.
 	 *
-	 * @return array
+	 * @return array | WP_Error | integer
 	 *   The Gigya response.
 	 */
 	public function call( $method, $params ) {
@@ -96,6 +96,12 @@ class GigyaCMS {
 
 	/**
 	 * Check validation of the data center.
+	 *
+	 * @param	$api_key
+	 * @param	$api_secret
+	 * @param	$api_domain
+	 *
+	 * @return	GSResponse	$res
 	 */
 	public function apiValidate( $api_key, $api_secret, $api_domain ) {
 
@@ -376,7 +382,6 @@ class GigyaCMS {
 	 * @param	$account
 	 */
 	public function accountLogout( $account ) {
-
 		// Get info about the primary account.
 		$email = $this->cleanEmail($account->data->user_email);
 		$query = "select UID from accounts where loginIDs.emails = '{$email}'";
