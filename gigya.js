@@ -13,12 +13,10 @@ var GigyaWp = GigyaWp || {};
     $( 'body' ).append( '<div id="dialog-modal"></div>' );
 
     GigyaWp.logout = function ( response ) {
-      if ( typeof response.context.id !== 'undefined' ) {
-        location.replace( gigyaParams.logoutUrl );
-      }
-    }
+      location.replace( gigyaParams.logoutUrl );
+    };
   } );
-    
+
   GigyaWp.userLoggedIn = function (response) {
       GigyaWp.loggedUser = response.user.UID;
       if (GigyaWp.loggedUser.length == 0) {
