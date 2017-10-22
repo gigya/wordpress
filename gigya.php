@@ -231,7 +231,7 @@ class GigyaAction {
 	}
 
 	/**
-	 * Hook AJAX RAAS login.
+	 * Hook AJAX RaaS login.
 	 */
 	public function ajaxRaasLogin() {
 
@@ -538,6 +538,10 @@ class GigyaAction {
 
 	/**
 	 * Hook content alter.
+	 *
+	 * @param	$content
+	 *
+	 * @return	string $content
 	 */
 	public function theContent( $content ) {
 		// Share plugin.
