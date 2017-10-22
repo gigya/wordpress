@@ -12,17 +12,12 @@ var GigyaWp = GigyaWp || {};
 		// jQueryUI dialog element.
 		$('body').append('<div id="dialog-modal"></div>');
 
-<<<<<<< HEAD
+
     GigyaWp.logout = function ( response ) {
       wp_loginout(gigyaParams.logoutUrl);
     };
   } );
-=======
-		GigyaWp.logout = function (response) {
-			location.replace(gigyaParams.logoutUrl);
-		};
-	});
->>>>>>> f39641163c8f1268436156509cdab5ddc5448d41
+
 
 	GigyaWp.userLoggedIn = function (response) {
 		GigyaWp.loggedUser = response.user.UID;

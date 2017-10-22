@@ -376,30 +376,6 @@ class GigyaCMS {
 
 	}
 
-<<<<<<< HEAD
-	
-=======
-	/**
-	 * RaaS logout.
-	 *
-	 * @param	$account
-	 */
-	public function accountLogout( $account ) {
-		// Get info about the primary account.
-		$email = $this->cleanEmail($account->data->user_email);
-		$query = "select UID from accounts where loginIDs.emails = '{$email}'";
-
-		// Get the UID from Email.
-		$res = $this->call( 'accounts.search', array( 'query' => $query ) );
-
-		// Logout the user.
-		if ( !is_wp_error($res)) {
-			$this->call( 'accounts.logout', array( 'UID' => $res['results'][0]['UID'] ) );
-		}
-
-	}
-
->>>>>>> f39641163c8f1268436156509cdab5ddc5448d41
 	/**
 	 * @param $account
 	 */
