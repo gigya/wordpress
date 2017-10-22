@@ -13,7 +13,7 @@ var GigyaWp = GigyaWp || {};
     $( 'body' ).append( '<div id="dialog-modal"></div>' );
 
     GigyaWp.logout = function ( response ) {
-      location.replace( gigyaParams.logoutUrl );
+      wp_loginout(gigyaParams.logoutUrl);
     };
   } );
 

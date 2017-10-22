@@ -7,11 +7,18 @@
     /**
      * Override default WP links to use Gigya's RaaS behavior.
      */
+
+    var raasLogout = function () {
+        gigya.accounts.logout();
+    };
     var overrideLinks = function () {
       $( document ).on( 'click', 'a[href]', function ( e ) {
         var path = $( this )[0].pathname;
         var search = $( this )[0].search;
         if ( path.indexOf( 'wp-login.php' ) != -1 ) {
+          if (search.includes('?action=logout'))  {
+              raasLogout();
+          }
           switch ( search ) {
 
             case '':
@@ -43,6 +50,8 @@
       // Hide the WP login screens navigation.
       $( '#login #nav' ).hide();
     };
+
+
 
 
 // --------------------------------------------------------------------
