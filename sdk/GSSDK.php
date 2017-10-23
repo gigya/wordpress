@@ -302,7 +302,7 @@ class GSRequest {
 	 * @return
 	 */
 	public static function buildQS( $params ) {
-		$val;
+		$val = '';
 		$ret = "";
 		foreach ( $params->getKeys() as $key ) {
 			$val = $params->getString( $key );
