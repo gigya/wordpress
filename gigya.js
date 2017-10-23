@@ -12,10 +12,12 @@ var GigyaWp = GigyaWp || {};
 		// jQueryUI dialog element.
 		$('body').append('<div id="dialog-modal"></div>');
 
-		GigyaWp.logout = function (response) {
-			location.replace(gigyaParams.logoutUrl);
-		};
-	});
+
+    GigyaWp.logout = function ( response ) {
+      wp_loginout(gigyaParams.logoutUrl);
+    };
+  } );
+
 
 	GigyaWp.userLoggedIn = function (response) {
 		GigyaWp.loggedUser = response.user.UID;

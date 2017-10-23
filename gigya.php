@@ -88,11 +88,9 @@ class GigyaAction {
 		add_action( 'wp_ajax_raas_update_profile', array( $this, 'ajaxUpdateProfile' ) );
 		add_action( 'wp_login', array( $this, 'wpLogin' ), 10, 2 );
 		add_action( 'user_register', array( $this, 'userRegister' ), 10, 1 );
-		add_action( 'wp_logout', array( $this, 'wpLogout' ) );
 		add_action( 'delete_user', array( $this, 'deleteUser' ) );
 		add_action( 'wpmu_delete_user', array( $this, 'deleteUser' ) );
 		add_action( 'widgets_init', array( $this, 'widgetsInit' ) );
-
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 		add_filter( 'the_content', array( $this, 'theContent' ) );
 		add_filter( 'get_avatar', array( $this, 'getGigyaAvatar'), 10, 5);
@@ -416,27 +414,6 @@ class GigyaAction {
 			// with a 'is_new_user' flag.
 			$gigyaCMS = new GigyaCMS();
 			$result = $gigyaCMS->notifyLogin( $uid, TRUE );
-		}
-	}
-
-	/**
-	 * Hook user logout
-	 */
-	public function wpLogout() {
-
-		// Get the current user.
-		$account = wp_get_current_user();
-		if ( ! empty ( $account ) ) {
-
-			// Social logout
-			if ( $this->login_options['mode'] == 'wp_sl' ) {
-                // Note: for SSO logout sync, when logout is clicked, first gigya logs out via front end (gigya.js)
-				$gigyaCMS = new GigyaCMS();
-				$gigyaCMS->userLogout( $account->ID );
-			} elseif ( $this->login_options['mode'] == 'raas' ) {
-				$gigyaCMS = new GigyaCMS();
-				$gigyaCMS->accountLogout( $account );
-			}
 		}
 	}
 
