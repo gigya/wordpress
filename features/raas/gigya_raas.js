@@ -15,27 +15,30 @@
       $( document ).on( 'click', 'a[href]', function ( e ) {
         var path = $( this )[0].pathname;
         var search = $( this )[0].search;
-        if ( path.indexOf( 'wp-login.php' ) != -1 ) {
-          if (search.includes('?action=logout'))  {
-              raasLogout();
-          }
-          switch ( search ) {
+        if ( path.indexOf( 'wp-login.php' ) !== -1 ) {
 
-            case '':
+          switch ( true ) {
+
+            case (search === ''):
               // Login page
               gigya.accounts.showScreenSet( {screenSet: gigyaRaasParams.raasWebScreen, mobileScreenSet: gigyaRaasParams.raasMobileScreen, startScreen: gigyaRaasParams.raasLoginScreen} );
               e.preventDefault();
               break;
 
-            case '?action=register':
+            case (search === '?action=register'):
               // Register page
               gigya.accounts.showScreenSet( {screenSet: gigyaRaasParams.raasWebScreen, mobileScreenSet: gigyaRaasParams.raasMobileScreen, startScreen: gigyaRaasParams.raasRegisterScreen} );
               e.preventDefault();
               break;
 
-            case '?action=lostpassword':
+            case (search === '?action=lostpassword'):
               // Lost Password page
               e.preventDefault();
+              break;
+
+            case (search.includes('?action=logout')):
+              //Logout
+              raasLogout();
               break;
           }
         }
