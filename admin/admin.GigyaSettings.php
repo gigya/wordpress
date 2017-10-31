@@ -191,7 +191,7 @@ class GigyaSettings {
 				$gigyaErrCode = $res->getErrorCode();
 				if ( $gigyaErrCode > 0 ) {
                     $gigyaErrMsg = $res->getErrorMessage();
-                    $errorsLink = "<a href='http://developers.gigya.com/037_API_reference/zz_Response_Codes_and_Errors' target='_blank'>Response_Codes_and_Errors</a>";
+                    $errorsLink = "<a href='https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST' target='_blank'>Response_Codes_and_Errors</a>";
                     $message = "Gigya API error: {$gigyaErrCode} - {$gigyaErrMsg}. For more information please refer to {$errorsLink}";
 					add_settings_error( 'gigya_global_settings', 'api_validate', $message, 'error' );
                     // prevent updating values
@@ -206,8 +206,6 @@ class GigyaSettings {
 	/**
 	 * Set the POST'ed secret key.
 	 * If its not submitted, take it from DB.
-	 *
-	 * @param obj $cms
 	 */
 	public static function _setSecret() {
 		if ( empty($_POST['gigya_global_settings']['api_secret']) ) {
