@@ -191,7 +191,7 @@ class GigyaSettings {
 				$gigyaErrCode = $res->getErrorCode();
 				if ( $gigyaErrCode > 0 ) {
                     $gigyaErrMsg = $res->getErrorMessage();
-                    $errorsLink = "<a href='https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST' target='_blank'>Response_Codes_and_Errors</a>";
+                    $errorsLink = "<a href='https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST' target='_blank' rel='noopener noreferrer'>Response_Codes_and_Errors</a>";
                     $message = "Gigya API error: {$gigyaErrCode} - {$gigyaErrMsg}. For more information please refer to {$errorsLink}";
 					add_settings_error( 'gigya_global_settings', 'api_validate', $message, 'error' );
                     // prevent updating values

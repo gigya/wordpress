@@ -87,14 +87,14 @@ function reactionsSettingsForm() {
 			'type'  => 'textarea',
 			'label' => __( 'Reaction Buttons' ),
 			'value' => _gigParam( $values, 'buttons', _gigya_get_json( 'admin/forms/json/default_reaction' ) ),
-			'desc'  => sprintf( __( 'Please enter an array of %s, representing the buttons to display in the Reactions bar.' ), '<a href="http://developers.gigya.com/020_Client_API/010_Socialize/socialize.showReactionsBarUI#Reaction_Object">' . _( 'Reaction objects' ) . '</a>' )
+			'desc'  => sprintf( __( 'Please enter an array of %s, representing the buttons to display in the Reactions bar.' ), '<a href="http://developers.gigya.com/020_Client_API/010_Socialize/socialize.showReactionsBarUI#Reaction_Object" target="_blank" rel="noopener noreferrer">' . _( 'Reaction objects' ) . '</a>' )
 	);
 
 	$form['advanced'] = array(
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced)" ),
 			'value' => _gigParam( $values, 'advanced', '' ),
-			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="http://developers.gigya.com/020_Client_API/010_Socialize/socialize.showReactionsBarUI" target="_blank">' . __( 'parameters' ) . '</a>'
+			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="http://developers.gigya.com/020_Client_API/010_Socialize/socialize.showReactionsBarUI" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
 	);
 
     // use this field in multisite to flag when sub site settings are saved locally for site

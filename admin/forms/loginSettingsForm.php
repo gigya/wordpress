@@ -107,18 +107,18 @@ function loginSettingsForm() {
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced) LoginUI" ),
 			'value' => _gigParam( $values, 'advancedLoginUI', '' ),
-			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="http://developers.gigya.com/030_Gigya_Socialize_API_2.0/030_API_reference/010_Client_API_%28JavaScript%29/Social_service/Socialize.showLoginUI" target="_blank">' . __( 'parameters' ) . '</a>'
+			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="http://developers.gigya.com/030_Gigya_Socialize_API_2.0/030_API_reference/010_Client_API_%28JavaScript%29/Social_service/Socialize.showLoginUI" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
 	);
 
 	$form['advancedAddConnectionsUI'] = array(
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced) AddConnectionsUI" ),
 			'value' => _gigParam( $values, 'advancedAddConnectionsUI', '' ),
-			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="http://developers.gigya.com/020_Client_API/020_Methods/socialize.showAddConnectionsUI" target="_blank">' . __( 'parameters' ) . '</a>'
+			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="http://developers.gigya.com/020_Client_API/020_Methods/socialize.showAddConnectionsUI" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
 	);
 
 	$form['map_social_title'] = array(
-		'markup' => __('<h4>Mapping Gigya User Fields to WordPress Fields</h4><p>Define which fields to map from Gigya to WordPress. The WordPress mapped target fields will be populated with data copied from the corresponding source fields. Learn more <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin#User_Management_Settings" target="_blank"/>here</a></p>')
+		'markup' => __('<h4>Mapping Gigya User Fields to WordPress Fields</h4><p>Define which fields to map from Gigya to WordPress. The WordPress mapped target fields will be populated with data copied from the corresponding source fields. Learn more <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin#User_Management_Settings" target="_blank" rel="noopener noreferrer" />here</a></p>')
 	);
 
 	$form['map_social_first_name'] = array(
@@ -161,7 +161,7 @@ function loginSettingsForm() {
 	);
 
 	$form['raas_txt'] = array(
-			'markup' => '<h4>Registration-as-a-Service Settings</h4><small><span>RaaS requires initial configuration in Gigya\'s Admin Console. Screen sets can be defined in the <a class="link-https" target="_blank" rel="external nofollow" href="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets" title="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets">UI Builder</a>. The page will display a list of predefined default screen-sets, each with an ID. Click on the "Visual Editor" link next to the screen-set that you want to use, this will open the <a class="external" target="_blank" title="010_Developer_Guide/10_UM360/040_Raas/020_UI_Builder#Visual_Editor" rel="internal" href="http://dev-wiki.gigya.com/010_Developer_Guide/10_UM360/040_Raas/020_UI_Builder#Visual_Editor">Visual Editor</a> window. You can modify the screens, or just hit the "Save" button to activate them. Please make sure that the screen-set IDs that are defined below match the IDs of the screen-sets you have configured in the <a class="link-https" target="_blank" rel="external nofollow" href="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets" title="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets">UI Builder</a> page.</span></small>'
+			'markup' => '<h4>Registration-as-a-Service Settings</h4><small><span>RaaS requires initial configuration in Gigya\'s Admin Console. Screen sets can be defined in the <a class="link-https" target="_blank" rel="external nofollow noopener noreferrer" href="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets" title="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets">UI Builder</a>. The page will display a list of predefined default screen-sets, each with an ID. Click on the "Visual Editor" link next to the screen-set that you want to use, this will open the <a class="external" target="_blank" title="010_Developer_Guide/10_UM360/040_Raas/020_UI_Builder#Visual_Editor" rel="internal" href="http://dev-wiki.gigya.com/010_Developer_Guide/10_UM360/040_Raas/020_UI_Builder#Visual_Editor">Visual Editor</a> window. You can modify the screens, or just hit the "Save" button to activate them. Please make sure that the screen-set IDs that are defined below match the IDs of the screen-sets you have configured in the <a class="link-https" target="_blank" rel="external nofollow noopener noreferrer" href="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets" title="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets">UI Builder</a> page.</span></small>'
 	);
 
 	$form['raas_screens'] = array(
@@ -238,7 +238,7 @@ function loginSettingsForm() {
 	);
 
 	$form['map_rass_title'] = array(
-		'markup' => __('<h4>Mapping Gigya User Fields to WordPress Fields</h4><p>Define which fields to map from Gigya to WordPress. The WordPress mapped target fields will be populated with data copied from the corresponding source fields. Learn more <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin#User_Management_Settings" target="_blank"/>here</a></p>')
+		'markup' => __('<h4>Mapping Gigya User Fields to WordPress Fields</h4><p>Define which fields to map from Gigya to WordPress. The WordPress mapped target fields will be populated with data copied from the corresponding source fields. Learn more <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin#User_Management_Settings" target="_blank" rel="noopener noreferrer" />here</a></p>')
 	);
 
 	$form['map_raas_first_name'] = array(
@@ -272,7 +272,7 @@ function loginSettingsForm() {
 	);
 
 	$form['raas_admin_roles_title'] = array(
-		'markup' => __('<h4>Admin Login Roles</h4><p>Select below which <a target="_blank" href=http://codex.wordpress.org/Roles_and_Capabilities#Roles>Roles</a> should be permitted to login via the default WordPress login UI in /wp-login.php <br/>For more information, please refer to <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin/020_RaaS#Admin_Users.2C_Roles_.26_Permissions" target="_blank">Users, Roles & Permissions</a> section in Gigya documentation.</p>')
+		'markup' => __('<h4>Admin Login Roles</h4><p>Select below which <a href="http://codex.wordpress.org/Roles_and_Capabilities#Roles">Roles</a> should be permitted to login via the default WordPress login UI in /wp-login.php <br/>For more information, please refer to <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin/020_RaaS#Admin_Users.2C_Roles_.26_Permissions" target="_blank" rel="noopener noreferrer">Users, Roles & Permissions</a> section in Gigya documentation.</p>')
 	);
 
 	// create checkbox for each role in site (except admin & super admin)
