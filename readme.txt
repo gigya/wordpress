@@ -85,10 +85,10 @@ For question about installations or configuration, please contact your account m
 
 
 = 4.0 =
-* Gigya's <a href="http://developers.gigya.com/010_Developer_Guide/18_Plugins/030_The_Reactions_Plugin" title="Reactions">Reactions bar</a>
-* Gigya's <a href="http://developers.gigya.com/010_Developer_Guide/40_Gamification" title="Gamification">Gamification</a>
-* Gigya's <a href="http://developers.gigya.com/010_Developer_Guide/18_Plugins/060_Activity_Feed_Plugin" title="Activity Feed">Activity Feed</a>
-* Upgraded <a href="http://developers.gigya.com/010_Developer_Guide/18_Plugins/022_Comments_Version_2" title="Comments Version 2">Comments plugin (version 2)</a>
+* Gigya's <a href="https://developers.gigya.com/display/GD/Reactions" title="Reactions">Reactions bar</a>
+* Gigya's <a href="https://developers.gigya.com/display/GD/Loyalty+-+Gamification+and+User+Behavior" title="Gamification">Gamification</a>
+* Gigya's Activity Feed
+* Upgraded <a href="https://developers.gigya.com/display/GD/Comments" title="Comments Version 2">Comments plugin (version 2)</a>
 * Support connecting to an alternative data centers (e.g. Europe data center)
 * Improved administration
 * Integrated Google Analytics
@@ -112,7 +112,7 @@ For question about installations or configuration, please contact your account m
 * Support Follow Bar in administration
 
 = 5.1.1 =
-* Fixed a Gigya breaking change: <a href="http://developers.gigya.com/010_Developer_Guide/Guides/Breaking_Changes#1._Strings_must_be_enclosed_with_quotes" >Strings must be enclosed with quotes in search queries</a>
+* Fixed a Gigya breaking change: <a href="http://developers.gigya.com/010_Developer_Guide/Guides/Breaking_Changes#1._Strings_must_be_enclosed_with_quotes">Strings must be enclosed with quotes in search queries</a>
 
 = 5.2 =
 * For security reasons, the Gigya Secret Key can now only be viewed or edited by privileged users. By default only by <strong>network admins</strong> (in a multi-site installation) or <strong>admins</strong> (in a single-site installation). Learn more in <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin#Roles_and_Permissions">Roles and Permissions</a>.

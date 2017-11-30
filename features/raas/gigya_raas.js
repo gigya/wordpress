@@ -42,7 +42,7 @@
               break;
           }
         }
-        else if ( path.indexOf( 'profile.php' ) != -1 && gigyaRaasParams.canEditUsers != 1 ) {
+        else if ( path.indexOf( 'profile.php' ) !== -1 && gigyaRaasParams.canEditUsers != 1 ) {
 
           // Profile page
           gigya.accounts.showScreenSet( {screenSet: gigyaRaasParams.raasProfileWebScreen, mobileScreenSet: gigyaRaasParams.raasProfileMobileScreen, onAfterSubmit: raasUpdatedProfile} );
@@ -77,7 +77,7 @@
 				}
 
 				// Embed Screens.
-				if (location.search.indexOf('admin=true') === -1 && admin == false) {
+				if (location.search.indexOf('admin=true') === -1 && !admin) {
 					gigya.accounts.showScreenSet({
 						screenSet: gigyaRaasParams.raasWebScreen,
 						mobileScreenSet: gigyaRaasParams.raasMobileScreen,
@@ -167,14 +167,15 @@
 				$('.spinner').show();
 
 				req.done(function (res) {
-					if (res.success == true) {
+					if (res.success) {
 						GigyaWp.redirect();
 					}
 					else {
 						if (typeof res.data !== 'undefined') {
 							// The user didn't logged in.
-							$('#dialog-modal').html(res.data.msg);
-							$('#dialog-modal').dialog({modal: true});
+							var dialog_modal = $('#dialog-modal');
+							dialog_modal.html(res.data.msg);
+							dialog_modal.dialog({modal: true});
 						}
 						gigya.accounts.logout();
 					}
@@ -184,7 +185,7 @@
 					console.log(errorThrown);
 				});
 
-				$("#dialog-modal").on("dialogclose", function (event, ui) {
+				$("#dialog-modal").on("dialogclose", function () {
 					location.reload();
 				});
 			};
