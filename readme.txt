@@ -50,7 +50,7 @@ For question about installations or configuration, please contact your account m
 
 == Screenshots ==
 
-1. Wordpress Registration page with Gigya's Social Login
+1. WordPress Registration page with Gigya's Social Login
 2. Registration-as-a-Service pop-up screen
 3. Gigya's administration panel
 4. Gigya widgets
@@ -62,7 +62,7 @@ For question about installations or configuration, please contact your account m
 
 = 2.0.5 =
 
-* Support Wordpress networks
+* Support WordPress networks
 * New customized Share bar including Facebook like button and Google+1.
 * Bug fixes
 
@@ -73,7 +73,7 @@ For question about installations or configuration, please contact your account m
 
 = 3.0 =
 * Option to choose the position of the share bar plugin.
-* Improve the integration of Gigya comments with the Wordpress comments.
+* Improve the integration of Gigya comments with the WordPress comments.
 * Call Gigya notifyLogin for user logging in with site credentials for better integration with Gigya plugins.
 * Option to select which JQuery version to be used by gigya plugin.
 * Support Gigya Login widget as a shortcode - enables site owners to embed the Login widget anywhere on the site template without a sidebar.
@@ -112,7 +112,7 @@ For question about installations or configuration, please contact your account m
 * Support Follow Bar in administration
 
 = 5.1.1 =
-* Fixed a Gigya breaking change:  <a href="http://developers.gigya.com/010_Developer_Guide/Guides/Breaking_Changes#1._Strings_must_be_enclosed_with_quotes" >Strings must be enclosed with quotes in search queries</a>
+* Fixed a Gigya breaking change: <a href="http://developers.gigya.com/010_Developer_Guide/Guides/Breaking_Changes#1._Strings_must_be_enclosed_with_quotes" >Strings must be enclosed with quotes in search queries</a>
 
 = 5.2 =
 * For security reasons, the Gigya Secret Key can now only be viewed or edited by privileged users. By default only by <strong>network admins</strong> (in a multi-site installation) or <strong>admins</strong> (in a single-site installation). Learn more in <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin#Roles_and_Permissions">Roles and Permissions</a>.
@@ -125,7 +125,7 @@ For question about installations or configuration, please contact your account m
 
 Can I configure the design of the Gigya component?
 
-Yes, the design is fully configurable. You can read more about configuring the Gigya component design in our online documentation <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin" title="Installation and Configuration guide">here</a>
+Yes, the design is fully configurable. You can read more about configuring the Gigya component design in our online documentation <a href="https://developers.gigya.com/display/GD/WordPress+Plugin" title="Installation and Configuration guide">here</a>
 
 How can I get support for the Gigya Plugin?
 

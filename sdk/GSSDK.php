@@ -217,7 +217,6 @@ class GSRequest {
 		$nonce      = ( (string) SigUtils::currentTimeMillis() ) . rand();
 		$httpMethod = "POST";
 
-
 		if ( ! empty( $secret ) ) {
 			$params->put( "apiKey", $token );
 

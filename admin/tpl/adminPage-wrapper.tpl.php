@@ -17,7 +17,7 @@
 	</div>
 
 	<?php
-	$helpUrl = 'http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin';
+	$helpUrl = 'https://developers.gigya.com/display/GD/WordPress+Plugin';
 	printf( __( 'To learn more about Gigya & how to setup an account, please visit our developer documentation <a target="_blank" rel="noopener noreferrer" href="%1$s">here</a>.' ), $helpUrl );
 	?>
 </div>

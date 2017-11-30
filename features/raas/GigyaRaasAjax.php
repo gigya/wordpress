@@ -26,7 +26,7 @@ class GigyaRaasAjax {
 
 		// Trap for login users
 		if ( is_user_logged_in() ) {
-			$prm = array( 'msg' => __( 'There already a logged in user' ) );
+			$prm = array( 'msg' => __( 'You are already logged in' ) );
 			wp_send_json_error( $prm );
 		}
 
