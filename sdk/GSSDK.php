@@ -215,7 +215,7 @@ class GSRequest {
 
 		//timestamp in milliseconds
 		$nonce      = ( (string) SigUtils::currentTimeMillis() ) . rand();
-		$httpMethod = "POST";
+		$httpMethod = $method;
 
 		if ( ! empty( $secret ) ) {
 			$params->put( "apiKey", $token );
