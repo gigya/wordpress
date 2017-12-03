@@ -5,6 +5,9 @@
  */
 class GigyaCMS {
 
+	protected $api_key;
+	protected $api_secret;
+
 	/**
 	 * Constructs a GigyaApi object.
 	 */
@@ -146,11 +149,15 @@ class GigyaCMS {
 	 */
 	public static function load( &$account ) {
 		// Attache to user if the user is logged in.
-		$account->gigya = ( isset( $account->uid ) ? new GigyaUser( $account->uid ) : NULL );
+		$account->gigya = ( isset( $account->uid ) ? new GigyaUser( $account->uid ) : null );
 	}
 
 	/**
 	 * Social logout.
+	 *
+	 * @param	$guid
+	 *
+	 * @return	array|WP_Error|integer|boolean
 	 */
 	public function userLogout( $guid ) {
 		if ( ! empty( $guid ) ) {
@@ -161,7 +168,7 @@ class GigyaCMS {
 			return $this->call( 'socialize.logout', $params );
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	/**
@@ -208,6 +215,8 @@ class GigyaCMS {
 	/**
 	 * Callback for array_walk.
 	 * Helper function for trimming.
+	 *
+	 * @param	$value
 	 */
 	private function trimValue( &$value ) {
 		$value = trim( $value );
@@ -246,7 +255,7 @@ class GigyaCMS {
 	 *
 	 * @return bool|null|string True if the notify login request succeeded or the error message from Gigya
 	 */
-	function notifyLogin( $uid, $is_new_user = FALSE, $user_info = NULL ) {
+	function notifyLogin( $uid, $is_new_user = false, $user_info = null ) {
 
 		$params['siteUID'] = $uid;
 
@@ -317,8 +326,9 @@ class GigyaCMS {
 
 			$this->call( 'socialize.deleteAccount', $params );
 
-			return TRUE;
+			return true;
 		}
+		return false;
 	}
 
 /////////////////////////////////
@@ -408,14 +418,13 @@ class GigyaCMS {
 	/**
 	 * Checks if this email is the primary user email
 	 *
-	 * @param String $gigya_emails
-	 * @param String $wp_email email from WP DB.
+	 * @param array $gigya_emails
+	 * @param string $wp_email email from WP DB.
 	 *
 	 * @internal param \The $userInfo user info from accounts.getUserInfo api call
 	 * @return bool
 	 */
 	public static function isPrimaryUser( $gigya_emails, $wp_email ) {
-
 		if ( in_array( $wp_email, $gigya_emails ) ) {
 			return TRUE;
 		}

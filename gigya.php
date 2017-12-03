@@ -304,10 +304,9 @@ class GigyaAction {
 			// for a return user logged in from WP login form.
 			$gigyaCMS = new GigyaCMS();
 			$gigyaCMS->notifyLogin( $account->ID );
-
 		}
 
-		// This post vars available when there is the same email on the site,
+		// These post vars are available when there is the same email on the site,
 		// with the one who try to register and we want to link-accounts
 		// after the user is logged in with password. Or login after email verify.
 		if ( ( $_POST['action'] == 'link_accounts' || $_POST['action'] == 'custom_login' ) && ! empty ( $_POST['data'] ) ) {
