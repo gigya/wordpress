@@ -96,8 +96,8 @@ For question about installations or configuration, please contact your account m
 
 = 5.0 =
 * The Plugin has been rewritten, providing improved architecture, administration and security.
-* Gigya's <a href="http://developers.gigya.com/010_Developer_Guide/10_UM360/040_Raas" title="RaaS Integration">Registration-as-a-Service Integration</a>
-* Gigya's <a href="http://developers.gigya.com/010_Developer_Guide/18_Plugins/025_Rating_Reviews" title="Rating & Reviews">Rating & Reviews</a>
+* Gigya's <a href="https://developers.gigya.com/display/GD/Registration-as-a-Service" title="RaaS Integration">Registration-as-a-Service Integration</a>
+* Gigya's <a href="https://developers.gigya.com/display/GD/R+and+R" title="Rating & Reviews">Rating & Reviews</a>
 * Added SEO support in the Comments and Rating&Reviews plugins, meaning the comments/reviews content is searchable by the main search engines.
 * All Gigya social plugins are provides as WP widgets that can be placed anywhere on your site.
 

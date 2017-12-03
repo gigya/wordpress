@@ -2,6 +2,16 @@
 
 	$(document).ready(function () {
 
+		/**
+		 * @class	gigya.socialize
+		 */
+		/**
+		 * @class	gigyaLoginParams
+		 * @property	actionCustomLogin
+		 * @property	actionLogin
+		 * @property	addConnection
+		 */
+
 // --------------------------------------------------------------------
 
 		/**
@@ -21,6 +31,7 @@
 			}
 
 			// Attach the Gigya block.
+			/** @function	gigya.socialize.showLoginUI */
 			gigya.socialize.showLoginUI(params);
 		};
 
@@ -28,7 +39,7 @@
 		 * Initialize each login widget on page.
 		 */
 		var showLoginWidget = function () {
-			$('.gigya-login-widget').each(function (index, value) {
+			$('.gigya-login-widget').each(function (index) {
 
 				var id = 'gigya-login-widget-' + index;
 				$(this).attr('id', id);
@@ -84,7 +95,11 @@
 				$.extend(addConnectionsParams, addConnectionsParamsUI);
 			}
 
-			// Attach the Gigya block.
+			/**
+			 * Attach the Gigya block
+			 *
+			 * @function	gigya.socialize.showAddConnectionsUI
+			 */
 			gigya.socialize.showAddConnectionsUI(addConnectionsParams);
 		};
 
@@ -110,7 +125,7 @@
 			$('.spinner').show();
 
 			req.done(function (res) {
-				if (res.success == true) {
+				if (res.success) {
 					if (typeof res.data !== 'undefined') {
 
 						// The user didn't register, and need more field to fill.
@@ -140,6 +155,11 @@
 		/**
 		 * Login validator.
 		 * @param response
+		 * @param response.provider
+		 * @param response.UID
+		 * @param response.user
+		 * @param response.user.firstName
+		 * @param response.user.isSiteUID
 		 * @returns {boolean}
 		 */
 		var loginValidate = function (response) {
@@ -167,9 +187,10 @@
 					'<input type="text" id="get-email" name="email">' +
 					'<button type="button" class="button button-get-email">Submit</button>' +
 					'</div>';
+				var dialog_modal_obj = $('#dialog-modal');
 
 				// Modal with the email form.
-				$('#dialog-modal').html(html).dialog({modal: true});
+				dialog_modal_obj.html(html).dialog({modal: true});
 
 				$(document).on('click', '.button-get-email', function () {
 					// The email input.
@@ -188,8 +209,7 @@
 
 				});
 
-				$("#dialog-modal").on("dialogclose", function (event, ui) {
-//          gigya.socialize.logout( response );
+				dialog_modal_obj.on("dialogclose", function (event, ui) {
 				});
 				$(document).on('click', ".ui-dialog-titlebar-close", function () {
 					gigya.socialize.logout();
@@ -243,8 +263,13 @@
 
 			var req = $.ajax(options);
 
+			/**
+			 * @param	res
+			 * @param	res.data
+			 * @param	res.data.msg
+			 */
 			req.done(function (res) {
-				if (res.success == true) {
+				if (res.success) {
 					GigyaWp.redirect();
 				}
 				else {
@@ -255,7 +280,7 @@
 				}
 			});
 
-			req.fail(function (jqXHR, textStatus, errorThrown) {
+			req.fail(function (jqXHR) { /* Use status, error function parameters for a more robust response */
 				console.log(jqXHR.statusCode());
 			});
 		};
@@ -289,4 +314,3 @@
 		}
 	});
 })(jQuery);
-
