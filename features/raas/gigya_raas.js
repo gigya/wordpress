@@ -8,11 +8,37 @@
      * Override default WP links to use Gigya's RaaS behavior.
      */
 
+	/**
+	 * @class	gigya.accounts
+	 * @function	gigya.accounts.showScreenSet
+	 * @function	gigya.accounts.addEventHandlers
+	 */
+	/**
+	 * @class	gigyaParams
+	 * @property	{String}	ajaxurl
+	 */
+	/**
+	 * @class	gigyaRaasParams
+	 * @property	actionRaas
+	 * @property	canEditUsers
+	 * @property	raasLoginDiv
+	 * @property	raasLoginScreen
+	 * @property	raasMobileScreen
+	 * @property	raasOverrideLinks
+	 * @property	raasProfileDiv
+	 * @property	raasProfileMobileScreen
+	 * @property	raasProfileWebScreen
+	 * @property	raasRegisterDiv
+	 * @property	raasRegisterScreen
+	 * @property	raasWebScreen
+	 */
+
     var raasLogout = function () {
-        gigya.accounts.logout();
+		gigya.accounts.logout();
     };
-    var overrideLinks = function () {
+	var overrideLinks = function () {
       $( document ).on( 'click', 'a[href]', function ( e ) {
+	  	/** @function	gigya.accounts.showScreenSet */
         var path = $( this )[0].pathname;
         var search = $( this )[0].search;
         if ( path.indexOf( 'wp-login.php' ) !== -1 ) {
@@ -51,11 +77,8 @@
       } );
 
       // Hide the WP login screens navigation.
-      $( '#login #nav' ).hide();
+      $( '#login' ).find( '#nav' ).hide();
     };
-
-
-
 
 // --------------------------------------------------------------------
 
@@ -104,7 +127,7 @@
 					// Set admin=true cookie
 					var d = new Date();
 					d.setTime(d.getTime() + (60 * 60 * 1000));
-					var expires = "; expires=" + d.toGMTString();
+					var expires = "; expires=" + d.toUTCString();
 					document.cookie = "gigya_admin=true" + expires;
 				}
 
@@ -192,20 +215,6 @@
 // --------------------------------------------------------------------
 
 			raasInit();
-
-// --------------------------------------------------------------------
-
-			// Check Connection to RaaS
-//		function AccountInfoResponse(response) {
-//			if (response.errorCode == 0) {
-//				console.log(response);
-//			}
-//			else {
-//				console.log('Gigya RaaS Error: ' + response.errorMessage);
-//			}
-//		}
-//
-//		gigya.accounts.getAccountInfo({ callback: AccountInfoResponse });
 
 		}
 	)
