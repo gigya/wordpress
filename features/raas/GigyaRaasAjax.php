@@ -8,6 +8,8 @@
 class GigyaRaasAjax {
 
 	private $gigya_account;
+	private $global_options;
+	private $login_options;
 
 	public function __construct() {
 
