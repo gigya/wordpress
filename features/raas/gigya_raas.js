@@ -8,11 +8,37 @@
      * Override default WP links to use Gigya's RaaS behavior.
      */
 
+	/**
+	 * @class	gigya.accounts
+	 * @function	gigya.accounts.showScreenSet
+	 * @function	gigya.accounts.addEventHandlers
+	 */
+	/**
+	 * @class	gigyaParams
+	 * @property	{String}	ajaxurl
+	 */
+	/**
+	 * @class	gigyaRaasParams
+	 * @property	actionRaas
+	 * @property	canEditUsers
+	 * @property	raasLoginDiv
+	 * @property	raasLoginScreen
+	 * @property	raasMobileScreen
+	 * @property	raasOverrideLinks
+	 * @property	raasProfileDiv
+	 * @property	raasProfileMobileScreen
+	 * @property	raasProfileWebScreen
+	 * @property	raasRegisterDiv
+	 * @property	raasRegisterScreen
+	 * @property	raasWebScreen
+	 */
+
     var raasLogout = function () {
-        gigya.accounts.logout();
+		gigya.accounts.logout();
     };
-    var overrideLinks = function () {
+	var overrideLinks = function () {
       $( document ).on( 'click', 'a[href]', function ( e ) {
+	  	/** @function	gigya.accounts.showScreenSet */
         var path = $( this )[0].pathname;
         var search = $( this )[0].search;
         if ( path.indexOf( 'wp-login.php' ) !== -1 ) {
@@ -42,7 +68,7 @@
               break;
           }
         }
-        else if ( path.indexOf( 'profile.php' ) != -1 && gigyaRaasParams.canEditUsers != 1 ) {
+        else if ( path.indexOf( 'profile.php' ) !== -1 && gigyaRaasParams.canEditUsers != 1 ) {
 
           // Profile page
           gigya.accounts.showScreenSet( {screenSet: gigyaRaasParams.raasProfileWebScreen, mobileScreenSet: gigyaRaasParams.raasProfileMobileScreen, onAfterSubmit: raasUpdatedProfile} );
@@ -51,11 +77,8 @@
       } );
 
       // Hide the WP login screens navigation.
-      $( '#login #nav' ).hide();
+      $( '#login' ).find( '#nav' ).hide();
     };
-
-
-
 
 // --------------------------------------------------------------------
 
@@ -77,7 +100,7 @@
 				}
 
 				// Embed Screens.
-				if (location.search.indexOf('admin=true') === -1 && admin == false) {
+				if (location.search.indexOf('admin=true') === -1 && !admin) {
 					gigya.accounts.showScreenSet({
 						screenSet: gigyaRaasParams.raasWebScreen,
 						mobileScreenSet: gigyaRaasParams.raasMobileScreen,
@@ -104,7 +127,7 @@
 					// Set admin=true cookie
 					var d = new Date();
 					d.setTime(d.getTime() + (60 * 60 * 1000));
-					var expires = "; expires=" + d.toGMTString();
+					var expires = "; expires=" + d.toUTCString();
 					document.cookie = "gigya_admin=true" + expires;
 				}
 
@@ -167,14 +190,15 @@
 				$('.spinner').show();
 
 				req.done(function (res) {
-					if (res.success == true) {
+					if (res.success) {
 						GigyaWp.redirect();
 					}
 					else {
 						if (typeof res.data !== 'undefined') {
 							// The user didn't logged in.
-							$('#dialog-modal').html(res.data.msg);
-							$('#dialog-modal').dialog({modal: true});
+							var dialog_modal = $('#dialog-modal');
+							dialog_modal.html(res.data.msg);
+							dialog_modal.dialog({modal: true});
 						}
 						gigya.accounts.logout();
 					}
@@ -184,27 +208,13 @@
 					console.log(errorThrown);
 				});
 
-				$("#dialog-modal").on("dialogclose", function (event, ui) {
+				$("#dialog-modal").on("dialogclose", function () {
 					location.reload();
 				});
 			};
 // --------------------------------------------------------------------
 
 			raasInit();
-
-// --------------------------------------------------------------------
-
-			// Check Connection to RaaS
-//		function AccountInfoResponse(response) {
-//			if (response.errorCode == 0) {
-//				console.log(response);
-//			}
-//			else {
-//				console.log('Gigya RaaS Error: ' + response.errorMessage);
-//			}
-//		}
-//
-//		gigya.accounts.getAccountInfo({ callback: AccountInfoResponse });
 
 		}
 	)

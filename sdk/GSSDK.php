@@ -15,7 +15,6 @@ if ( ! function_exists( 'json_decode' ) ) {
 	throw new Exception( 'Gigya.Socialize needs the JSON PHP extension.' );
 }
 
-
 /**
  * Gigya Socialize Exception
  *
@@ -58,22 +57,24 @@ class GSRequest {
 
 	private $apiKey;
 	private $secretKey;
-	private $params; //GSObject
+	/**
+	 * @var null|GSObject
+	 */
+	private $params;
 	private $useHTTPS;
 	private $apiDomain = self::DEFAULT_API_DOMAIN;
 
-
 	/**
 	 * Constructs a request using an apiKey and secretKey.
-	 * You must provide a user ID (UID) of the tage user.
+	 * You must provide a user ID (UID) of the user.
 	 * Suitable for calling our old REST API
 	 *
 	 * @param apiKey
 	 * @param secretKey
-	 * @param apiMethod the api method (including namespace) to call. for example: socialize.getUserInfo
-	 *                  If namespaces is not supplied "socialize" is assumed
-	 * @param params    the request parameters
-	 * @param useHTTPS  useHTTPS set this to true if you want to use HTTPS.
+	 * @param string			$apiMethod the api method (including namespace) to call. for example: socialize.getUserInfo
+	 *                  			If namespaces is not supplied "socialize" is assumed
+	 * @param null | GSObject	$params    the request parameters
+	 * @param boolean			$useHTTPS  useHTTPS set this to true if you want to use HTTPS.
 	 */
 	public function __construct( $apiKey, $secretKey, $apiMethod, $params = null, $useHTTPS = false ) {
 		if ( ! isset( $apiMethod ) || strlen( $apiMethod ) == 0 )
@@ -123,7 +124,7 @@ class GSRequest {
 	/**
 	 * Sets the domain used for making API calls. This method provides the option to override the default domain "gigya.com" and specify an alternative data center to be used.
 	 * Parameters:
-	 *    $apiDomain - the domain of the data center to be used. For example: "eu1.gigya.com" for Europe data center.
+	 * @param	string	$apiDomain - the domain of the data center to be used. For example: "eu1.gigya.com" for Europe data center.
 	 */
 	public function setAPIDomain( $apiDomain ) {
 		if ( ! isset( $apiDomain ) || strlen( $apiDomain ) == 0 )
@@ -152,6 +153,10 @@ class GSRequest {
 
 	/**
 	 * Send the request synchronously
+	 *
+	 * @param	string	$timeout
+	 *
+	 * @return	GSResponse
 	 */
 	public function send( $timeout = null ) {
 		$format = $this->params->getString( "format", null );
@@ -204,30 +209,44 @@ class GSRequest {
 		}
 	}
 
+	/**
+	 * @param	string		$method
+	 * @param	string		$domain
+	 * @param	string		$path
+	 * @param	GSObject	$params
+	 * @param      $token
+	 * @param      $secret
+	 * @param bool $useHTTPS
+	 * @param null|string|integer $timeout
+	 * @return mixed
+	 */
 	private function sendRequest( $method, $domain, $path, $params, $token, $secret, $useHTTPS = false, $timeout = null ) {
 		$params->put( "sdk", "php_" . GSRequest::version );
 		//prepare query params
-		$protocol    = $useHTTPS || empty( $secret ) ? "https" : "http";
+		$protocol    = ($useHTTPS or empty( $secret )) ? "https" : "http";
 		$resourceURI = $protocol . "://" . $domain . $path;
 
-		//UTC timestamp.
+		/* UTC timestamp */
 		$timestamp = (string) time();
 
-		//timestamp in milliseconds
+		/* Timestamp in milliseconds */
 		$nonce      = ( (string) SigUtils::currentTimeMillis() ) . rand();
-		$httpMethod = "POST";
+		$httpMethod = $method;
 
 		if ( ! empty( $secret ) ) {
 			$params->put( "apiKey", $token );
 
-			if ( $useHTTPS ) {
+			if ( $useHTTPS )
+			{
 				$params->put( "secret", $secret );
-			} else {
+			}
+			else
+			{
 				$params->put( "timestamp", $timestamp );
 				$params->put( "nonce", $nonce );
 
-				//signature
-				$signature = self::getOAuth1Signature( $secret, $httpMethod, $resourceURI, $useHTTPS, $params );
+				/* Signature */
+				$signature = self::getOAuth1Signature( $secret, $httpMethod, $resourceURI, $params );
 				$params->put( "sig", $signature );
 			}
 		} else {
@@ -235,13 +254,20 @@ class GSRequest {
 			$params->put( "oauth_token", $token );
 		}
 
-		//get rest response.
+		/* Get REST response */
 		$res = $this->curl( $resourceURI, $params, $timeout );
 		return $res;
 	}
 
-
+	/**
+	 * @param	string		$url
+	 * @param	GSObject	$params
+	 * @param null | string | integer	$timeout
+	 * @return mixed
+	 * @throws Exception
+	 */
 	private function curl( $url, $params, $timeout = null ) {
+		$postData = array();
 		foreach ( $params->getKeys() as $key ) {
 			$value          = $params->getString( $key );
 			$postData[$key] = $value;
@@ -296,13 +322,12 @@ class GSRequest {
 	/**
 	 * Converts a GSObject to a query string
 	 *
-	 * @param params
+	 * @param	GSObject	$params
 	 *
-	 * @return
+	 * @return	string
 	 */
 	public static function buildQS( $params ) {
-		$val = '';
-		$ret = "";
+		$ret = '';
 		foreach ( $params->getKeys() as $key ) {
 			$val = $params->getString( $key );
 			if ( isset( $val ) ) {
@@ -313,15 +338,19 @@ class GSRequest {
 		return $ret;
 	}
 
-	private static function getOAuth1Signature( $key, $httpMethod, $url, $isSecureConnection, $requestParams ) {
-		// Create the BaseString.
-		$baseString = self::calcOAuth1BaseString( $httpMethod, $url, $isSecureConnection, $requestParams );
+	private static function getOAuth1Signature( $key, $httpMethod, $url, $requestParams ) {
+		/* Create the BaseString */
+		$baseString = self::calcOAuth1BaseString( $httpMethod, $url, $requestParams );
 		return SigUtils::calcSignature( $baseString, $key );
 	}
 
-	private static function calcOAuth1BaseString( $httpMethod, $url, $isSecureConnection, $requestParams ) {
-
-
+	/**
+	 * @param $httpMethod
+	 * @param $url
+	 * @param	GSObject	$requestParams
+	 * @return string
+	 */
+	private static function calcOAuth1BaseString( $httpMethod, $url, $requestParams ) {
 		$normalizedUrl = "";
 		$u             = parse_url( $url );
 		$protocol      = strtolower( $u["scheme"] );
@@ -378,7 +407,6 @@ class GSRequest {
 
 }
 
-
 /**
  * Wraps the server's response.
  * If the request was sent with the format set to "xml", the getData() will return null and you should use getResponseText() instead.
@@ -389,8 +417,17 @@ class GSResponse {
 	private $errorCode = 0;
 	private $errorMessage = null;
 	private $rawData = "";
-	private $data; //GSObject
+	/**
+	 * @var GSObject
+	 */
+	private $data;
+	/**
+	 * @var	GSObject
+	 */
 	private static $errorMsgDic;
+	/**
+	 * @var null|GSObject
+	 */
 	private $params = null;
 	private $method = null;
 	private $traceLog = null;
@@ -400,7 +437,6 @@ class GSResponse {
 		self::$errorMsgDic->put( 400002, "Required parameter is missing" );
 		self::$errorMsgDic->put( 500000, "General server error" );
 	}
-
 
 	public function getErrorCode() {
 		return $this->errorCode;
@@ -460,7 +496,6 @@ class GSResponse {
 	public function getArray( $key ) {
 		return $this->data->getArray( $key );
 	}
-
 
 	/* C'tor */
 	public function __construct( $method, $responseText = null, $params = null, $errorCode = null, $errorMessage = null, $traceLog = null ) {
@@ -546,7 +581,6 @@ class GSResponse {
 
 GSResponse::Init();
 
-
 /**
  * Used for passing parameters when issueing requests e.g. GSRequest.send
  * As well as returning response data e.g. GSResponse.getData
@@ -559,7 +593,7 @@ class GSObject {
 	/**
 	 * Construct a GSObject from json string, throws excpetion.
 	 *
-	 * @param json the json formatted string
+	 * @param	string | object	$json the json formatted string
 	 *
 	 * @throws Exception if unable to parse json
 	 */
@@ -570,7 +604,6 @@ class GSObject {
 			//parse json string.
 			if ( gettype( $json ) == 'string' ) {
 				$obj = json_decode( $json, false );
-
 
 				if ( $obj == null ) {
 					throw new GSException();
@@ -602,7 +635,6 @@ class GSObject {
 		return $arr;
 	}
 
-
 	public static function serializeValue( $value ) {
 
 		//GSDictionary
@@ -617,14 +649,12 @@ class GSObject {
 		}
 	}
 
-
 	/* Put */
 	const DEFAULT_VALUE = '@@EMPTY@@';
 
 	public function put( $key, $value ) {
 		$this->map[$key] = $value;
 	}
-
 
 	private function get( $key, $defaultValue ) {
 		if ( array_key_exists( $key, $this->map ) ) {
@@ -689,7 +719,6 @@ class GSObject {
 		}
 	}
 
-
 	/**
 	 * Parse parameters from query string
 	 *
@@ -733,22 +762,23 @@ class GSObject {
 		}
 	}
 
+	/**
+	 * @param array|object	$jo
+	 * @param GSObject		$parentObj
+	 * @return mixed
+	 */
 	private static function processJsonObject( $jo, $parentObj ) {
 		if ( ! empty( $jo ) )
 			foreach ( $jo as $name => $value ) {
-
 
 				//array
 				if ( is_array( ( $value ) ) ) {
 					$parentObj->put( $name, new GSArray( $value ) );
 				} //object
 				elseif ( is_object( $value ) ) {
-
 					$childObj = new GSObject();
 					$parentObj->put( $name, $childObj );
 					self::processJsonObject( $value, $childObj );
-
-
 				} //primitive
 				else {
 					$parentObj->put( $name, $value );
@@ -760,7 +790,6 @@ class GSObject {
 	}
 
 }
-
 
 class GSArray {
 	private $map;
@@ -784,6 +813,10 @@ class GSArray {
 		}
 	}
 
+	/**
+	 * @param null|array|object	$value
+	 * @param GSArray			$gsarr
+	 */
 	private static function processJsonObject( $value, $gsarr ) {
 		if ( ! empty( $value ) ) {
 			foreach ( $value as $val ) {
@@ -817,7 +850,7 @@ class GSArray {
 	public function getBool( $inx ) {
 		$obj = $this->map[$inx];
 		if ( $obj === null )
-			throw new Exception( GSArray::NO_INDEX_EX + $inx );
+			throw new Exception( GSArray::NO_INDEX_EX.$inx );
 
 		if ( is_bool( $obj ) ) {
 			return (Boolean) $obj;
@@ -831,7 +864,7 @@ class GSArray {
 
 		$obj = $this->map[$inx];
 		if ( $obj === null )
-			throw new Exception( GSArray::NO_INDEX_EX + $inx );
+			throw new Exception( GSArray::NO_INDEX_EX.$inx );
 
 		if ( is_int( $obj ) ) {
 			return (int) $obj;
@@ -843,7 +876,7 @@ class GSArray {
 	public function getLong( $inx ) {
 		$obj = $this->map[$inx];
 		if ( $obj === null )
-			throw new Exception( GSArray::NO_INDEX_EX + $inx );
+			throw new Exception( GSArray::NO_INDEX_EX.$inx );
 
 		if ( is_float( $obj ) ) {
 			return (float) $obj;
@@ -855,7 +888,7 @@ class GSArray {
 	public function getDouble( $inx ) {
 		$obj = $this->map[$inx];
 		if ( $obj === null )
-			throw new Exception( GSArray::NO_INDEX_EX + $inx );
+			throw new Exception( GSArray::NO_INDEX_EX.$inx );
 
 		if ( is_double( $obj ) ) {
 			return (double) $obj;
@@ -875,7 +908,6 @@ class GSArray {
 	public function length() {
 		return sizeof( $this->map );
 	}
-
 
 	public function __toString() {
 		return $this->toJsonString();
@@ -902,6 +934,10 @@ class GSArray {
 		return $arr;
 	}
 
+	/**
+	 * @param GSArray	$gsarr
+	 * @return array
+	 */
 	public static function serializeGSArray( $gsarr ) {
 		$arr = Array();
 		for ( $i = 0; $i < $gsarr->length(); $i ++ ) {
@@ -913,7 +949,6 @@ class GSArray {
 		return $arr;
 	}
 }
-
 
 class SigUtils {
 	public static function validateUserSignature( $UID, $timestamp, $secret, $signature ) {
@@ -954,5 +989,3 @@ class SigUtils {
 		return $signature;
 	}
 }
-
-?>

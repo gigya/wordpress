@@ -2,6 +2,17 @@ var GigyaWp = GigyaWp || {};
 
 (function ($) {
 
+	/**
+	 * @class gigyaParams
+	 * @property	logoutUrl
+	 */
+	/**
+	 * @class gigyaLoginParams
+	 */
+	/**
+	 * @class gigyaRaasParams
+	 */
+
 // --------------------------------------------------------------------
 
 	window.__gigyaConf = gigyaParams;
@@ -12,12 +23,11 @@ var GigyaWp = GigyaWp || {};
 		// jQueryUI dialog element.
 		$('body').append('<div id="dialog-modal"></div>');
 
-
-    GigyaWp.logout = function ( response ) {
-      wp_loginout(gigyaParams.logoutUrl);
-    };
-  } );
-
+		GigyaWp.logout = function ( response ) {
+			/** @function	wp_loginout */
+		  wp_loginout(gigyaParams.logoutUrl);
+		};
+	} );
 
 	GigyaWp.userLoggedIn = function (response) {
 		GigyaWp.loggedUser = response.user.UID;
