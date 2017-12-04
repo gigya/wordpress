@@ -287,12 +287,9 @@ class GigyaAction {
 	 * @param $account
 	 */
 	public function wpLogin( $user_login, $account ) {
-
-		// Login through WP form.
+		/* Login through WP form. */
 		if ( isset( $_POST['log'] ) && isset( $_POST['pwd'] ) ) {
-
-			// Trap for non-admin user who tries to login through WP form on RaaS mode.
-
+			/* Trap for non-admin user who tries to login through WP form on RaaS mode. */
 			$_is_allowed_user = $this->check_raas_allowed_user_role($account->roles);
 			if ( $this->login_options['mode'] == 'raas' && (!$_is_allowed_user) ) {
 				wp_logout();
@@ -300,15 +297,16 @@ class GigyaAction {
 				exit;
 			}
 
-			// Notify Gigya socialize.notifyLogin
-			// for a return user logged in from WP login form.
+			/* Notify Gigya socialize.notifyLogin for a return user logged in from WP login form. */
 			$gigyaCMS = new GigyaCMS();
 			$gigyaCMS->notifyLogin( $account->ID );
 		}
 
-		// These post vars are available when there is the same email on the site,
-		// with the one who try to register and we want to link-accounts
-		// after the user is logged in with password. Or login after email verify.
+		/*
+		 * These post vars are available when there is the same email on the site,
+		 * with the one who try to register and we want to link-accounts
+		 * after the user is logged in with password. Or login after email verify.
+		 */
 		if ( ( $_POST['action'] == 'link_accounts' || $_POST['action'] == 'custom_login' ) && ! empty ( $_POST['data'] ) ) {
 			parse_str( $_POST['data'], $data );
 			if ( ! empty( $data['gigyaUID'] ) ) {
@@ -319,12 +317,13 @@ class GigyaAction {
 		}
 	}
 
-	/*  Raas admin login
-	 *  Check if user role is marked by admin as allowed role for wp login access
-	 *  For unified comparison transform values to _lowercase_
-	 *  admin roles are auto allowed, subscriber role is auto denied.
+	/**
+	 * Raas admin login
+	 * Check if user role is marked by admin as allowed role for wp login access
+	 * For unified comparison transform values to _lowercase_
+	 * admin roles are auto allowed, subscriber role is auto denied.
 	 *
-	 * @param string $user_role
+	 * @param array $user_roles
 	 * @return bool $allowed
 	 */
 	public function check_raas_allowed_user_role($user_roles) {
@@ -363,11 +362,11 @@ class GigyaAction {
 		return $allowed;
 	}
 
-	/*
+	/**
 	 * Custom error message in case raas user tries to log in via wordpress wp-login screen.
 	 * Used by hook wp_login
 	 *
-	 * @return string $message
+	 * @return string
 	 */
 	public function raas_wp_login_custom_message() {
 		if (isset($_GET['rperm']) ) {
@@ -584,7 +583,7 @@ class GigyaAction {
 		}
 	}
 
-	public  function getGigyaAvatar($avatar, $id_or_email, $size, $default, $alt) {
+	public function getGigyaAvatar($avatar, $id_or_email, $size, $default, $alt) {
 		if ( empty($id_or_email) ) {
 			$id = get_current_user_id();
 		} else {
@@ -604,12 +603,12 @@ class GigyaAction {
 		$alt = empty( $alt ) ? get_user_meta($id, "first_name", true) : $alt;
 		return "<img src='{$url}' alt='{$alt}' width='{$size}' height='{$size}'>";
 	}
-
 }
 
- if ( ! function_exists( 'wp_new_user_notification' ) ) {
+if ( ! function_exists( 'wp_new_user_notification' ) ) {
 	$login_opts = get_option( GIGYA__SETTINGS_LOGIN );
-	if ( $login_opts['mode'] == 'raas' ) {
+	if ( $login_opts['mode'] == 'raas' )
+	{
 		/**
 		 * If we're on raas mode we disabled new user notifications from WP.
 		 *
@@ -647,7 +646,6 @@ function _gigya_render_tpl( $template_file, $variables = array() ) {
 
 	// End buffering and return its contents
 	return ob_get_clean();
-
 }
 
 // --------------------------------------------------------------------
@@ -662,7 +660,6 @@ function _gigya_render_tpl( $template_file, $variables = array() ) {
  * @return string
  */
 function _gigya_form_render( $form, $name_prefix = '' ) {
-
 	$render = '';
 
 	foreach ( $form as $id => $el ) {
@@ -699,7 +696,6 @@ function _gigya_form_render( $form, $name_prefix = '' ) {
 	}
 
 	return $render;
-
 }
 
 // --------------------------------------------------------------------

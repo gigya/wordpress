@@ -261,7 +261,7 @@ class GigyaCMS {
 
 		// Set a new user flag if true.
 		if ( ! empty( $is_new_user ) ) {
-			$params['newUser'] = TRUE;
+			$params['newUser'] = true;
 		}
 
 		// Add user info.
@@ -284,9 +284,8 @@ class GigyaCMS {
 			error_log( sprintf( 'error message : @error', array( '@error' => $e->getMessage() ) ) );
 		}
 
-		return TRUE;
+		return true;
 	}
-
 
 	/**
 	 * Informs Gigya that this user has completed site registration
@@ -307,7 +306,7 @@ class GigyaCMS {
 			return $this->call( 'socialize.notifyRegistration', $params );
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	/**
@@ -354,18 +353,6 @@ class GigyaCMS {
 		}
 		return true;
 	}
-	/*
-	 * Check if IDentity storage is enabled
-	 */
-//	public function isIDS() {
-//		$res = $this->call( 'ids.getSchema', array());
-//		if ( is_wp_error($res)) {
-//			if ( $res->get_error_code() === 403036) {
-//				return false;
-//			}
-//		}
-//		return true;
-//	}
 
 	/**
 	 * @param $guid
@@ -402,7 +389,6 @@ class GigyaCMS {
 		if (!is_wp_error($res)) {
 			$this->call( 'accounts.deleteAccount', array( 'UID' => $res['results'][0]['UID'] ) );
 		}
-
 	}
 
 	/**
@@ -426,10 +412,10 @@ class GigyaCMS {
 	 */
 	public static function isPrimaryUser( $gigya_emails, $wp_email ) {
 		if ( in_array( $wp_email, $gigya_emails ) ) {
-			return TRUE;
+			return true;
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	/**
@@ -505,6 +491,11 @@ class GigyaCMS {
 		return false;
 	}
 
+	/**
+	 * Checks whether the user agent is a search engine crawler
+	 *
+	 * @return bool
+	 */
 	public static function isSpider() {
 		// Add as many spiders you want in this array
 		$spiders = array( 'Googlebot', 'Yammybot', 'Openbot', 'Yahoo', 'Slurp', 'msnbot', 'ia_archiver', 'Lycos', 'Scooter', 'AltaVista', 'Teoma', 'Gigabot', 'Googlebot-Mobile' );
@@ -513,22 +504,21 @@ class GigyaCMS {
 		// the User Agent
 		foreach ( $spiders as $spider ) {
 			if ( strpos( $_SERVER['HTTP_USER_AGENT'], $spider ) !== false ) {
-				return TRUE;
+				return true;
 			}
 		}
-		return FALSE;
+		return false;
 	}
 
-  /*
-   * Prepare email string to be sent via HTTP
-   *
-   * @param string email
-   * @Return string clean_email
-   */
-  protected function cleanEmail($email) {
-	  $email = str_replace(' ', '', $email);
-	  $clean_email = htmlspecialchars(($email));
-	  return $clean_email;
-  }
-
+	/**
+	* Prepare email string to be sent via HTTP
+	*
+	* @param string $email
+	* @return string
+	*/
+	protected function cleanEmail($email) {
+		$email = str_replace(' ', '', $email);
+		$clean_email = htmlspecialchars($email);
+		return $clean_email;
+	}
 }

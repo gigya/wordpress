@@ -101,7 +101,6 @@ class GigyaLoginAjax {
 	 * Register new WP user from Gigya user.
 	 */
 	private function register() {
-
 		// Before we insert new user to the system, we check
 		// if there is a user with the same email in our DB.
 		// When there is we ask the user login in the
@@ -151,7 +150,7 @@ class GigyaLoginAjax {
 			// Return JSON to client.
 			wp_send_json_error( array( 'msg' => $msg ) );
 		}
-		// map user social fields to wordpress user
+		// map user social fields to WordPress user
 		_gigya_add_to_wp_user_meta($this->{"gigya_user"}, $user_id);
 
 		$wp_user = get_userdata( $user_id );
