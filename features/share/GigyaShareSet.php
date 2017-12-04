@@ -69,7 +69,9 @@ class GigyaShareSet {
 	 * @return string
 	 */
 	public function setDefaultPosition( $content ) {
-		$position = $this->share_options['position'];
+		$position = null;
+		if (isset($this->share_options['position']))
+			$position = $this->share_options['position'];
 		if ( ! empty( $position ) && $position != 'none' ) {
 
 			// Get the share widget content.
@@ -86,7 +88,7 @@ class GigyaShareSet {
 			);
 
 			// Get the widget.
-			$widget = GigyaShare_Widget::getContent( $args, $instance );
+			$widget = (new GigyaShare_Widget)->getContent( $args, $instance );
 
 			// Set share widget position on post page.
 			switch ( $position ) {
@@ -128,13 +130,13 @@ class GigyaShareSet {
 						'post_type'      => 'attachment',
 						'post_parent'    => $post->ID,
 						'post_mime_type' => 'image',
-						'post_status'    => NULL
+						'post_status'    => null
 				)
 		);
 
 		if ( $attachments ) {
 			foreach ( $attachments as $attachment ) {
-				return wp_get_attachment_url( $attachment->ID, 'thumbnail', FALSE, FALSE );
+				return wp_get_attachment_url( $attachment->ID );
 			}
 		}
 
@@ -147,5 +149,4 @@ class GigyaShareSet {
 		// No image was found, use WP default blank image.
 		return get_bloginfo( 'wpurl' ) . '/' . WPINC . '/images/blank.gif';
 	}
-
 }
