@@ -746,9 +746,9 @@ function _gigya_get_json( $file ) {
  */
 function _gigParam( $array, $key, $default = null ) {
 	if ( is_array( $array ) ) {
-		return ! empty( $array[$key] ) || $array[$key] === "0" ? $array[$key] : $default;
+		return (isset( $array[$key] ) and ($array[$key] or $array[$key] === "0")) ? $array[$key] : $default;
 	} elseif ( is_object( $array ) ) {
-		return ! empty( $array->$key ) || $array->key === "0" ? $array->$key : $default;
+		return (isset( $array->$key ) and ($array->$key or $array->$key === "0")) ? $array->$key : $default;
 	}
 	return $default;
 }
