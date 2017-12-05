@@ -288,7 +288,8 @@ class GigyaAction {
 	 */
 	public function wpLogin( $user_login, $account ) {
 		/* Login through WP form. */
-		if ( isset( $_POST['log'] ) && isset( $_POST['pwd'] ) ) {
+		if ( isset( $_POST['log'] ) && isset( $_POST['pwd'] ) )
+		{
 			/* Trap for non-admin user who tries to login through WP form on RaaS mode. */
 			$_is_allowed_user = $this->check_raas_allowed_user_role($account->roles);
 			if ( $this->login_options['mode'] == 'raas' && (!$_is_allowed_user) ) {
@@ -302,6 +303,20 @@ class GigyaAction {
 			$gigyaCMS->notifyLogin( $account->ID );
 		}
 
+		/* RaaS Login */
+		if ($_POST['action'] === 'gigya_raas')
+		{
+			/* Update Gigya UID in WordPress user meta if it isn't set already */
+			if (isset($_POST['data']['UID']))
+			{
+				$wp_gigya_uid = get_user_meta($account->ID, 'gigya_uid', true);
+				if (empty($wp_gigya_uid))
+					add_user_meta($account->ID, 'gigya_uid', $_POST['data']['UID']);
+				elseif ($wp_gigya_uid !== $_POST['data']['UID'])
+					wp_send_json_error(array('msg' => __('Oops! Someone is already registered with the email')));
+			}
+		}
+
 		/*
 		 * These post vars are available when there is the same email on the site,
 		 * with the one who try to register and we want to link-accounts
@@ -312,7 +327,7 @@ class GigyaAction {
 			if ( ! empty( $data['gigyaUID'] ) ) {
 				$gigyaCMS = new GigyaCMS();
 				$gigyaCMS->notifyRegistration( $data['gigyaUID'], $account->ID );
-				delete_user_meta( $account->ID, 'gigya_uid' );
+//				delete_user_meta( $account->ID, 'gigya_uid' );
 			}
 		}
 	}
@@ -383,6 +398,9 @@ class GigyaAction {
 	 */
 	public function userRegister( $uid ) {
 
+		/* Registered through RaaS */
+		if (isset($_POST['data']['UID']))
+			add_user_meta($uid, 'gigya_uid', $_POST['data']['UID']);
 		// New user was registered through our custom extra-details form.
 		if ( $_POST['form_name'] == 'registerform-gigya-extra' && ! empty( $_POST['gigyaUID'] ) ) {
 			add_user_meta( $uid, 'gigya_uid', $_POST['gigyaUID'] );
@@ -837,10 +855,9 @@ function _gigya_add_to_wp_user_meta($gigya_object, $user_id) {
 		if (strpos($key, $prefix) === 0 && $opt == 1) {
 			$k = str_replace($prefix, "",$key);
 			$gigya_key = _wp_key_to_gigya_key($k);
-			update_user_meta($user_id, $k, sanitize_text_field($gigya_object[$gigya_key]));
+			update_user_meta($user_id, $k, (isset($gigya_object[$gigya_key])) ? sanitize_text_field($gigya_object[$gigya_key]) : '');
 		}
 	}
-
 }
 
 function _wp_key_to_gigya_key( $wp_key ) {
