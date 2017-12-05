@@ -10,7 +10,7 @@
 		<input type="checkbox" <?php checked( "1", $value ); ?> value="1" id="gigya_<?php echo $id; ?>" name="<?php echo $name ?>" />
 		<?php echo $label; ?>
 	</label>
-	<?php if ( $desc ): ?>
+	<?php if ( !empty($desc) ): ?>
 		<small><?php echo $desc; ?></small>
 	<?php endif; ?>
 </div>
