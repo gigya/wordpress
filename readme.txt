@@ -40,7 +40,7 @@ For more information, installation steps and configuration options - please refe
 
 == Installation ==
 
-You can read more about the installation steps and other advanced configuration options in Gigya's online documentation <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin" title="Installation and Configuration guide">here</a>
+You can read more about the installation steps and other advanced configuration options in Gigya's online documentation <a href="https://developers.gigya.com/display/GD/WordPress+Plugin" title="Installation and Configuration guide">here</a>
 
 1.	After downloading the Gigya plug-in, unpack and upload the folder to the the / wp-content/plugins/ directory on your blog.
 2.	Go to the Plug-in tab in the WordPress administration panel, find the Gigya plug-in on the list and click Activate.
@@ -115,7 +115,7 @@ For question about installations or configuration, please contact your account m
 * Fixed a Gigya breaking change: <a href="http://developers.gigya.com/010_Developer_Guide/Guides/Breaking_Changes#1._Strings_must_be_enclosed_with_quotes">Strings must be enclosed with quotes in search queries</a>
 
 = 5.2 =
-* For security reasons, the Gigya Secret Key can now only be viewed or edited by privileged users. By default only by <strong>network admins</strong> (in a multi-site installation) or <strong>admins</strong> (in a single-site installation). Learn more in <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin#Roles_and_Permissions">Roles and Permissions</a>.
+* For security reasons, the Gigya Secret Key can now only be viewed or edited by privileged users. By default only by <strong>network admins</strong> (in a multi-site installation) or <strong>admins</strong> (in a single-site installation). Learn more in <a href="https://developers.gigya.com/display/GD/WordPress+Plugin#WordPressPlugin-RolesandPermissions">Roles and Permissions</a>.
 * Security enhancements
 
 = 5.2.2.2 =

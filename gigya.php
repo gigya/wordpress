@@ -724,7 +724,7 @@ function _gigya_get_json( $file ) {
  * @param string $key
  * @param string, int $default
  *
- * @return mixed $default - $array value (if $array is not empty) // FIXME: return value not actually mixed, it's one of two things (some type and null). Need to find the sometype
+ * @return mixed $default - $array value (if $array is not empty)
  */
 function _gigParam( $array, $key, $default = null ) {
 	if ( is_array( $array ) ) {
