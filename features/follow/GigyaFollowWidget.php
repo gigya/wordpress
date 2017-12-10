@@ -128,7 +128,7 @@ class GigyaFollow_Widget extends WP_Widget {
 				'type'  => 'textarea',
 				'value' => _gigParam( $instance, 'buttons', _gigya_get_json( 'admin/forms/json/default_follow' ) ),
 				'label' => __( 'Follow Bar buttons' ),
-				'desc'  => __( 'Please fill valid JSON for follow-bar button as describe' ) . ' ' . '<a href="http://developers.gigya.com/010_Developer_Guide/18_Plugins/050_Follow_Bar#Quick_Start_Implementation">' . __( 'here' ) . '</a>',
+				'desc'  => __( 'Please fill valid JSON for follow-bar button as describe' ) . ' ' . '<a href="https://developers.gigya.com/display/GD/WordPress+Plugin#WordPressPlugin-FollowBar">' . __( 'here' ) . '</a>',
 				'name'  => $this->get_field_name( 'buttons' ),
 				'class' => 'json'
 		);
