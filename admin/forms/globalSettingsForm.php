@@ -99,7 +99,7 @@ function globalSettingsForm() {
 			'type'  => 'textarea',
 			'value' => _gigParam( $values, 'advanced', '' ),
 			'label' => __( 'Additional Parameters (advanced)' ),
-			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="http://developers.gigya.com/030_API_reference/010_Client_API/010_Objects/Conf_object" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
+			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://developers.gigya.com/display/GD/Global+Configuration" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
 	);
 
 	$form['google_analytics'] = array(
