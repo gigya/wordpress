@@ -112,7 +112,7 @@ For question about installations or configuration, please contact your account m
 * Support Follow Bar in administration
 
 = 5.1.1 =
-* Fixed a Gigya breaking change: <a href="http://developers.gigya.com/010_Developer_Guide/Guides/Breaking_Changes#1._Strings_must_be_enclosed_with_quotes">Strings must be enclosed with quotes in search queries</a>
+* Fixed a Gigya breaking change: Strings must be enclosed with quotes in search queries
 
 = 5.2 =
 * For security reasons, the Gigya Secret Key can now only be viewed or edited by privileged users. By default only by <strong>network admins</strong> (in a multi-site installation) or <strong>admins</strong> (in a single-site installation). Learn more in <a href="https://developers.gigya.com/display/GD/WordPress+Plugin#WordPressPlugin-RolesandPermissions">Roles and Permissions</a>.
