@@ -69,10 +69,20 @@ class GigyaAction {
 		$this->global_options = get_option( GIGYA__SETTINGS_GLOBAL );
 
 		// Gigya CMS
-		define( 'GIGYA__API_KEY', $this->global_options['api_key'] );
-		define( 'GIGYA__API_SECRET', $this->global_options['api_secret'] );
-		define( 'GIGYA__API_DOMAIN', $this->global_options['data_center'] );
-		define( 'GIGYA__API_DEBUG', $this->global_options['debug'] );
+		if (!empty($this->global_options))
+		{
+			define( 'GIGYA__API_KEY', $this->global_options['api_key'] );
+			define( 'GIGYA__API_SECRET', $this->global_options['api_secret'] );
+			define( 'GIGYA__API_DOMAIN', $this->global_options['data_center'] );
+			define( 'GIGYA__API_DEBUG', $this->global_options['debug'] );
+		}
+		else
+		{
+			define( 'GIGYA__API_KEY', '' );
+			define( 'GIGYA__API_SECRET', '' );
+			define( 'GIGYA__API_DOMAIN', '' );
+			define( 'GIGYA__API_DEBUG', '' );
+		}
 
 		add_action( 'init', array( $this, 'init' ) );
 		add_action( 'admin_action_update', array( $this, 'adminActionUpdate' ) );
@@ -242,7 +252,7 @@ class GigyaAction {
 		$gigyaLoginAjax->init();
 	}
 
-	public  function ajaxUpdateProfile() {
+	public function ajaxUpdateProfile() {
 
 		// Loads Gigya's RaaS class.
 		require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasAjax.php';
@@ -439,7 +449,9 @@ class GigyaAction {
 	 * @param	$info
 	 */
 	private function shortcodeUserInfo( $atts, $info = NULL ) {
-
+		/**
+		 * @var	WP_User
+		 */
 		$wp_user = wp_get_current_user();
 
 		if ( $info == NULL ) {
@@ -735,6 +747,71 @@ function _gigParam( $array, $key, $default = null ) {
 	return $default;
 }
 
+	/**
+	 * Helper
+	 * Returns a JSON string based on the Gigya parameters given.
+	 *
+	 * Example:
+	 * $params = ['a', 'b', 'c']
+	 * $labels = ['name1', 'name2']
+	 * $more_params = [['x', 'y', 'z']]
+	 * Returns: [{"name1":"a", "name2":"x"},{"name1":"b", "name2":"y"},{"name1":"c", "name2":"z"}]
+	 *
+	 * @param	array	$params			Array of parameters to build JSON
+	 * @param	array	$labels			Labels for given parameters--if only $params is given, $label should be an array of one
+	 * @param	array	$more_params	More parameter arrays
+	 *
+	 * @return string|false	Final JSON, or false on failure
+	 */
+function _gigParamsBuildJson( $params, $labels, ...$more_params ) {
+	if (empty($more_params))
+		$more_params = array();
+	if (count($labels) !== (1 + count($more_params)))
+		return false;
+	array_unshift($more_params, $params);
+
+	$build_array = array();
+	$json_array = array();
+	foreach ($more_params as $i => $param)
+	{
+		$build_array[$labels[$i]] = $param;
+	}
+	foreach ($build_array as $label => $label_set)
+	{
+		foreach ($label_set as $j => $value)
+		{
+			$json_array[$j][$label] = $value;
+		}
+	}
+
+	return json_encode($json_array);
+}
+
+function _gigParamsBuildLegacyJson($params) {
+	$values = get_option( GIGYA__SETTINGS_LOGIN );
+
+	$json_array = array();
+	for ($i = 0; $i < count($params); $i++)
+	{
+		$prefix = _gigya_get_mode_prefix();
+		if (isset($values[$params[$i]]) or isset($values[$prefix.$params[$i]]))
+		{
+			if ($values[$params[$i]] or $values[$prefix.$params[$i]])
+			{
+				$cms_name = str_replace($prefix, '', $params[$i]);
+				$gigya_name = _wp_key_to_gigya_key($cms_name);
+				$json_array[$i] = array(
+					'cmsName' => $cms_name,
+					'gigyaName' => $gigya_name,
+				);
+			}
+		}
+	}
+	$json_array = array_values($json_array); /* Flattens the array to hide keys in JSON */
+
+	return json_encode($json_array);
+}
+
 // --------------------------------------------------------------------
 
 /**
@@ -818,6 +895,24 @@ function gigyaSyncLoginSession() {
 
 // --------------------------------------------------------------------
 
+	/**
+	 * Gets RaaS or SL prefix, depending on what the user is using
+	 *
+	 * @return string
+	 */
+function _gigya_get_mode_prefix()
+{
+	$login_opts = get_option( GIGYA__SETTINGS_LOGIN );
+	if ($login_opts['mode'] == "wp_sl") {
+		$prefix = "map_social_";
+	} elseif ($login_opts['mode'] == "raas") {
+		$prefix = "map_raas_";
+	} else {
+		return '';
+	}
+	return $prefix;
+}
+
 /**
  * Map social user fields to worpdress user fields
  * @param $gigya_object
@@ -825,22 +920,29 @@ function gigyaSyncLoginSession() {
  */
 function _gigya_add_to_wp_user_meta($gigya_object, $user_id) {
 	$login_opts = get_option( GIGYA__SETTINGS_LOGIN );
-	if ($login_opts['mode'] == "wp_sl") {
-		$prefix = "map_social_";
-	} elseif ($login_opts['mode'] == "raas") {
-		$prefix = "map_raas_";
-	} else {
+	$prefix = _gigya_get_mode_prefix();
+	if (!$prefix)
 		return;
-	}
-	// Get all mapping options
-	foreach ( $login_opts as $key => $opt ) {
-		if (strpos($key, $prefix) === 0 && $opt == 1) {
-			$k = str_replace($prefix, "",$key);
-			$gigya_key = _wp_key_to_gigya_key($k);
-			update_user_meta($user_id, $k, sanitize_text_field($gigya_object[$gigya_key]));
+
+	if (!empty($login_opts['map_raas_full_map']))
+	{
+		foreach (json_decode($login_opts['map_raas_full_map']) as $meta_key)
+		{
+			$meta_key = (array)$meta_key;
+			update_user_meta($user_id, $meta_key['cmsName'], sanitize_text_field($gigya_object[$meta_key['gigyaName']]));
 		}
 	}
-
+	else
+	{
+		/* Legacy field mapping options */
+		foreach ( $login_opts as $key => $opt ) {
+			if (strpos($key, $prefix) === 0 && $opt == 1) {
+				$k = str_replace($prefix, "", $key);
+				$gigya_key = _wp_key_to_gigya_key($k);
+				update_user_meta($user_id, $k, sanitize_text_field($gigya_object[$gigya_key]));
+			}
+		}
+	}
 }
 
 function _wp_key_to_gigya_key( $wp_key ) {
