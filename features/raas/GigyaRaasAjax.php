@@ -22,17 +22,16 @@ class GigyaRaasAjax {
 	 * This is Gigya login AJAX callback
 	 */
 	public function init() {
-
-		// Get the data from the client (AJAX).
+		/* Get the data from the client (AJAX). */
 		$data = $_POST['data'];
 
-		// Trap for login users
+		/* Trap for login users */
 		if ( is_user_logged_in() ) {
 			$prm = array( 'msg' => __( 'You are already logged in' ) );
 			wp_send_json_error( $prm );
 		}
 
-		// Check Gigya's signature validation.
+		/* Check Gigya's signature validation */
 		$is_sig_validate = SigUtils::validateUserSignature(
 				$data['UID'],
 				$data['signatureTimestamp'],
@@ -40,13 +39,13 @@ class GigyaRaasAjax {
 				$data['UIDSignature']
 		);
 
-		// Gigya user validate trap.
+		/* Gigya user validate trap */
 		if ( empty( $is_sig_validate ) ) {
 			$prm = array( 'msg' => __( 'There is a problem validating your user' ) );
 			wp_send_json_error( $prm );
 		}
 
-		// Initialize Gigya account.
+		/* Initialize Gigya account */
 		$gigyaCMS            = new GigyaCMS();
 		$this->gigya_account = $gigyaCMS->getAccount( $data['UID'] );
 		if ( is_wp_error($this->gigya_account) ) {
@@ -54,10 +53,18 @@ class GigyaRaasAjax {
 			wp_send_json_error( $prm );
 		}
 
-		// Check if there is already a WP user with the same email.
-		$wp_user = get_user_by( 'email', $this->gigya_account['profile']['email'] );
-		if ( ! empty( $wp_user ) ) {
+		/* Check if there is already a WP user with the same UID. Failing that, checks by email for backwards compatibility. */
+		$wp_user = get_users(array(
+								'meta_key' => 'gigya_uid',
+								'meta_value' => $data['UID'],
+							 ));
+		if (!empty($wp_user))
+			$wp_user = $wp_user[0];
+		else /* Comment this ELSE statement to verify *only* by UID */
+			$wp_user = get_user_by( 'email', $this->gigya_account['profile']['email'] );
 
+		if ( ! empty( $wp_user ) )
+		{
 			$primary_user = $gigyaCMS->isPrimaryUser( $this->gigya_account['loginIDs']['emails'], strtolower($wp_user->data->user_email) );
 
 			// If this user is not the primary user account in Gigya
@@ -72,14 +79,13 @@ class GigyaRaasAjax {
 				wp_send_json_error( $prm );
 			}
 
-			// Login this user.
+			/* Log this user in */
 			$this->login( $wp_user );
-
-		} else {
-
-			// Register new user.
+		}
+		else
+		{
+			/* Register new user */
 			$this->register();
-
 		}
 
 		wp_send_json_success();
@@ -91,7 +97,6 @@ class GigyaRaasAjax {
 	 * @param $wp_user
 	 */
 	public function login( $wp_user ) {
-
 		// Login procedure.
 		wp_clear_auth_cookie();
 		wp_set_current_user( $wp_user->ID );
@@ -103,7 +108,6 @@ class GigyaRaasAjax {
 		// Do other login Implementations.
 
 		do_action( 'wp_login', $wp_user->data->user_login, $wp_user );
-
 	}
 
 	/**
@@ -127,12 +131,12 @@ class GigyaRaasAjax {
 			$name .= uniqid( '-' );
 		}
 
-		// Hook just before register new user from Gigya RaaS.
+		/* Hook just before register new user from Gigya RaaS. */
 		do_action( 'gigya_before_raas_register', $name, $email );
 
 		$user_id = register_new_user( $name, $email );
 
-		// On registration error.
+		/* On registration error. */
 		if ( ! empty( $user_id->errors ) ) {
 			$msg = '';
 			foreach ( $user_id->errors as $error ) {
