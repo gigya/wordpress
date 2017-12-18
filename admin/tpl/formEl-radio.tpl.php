@@ -6,7 +6,7 @@
 ?>
 <div class="row radio <?php echo $class ?>">
 	<fieldset id="gigya_<?php echo $id; ?>">
-		<legend><?php echo $label; ?></legend>
+		<legend><?php echo isset($label) ? $label : ''; ?></legend>
 		<?php foreach ( $options as $key => $option ) : ?>
 			<label>
 				<input type="radio" name="<?php echo $name ?>" <?php if ( $value == $key ) echo 'checked="checked"' ?> value="<?php echo $key; ?>">
@@ -14,7 +14,7 @@
 			</label>
 		<?php endforeach ?>
 	</fieldset>
-	<?php if ( $desc ): ?>
+	<?php if ( isset($desc) and $desc ): ?>
 		<small><?php echo $desc; ?></small>
 	<?php endif; ?>
 </div>

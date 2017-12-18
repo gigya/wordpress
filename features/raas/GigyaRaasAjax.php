@@ -12,7 +12,6 @@ class GigyaRaasAjax {
 	private $login_options;
 
 	public function __construct() {
-
 		// Get settings variables.
 		$this->global_options = get_option( GIGYA__SETTINGS_GLOBAL );
 		$this->login_options  = get_option( GIGYA__SETTINGS_LOGIN );
@@ -69,8 +68,7 @@ class GigyaRaasAjax {
 
 			// If this user is not the primary user account in Gigya
 			// we delete the account (we don't want two different users with the same email)
-			if ( empty( $primary_user ) ) {
-
+			if ( !$is_primary_user ) {
 				$gigyaCMS->deleteAccountByGUID( $this->gigya_account['UID'] );
 
 				$msg =  __( 'We found your email in our system.<br />Please use your existing account to login to the site, or create a new account using a different email address.' );
@@ -106,7 +104,6 @@ class GigyaRaasAjax {
 		do_action( 'gigya_after_raas_login', $this->gigya_account, $wp_user );
 
 		// Do other login Implementations.
-
 		do_action( 'wp_login', $wp_user->data->user_login, $wp_user );
 	}
 
@@ -114,7 +111,6 @@ class GigyaRaasAjax {
 	 * Register new WP user from Gigya user.
 	 */
 	private function register() {
-
 		// Register a new user to WP with params from Gigya.
 		if ( isset($this->gigya_account['profile']['username']) ) {
 			$name = $this->gigya_account['profile']['username'];
