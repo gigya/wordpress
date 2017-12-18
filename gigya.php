@@ -322,12 +322,13 @@ class GigyaAction {
 		 * with the one who try to register and we want to link-accounts
 		 * after the user is logged in with password. Or login after email verify.
 		 */
-		if ( ( $_POST['action'] == 'link_accounts' || $_POST['action'] == 'custom_login' ) && ! empty ( $_POST['data'] ) ) {
+		if ( ( $_POST['action'] == 'link_accounts' || $_POST['action'] == 'custom_login' ) && ! empty ( $_POST['data'] ) )
+    {
 			parse_str( $_POST['data'], $data );
-			if ( ! empty( $data['gigyaUID'] ) ) {
+			if ( ! empty( $data['gigyaUID'] ) )
+      {
 				$gigyaCMS = new GigyaCMS();
 				$gigyaCMS->notifyRegistration( $data['gigyaUID'], $account->ID );
-//				delete_user_meta( $account->ID, 'gigya_uid' );
 			}
 		}
 	}
