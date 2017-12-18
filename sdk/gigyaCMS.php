@@ -411,11 +411,7 @@ class GigyaCMS {
 	 * @return bool
 	 */
 	public static function isPrimaryUser( $gigya_emails, $wp_email ) {
-		if ( in_array( $wp_email, $gigya_emails ) ) {
-			return true;
-		}
-
-		return false;
+		return ( in_array( $wp_email, $gigya_emails ) );
 	}
 
 	/**

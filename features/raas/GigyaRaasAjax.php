@@ -12,7 +12,6 @@ class GigyaRaasAjax {
 	private $login_options;
 
 	public function __construct() {
-
 		// Get settings variables.
 		$this->global_options = get_option( GIGYA__SETTINGS_GLOBAL );
 		$this->login_options  = get_option( GIGYA__SETTINGS_LOGIN );
@@ -22,7 +21,6 @@ class GigyaRaasAjax {
 	 * This is Gigya login AJAX callback
 	 */
 	public function init() {
-
 		// Get the data from the client (AJAX).
 		$data = $_POST['data'];
 
@@ -57,13 +55,11 @@ class GigyaRaasAjax {
 		// Check if there is already a WP user with the same email.
 		$wp_user = get_user_by( 'email', $this->gigya_account['profile']['email'] );
 		if ( ! empty( $wp_user ) ) {
-
-			$primary_user = $gigyaCMS->isPrimaryUser( $this->gigya_account['loginIDs']['emails'], strtolower($wp_user->data->user_email) );
+			$is_primary_user = $gigyaCMS->isPrimaryUser( $this->gigya_account['loginIDs']['emails'], strtolower($wp_user->data->user_email) );
 
 			// If this user is not the primary user account in Gigya
 			// we delete the account (we don't want two different users with the same email)
-			if ( empty( $primary_user ) ) {
-
+			if ( !$is_primary_user ) {
 				$gigyaCMS->deleteAccountByGUID( $this->gigya_account['UID'] );
 
 				$msg =  __( 'We found your email in our system.<br />Please use your existing account to login to the site, or create a new account using a different email address.' );
@@ -74,12 +70,9 @@ class GigyaRaasAjax {
 
 			// Login this user.
 			$this->login( $wp_user );
-
 		} else {
-
 			// Register new user.
 			$this->register();
-
 		}
 
 		wp_send_json_success();
@@ -91,7 +84,6 @@ class GigyaRaasAjax {
 	 * @param $wp_user
 	 */
 	public function login( $wp_user ) {
-
 		// Login procedure.
 		wp_clear_auth_cookie();
 		wp_set_current_user( $wp_user->ID );
@@ -101,16 +93,13 @@ class GigyaRaasAjax {
 		do_action( 'gigya_after_raas_login', $this->gigya_account, $wp_user );
 
 		// Do other login Implementations.
-
 		do_action( 'wp_login', $wp_user->data->user_login, $wp_user );
-
 	}
 
 	/**
 	 * Register new WP user from Gigya user.
 	 */
 	private function register() {
-
 		// Register a new user to WP with params from Gigya.
 		if ( isset($this->gigya_account['profile']['username']) ) {
 			$name = $this->gigya_account['profile']['username'];
