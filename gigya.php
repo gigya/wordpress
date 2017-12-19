@@ -406,12 +406,14 @@ class GigyaAction {
 			}
 		}
 
-		// New user was registered through WP form.
+		/* New user was registered through WP form. */
 		if ( isset( $_POST['user_login'] ) && isset( $_POST['user_email'] ) ) {
-			// We notify to Gigya's 'socialize.notifyLogin'
-			// with a 'is_new_user' flag.
+			/*
+			 * We notify to Gigya's 'socialize.notifyLogin'
+			 * with a 'is_new_user' flag.
+			 */
 			$gigyaCMS = new GigyaCMS();
-			$result = $gigyaCMS->notifyLogin( $uid, TRUE );
+			$gigyaCMS->notifyLogin( $uid, true );
 		}
 	}
 
@@ -454,7 +456,6 @@ class GigyaAction {
 	 * Register widgets.
 	 */
 	public function widgetsInit() {
-
 		// RaaS Widget.
 		$raas_on = $this->login_options['mode'] == 'raas';
 		if ( ! empty( $raas_on ) ) {
