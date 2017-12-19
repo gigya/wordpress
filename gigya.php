@@ -391,7 +391,7 @@ class GigyaAction {
 	 * Custom error message in case raas user tries to log in via wordpress wp-login screen.
 	 * Used by hook wp_login
 	 *
-	 * @return string
+	 * @return string|false
 	 */
 	public function raas_wp_login_custom_message() {
 		if (isset($_GET['rperm']) ) {
@@ -399,6 +399,7 @@ class GigyaAction {
 			this login requires administrator permission. <br/>Click <a href='/wp-login.php'>here</a> to login to the site.</div>";
 			return $message;
 		}
+		return false;
 	}
 
 	/**
