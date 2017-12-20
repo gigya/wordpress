@@ -1021,6 +1021,10 @@ function _gigya_add_to_wp_user_meta($gigya_object, $user_id) {
 			if (strpos($key, $prefix) === 0 && $opt == 1) {
 				$k = str_replace($prefix, "", $key);
 				$gigya_key = 'profile.'._wp_key_to_gigya_key($k);
+				if (!isset($gigya_object[$gigya_key]))
+				{
+					$gigya_object[$gigya_key] = '';
+				}
 				update_user_meta($user_id, $k, sanitize_text_field($gigya_object[$gigya_key]));
 			}
 		}

@@ -100,15 +100,15 @@ class GigyaCMS {
 	/**
 	 * Check validation of the data center.
 	 *
-	 * @param	$api_key
-	 * @param	$api_secret
-	 * @param	$api_domain
+	 * @param	string	$api_key
+	 * @param	string	$user_key
+	 * @param	string	$api_secret
+	 * @param	string	$api_domain
 	 *
 	 * @return	GSResponse	$res
 	 */
-	public function apiValidate( $api_key, $api_secret, $api_domain ) {
-
-		$request = new GSRequest( $api_key, $api_secret, 'socialize.shortenURL' );
+	public function apiValidate( $api_key, $user_key, $api_secret, $api_domain ) {
+		$request = new GSRequest( $api_key, $api_secret, 'socialize.shortenURL', null, null, $user_key );
 
 		$request->setAPIDomain( $api_domain );
 		$request->setParam( 'url', 'http://gigya.com' );

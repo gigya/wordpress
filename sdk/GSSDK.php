@@ -57,6 +57,7 @@ class GSRequest {
 
 	private $apiKey;
 	private $secretKey;
+	private $userKey;
 	/**
 	 * @var null|GSObject
 	 */
@@ -69,14 +70,15 @@ class GSRequest {
 	 * You must provide a user ID (UID) of the user.
 	 * Suitable for calling our old REST API
 	 *
-	 * @param apiKey
-	 * @param secretKey
-	 * @param string			$apiMethod the api method (including namespace) to call. for example: socialize.getUserInfo
-	 *                  			If namespaces is not supplied "socialize" is assumed
-	 * @param null | GSObject	$params    the request parameters
-	 * @param boolean			$useHTTPS  useHTTPS set this to true if you want to use HTTPS.
+	 * @param string		$apiKey
+	 * @param string		$userKey
+	 * @param string		$secretKey
+	 * @param string		$apiMethod the api method (including namespace) to call. for example: socialize.getUserInfo
+	 *                  		If namespaces is not supplied "socialize" is assumed
+	 * @param null|GSObject	$params    the request parameters
+	 * @param boolean		$useHTTPS  useHTTPS set this to true if you want to use HTTPS.
 	 */
-	public function __construct( $apiKey, $secretKey, $apiMethod, $params = null, $useHTTPS = false ) {
+	public function __construct( $apiKey, $secretKey, $apiMethod, $params = null, $useHTTPS = false, $userKey = null ) {
 		if ( ! isset( $apiMethod ) || strlen( $apiMethod ) == 0 )
 			return;
 
@@ -105,6 +107,7 @@ class GSRequest {
 		$this->useHTTPS = $useHTTPS;
 
 		$this->apiKey    = $apiKey;
+		$this->userKey   = $userKey;
 		$this->secretKey = $secretKey;
 
 		$this->traceField( "apiMethod", $apiMethod );
@@ -188,12 +191,15 @@ class GSRequest {
 		try {
 			$this->setParam( "httpStatusCodes", "false" );
 
+			//$this->userKey = 'AIHBUvAkQq1k'; ////
+
 			$this->traceField( "apiKey", $this->apiKey );
+			$this->traceField( "apiKey", $this->userKey );
 			$this->traceField( "apiMethod", $this->method );
 			$this->traceField( "params", $this->params );
 			$this->traceField( "useHTTPS", $this->useHTTPS );
 
-			$responseStr = $this->sendRequest( "POST", $this->host, $this->path, $this->params, $this->apiKey, $this->secretKey, $this->useHTTPS, $timeout );
+			$responseStr = $this->sendRequest( "POST", $this->host, $this->path, $this->params, $this->apiKey, $this->secretKey, $this->useHTTPS, $timeout, $this->userKey );
 
 			return new GSResponse( $this->method, $responseStr, null, 0, null, $this->traceLog );
 		} catch ( Exception $ex ) {
@@ -214,13 +220,14 @@ class GSRequest {
 	 * @param	string		$domain
 	 * @param	string		$path
 	 * @param	GSObject	$params
-	 * @param      $token
-	 * @param      $secret
-	 * @param bool $useHTTPS
-	 * @param null|string|integer $timeout
+	 * @param   string		$token
+	 * @param	string		$secret
+	 * @param	bool		$useHTTPS
+	 * @param 				$timeout
+	 * @param	string		$userKey
 	 * @return mixed
 	 */
-	private function sendRequest( $method, $domain, $path, $params, $token, $secret, $useHTTPS = false, $timeout = null ) {
+	private function sendRequest( $method, $domain, $path, $params, $token, $secret, $useHTTPS = false, $timeout = null, $userKey = null ) {
 		$params->put( "sdk", "php_" . GSRequest::version );
 		//prepare query params
 		$protocol    = ($useHTTPS or empty( $secret )) ? "https" : "http";
@@ -232,6 +239,9 @@ class GSRequest {
 		/* Timestamp in milliseconds */
 		$nonce      = ( (string) SigUtils::currentTimeMillis() ) . rand();
 		$httpMethod = $method;
+
+		if ( $userKey )
+			$params->put( "userKey", $userKey );
 
 		if ( ! empty( $secret ) ) {
 			$params->put( "apiKey", $token );

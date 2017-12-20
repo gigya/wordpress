@@ -186,7 +186,7 @@ class GigyaSettings {
 		} elseif ( isset( $_POST['gigya_global_settings'] ) ) {
 			$cms = new gigyaCMS();
 			static::_setSecret();
-			$res = $cms->apiValidate( $_POST['gigya_global_settings']['api_key'], $_POST['gigya_global_settings']['api_secret'], $_POST['gigya_global_settings']['data_center'] );
+			$res = $cms->apiValidate( $_POST['gigya_global_settings']['api_key'], $_POST['gigya_global_settings']['user_key'], $_POST['gigya_global_settings']['api_secret'], $_POST['gigya_global_settings']['data_center'] );
 			if (!empty($res)) {
 				$gigyaErrCode = $res->getErrorCode();
 				if ( $gigyaErrCode > 0 ) {
