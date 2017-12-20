@@ -845,6 +845,45 @@ function _gigParamDefaultOn( $array, $key ) {
 	return ( isset( $array[$key] ) && $array[$key] === '0' ) ? '0' : '1';
 }
 
+/**
+ * Helper
+ * Flattens array into dot notation.
+ *
+ * @param	array	$array	Input array
+ * @returns array
+ */
+function _gigArrayFlatten( $array )
+{
+	$iterator = new RecursiveIteratorIterator(new RecursiveArrayIterator($array));
+	$result = array();
+	$valueIsArray = false;
+	foreach ($iterator as $leafValue) {
+		$keys = array();
+		foreach (range(0, $iterator->getDepth()) as $depth) {
+			$key = $iterator->getSubIterator($depth)->key();
+			if (gettype($key) === 'string')
+			{
+				$keys[] = $key;
+				$valueIsArray = false;
+			}
+			else
+				$valueIsArray = true;
+		}
+
+		$keyString = join('.', $keys);
+		if (!$valueIsArray)
+			$result[$keyString] = $leafValue;
+		else
+		{
+			if (empty($result[$keyString]) or !is_array($result[$keyString]))
+				$result[$keyString] = array();
+			$result[$keyString][] = $leafValue;
+		}
+	}
+
+	return $result;
+}
+
 // --------------------------------------------------------------------
 
 /**
@@ -937,15 +976,16 @@ function _gigya_get_mode_prefix()
  * @param $gigya_object
  * @param $user_id
  *
- * @throws Exception if there are problems with the hook
+ * @throws Exception if there are problems with the hook or data
  */
 function _gigya_add_to_wp_user_meta($gigya_object, $user_id) {
+	$gigya_object = _gigArrayFlatten($gigya_object);
 	$login_opts = get_option( GIGYA__SETTINGS_LOGIN );
 	$prefix = _gigya_get_mode_prefix();
 	if (!$prefix)
 		return;
 
-	if (!empty($login_opts['map_raas_full_map']))
+	if (!empty($login_opts['map_raas_full_map'])) /* Fully customized field mapping options */
 	{
 		/* Hook for modifying the data from Gigya before it is mapped */
 		$gigya_object_orig = $gigya_object;
@@ -960,22 +1000,27 @@ function _gigya_add_to_wp_user_meta($gigya_object, $user_id) {
 			throw new Exception('Exception while running hook. Error message: '.$e->getMessage());
 		}
 
-		/* Fully customized field mapping options */
 		foreach (json_decode($login_opts['map_raas_full_map']) as $meta_key)
 		{
 			$meta_key = (array)$meta_key;
 			if (!isset($gigya_object[$meta_key['gigyaName']]))
+			{
 				$gigya_object[$meta_key['gigyaName']] = '';
+				/*
+				 * Uncomment this line if you want to send a notice to the WordPress log about *every* field mapping failure on *every* user login/registration.
+				 *
+				 * trigger_error('The Gigya field '.$meta_key['gigyaName'].', specified in the field mapping, does not exist. WP user ID: '.$user_id, E_USER_NOTICE);
+				 */
+			}
 			update_user_meta($user_id, $meta_key['cmsName'], sanitize_text_field($gigya_object[$meta_key['gigyaName']]));
 		}
 	}
-	else
+	else /* Legacy field mapping options */
 	{
-		/* Legacy field mapping options */
 		foreach ( $login_opts as $key => $opt ) {
 			if (strpos($key, $prefix) === 0 && $opt == 1) {
 				$k = str_replace($prefix, "", $key);
-				$gigya_key = _wp_key_to_gigya_key($k);
+				$gigya_key = 'profile.'._wp_key_to_gigya_key($k);
 				update_user_meta($user_id, $k, sanitize_text_field($gigya_object[$gigya_key]));
 			}
 		}
