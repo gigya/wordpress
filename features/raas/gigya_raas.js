@@ -4,39 +4,39 @@
 
 // --------------------------------------------------------------------
 
-    /**
-     * Override default WP links to use Gigya's RaaS behavior.
-     */
+		/**
+		 * Override default WP links to use Gigya's RaaS behavior.
+		 */
 
-	/**
-	 * @class	gigya.accounts
-	 * @function	gigya.accounts.showScreenSet
-	 * @function	gigya.accounts.addEventHandlers
-	 */
-	/**
-	 * @class	gigyaParams
-	 * @property	{String}	ajaxurl
-	 */
-	/**
-	 * @class	gigyaRaasParams
-	 * @property	actionRaas
-	 * @property	canEditUsers
-	 * @property	raasLoginDiv
-	 * @property	raasLoginScreen
-	 * @property	raasMobileScreen
-	 * @property	raasOverrideLinks
-	 * @property	raasProfileDiv
-	 * @property	raasProfileMobileScreen
-	 * @property	raasProfileWebScreen
-	 * @property	raasRegisterDiv
-	 * @property	raasRegisterScreen
-	 * @property	raasWebScreen
-	 */
+		/**
+		 * @class	gigya.accounts
+		 * @function	gigya.accounts.showScreenSet
+		 * @function	gigya.accounts.addEventHandlers
+		 */
+		/**
+		 * @class	gigyaParams
+		 * @property	{String}	ajaxurl
+		 */
+		/**
+		 * @class	gigyaRaasParams
+		 * @property	actionRaas
+		 * @property	canEditUsers
+		 * @property	raasLoginDiv
+		 * @property	raasLoginScreen
+		 * @property	raasMobileScreen
+		 * @property	raasOverrideLinks
+		 * @property	raasProfileDiv
+		 * @property	raasProfileMobileScreen
+		 * @property	raasProfileWebScreen
+		 * @property	raasRegisterDiv
+		 * @property	raasRegisterScreen
+		 * @property	raasWebScreen
+		 */
 
-    var raasLogout = function () {
-		gigya.accounts.logout();
-    };
-	var overrideLinks = function () {
+		var raasLogout = function () {
+			gigya.accounts.logout();
+		};
+		var overrideLinks = function () {
       $( document ).on( 'click', 'a[href]', function ( e ) {
 	  	/** @function	gigya.accounts.showScreenSet */
         var path = $( this )[0].pathname;
@@ -82,142 +82,140 @@
 
 // --------------------------------------------------------------------
 
-			var raasInit = function () {
-				// Override default WP links to use Gigya's RaaS behavior.
-				if (gigyaRaasParams.raasOverrideLinks > 0) {
-					overrideLinks();
+		var raasInit = function () {
+			// Override default WP links to use Gigya's RaaS behavior.
+			if (gigyaRaasParams.raasOverrideLinks > 0) {
+				overrideLinks();
+			}
+
+			// Get admin=true cookie.
+			var admin = false;
+			var name = "gigya_admin=true";
+			var ca = document.cookie.split(';');
+			for (var i = 0; i < ca.length; i++) {
+				var c = ca[i].trim();
+				if (c.indexOf(name) === 0 && location.pathname.indexOf('wp-login.php') !== -1) {
+					admin = true
 				}
+			}
 
-				// Get admin=true cookie.
-				var admin = false;
-				var name = "gigya_admin=true";
-				var ca = document.cookie.split(';');
-				for (var i = 0; i < ca.length; i++) {
-					var c = ca[i].trim();
-					if (c.indexOf(name) === 0 && location.pathname.indexOf('wp-login.php') !== -1) {
-						admin = true
-					}
+			// Embed Screens.
+			if (location.search.indexOf('admin=true') === -1 && !admin) {
+				gigya.accounts.showScreenSet({
+					screenSet: gigyaRaasParams.raasWebScreen,
+					mobileScreenSet: gigyaRaasParams.raasMobileScreen,
+					startScreen: gigyaRaasParams.raasLoginScreen,
+					containerID: gigyaRaasParams.raasLoginDiv
+				});
+				gigya.accounts.showScreenSet({
+					screenSet: gigyaRaasParams.raasWebScreen,
+					mobileScreenSet: gigyaRaasParams.raasMobileScreen,
+					startScreen: gigyaRaasParams.raasRegisterScreen,
+					containerID: gigyaRaasParams.raasRegisterDiv
+				});
+
+				if (gigyaRaasParams.canEditUsers != 1) {
+					gigya.accounts.showScreenSet({
+						screenSet: gigyaRaasParams.raasProfileWebScreen,
+						mobileScreenSet: gigyaRaasParams.raasProfileMobileScreen,
+						containerID: gigyaRaasParams.raasProfileDiv,
+						onAfterSubmit: raasUpdatedProfile
+					});
 				}
+			}
+			else {
+				// Set admin=true cookie
+				var d = new Date();
+				d.setTime(d.getTime() + (60 * 60 * 1000));
+				var expires = "; expires=" + d.toUTCString();
+				document.cookie = "gigya_admin=true" + expires;
+			}
 
-				// Embed Screens.
-				if (location.search.indexOf('admin=true') === -1 && !admin) {
-					gigya.accounts.showScreenSet({
-						screenSet: gigyaRaasParams.raasWebScreen,
-						mobileScreenSet: gigyaRaasParams.raasMobileScreen,
-						startScreen: gigyaRaasParams.raasLoginScreen,
-						containerID: gigyaRaasParams.raasLoginDiv
-					});
-					gigya.accounts.showScreenSet({
-						screenSet: gigyaRaasParams.raasWebScreen,
-						mobileScreenSet: gigyaRaasParams.raasMobileScreen,
-						startScreen: gigyaRaasParams.raasRegisterScreen,
-						containerID: gigyaRaasParams.raasRegisterDiv
-					});
+			// Attach event handlers.
+			if (typeof GigyaWp.regEvents === 'undefined') {
 
-					if (gigyaRaasParams.canEditUsers != 1) {
-						gigya.accounts.showScreenSet({
-							screenSet: gigyaRaasParams.raasProfileWebScreen,
-							mobileScreenSet: gigyaRaasParams.raasProfileMobileScreen,
-							containerID: gigyaRaasParams.raasProfileDiv,
-							onAfterSubmit: raasUpdatedProfile
-						});
-					}
+				// Raas Login.
+				gigya.accounts.addEventHandlers({
+					onLogin: raasLogin,
+					onLogout: GigyaWp.logout
+				});
+
+				GigyaWp.regEvents = true;
+			}
+		};
+
+		var raasUpdatedProfile = function (res) {
+			var esData = GigyaWp.getEssentialParams(res);
+			var options = {
+				url: gigyaParams.ajaxurl,
+				type: 'POST',
+				dataType: 'json',
+				data: {
+					data: esData,
+					action: 'raas_update_profile'
+				}
+			};
+			var req = $.ajax(options);
+		};
+// --------------------------------------------------------------------
+
+		/**
+		 * On RaaS login with Gigya behavior.
+		 * @param	response
+		 * @param	response.provider
+		 * @param	response.UID
+		 */
+		var raasLogin = function (response) {
+
+			if (response.provider === 'site') {
+				return false;
+			}
+			// Gigya temp user.
+			if (typeof response.UID === 'undefined' || response.UID.indexOf('_temp_') === 0) {
+				return false;
+			}
+
+			var options = {
+				url: gigyaParams.ajaxurl,
+				type: 'POST',
+				dataType: 'json',
+				data: {
+					data: response,
+					action: gigyaRaasParams.actionRaas
+				}
+			};
+
+			var req = $.ajax(options);
+			$('body').prepend('<span class="spinner"></span>');
+			$('.spinner').show();
+
+			req.done(function (res) {
+				if (res.success) {
+					GigyaWp.redirect();
 				}
 				else {
-					// Set admin=true cookie
-					var d = new Date();
-					d.setTime(d.getTime() + (60 * 60 * 1000));
-					var expires = "; expires=" + d.toUTCString();
-					document.cookie = "gigya_admin=true" + expires;
-				}
-
-				// Attach event handlers.
-				if (typeof GigyaWp.regEvents === 'undefined') {
-
-					// Raas Login.
-					gigya.accounts.addEventHandlers({
-						onLogin: raasLogin,
-						onLogout: GigyaWp.logout
-					});
-
-					GigyaWp.regEvents = true;
-				}
-			};
-
-			var raasUpdatedProfile = function (res) {
-				var esData = GigyaWp.getEssentialParams(res);
-				var options = {
-					url: gigyaParams.ajaxurl,
-					type: 'POST',
-					dataType: 'json',
-					data: {
-						data: esData,
-						action: 'raas_update_profile'
+					if (typeof res.data !== 'undefined') {
+						// The user didn't logged in.
+						var dialog_modal = $('#dialog-modal');
+						dialog_modal.html(res.data.msg);
+						dialog_modal.dialog({modal: true});
 					}
-				};
-				var req = $.ajax(options);
-			};
+					gigya.accounts.logout();
+				}
+			});
+
+			req.fail(function (jqXHR, textStatus, errorThrown) {
+				console.log(errorThrown);
+			});
+
+			$("#dialog-modal").on("dialogclose", function () {
+				location.reload();
+			});
+		};
 // --------------------------------------------------------------------
 
-			/**
-			 * On RaaS login with Gigya behavior.
-			 * @param	response
-			 * @param	response.provider
-			 * @param	response.UID
-			 */
-			var raasLogin = function (response) {
+		raasInit();
 
-				if (response.provider === 'site') {
-					return false;
-				}
-				// Gigya temp user.
-				if (typeof response.UID === 'undefined' || response.UID.indexOf('_temp_') === 0) {
-					return false;
-				}
-
-				var options = {
-					url: gigyaParams.ajaxurl,
-					type: 'POST',
-					dataType: 'json',
-					data: {
-						data: response,
-						action: gigyaRaasParams.actionRaas
-					}
-				};
-
-				var req = $.ajax(options);
-				$('body').prepend('<span class="spinner"></span>');
-				$('.spinner').show();
-
-				req.done(function (res) {
-					if (res.success) {
-						GigyaWp.redirect();
-					}
-					else {
-						if (typeof res.data !== 'undefined') {
-							// The user didn't logged in.
-							var dialog_modal = $('#dialog-modal');
-							dialog_modal.html(res.data.msg);
-							dialog_modal.dialog({modal: true});
-						}
-						gigya.accounts.logout();
-					}
-				});
-
-				req.fail(function (jqXHR, textStatus, errorThrown) {
-					console.log(errorThrown);
-				});
-
-				$("#dialog-modal").on("dialogclose", function () {
-					location.reload();
-				});
-			};
-// --------------------------------------------------------------------
-
-			raasInit();
-
-		}
-	)
-	;
+	});
 })(jQuery);
 
