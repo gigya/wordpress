@@ -4,7 +4,7 @@
  * Render with @see _gigya_render_tpl().
  */
 ?>
-<div class="row textarea <?php echo $class ?>">
+<div class="row textarea <?php echo isset($class) ? $class : ''; ?>">
 	<label for="gigya_<?php echo $id; ?>">
 		<?php echo $label; ?>
 	</label>
