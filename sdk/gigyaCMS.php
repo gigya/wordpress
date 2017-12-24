@@ -109,7 +109,7 @@ class GigyaCMS {
 		$request = new GSRequest( $api_key, $api_secret, 'socialize.shortenURL', null, null, $user_key );
 
 		$request->setAPIDomain( $api_domain );
-		$request->setParam( 'url', 'http://gigya.com' );
+		$request->setParam( 'url', 'http://www.gigya.com' );
 		ini_set('arg_separator.output', '&');
 		$res = $request->send();
 		ini_restore ( 'arg_separator.output' );
