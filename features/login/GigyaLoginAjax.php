@@ -21,8 +21,7 @@ class GigyaLoginAjax {
 	 * This is Gigya login AJAX callback
 	 */
 	public function init() {
-
-		// Get the data from the client (AJAX).
+		/* Get the data from the client (AJAX) */
 		$data = $_POST['data'];
 
 		// Trap for login users
@@ -30,7 +29,7 @@ class GigyaLoginAjax {
 			wp_send_json_error( array( 'msg' => __( 'There is already a logged in user' ) ) );
 		}
 
-		// Check Gigya's signature validation.
+		/* Check Gigya's signature validation */
 		$is_sig_validate = SigUtils::validateUserSignature(
 				$data['UID'],
 				$data['timestamp'],
@@ -39,8 +38,8 @@ class GigyaLoginAjax {
 		);
 
 		// Gigya user validate trap.
-		if ( empty( $is_sig_validate ) ) {
-			wp_send_json_error( array( 'msg' => __( 'There was a problem validating your user' ) ) );
+		if ( !( $is_sig_validate ) ) {
+			wp_send_json_error( array( 'msg' => __( 'Login: There was a problem validating your user' ) ) );
 		}
 
 		// Initialize Gigya user.

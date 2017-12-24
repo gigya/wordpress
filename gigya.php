@@ -71,6 +71,7 @@ class GigyaAction {
 		if (!empty($this->global_options))
 		{
 			define( 'GIGYA__API_KEY', $this->global_options['api_key'] );
+			define( 'GIGYA__USER_KEY', $this->global_options['user_key'] );
 			define( 'GIGYA__API_SECRET', $this->global_options['api_secret'] );
 			define( 'GIGYA__API_DOMAIN', $this->global_options['data_center'] );
 			define( 'GIGYA__API_DEBUG', $this->global_options['debug'] );
@@ -78,6 +79,7 @@ class GigyaAction {
 		else
 		{
 			define( 'GIGYA__API_KEY', '' );
+			define( 'GIGYA__USER_KEY', '' );
 			define( 'GIGYA__API_SECRET', '' );
 			define( 'GIGYA__API_DOMAIN', '' );
 			define( 'GIGYA__API_DEBUG', '' );
@@ -152,7 +154,24 @@ class GigyaAction {
 	 * Initialize hook.
 	 */
 	public function init() {
-		require_once GIGYA__PLUGIN_DIR . 'sdk/GSSDK.php';
+		/* Require SDK libraries */
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GigyaJsonObject.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GigyaUserFactory.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GigyaProfile.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GigyaUser.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GSFactory.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GSException.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GSKeyNotFoundException.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GSApiException.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GSRequest.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GSResponse.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GSObject.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GSArray.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GigyaApiRequest.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/SigUtils.php';
+		GSResponse::init();
+
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GigyaApiHelper.php';
 		require_once GIGYA__PLUGIN_DIR . 'sdk/gigyaCMS.php';
 
 		// Load jQuery and jQueryUI from WP.
@@ -233,7 +252,6 @@ class GigyaAction {
 	 * Hook AJAX login.
 	 */
 	public function ajaxLogin() {
-
 		// Loads Gigya's social login class.
 		require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginAjax.php';
 		$gigyaLoginAjax = new GigyaLoginAjax;
@@ -244,7 +262,6 @@ class GigyaAction {
 	 * Hook AJAX RaaS login.
 	 */
 	public function ajaxRaasLogin() {
-
 		// Loads Gigya's RaaS class.
 		require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasAjax.php';
 		$gigyaLoginAjax = new GigyaRaasAjax;
@@ -252,7 +269,6 @@ class GigyaAction {
 	}
 
 	public function ajaxUpdateProfile() {
-
 		// Loads Gigya's RaaS class.
 		require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasAjax.php';
 		$gigyaAjax = new GigyaRaasAjax;

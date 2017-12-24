@@ -5,11 +5,8 @@ var GigyaWp = GigyaWp || {};
 	/**
 	 * @class gigyaParams
 	 * @property	logoutUrl
-	 */
-	/**
+	 *
 	 * @class gigyaLoginParams
-	 */
-	/**
 	 * @class gigyaRaasParams
 	 */
 
@@ -47,7 +44,7 @@ var GigyaWp = GigyaWp || {};
 
 	GigyaWp.redirect = function () {
 		if (location.pathname.indexOf('wp-login.php') !== -1) {
-			// Redirect after login page.
+			/* Redirect after login page */
 			if (typeof gigyaLoginParams !== 'undefined') {
 				location.replace(gigyaLoginParams.redirect);
 			}
@@ -56,7 +53,7 @@ var GigyaWp = GigyaWp || {};
 			}
 		}
 		else {
-			// Refresh.
+			/* Refresh */
 			location.reload();
 		}
 	};
