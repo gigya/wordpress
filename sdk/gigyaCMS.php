@@ -12,10 +12,8 @@ class GigyaCMS {
 	 * Constructs a GigyaApi object.
 	 */
 	public function __construct() {
-
 		$this->api_key    = GIGYA__API_KEY;
 		$this->api_secret = GIGYA__API_SECRET;
-
 	}
 
 	/**
@@ -360,7 +358,6 @@ class GigyaCMS {
 	 * @return mixed
 	 */
 	public function getAccount( $guid ) {
-
 		$req_params = array(
 			'UID'                => $guid,
 			'include'            => 'profile,data,loginIDs',
@@ -369,8 +366,8 @@ class GigyaCMS {
 
 		// Because we can only trust the UID parameter from the origin object,
 		// We'll ask Gigya's API for account-info straight from the server.
-		return $this->call( 'accounts.getAccountInfo', $req_params );
-
+		$gigya_api_helper = new GigyaApiHelper(GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__API_SECRET, GIGYA__API_DOMAIN);
+		return $gigya_api_helper->sendApiCall( 'accounts.getAccountInfo', $req_params );
 	}
 
 	/**

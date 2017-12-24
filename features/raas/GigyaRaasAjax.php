@@ -31,16 +31,12 @@ class GigyaRaasAjax {
 		}
 
 		/* Check Gigya's signature validation */
-		$is_sig_validate = SigUtils::validateUserSignature(
-				$data['UID'],
-				$data['signatureTimestamp'],
-				GIGYA__API_SECRET,
-				$data['UIDSignature']
-		);
+		$gigya_api_helper = new GigyaApiHelper(GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__API_SECRET, GIGYA__API_DOMAIN);
+		$is_sig_validate = $gigya_api_helper->validateUid($data['UID'], $data['UIDSignature'], $data['signatureTimestamp']);
 
 		/* Gigya user validate trap */
-		if ( empty( $is_sig_validate ) ) {
-			$prm = array( 'msg' => __( 'There is a problem validating your user' ) );
+		if ( !( $is_sig_validate ) ) {
+			$prm = array( 'msg' => __( 'RaaS: There is a problem validating your user' ) );
 			wp_send_json_error( $prm );
 		}
 
@@ -51,6 +47,8 @@ class GigyaRaasAjax {
 			$prm = array( 'msg' => __( 'Oops! Something went wrong during your login process. Please try to login again.' ) );
 			wp_send_json_error( $prm );
 		}
+		else
+			$this->gigya_account = $this->gigya_account->getData()->serialize();
 
 		/* Check if there is already a WP user with the same UID. Failing that, checks by email for backwards compatibility. */
 		$wp_user = get_users(array(

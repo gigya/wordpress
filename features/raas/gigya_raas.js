@@ -70,7 +70,7 @@
         }
         else if ( path.indexOf( 'profile.php' ) !== -1 && gigyaRaasParams.canEditUsers != 1 ) {
 
-          // Profile page
+          /* Profile page */
           gigya.accounts.showScreenSet( {screenSet: gigyaRaasParams.raasProfileWebScreen, mobileScreenSet: gigyaRaasParams.raasProfileMobileScreen, onAfterSubmit: raasUpdatedProfile} );
           e.preventDefault();
         }
@@ -83,23 +83,23 @@
 // --------------------------------------------------------------------
 
 		var raasInit = function () {
-			// Override default WP links to use Gigya's RaaS behavior.
+			/* Override default WP links to use Gigya's RaaS behavior */
 			if (gigyaRaasParams.raasOverrideLinks > 0) {
 				overrideLinks();
 			}
 
-			// Get admin=true cookie.
+			/* Get admin=true cookie */
 			var admin = false;
 			var name = "gigya_admin=true";
 			var ca = document.cookie.split(';');
 			for (var i = 0; i < ca.length; i++) {
 				var c = ca[i].trim();
 				if (c.indexOf(name) === 0 && location.pathname.indexOf('wp-login.php') !== -1) {
-					admin = true
+					admin = true;
 				}
 			}
 
-			// Embed Screens.
+			/* Embed Screens */
 			if (location.search.indexOf('admin=true') === -1 && !admin) {
 				gigya.accounts.showScreenSet({
 					screenSet: gigyaRaasParams.raasWebScreen,
@@ -124,17 +124,16 @@
 				}
 			}
 			else {
-				// Set admin=true cookie
+				/* Set admin=true cookie */
 				var d = new Date();
 				d.setTime(d.getTime() + (60 * 60 * 1000));
 				var expires = "; expires=" + d.toUTCString();
 				document.cookie = "gigya_admin=true" + expires;
 			}
 
-			// Attach event handlers.
+			/* Attach event handlers */
 			if (typeof GigyaWp.regEvents === 'undefined') {
-
-				// Raas Login.
+				/* Raas Login */
 				gigya.accounts.addEventHandlers({
 					onLogin: raasLogin,
 					onLogout: GigyaWp.logout
@@ -161,16 +160,18 @@
 
 		/**
 		 * On RaaS login with Gigya behavior.
-		 * @param	response
-		 * @param	response.provider
-		 * @param	response.UID
+		 * @param	response				object
+		 * @param	response.provider		string	Login service provider, such as "googleplus" etc., or native RaaS ("")
+		 * @param	response.UID			string	User's UID
+		 * @param	response.UIDSignature	string	User's API signature which is calculated using the secret key and other parameters
 		 */
 		var raasLogin = function (response) {
-
+			console.log(response); ////
 			if (response.provider === 'site') {
 				return false;
 			}
-			// Gigya temp user.
+
+			/* Gigya temp user */
 			if (typeof response.UID === 'undefined' || response.UID.indexOf('_temp_') === 0) {
 				return false;
 			}
