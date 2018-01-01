@@ -980,31 +980,6 @@ function _gigya_error_log( $new_log ) {
  * @return	integer
  */
 function gigyaSyncLoginSession( $mode, $session_opts = null ) {
-//	$default_expiration = GIGYA__DEFAULT_COOKIE_EXPIRATION;
-//	if ($mode == 'raas')
-//	{
-//		if (isset($session_opts['session_type_numeric']))
-//		{
-//			switch ($session_opts['session_type_numeric'])
-//			{
-//				case '0': /* Until browser close */
-//					$expiration = $default_expiration;
-//					break;
-//				case '-2': /* Forever */
-//					$expiration = 10 * YEAR_IN_SECONDS;
-//					break;
-//				default:
-//					$expiration = $session_opts['session_duration'];
-//					break;
-//			}
-//		}
-//		else
-//			$expiration = $default_expiration;
-//	}
-//	else
-//		$expiration = $default_expiration;
-//
-//	return (int) apply_filters( 'auth_cookie_expiration', $expiration, 777, false );
 	if ($mode == 'raas')
 		return ($session_opts['session_type_numeric'] > 0) ? $session_opts['session_duration'] : $session_opts['session_type_numeric'];
 	else
