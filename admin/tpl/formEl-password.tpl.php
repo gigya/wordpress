@@ -10,4 +10,9 @@
 	<?php if ( ! empty( $desc ) ): ?>
 		<small><?php echo $desc; ?></small>
 	<?php endif; ?>
+	<?php
+		if ( isset($markup) ):
+			echo $markup;
+		endif;
+	?>
 </div>
