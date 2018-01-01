@@ -152,19 +152,19 @@ function loginSettingsForm() {
 	);
 
 	$form['sl_end'] = array(
-			'markup' => '</div>'
+		'markup' => '</div>'
 	);
 
 	$form['raas_start'] = array(
-			'markup' => '<div class="raas-login-wrapper">'
+		'markup' => '<div class="raas-login-wrapper">'
 	);
 
 	$form['raas_txt'] = array(
-			'markup' => '<h4>Registration-as-a-Service Settings</h4><small><span>RaaS requires initial configuration in Gigya\'s Admin Console. Screen sets can be defined in the <a class="link-https" target="_blank" rel="external nofollow noopener noreferrer" href="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets" title="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets">UI Builder</a>. The page will display a list of predefined default screen-sets, each with an ID. Click on the "Visual Editor" link next to the screen-set that you want to use, this will open the <a class="external" target="_blank" title="UI Builder" rel="internal" href="https://developers.gigya.com/display/GD/UI+Builder">Visual Editor</a> window. You can modify the screens, or just hit the "Save" button to activate them. Please make sure that the screen-set IDs that are defined below match the IDs of the screen-sets you have configured in the <a class="link-https" target="_blank" rel="external nofollow noopener noreferrer" href="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets" title="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets">UI Builder</a> page.</span></small>'
+		'markup' => '<h4>'.__('Registration-as-a-Service Settings').'</h4><small><span>RaaS requires initial configuration in Gigya\'s Admin Console. Screen sets can be defined in the <a class="link-https" target="_blank" rel="external nofollow noopener noreferrer" href="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets" title="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets">UI Builder</a>. The page will display a list of predefined default screen-sets, each with an ID. Click on the "Visual Editor" link next to the screen-set that you want to use, this will open the <a class="external" target="_blank" title="UI Builder" rel="internal" href="https://developers.gigya.com/display/GD/UI+Builder">Visual Editor</a> window. You can modify the screens, or just hit the "Save" button to activate them. Please make sure that the screen-set IDs that are defined below match the IDs of the screen-sets you have configured in the <a class="link-https" target="_blank" rel="external nofollow noopener noreferrer" href="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets" title="https://platform.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets">UI Builder</a> page.</span></small>'
 	);
 
 	$form['raas_screens'] = array(
-			'markup' => '<h4>Login/Registration Screen Sets</h4>'
+		'markup' => '<h4>'.__('Login/Registration Screen Sets').'</h4>'
 	);
 
 	$form['raasWebScreen'] = array(
@@ -192,7 +192,7 @@ function loginSettingsForm() {
 	);
 
 	$form['raas_profile_screens'] = array(
-			'markup' => '<h4>Profile Screen Sets</h4>'
+			'markup' => '<h4>' . __( 'Profile Screen Sets' ) . '</h4>',
 	);
 
 	$form['raasProfileWebScreen'] = array(
