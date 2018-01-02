@@ -22,7 +22,7 @@ define( 'GIGYA__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'GIGYA__CDN_PROTOCOL', ! empty( $_SERVER['HTTPS'] ) ? 'https://cdns' : 'http://cdn' );
 define( 'GIGYA__JS_CDN', GIGYA__CDN_PROTOCOL . '.gigya.com/js/socialize.js?apiKey=' );
 define( 'GIGYA__LOG_LIMIT', 50 );
-define( 'GIGYA__DEFAULT_COOKIE_EXPIRATION', 2 * DAY_IN_SECONDS );
+define( 'GIGYA__DEFAULT_COOKIE_EXPIRATION', 1800 );
 
 /**
  * Gigya constants for admin settings sections.

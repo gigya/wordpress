@@ -30,6 +30,10 @@ class GigyaInstall {
 			add_option( GIGYA__SETTINGS_GLOBAL, array(), '', 'yes' );
 		}
 
+		if ( empty ( $this->session_options ) ) {
+			add_option( GIGYA__SETTINGS_SESSION, array(), '', 'yes' );
+		}
+
 		if ( empty ( $this->login_options ) ) {
 			add_option( GIGYA__SETTINGS_LOGIN, array(), '', 'yes' );
 		}
