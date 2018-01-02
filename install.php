@@ -5,12 +5,25 @@
  */
 class GigyaInstall {
 
+	private $global_options;
+	private $login_options;
+	private $session_options;
+	private $share_options;
+	private $comments_options;
+	private $reactions_options;
+	private $gm_options;
+	private $feed_options;
+	private $log;
+
+	private $reactions_optionsjson_decode_nice;
+
 	/**
 	 * Constructor.
 	 */
 	public function __construct() {
 		$this->global_options    = get_option( GIGYA__SETTINGS_GLOBAL );
 		$this->login_options     = get_option( GIGYA__SETTINGS_LOGIN );
+		$this->session_options     = get_option( GIGYA__SETTINGS_SESSION );
 		$this->share_options     = get_option( GIGYA__SETTINGS_SHARE );
 		$this->comments_options  = get_option( GIGYA__SETTINGS_COMMENTS );
 		$this->reactions_options = get_option( GIGYA__SETTINGS_REACTIONS );
