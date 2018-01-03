@@ -35,7 +35,7 @@ define( 'GIGYA__SETTINGS_FOLLOW', 'gigya_follow_settings' );
 define( 'GIGYA__SETTINGS_COMMENTS', 'gigya_comments_settings' );
 define( 'GIGYA__SETTINGS_REACTIONS', 'gigya_reactions_settings' );
 define( 'GIGYA__SETTINGS_GM', 'gigya_gm_settings' );
-define( 'GIGYA__SETTINGS_FEED', 'gigya_feed_settings' );
+//define( 'GIGYA__SETTINGS_FEED', 'gigya_feed_settings' );
 
 /**
  * Register activation hook
@@ -127,10 +127,6 @@ class GigyaAction {
 		$comments_switch = get_option(GIGYA__SETTINGS_COMMENTS);
 		if ( (count($comments_switch) > 0) && ($comments_switch['on'] == true || $comments_switch['on'] == '1') ) {
 			add_shortcode( 'gigya-comments', array( $shortcodes_class, 'gigyaCommentsScode' ) );
-		}
-		$feed_switch = get_option(GIGYA__SETTINGS_FEED);
-		if ( (count($feed_switch) > 0) && ($feed_switch['on'] == true || $feed_switch['on'] == '1' ) ) {
-			add_shortcode( 'gigya-activity-feed', array( $shortcodes_class, 'gigyaFeedScode' ) );
 		}
 		$follow_bar_switch = get_option(GIGYA__SETTINGS_FOLLOW);
 		if ( (count($follow_bar_switch) > 0) &&  ($follow_bar_switch['on'] == true  || $follow_bar_switch['on'] == '1') ) {
@@ -559,12 +555,12 @@ class GigyaAction {
 		}
 
 		// Activity Feed Widget.
-		$feed_options = get_option( GIGYA__SETTINGS_FEED );
-		$feed_on      = _gigParamDefaultOn( $feed_options, 'on' );
-		if ( ! empty( $feed_on ) ) {
-			require_once GIGYA__PLUGIN_DIR . 'features/feed/GigyaFeedWidget.php';
-			register_widget( 'GigyaFeed_Widget' );
-		}
+//		$feed_options = get_option( GIGYA__SETTINGS_FEED );
+//		$feed_on      = _gigParamDefaultOn( $feed_options, 'on' );
+//		if ( ! empty( $feed_on ) ) {
+//			require_once GIGYA__PLUGIN_DIR . 'features/feed/GigyaFeedWidget.php';
+//			register_widget( 'GigyaFeed_Widget' );
+//		}
 
 		// Follow Bar Widget.
 		require_once GIGYA__PLUGIN_DIR . 'features/follow/GigyaFollowWidget.php';

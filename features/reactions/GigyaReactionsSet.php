@@ -6,14 +6,14 @@
  * An AJAX handler for login or register user to WP.
  */
 class GigyaReactionsSet {
+	private $reactions_options;
 
 	public function __construct() {
 
-		// Get settings variables.
+		/* Get settings variables. */
 		$this->reactions_options = get_option( GIGYA__SETTINGS_REACTIONS );
-		$this->feed_options      = get_option( GIGYA__SETTINGS_FEED );
 
-		// Load custom Gigya reactions script.
+		/* Load custom Gigya reactions script. */
 		wp_enqueue_script( 'gigya_reactions_js', GIGYA__PLUGIN_URL . 'features/reactions/gigya_reactions.js' );
 		wp_enqueue_style( 'gigya_reactions_css', GIGYA__PLUGIN_URL . 'features/reactions/gigya_reactions.css' );
 
@@ -24,11 +24,10 @@ class GigyaReactionsSet {
 	 * @return array
 	 */
 	public function getParams() {
-
-		// The current post.
+		/* The current post */
 		global $post;
 
-		// Set image path.
+		/* Set image path */
 		$image_by = _gigParam( $this->reactions_options, 'image', '0' );
 		if ( ! empty( $image_by ) ) {
 			$img = _gigParam( $this->reactions_options, 'imageURL', get_bloginfo( 'wpurl' ) . '/' . WPINC . '/images/blank.gif' );
@@ -36,10 +35,10 @@ class GigyaReactionsSet {
 			$img = $this->getImage( $post );
 		}
 
-		// Unique bar ID.
+		/* Unique bar ID */
 		$bar_id = 'bar-' . get_the_ID();
 
-		// The parameters array.
+		/* The parameters array */
 		$params = array(
 				'barID'             => $bar_id,
 				'layout'            => _gigParam( $this->reactions_options, 'layout', 'horizontal' ),
@@ -47,8 +46,8 @@ class GigyaReactionsSet {
 				'countType'         => _gigParam( $this->reactions_options, 'countType', 'right' ),
 				'enabledProviders'  => _gigParam( $this->reactions_options, 'enabledProviders', 'reactions,facebook-like,google-plusone,twitter,email' ),
 				'multipleReactions' => _gigParam( $this->reactions_options, 'multipleReactions', 0 ),
-				'scope'             => _gigParam( $this->feed_options, 'scope', 'external' ),
-				'privacy'           => _gigParam( $this->feed_options, 'privacy', 'private' ),
+				'scope'				=> '', /* Backwards compatibility for activity feed deprecation */
+				'privacy'			=> '', /* Backwards compatibility for activity feed deprecation */
 				'ua'                => array(
 						'linkBack'  => esc_url( apply_filters( 'the_permalink', get_permalink() ) ),
 						'postTitle' => get_the_title(),
@@ -57,19 +56,19 @@ class GigyaReactionsSet {
 				),
 		);
 
-		// Add reactions buttons parameters if exist.
+		/* Add reactions buttons parameters if exist */
 		if ( ! empty( $this->reactions_options['buttons'] ) ) {
 			$buttons             = gigyaCMS::parseJSON( _gigParam( $this->reactions_options, 'buttons', _gigya_get_json( 'admin/forms/json/default_reaction' ) ) );
 			$params['reactions'] = $buttons;
 		}
 
-		// Add advanced parameters if exist.
+		/* Add advanced parameters if exist */
 		if ( ! empty( $this->reactions_options['advanced'] ) ) {
 			$advanced = gigyaCMS::parseJSON( _gigParam( $this->reactions_options, 'advanced', '' ) );
 			$params   = array_merge( $params, $advanced );
 		}
 
-		// Let others plugins to modify the reactions parameters.
+		/* Let others plugins to modify the reactions parameters */
 		$params = apply_filters( 'gigya_reactions_params', $params );
 
 		return $params;
@@ -100,7 +99,8 @@ class GigyaReactionsSet {
 			);
 
 			// Get the widget.
-			$widget = GigyaReactions_Widget::getContent( $args, $instance );
+			$widget_obj = new GigyaReactions_Widget();
+			$widget = $widget_obj->getContent( $args, $instance );
 
 			// Set reactions widget position on post page.
 			switch ( $position ) {
@@ -130,13 +130,12 @@ class GigyaReactionsSet {
 	 * @return string
 	 */
 	function getImage( $post ) {
-
-		// Check if there post thumbnail.
+		/* Check if there post thumbnail */
 		if ( has_post_thumbnail( $post->ID ) ) {
 			return wp_get_attachment_url( get_post_thumbnail_id( $post->ID ) );
 		}
 
-		// Check if there attachments.
+		/* Check if there attachments */
 		$attachments = get_posts( array(
 						'order'          => 'ASC',
 						'post_type'      => 'attachment',
@@ -152,13 +151,13 @@ class GigyaReactionsSet {
 			}
 		}
 
-		// Search for image in the code.
+		/* Search for image in the code */
 		preg_match_all( '/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $post->post_content, $matches );
 		if ( ! empty( $matches[1][0] ) ) {
 			return $matches[1][0];
 		}
 
-		// No image was found, use WP default blank image.
+		/* No image was found, use WP default blank image */
 		return get_bloginfo( 'wpurl' ) . '/' . WPINC . '/images/blank.gif';
 	}
 
