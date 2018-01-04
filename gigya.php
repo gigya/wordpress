@@ -22,7 +22,7 @@ define( 'GIGYA__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'GIGYA__CDN_PROTOCOL', ! empty( $_SERVER['HTTPS'] ) ? 'https://cdns' : 'http://cdn' );
 define( 'GIGYA__JS_CDN', GIGYA__CDN_PROTOCOL . '.gigya.com/js/socialize.js?apiKey=' );
 define( 'GIGYA__LOG_LIMIT', 50 );
-define( 'GIGYA__DEFAULT_COOKIE_EXPIRATION', 1800 );
+define( 'GIGYA__DEFAULT_COOKIE_EXPIRATION', 1800 ); /* WordPress defaults to 172800 (48 hours) */
 
 /**
  * Gigya constants for admin settings sections.
@@ -36,6 +36,13 @@ define( 'GIGYA__SETTINGS_COMMENTS', 'gigya_comments_settings' );
 define( 'GIGYA__SETTINGS_REACTIONS', 'gigya_reactions_settings' );
 define( 'GIGYA__SETTINGS_GM', 'gigya_gm_settings' );
 define( 'GIGYA__SETTINGS_FEED', 'gigya_feed_settings' );
+
+/**
+ * Session constants
+ */
+define( 'GIGYA__SESSION_DEFAULT', 0 );
+define( 'GIGYA__SESSION_SLIDING', -1 );
+define( 'GIGYA__SESSION_FOREVER', -2 );
 
 /**
  * Register activation hook
@@ -106,6 +113,7 @@ class GigyaAction {
 		add_action( 'delete_user', array( $this, 'deleteUser' ) );
 		add_action( 'wpmu_delete_user', array( $this, 'deleteUser' ) );
 		add_action( 'widgets_init', array( $this, 'widgetsInit' ) );
+		add_action( 'set_logged_in_cookie', 'updateCookie', 10, 2 );
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 		add_filter( 'the_content', array( $this, 'theContent' ) );
 		add_filter( 'get_avatar', array( $this, 'getGigyaAvatar'), 10, 5);
@@ -971,19 +979,65 @@ function _gigya_error_log( $new_log ) {
 
 // --------------------------------------------------------------------
 
+function _gigya_get_session_expiration($length, $user_id, $remember) {
+	return $length;
+}
+
+function updateCookie( $cookie, $expiration ) {
+	if (isset($_COOKIE[LOGGED_IN_COOKIE]))
+	{
+		$_COOKIE[LOGGED_IN_COOKIE] = $cookie;
+	}
+}
+
 /**
- * Get Login session time from WordPress to set in Gigya
+ * Get Login session time from Gigya's plugin, as configured by the user, and syncs it with WordPress using the auth_cookie_expiration hook
  *
- * @param	string	$mode			Whether RaaS or SocialLogin
+ * @param	string	$mode			Whether RaaS (raas) or Social Login (wp_sl)
  * @param	array	$session_opts	Login options for RaaS (session duration etc.)
  *
  * @return	integer
  */
 function gigyaSyncLoginSession( $mode, $session_opts = null ) {
+	$default_expiration = GIGYA__DEFAULT_COOKIE_EXPIRATION;
+	$expiration = $default_expiration;
+
 	if ($mode == 'raas')
-		return ($session_opts['session_type_numeric'] > 0) ? $session_opts['session_duration'] : $session_opts['session_type_numeric'];
-	else
-		return GIGYA__DEFAULT_COOKIE_EXPIRATION;
+	{
+		if (isset($session_opts['session_type_numeric']))
+		{
+			$session_type = intval($session_opts['session_type_numeric']);
+
+			switch ($session_type)
+			{
+				case GIGYA__SESSION_DEFAULT: /* Until browser close */
+					$expiration = $default_expiration;
+					break;
+				case GIGYA__SESSION_FOREVER: /* Forever */
+					$expiration = YEAR_IN_SECONDS;
+					break;
+				default:
+					$expiration = $session_opts['session_duration'];
+					break;
+			}
+
+			add_filter( 'auth_cookie_expiration', function($length, $user_id = null, $remember = null) use ($expiration) {
+							return _gigya_get_session_expiration($expiration, $user_id, $remember);
+						},
+						10, 3
+			);
+
+			if ($session_type === GIGYA__SESSION_SLIDING)
+			{
+				$user = wp_get_current_user();
+				wp_set_auth_cookie( $user->ID );
+
+				do_action( 'set_logged_in_cookie', null, $expiration );
+			}
+		}
+	}
+
+	return (int) $expiration;
 }
 
 // --------------------------------------------------------------------
