@@ -71,7 +71,8 @@ class GigyaAction {
 		if (!empty($this->global_options))
 		{
 			define( 'GIGYA__API_KEY', $this->global_options['api_key'] );
-			define( 'GIGYA__USER_KEY', $this->global_options['user_key'] );
+			if (isset($this->global_options['user_key'])) /* Backwards compatibility */
+				define( 'GIGYA__USER_KEY', $this->global_options['user_key'] );
 			define( 'GIGYA__API_SECRET', $this->global_options['api_secret'] );
 			define( 'GIGYA__API_DOMAIN', $this->global_options['data_center'] );
 			define( 'GIGYA__API_DEBUG', $this->global_options['debug'] );
