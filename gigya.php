@@ -1087,7 +1087,7 @@ function _gigya_add_to_wp_user_meta($gigya_object, $user_id) {
 		$gigya_object_orig = $gigya_object;
 		try
 		{
-			do_action( 'gigya_pre_filed_mapping', $gigya_object, get_userdata($user_id) );
+			$gigya_object = apply_filters( 'gigya_pre_field_mapping', $gigya_object_orig, get_userdata($user_id) );
 			if (array_keys($gigya_object_orig) != array_keys($gigya_object))
 				throw new Exception('Invalid data returned by the hook. Return array must have the same keys as the input array.');
 		}
