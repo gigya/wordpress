@@ -202,7 +202,7 @@ class GigyaRaasAjax {
 			if (!$host = $_SERVER['SERVER_NAME']) {
 				$host = $_SERVER['SERVER_ADDR'];
 			}
-			if ((empty($gltexp_cookie_timestamp) and $session_type !== 0) or (time() < $gltexp_cookie_timestamp and $session_type < 0))
+			if ((empty($gltexp_cookie_timestamp) and $session_type !== GIGYA__SESSION_DEFAULT) or (time() < $gltexp_cookie_timestamp and $session_type < 0))
 			{
 				if (!empty($token))
 				{
@@ -213,7 +213,7 @@ class GigyaRaasAjax {
 					setrawcookie('gltexp_' . GIGYA__API_KEY, rawurlencode($session_sig), $cookie_expiration, '/', $host);
 				}
 			}
-			elseif ($session_type === 0)
+			elseif ($session_type === GIGYA__SESSION_DEFAULT)
 				setrawcookie('gltexp_' . GIGYA__API_KEY, '', $cookie_expiration, '/', $host); /* Unset cookie */
 		}
 	}
