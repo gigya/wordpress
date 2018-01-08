@@ -7,20 +7,21 @@
  */
 class GigyaLoginAjax {
 
-	public function __construct() {
+	protected $global_options;
+	protected $login_options;
+	protected $gigya_user;
 
+	public function __construct() {
 		// Get settings variables.
 		$this->global_options = get_option( GIGYA__SETTINGS_GLOBAL );
 		$this->login_options  = get_option( GIGYA__SETTINGS_LOGIN );
-
 	}
 
 	/**
 	 * This is Gigya login AJAX callback
 	 */
 	public function init() {
-
-		// Get the data from the client (AJAX).
+		/* Get the data from the client (AJAX) */
 		$data = $_POST['data'];
 
 		// Trap for login users
@@ -28,7 +29,7 @@ class GigyaLoginAjax {
 			wp_send_json_error( array( 'msg' => __( 'There is already a logged in user' ) ) );
 		}
 
-		// Check Gigya's signature validation.
+		/* Check Gigya's signature validation */
 		$is_sig_validate = SigUtils::validateUserSignature(
 				$data['UID'],
 				$data['timestamp'],
@@ -37,8 +38,8 @@ class GigyaLoginAjax {
 		);
 
 		// Gigya user validate trap.
-		if ( empty( $is_sig_validate ) ) {
-			wp_send_json_error( array( 'msg' => __( 'There was a problem validating your user' ) ) );
+		if ( !( $is_sig_validate ) ) {
+			wp_send_json_error( array( 'msg' => __( 'Login: There was a problem validating your user' ) ) );
 		}
 
 		// Initialize Gigya user.
@@ -99,7 +100,6 @@ class GigyaLoginAjax {
 	 * Register new WP user from Gigya user.
 	 */
 	private function register() {
-
 		// Before we insert new user to the system, we check
 		// if there is a user with the same email in our DB.
 		// When there is we ask the user login in the
@@ -149,7 +149,7 @@ class GigyaLoginAjax {
 			// Return JSON to client.
 			wp_send_json_error( array( 'msg' => $msg ) );
 		}
-		// map user social fields to wordpress user
+		// map user social fields to WordPress user
 		_gigya_add_to_wp_user_meta($this->{"gigya_user"}, $user_id);
 
 		$wp_user = get_userdata( $user_id );
@@ -264,8 +264,8 @@ class GigyaLoginAjax {
 		$form            = array();
 		$form['message'] = array(
 				'markup' => __( "<h3>Already a Member:</h3>
-                                 <p>We found your email: <strong>{$this->gigya_user['email']}</strong> in our system</p>
-                                 <p>Please provide your site password to link to your existing account</p><br><br>" )
+								<p>We found your email: <strong>{$this->gigya_user['email']}</strong> in our system</p>
+								<p>Please provide your site password to link to your existing account</p><br><br>" )
         );
 		$form['log']     = array(
 				'type'  => 'hidden',

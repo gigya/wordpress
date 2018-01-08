@@ -185,17 +185,17 @@ class GigyaSettings {
 
 		} elseif ( isset( $_POST['gigya_global_settings'] ) ) {
 			$cms = new gigyaCMS();
-			STATIC::_setSecret();
-			$res = $cms->apiValidate( $_POST['gigya_global_settings']['api_key'], $_POST['gigya_global_settings']['api_secret'], $_POST['gigya_global_settings']['data_center'] );
+			static::_setSecret();
+			$res = $cms->apiValidate( $_POST['gigya_global_settings']['api_key'], $_POST['gigya_global_settings']['user_key'], $_POST['gigya_global_settings']['api_secret'], $_POST['gigya_global_settings']['data_center'] );
 			if (!empty($res)) {
 				$gigyaErrCode = $res->getErrorCode();
 				if ( $gigyaErrCode > 0 ) {
                     $gigyaErrMsg = $res->getErrorMessage();
-                    $errorsLink = "<a href='http://developers.gigya.com/037_API_reference/zz_Response_Codes_and_Errors' target='_blank'>Response_Codes_and_Errors</a>";
+                    $errorsLink = "<a href='https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST' target='_blank' rel='noopener noreferrer'>Response_Codes_and_Errors</a>";
                     $message = "Gigya API error: {$gigyaErrCode} - {$gigyaErrMsg}. For more information please refer to {$errorsLink}";
 					add_settings_error( 'gigya_global_settings', 'api_validate', $message, 'error' );
                     // prevent updating values
-                    STATIC::_keepOldApiValues();
+                    static::_keepOldApiValues();
 				}
 			} else {
 				add_settings_error( 'gigya_global_settings', 'api_validate', 'Error sending request to gigya', 'error' );
@@ -206,12 +206,10 @@ class GigyaSettings {
 	/**
 	 * Set the POST'ed secret key.
 	 * If its not submitted, take it from DB.
-	 *
-	 * @param obj $cms
 	 */
 	public static function _setSecret() {
 		if ( empty($_POST['gigya_global_settings']['api_secret']) ) {
-			$options = STATIC::_setSiteOptions();
+			$options = static::_setSiteOptions();
 			$_POST['gigya_global_settings']['api_secret'] = $options['api_secret'];
 		}
 	}
@@ -220,7 +218,7 @@ class GigyaSettings {
      * Set the posted api related values to the old (from DB) values
      */
     public static function _keepOldApiValues() {
-        $options = STATIC::_setSiteOptions();
+        $options = static::_setSiteOptions();
         $_POST['gigya_global_settings']['api_key'] = $options['api_key'];
         $_POST['gigya_global_settings']['api_secret'] = $options['api_secret'];
         $_POST['gigya_global_settings']['data_center'] = $options['data_center'];

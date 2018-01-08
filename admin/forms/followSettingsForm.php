@@ -17,7 +17,7 @@ function followSettingsForm() {
 			'type'  => 'textarea',
 			'label' => __( 'Follow Buttons' ),
 			'value' => _gigParam( $values, 'followButtons', _gigya_get_json( 'admin/forms/json/default_follow' ) ),
-			'desc'  => __( 'Please fill valid JSON for follow-bar button as describe' ) . ' ' . '<a href="http://developers.gigya.com/010_Developer_Guide/18_Plugins/050_Follow_Bar#Quick_Start_Implementation">' . __( 'here' ) . '</a>',
+			'desc'  => __( 'Please fill valid JSON for follow-bar button as describe' ) . ' ' . '<a href="https://developers.gigya.com/display/AR/Follow+Bar#FollowBar-QuickStartImplementation" target="_blank" rel="noopener noreferrer">' . __( 'here' ) . '</a>',
 	);
 
 
@@ -43,7 +43,7 @@ function followSettingsForm() {
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced)" ),
 			'value' => _gigParam( $values, 'advanced', '' ),
-			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="http://developers.gigya.com/020_Client_API/010_Socialize/socialize.showFollowBarUI" target="_blank">' . __( 'parameters' ) . '</a>'
+			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://developers.gigya.com/display/AR/socialize.showFollowBarUI+JS" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
 	);
 
     // use this field in multisite to flag when sub site settings are saved locally for site

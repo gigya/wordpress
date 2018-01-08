@@ -5,14 +5,15 @@
  */
 class GigyaCMS {
 
+	protected $api_key;
+	protected $api_secret;
+
 	/**
 	 * Constructs a GigyaApi object.
 	 */
 	public function __construct() {
-
 		$this->api_key    = GIGYA__API_KEY;
 		$this->api_secret = GIGYA__API_SECRET;
-
 	}
 
 	/**
@@ -23,7 +24,7 @@ class GigyaCMS {
 	 * @param mixed $params
 	 *   The method parameters.
 	 *
-	 * @return array
+	 * @return array | WP_Error | integer
 	 *   The Gigya response.
 	 */
 	public function call( $method, $params ) {
@@ -96,13 +97,19 @@ class GigyaCMS {
 
 	/**
 	 * Check validation of the data center.
+	 *
+	 * @param	string	$api_key
+	 * @param	string	$user_key
+	 * @param	string	$api_secret
+	 * @param	string	$api_domain
+	 *
+	 * @return	GSResponse	$res
 	 */
-	public function apiValidate( $api_key, $api_secret, $api_domain ) {
-
-		$request = new GSRequest( $api_key, $api_secret, 'socialize.shortenURL' );
+	public function apiValidate( $api_key, $user_key, $api_secret, $api_domain ) {
+		$request = new GSRequest( $api_key, $api_secret, 'socialize.shortenURL', null, null, $user_key );
 
 		$request->setAPIDomain( $api_domain );
-		$request->setParam( 'url', 'http://gigya.com' );
+		$request->setParam( 'url', 'http://www.gigya.com' );
 		ini_set('arg_separator.output', '&');
 		$res = $request->send();
 		ini_restore ( 'arg_separator.output' );
@@ -114,7 +121,7 @@ class GigyaCMS {
 	 *
 	 * @param $guid
 	 *
-	 * @return array || false
+	 * @return array | false
 	 *   the user info from Gigya.
 	 */
 	public function getUserInfo( $guid ) {
@@ -140,11 +147,15 @@ class GigyaCMS {
 	 */
 	public static function load( &$account ) {
 		// Attache to user if the user is logged in.
-		$account->gigya = ( isset( $account->uid ) ? new GigyaUser( $account->uid ) : NULL );
+		$account->gigya = ( isset( $account->uid ) ? new GigyaUser( $account->uid ) : null );
 	}
 
 	/**
 	 * Social logout.
+	 *
+	 * @param	$guid
+	 *
+	 * @return	array|WP_Error|integer|boolean
 	 */
 	public function userLogout( $guid ) {
 		if ( ! empty( $guid ) ) {
@@ -155,7 +166,7 @@ class GigyaCMS {
 			return $this->call( 'socialize.logout', $params );
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	/**
@@ -166,7 +177,7 @@ class GigyaCMS {
 	 *                      an associative array of params to pass to Gigya
 	 *
 	 * @see http://developers.gigya.com/020_Client_API/020_Methods/socialize.getFriends
-	 * @return array
+	 * @return array | false
 	 *      the response from gigya.
 	 */
 	public function getFriends( $guid, $params = array() ) {
@@ -202,6 +213,8 @@ class GigyaCMS {
 	/**
 	 * Callback for array_walk.
 	 * Helper function for trimming.
+	 *
+	 * @param	$value
 	 */
 	private function trimValue( &$value ) {
 		$value = trim( $value );
@@ -240,13 +253,13 @@ class GigyaCMS {
 	 *
 	 * @return bool|null|string True if the notify login request succeeded or the error message from Gigya
 	 */
-	function notifyLogin( $uid, $is_new_user = FALSE, $user_info = NULL ) {
+	function notifyLogin( $uid, $is_new_user = false, $user_info = null ) {
 
 		$params['siteUID'] = $uid;
 
 		// Set a new user flag if true.
 		if ( ! empty( $is_new_user ) ) {
-			$params['newUser'] = TRUE;
+			$params['newUser'] = true;
 		}
 
 		// Add user info.
@@ -269,9 +282,8 @@ class GigyaCMS {
 			error_log( sprintf( 'error message : @error', array( '@error' => $e->getMessage() ) ) );
 		}
 
-		return TRUE;
+		return true;
 	}
-
 
 	/**
 	 * Informs Gigya that this user has completed site registration
@@ -292,7 +304,7 @@ class GigyaCMS {
 			return $this->call( 'socialize.notifyRegistration', $params );
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	/**
@@ -311,8 +323,9 @@ class GigyaCMS {
 
 			$this->call( 'socialize.deleteAccount', $params );
 
-			return TRUE;
+			return true;
 		}
+		return false;
 	}
 
 /////////////////////////////////
@@ -338,18 +351,6 @@ class GigyaCMS {
 		}
 		return true;
 	}
-	/*
-	 * Check if IDentity storage is enabled
-	 */
-//	public function isIDS() {
-//		$res = $this->call( 'ids.getSchema', array());
-//		if ( is_wp_error($res)) {
-//			if ( $res->get_error_code() === 403036) {
-//				return false;
-//			}
-//		}
-//		return true;
-//	}
 
 	/**
 	 * @param $guid
@@ -357,7 +358,6 @@ class GigyaCMS {
 	 * @return mixed
 	 */
 	public function getAccount( $guid ) {
-
 		$req_params = array(
 			'UID'                => $guid,
 			'include'            => 'profile,data,loginIDs',
@@ -366,27 +366,8 @@ class GigyaCMS {
 
 		// Because we can only trust the UID parameter from the origin object,
 		// We'll ask Gigya's API for account-info straight from the server.
-		return $this->call( 'accounts.getAccountInfo', $req_params );
-
-	}
-
-	/**
-	 * RaaS logout.
-	 */
-	public function accountLogout( $account ) {
-
-		// Get info about the primary account.
-		$email = $this->cleanEmail($account->data->user_email);
-		$query = "select UID from accounts where loginIDs.emails =  '{$email}'";
-
-		// Get the UID from Email.
-		$res = $this->call( 'accounts.search', array( 'query' => $query ) );
-
-		// Logout the user.
-		if ( !is_wp_error($res)) {
-			$this->call( 'accounts.logout', array( 'UID' => $res['results'][0]['UID'] ) );
-		}
-
+		$gigya_api_helper = new GigyaApiHelper(GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__API_SECRET, GIGYA__API_DOMAIN);
+		return $gigya_api_helper->sendApiCall( 'accounts.getAccountInfo', $req_params );
 	}
 
 	/**
@@ -405,7 +386,6 @@ class GigyaCMS {
 		if (!is_wp_error($res)) {
 			$this->call( 'accounts.deleteAccount', array( 'UID' => $res['results'][0]['UID'] ) );
 		}
-
 	}
 
 	/**
@@ -421,19 +401,14 @@ class GigyaCMS {
 	/**
 	 * Checks if this email is the primary user email
 	 *
-	 * @param String $gigya_emails
-	 * @param String $wp_email email from WP DB.
+	 * @param array $gigya_emails
+	 * @param string $wp_email email from WP DB.
 	 *
 	 * @internal param \The $userInfo user info from accounts.getUserInfo api call
 	 * @return bool
 	 */
 	public static function isPrimaryUser( $gigya_emails, $wp_email ) {
-
-		if ( in_array( $wp_email, $gigya_emails ) ) {
-			return TRUE;
-		}
-
-		return FALSE;
+		return ( in_array( $wp_email, $gigya_emails ) );
 	}
 
 	/**
@@ -486,7 +461,7 @@ class GigyaCMS {
 	 *
 	 * @param string $values
 	 *
-	 * @return array
+	 * @return array | false
 	 */
 	public static function advancedValuesParser( $values ) {
 
@@ -509,6 +484,11 @@ class GigyaCMS {
 		return false;
 	}
 
+	/**
+	 * Checks whether the user agent is a search engine crawler
+	 *
+	 * @return bool
+	 */
 	public static function isSpider() {
 		// Add as many spiders you want in this array
 		$spiders = array( 'Googlebot', 'Yammybot', 'Openbot', 'Yahoo', 'Slurp', 'msnbot', 'ia_archiver', 'Lycos', 'Scooter', 'AltaVista', 'Teoma', 'Gigabot', 'Googlebot-Mobile' );
@@ -517,22 +497,21 @@ class GigyaCMS {
 		// the User Agent
 		foreach ( $spiders as $spider ) {
 			if ( strpos( $_SERVER['HTTP_USER_AGENT'], $spider ) !== false ) {
-				return TRUE;
+				return true;
 			}
 		}
-		return FALSE;
+		return false;
 	}
 
-  /*
-   * Prepare email string to be sent via HTTP
-   *
-   * @param string email
-   * @Return string clean_email
-   */
-  protected function cleanEmail($email) {
-	  $email = str_replace(' ', '', $email);
-	  $clean_email = htmlspecialchars(($email));
-	  return $clean_email;
-  }
-
+	/**
+	* Prepare email string to be sent via HTTP
+	*
+	* @param string $email
+	* @return string
+	*/
+	protected function cleanEmail($email) {
+		$email = str_replace(' ', '', $email);
+		$clean_email = htmlspecialchars($email);
+		return $clean_email;
+	}
 }

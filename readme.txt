@@ -1,17 +1,17 @@
 === Gigya - Social Infrastructure  ===
 
 Contributors: gigya.com, konforti, luciodiri
-Tags: Registration, Social Login, Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, Gigya, Social Infrastructure, feed
-Requires at least: 3.6
-Tested up to: 4.2.2
-Stable tag: 5.2.2.2
+Tags: CIAM, CIM, Registration, Social Login, Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, Gigya, Social Infrastructure, feed
+Requires at least: 4.2
+Tested up to: 4.8
+Stable tag: 5.5
 License: GPLv2 or later
 
 Integrate your WordPress site with Gigya
 
 == Description ==
 Gigya's Customer Identity Management Platform helps companies build better customer relationships by turning unknown visitors into known, loyal and engaged customers. With Gigya’s technology, businesses increase registrations and identify customers across devices, consolidate data into rich customer profiles, and provide better service, products and experiences by integrating data into marketing and service applications.
- 
+
 More than 700 of the world’s leading businesses such as Fox, Forbes, and Verizon rely on Gigya to build identity-driven relationships and to provide scalable, secure Customer Identity Management.
 
 If you don't have an account yet, <a href="https://console.gigya.com/register.aspx" title="sign up">sign up for a free trial</a>.
@@ -30,8 +30,6 @@ If you don't have an account yet, <a href="https://console.gigya.com/register.as
 * Rating & Reviews - Give your customers an easy way to provide feedback on products and content across your site and share that feedback with friends in their social networks.
 * Gamification - Motivate your users to take valuable actions by offering rewards such as higher status, special offers, badges, points and more.
 * Reactions - Make it easy for users to react to content on your site and share their reactions with friends on social networks.
-* Activity Feed - Provide you site visitors with visibility into the real-time activity that is happening on your WordPress blog or website.
-* Follow Bar - Easily add links for users to Like you on Facebook, follow you on Twitter, or otherwise engage with you across a range of social channels.
 
 
 For more information, installation steps and configuration options - please refer to Gigya's documentation:
@@ -40,7 +38,7 @@ For more information, installation steps and configuration options - please refe
 
 == Installation ==
 
-You can read more about the installation steps and other advanced configuration options in Gigya's online documentation <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin" title="Installation and Configuration guide">here</a>
+You can read more about the installation steps and other advanced configuration options in Gigya's online documentation <a href="https://developers.gigya.com/display/GD/WordPress+Plugin" title="Installation and Configuration guide">here</a>
 
 1.	After downloading the Gigya plug-in, unpack and upload the folder to the the / wp-content/plugins/ directory on your blog.
 2.	Go to the Plug-in tab in the WordPress administration panel, find the Gigya plug-in on the list and click Activate.
@@ -50,7 +48,7 @@ For question about installations or configuration, please contact your account m
 
 == Screenshots ==
 
-1. Wordpress Registration page with Gigya's Social Login
+1. WordPress Registration page with Gigya's Social Login
 2. Registration-as-a-Service pop-up screen
 3. Gigya's administration panel
 4. Gigya widgets
@@ -62,7 +60,7 @@ For question about installations or configuration, please contact your account m
 
 = 2.0.5 =
 
-* Support Wordpress networks
+* Support WordPress networks
 * New customized Share bar including Facebook like button and Google+1.
 * Bug fixes
 
@@ -73,7 +71,7 @@ For question about installations or configuration, please contact your account m
 
 = 3.0 =
 * Option to choose the position of the share bar plugin.
-* Improve the integration of Gigya comments with the Wordpress comments.
+* Improve the integration of Gigya comments with the WordPress comments.
 * Call Gigya notifyLogin for user logging in with site credentials for better integration with Gigya plugins.
 * Option to select which JQuery version to be used by gigya plugin.
 * Support Gigya Login widget as a shortcode - enables site owners to embed the Login widget anywhere on the site template without a sidebar.
@@ -85,10 +83,10 @@ For question about installations or configuration, please contact your account m
 
 
 = 4.0 =
-* Gigya's <a href="http://developers.gigya.com/010_Developer_Guide/18_Plugins/030_The_Reactions_Plugin" title="Reactions">Reactions bar</a>
-* Gigya's <a href="http://developers.gigya.com/010_Developer_Guide/40_Gamification" title="Gamification">Gamification</a>
-* Gigya's <a href="http://developers.gigya.com/010_Developer_Guide/18_Plugins/060_Activity_Feed_Plugin" title="Activity Feed">Activity Feed</a>
-* Upgraded <a href="http://developers.gigya.com/010_Developer_Guide/18_Plugins/022_Comments_Version_2" title="Comments Version 2">Comments plugin (version 2)</a>
+* Gigya's <a href="https://developers.gigya.com/display/GD/Reactions" title="Reactions">Reactions bar</a>
+* Gigya's <a href="https://developers.gigya.com/display/GD/Loyalty+-+Gamification+and+User+Behavior" title="Gamification">Gamification</a>
+* Gigya's Activity Feed
+* Upgraded <a href="https://developers.gigya.com/display/GD/Comments" title="Comments Version 2">Comments plugin (version 2)</a>
 * Support connecting to an alternative data centers (e.g. Europe data center)
 * Improved administration
 * Integrated Google Analytics
@@ -96,8 +94,8 @@ For question about installations or configuration, please contact your account m
 
 = 5.0 =
 * The Plugin has been rewritten, providing improved architecture, administration and security.
-* Gigya's <a href="http://developers.gigya.com/010_Developer_Guide/10_UM360/040_Raas" title="RaaS Integration">Registration-as-a-Service Integration</a>
-* Gigya's <a href="http://developers.gigya.com/010_Developer_Guide/18_Plugins/025_Rating_Reviews" title="Rating & Reviews">Rating & Reviews</a>
+* Gigya's <a href="https://developers.gigya.com/display/GD/Registration-as-a-Service" title="RaaS Integration">Registration-as-a-Service Integration</a>
+* Gigya's <a href="https://developers.gigya.com/display/GD/R+and+R" title="Rating & Reviews">Rating & Reviews</a>
 * Added SEO support in the Comments and Rating&Reviews plugins, meaning the comments/reviews content is searchable by the main search engines.
 * All Gigya social plugins are provides as WP widgets that can be placed anywhere on your site.
 
@@ -112,20 +110,27 @@ For question about installations or configuration, please contact your account m
 * Support Follow Bar in administration
 
 = 5.1.1 =
-* Fixed a Gigya breaking change:  <a href="http://developers.gigya.com/010_Developer_Guide/Guides/Breaking_Changes#1._Strings_must_be_enclosed_with_quotes" >Strings must be enclosed with quotes in search queries</a>
+* Fixed a Gigya breaking change: Strings must be enclosed with quotes in search queries
 
 = 5.2 =
-* For security reasons, the Gigya Secret Key can now only be viewed or edited by privileged users. By default only by <strong>network admins</strong> (in a multi-site installation) or <strong>admins</strong> (in a single-site installation). Learn more in <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin#Roles_and_Permissions">Roles and Permissions</a>.
+* For security reasons, the Gigya Secret Key can now only be viewed or edited by privileged users. By default only by <strong>network admins</strong> (in a multi-site installation) or <strong>admins</strong> (in a single-site installation). Learn more in <a href="https://developers.gigya.com/display/GD/WordPress+Plugin#WordPressPlugin-RolesandPermissions">Roles and Permissions</a>.
 * Security enhancements
 
 = 5.2.2.2 =
 * Bug fixes
 
+= 5.5 =
+* The GConnector authentication is now done using an application key and secret, rather than a partner secret, for security reasons. Note that in order for the new version to work, you must change the existing credentials (partner secret) to new ones (application key and secret).
+* Custom field mapping: You can now flexibly map any Gigya field to a Wordpress field
+* Users are now synced between Gigya and Wordpress based on their Gigya UID, and not on their email addresses.
+* If a duplicate user is detected, they are no longer deleted. Instead, an error is displayed.
+
+
 == FAQ ==
 
 Can I configure the design of the Gigya component?
 
-Yes, the design is fully configurable. You can read more about configuring the Gigya component design in our online documentation <a href="http://developers.gigya.com/015_Partners/030_CMS_and_Ecommerce_Platforms/030_Wordpress_Plugin" title="Installation and Configuration guide">here</a>
+Yes, the design is fully configurable. You can read more about configuring the Gigya component design in our online documentation <a href="https://developers.gigya.com/display/GD/WordPress+Plugin" title="Installation and Configuration guide">here</a>
 
 How can I get support for the Gigya Plugin?
 

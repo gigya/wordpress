@@ -3,7 +3,7 @@
  * Plugin Name: Gigya - Make Your Site Social
  * Plugin URI: http://gigya.com
  * Description: Allows sites to utilize the Gigya API for authentication and social network updates.
- * Version: 5.2.1
+ * Version: 5.5
  * Author: Gigya
  * Author URI: http://gigya.com
  * License: GPL2+
@@ -14,9 +14,9 @@
 /**
  * Global constants.
  */
-define( 'GIGYA__MINIMUM_WP_VERSION', '3.5' );
-define( 'GIGYA__MINIMUM_PHP_VERSION', '5.2' );
-define( 'GIGYA__VERSION', '5.2.2.2' );
+define( 'GIGYA__MINIMUM_WP_VERSION', '3.6' );
+define( 'GIGYA__MINIMUM_PHP_VERSION', '5.4' );
+define( 'GIGYA__VERSION', '5.5' );
 define( 'GIGYA__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GIGYA__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'GIGYA__CDN_PROTOCOL', ! empty( $_SERVER['HTTPS'] ) ? 'https://cdns' : 'http://cdn' );
@@ -55,6 +55,8 @@ new GigyaAction;
  * The main plugin class.
  */
 class GigyaAction {
+	protected $login_options;
+	protected $global_options;
 
 	/**
 	 * Constructor.
@@ -66,10 +68,23 @@ class GigyaAction {
 		$this->global_options = get_option( GIGYA__SETTINGS_GLOBAL );
 
 		// Gigya CMS
-		define( 'GIGYA__API_KEY', $this->global_options['api_key'] );
-		define( 'GIGYA__API_SECRET', $this->global_options['api_secret'] );
-		define( 'GIGYA__API_DOMAIN', $this->global_options['data_center'] );
-		define( 'GIGYA__API_DEBUG', $this->global_options['debug'] );
+		if (!empty($this->global_options))
+		{
+			define( 'GIGYA__API_KEY', $this->global_options['api_key'] );
+			if (isset($this->global_options['user_key'])) /* Backwards compatibility */
+				define( 'GIGYA__USER_KEY', $this->global_options['user_key'] );
+			define( 'GIGYA__API_SECRET', $this->global_options['api_secret'] );
+			define( 'GIGYA__API_DOMAIN', $this->global_options['data_center'] );
+			define( 'GIGYA__API_DEBUG', $this->global_options['debug'] );
+		}
+		else
+		{
+			define( 'GIGYA__API_KEY', '' );
+			define( 'GIGYA__USER_KEY', '' );
+			define( 'GIGYA__API_SECRET', '' );
+			define( 'GIGYA__API_DOMAIN', '' );
+			define( 'GIGYA__API_DEBUG', '' );
+		}
 
 		add_action( 'init', array( $this, 'init' ) );
 		add_action( 'admin_action_update', array( $this, 'adminActionUpdate' ) );
@@ -85,15 +100,13 @@ class GigyaAction {
 		add_action( 'wp_ajax_raas_update_profile', array( $this, 'ajaxUpdateProfile' ) );
 		add_action( 'wp_login', array( $this, 'wpLogin' ), 10, 2 );
 		add_action( 'user_register', array( $this, 'userRegister' ), 10, 1 );
-		add_action( 'wp_logout', array( $this, 'wpLogout' ) );
 		add_action( 'delete_user', array( $this, 'deleteUser' ) );
 		add_action( 'wpmu_delete_user', array( $this, 'deleteUser' ) );
 		add_action( 'widgets_init', array( $this, 'widgetsInit' ) );
-
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 		add_filter( 'the_content', array( $this, 'theContent' ) );
 		add_filter( 'get_avatar', array( $this, 'getGigyaAvatar'), 10, 5);
-		add_filter( 'login_message', array( $this, 'rass_wp_login_custom_message') );
+		add_filter( 'login_message', array( $this, 'raas_wp_login_custom_message') );
 
         $comments_on = $this->gigya_comments_on();
         if ($comments_on) {
@@ -142,7 +155,24 @@ class GigyaAction {
 	 * Initialize hook.
 	 */
 	public function init() {
-		require_once GIGYA__PLUGIN_DIR . 'sdk/GSSDK.php';
+		/* Require SDK libraries */
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GigyaJsonObject.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GigyaUserFactory.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GigyaProfile.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GigyaUser.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GSFactory.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GSException.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GSKeyNotFoundException.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GSApiException.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GSRequest.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GSResponse.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GSObject.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GSArray.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GigyaApiRequest.php';
+		require_once GIGYA__PLUGIN_DIR . 'sdk/SigUtils.php';
+		GSResponse::init();
+
+		require_once GIGYA__PLUGIN_DIR . 'sdk/GigyaApiHelper.php';
 		require_once GIGYA__PLUGIN_DIR . 'sdk/gigyaCMS.php';
 
 		// Load jQuery and jQueryUI from WP.
@@ -223,7 +253,6 @@ class GigyaAction {
 	 * Hook AJAX login.
 	 */
 	public function ajaxLogin() {
-
 		// Loads Gigya's social login class.
 		require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginAjax.php';
 		$gigyaLoginAjax = new GigyaLoginAjax;
@@ -231,18 +260,16 @@ class GigyaAction {
 	}
 
 	/**
-	 * Hook AJAX RAAS login.
+	 * Hook AJAX RaaS login.
 	 */
 	public function ajaxRaasLogin() {
-
 		// Loads Gigya's RaaS class.
 		require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasAjax.php';
 		$gigyaLoginAjax = new GigyaRaasAjax;
 		$gigyaLoginAjax->init();
 	}
 
-	public  function ajaxUpdateProfile() {
-
+	public function ajaxUpdateProfile() {
 		// Loads Gigya's RaaS class.
 		require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasAjax.php';
 		$gigyaAjax = new GigyaRaasAjax;
@@ -286,12 +313,10 @@ class GigyaAction {
 	 * @param $account
 	 */
 	public function wpLogin( $user_login, $account ) {
-
-		// Login through WP form.
-		if ( isset( $_POST['log'] ) && isset( $_POST['pwd'] ) ) {
-
-			// Trap for non-admin user who tries to login through WP form on RaaS mode.
-
+		/* Login through WP form. */
+		if ( isset( $_POST['log'] ) && isset( $_POST['pwd'] ) )
+		{
+			/* Trap for non-admin user who tries to login through WP form on RaaS mode. */
 			$_is_allowed_user = $this->check_raas_allowed_user_role($account->roles);
 			if ( $this->login_options['mode'] == 'raas' && (!$_is_allowed_user) ) {
 				wp_logout();
@@ -299,32 +324,48 @@ class GigyaAction {
 				exit;
 			}
 
-			// Notify Gigya socialize.notifyLogin
-			// for a return user logged in from WP login form.
+			/* Notify Gigya socialize.notifyLogin for a return user logged in from WP login form. */
 			$gigyaCMS = new GigyaCMS();
 			$gigyaCMS->notifyLogin( $account->ID );
-
 		}
 
-		// This post vars available when there is the same email on the site,
-		// with the one who try to register and we want to link-accounts
-		// after the user is logged in with password. Or login after email verify.
-		if ( ( $_POST['action'] == 'link_accounts' || $_POST['action'] == 'custom_login' ) && ! empty ( $_POST['data'] ) ) {
+		/* RaaS Login */
+		if ($_POST['action'] === 'gigya_raas')
+		{
+			/* Update Gigya UID in WordPress user meta if it isn't set already */
+			if (isset($_POST['data']['UID']))
+			{
+				$wp_gigya_uid = get_user_meta($account->ID, 'gigya_uid', true);
+				if (empty($wp_gigya_uid))
+					add_user_meta($account->ID, 'gigya_uid', $_POST['data']['UID']);
+				elseif ($wp_gigya_uid !== $_POST['data']['UID'])
+					wp_send_json_error(array('msg' => __('Oops! Someone is already registered with the email')));
+			}
+		}
+
+		/*
+		 * These post vars are available when there is the same email on the site,
+		 * with the one who try to register and we want to link-accounts
+		 * after the user is logged in with password. Or login after email verify.
+		 */
+		if ( ( $_POST['action'] == 'link_accounts' || $_POST['action'] == 'custom_login' ) && ! empty ( $_POST['data'] ) )
+    {
 			parse_str( $_POST['data'], $data );
-			if ( ! empty( $data['gigyaUID'] ) ) {
+			if ( ! empty( $data['gigyaUID'] ) )
+      {
 				$gigyaCMS = new GigyaCMS();
 				$gigyaCMS->notifyRegistration( $data['gigyaUID'], $account->ID );
-				delete_user_meta( $account->ID, 'gigya_uid' );
 			}
 		}
 	}
 
-	/*  Raas admin login
-	 *  Check if user role is marked by admin as allowed role for wp login access
-	 *  For unified comparison transform values to _lowercase_
-	 *  admin roles are auto allowed, subscriber role is auto denied.
+	/**
+	 * Raas admin login
+	 * Check if user role is marked by admin as allowed role for wp login access
+	 * For unified comparison transform values to _lowercase_
+	 * admin roles are auto allowed, subscriber role is auto denied.
 	 *
-	 * @param string $user_role
+	 * @param array $user_roles
 	 * @return bool $allowed
 	 */
 	public function check_raas_allowed_user_role($user_roles) {
@@ -363,18 +404,19 @@ class GigyaAction {
 		return $allowed;
 	}
 
-	/*
+	/**
 	 * Custom error message in case raas user tries to log in via wordpress wp-login screen.
 	 * Used by hook wp_login
 	 *
-	 * @return string $message
+	 * @return string|false
 	 */
-	public function rass_wp_login_custom_message() {
+	public function raas_wp_login_custom_message() {
 		if (isset($_GET['rperm']) ) {
 			$message = "<div id='login_error'><strong>Access denied: </strong>
 			this login requires administrator permission. <br/>Click <a href='/wp-login.php'>here</a> to login to the site.</div>";
 			return $message;
 		}
+		return false;
 	}
 
 	/**
@@ -384,6 +426,9 @@ class GigyaAction {
 	 */
 	public function userRegister( $uid ) {
 
+		/* Registered through RaaS */
+		if (isset($_POST['data']['UID']))
+			add_user_meta($uid, 'gigya_uid', $_POST['data']['UID']);
 		// New user was registered through our custom extra-details form.
 		if ( $_POST['form_name'] == 'registerform-gigya-extra' && ! empty( $_POST['gigyaUID'] ) ) {
 			add_user_meta( $uid, 'gigya_uid', $_POST['gigyaUID'] );
@@ -407,33 +452,14 @@ class GigyaAction {
 			}
 		}
 
-		// New user was registered through WP form.
+		/* New user was registered through WP form. */
 		if ( isset( $_POST['user_login'] ) && isset( $_POST['user_email'] ) ) {
-			// We notify to Gigya's 'socialize.notifyLogin'
-			// with a 'is_new_user' flag.
+			/*
+			 * We notify to Gigya's 'socialize.notifyLogin'
+			 * with a 'is_new_user' flag.
+			 */
 			$gigyaCMS = new GigyaCMS();
-			$result = $gigyaCMS->notifyLogin( $uid, TRUE );
-		}
-	}
-
-	/**
-	 * Hook user logout
-	 */
-	public function wpLogout() {
-
-		// Get the current user.
-		$account = wp_get_current_user();
-		if ( ! empty ( $account ) ) {
-
-			// Social logout
-			if ( $this->login_options['mode'] == 'wp_sl' ) {
-                // Note: for SSO logout sync, when logout is clicked, first gigya logs out via front end (gigya.js)
-				$gigyaCMS = new GigyaCMS();
-				$gigyaCMS->userLogout( $account->ID );
-			} elseif ( $this->login_options['mode'] == 'raas' ) {
-				$gigyaCMS = new GigyaCMS();
-				$gigyaCMS->accountLogout( $account );
-			}
+			$gigyaCMS->notifyLogin( $uid, true );
 		}
 	}
 
@@ -455,10 +481,15 @@ class GigyaAction {
 	}
 
 	/**
-	 * shortcode for UserInfo.
+	 * Shortcode for UserInfo.
+	 *
+	 * @param	array	$atts
+	 * @param	$info
 	 */
 	private function shortcodeUserInfo( $atts, $info = NULL ) {
-
+		/**
+		 * @var	WP_User
+		 */
 		$wp_user = wp_get_current_user();
 
 		if ( $info == NULL ) {
@@ -473,8 +504,7 @@ class GigyaAction {
 	 * Register widgets.
 	 */
 	public function widgetsInit() {
-
-		// RasS Widget.
+		// RaaS Widget.
 		$raas_on = $this->login_options['mode'] == 'raas';
 		if ( ! empty( $raas_on ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasWidget.php';
@@ -535,6 +565,10 @@ class GigyaAction {
 
 	/**
 	 * Hook content alter.
+	 *
+	 * @param	$content
+	 *
+	 * @return	string $content
 	 */
 	public function theContent( $content ) {
 		// Share plugin.
@@ -576,15 +610,15 @@ class GigyaAction {
 	 * @return string
 	 */
 	public function commentsTemplate( $comment_template ) {
-        // Spider trap.
-        // When a spider detect we render the comment in the HTML for SEO
+        /* Spider trap.
+         * When a spider detect we render the comment in the HTML for SEO */
         $is_spider = gigyaCMS::isSpider();
         if ( ! empty( $is_spider ) ) {
-            // Override default WP comments template with comment spider.
+            /* Override default WP comments template with comment spider */
             return GIGYA__PLUGIN_DIR . 'admin/tpl/comments-spider.tpl.php';
         }
 
-        // Override default WP comments template.
+        /* Override default WP comments template */
         return GIGYA__PLUGIN_DIR . 'admin/tpl/comments.tpl.php';
 	}
 
@@ -598,7 +632,7 @@ class GigyaAction {
 		}
 	}
 
-	public  function getGigyaAvatar($avatar, $id_or_email, $size, $default, $alt) {
+	public function getGigyaAvatar($avatar, $id_or_email, $size, $default, $alt) {
 		if ( empty($id_or_email) ) {
 			$id = get_current_user_id();
 		} else {
@@ -618,12 +652,12 @@ class GigyaAction {
 		$alt = empty( $alt ) ? get_user_meta($id, "first_name", true) : $alt;
 		return "<img src='{$url}' alt='{$alt}' width='{$size}' height='{$size}'>";
 	}
-
 }
 
- if ( ! function_exists( 'wp_new_user_notification' ) ) {
+if ( ! function_exists( 'wp_new_user_notification' ) ) {
 	$login_opts = get_option( GIGYA__SETTINGS_LOGIN );
-	if ( $login_opts['mode'] == 'raas' ) {
+	if ( $login_opts['mode'] == 'raas' )
+	{
 		/**
 		 * If we're on raas mode we disabled new user notifications from WP.
 		 *
@@ -631,7 +665,7 @@ class GigyaAction {
 		 * @param string $plaintext_pass
 		 */
 		function wp_new_user_notification( $user_id, $plaintext_pass = '' ) {
-			// Set default_password_nag to false, for prevent a user asked to change his password.
+			/* Set default_password_nag to false, for prevent a user asked to change his password */
 			update_user_option( $user_id, 'default_password_nag', false, true );
 			return;
 		}
@@ -646,10 +680,9 @@ class GigyaAction {
  * @param $variables
  *   A keyed array of variables that will appear in the output.
  *
- * @return void The output generated by the template.
+ * @return string The output generated by the template.
  */
 function _gigya_render_tpl( $template_file, $variables = array() ) {
-
 	// Extract the variables to a local namespace
 	extract( $variables, EXTR_SKIP );
 
@@ -661,7 +694,6 @@ function _gigya_render_tpl( $template_file, $variables = array() ) {
 
 	// End buffering and return its contents
 	return ob_get_clean();
-
 }
 
 // --------------------------------------------------------------------
@@ -676,7 +708,6 @@ function _gigya_render_tpl( $template_file, $variables = array() ) {
  * @return string
  */
 function _gigya_form_render( $form, $name_prefix = '' ) {
-
 	$render = '';
 
 	foreach ( $form as $id => $el ) {
@@ -713,7 +744,6 @@ function _gigya_form_render( $form, $name_prefix = '' ) {
 	}
 
 	return $render;
-
 }
 
 // --------------------------------------------------------------------
@@ -742,36 +772,145 @@ function _gigya_get_json( $file ) {
  * @param string $key
  * @param string, int $default
  *
- * @return $default - $array value (if $array is not empty)
+ * @return mixed $default - $array value (if $array is not empty)
  */
 function _gigParam( $array, $key, $default = null ) {
 	if ( is_array( $array ) ) {
-		return ! empty( $array[$key] ) || $array[$key] === "0" ? $array[$key] : $default;
+		return (isset( $array[$key] ) and ($array[$key] or $array[$key] === "0")) ? $array[$key] : $default;
 	} elseif ( is_object( $array ) ) {
-		return ! empty( $array->$key ) || $array->key === "0" ? $array->$key : $default;
+		return (isset( $array->$key ) and ($array->$key or $array->$key === "0")) ? $array->$key : $default;
 	}
 	return $default;
+}
+
+/**
+ * Helper
+ * Returns a JSON string based on the Gigya parameters given.
+ *
+ * Example:
+ * $params = ['a', 'b', 'c']
+ * $labels = ['name1', 'name2']
+ * $more_params = [['x', 'y', 'z']]
+ * Returns: [{"name1":"a", "name2":"x"},{"name1":"b", "name2":"y"},{"name1":"c", "name2":"z"}]
+ *
+ * @param	array	$params			Array of parameters to build JSON
+ * @param	array	$labels			Labels for given parameters--if only $params is given, $label should be an array of one
+ * @param	array	$more_params	More parameter arrays
+ *
+ * @return string|false	Final JSON, or false on failure
+ */
+function _gigParamsBuildJson( $params, $labels, ...$more_params ) {
+	if (empty($more_params))
+		$more_params = array();
+	if (count($labels) !== (1 + count($more_params)))
+		return false;
+	array_unshift($more_params, $params);
+
+	$build_array = array();
+	$json_array = array();
+	foreach ($more_params as $i => $param)
+	{
+		$build_array[$labels[$i]] = $param;
+	}
+	foreach ($build_array as $label => $label_set)
+	{
+		foreach ($label_set as $j => $value)
+		{
+			$json_array[$j][$label] = $value;
+		}
+	}
+
+	return json_encode($json_array);
+}
+
+function _gigParamsBuildLegacyJson($params) {
+	$values = get_option( GIGYA__SETTINGS_LOGIN );
+
+	$json_array = array();
+	for ($i = 0; $i < count($params); $i++)
+	{
+		$prefix = _gigya_get_mode_prefix();
+		if (isset($values[$params[$i]]) or isset($values[$prefix.$params[$i]]))
+		{
+			if ($values[$params[$i]] or $values[$prefix.$params[$i]])
+			{
+				$cms_name = str_replace($prefix, '', $params[$i]);
+				$gigya_name = _wp_key_to_gigya_key($cms_name);
+				$json_array[$i] = array(
+					'cmsName' => $cms_name,
+					'gigyaName' => $gigya_name,
+				);
+			}
+		}
+	}
+	$json_array = array_values($json_array); /* Flattens the array to hide keys in JSON */
+
+	return json_encode($json_array);
 }
 
 // --------------------------------------------------------------------
 
 /**
  * Helper
+ *
+ * @param array	$array
+ * @param $key
+ *
+ * @return integer
  */
 function _gigParamDefaultOn( $array, $key ) {
 	return ( isset( $array[$key] ) && $array[$key] === '0' ) ? '0' : '1';
 }
 
+/**
+ * Helper
+ * Flattens array into dot notation.
+ *
+ * @param	array	$array	Input array
+ * @returns array
+ */
+function _gigArrayFlatten( $array )
+{
+	$iterator = new RecursiveIteratorIterator(new RecursiveArrayIterator($array));
+	$result = array();
+	$valueIsArray = false;
+	foreach ($iterator as $leafValue) {
+		$keys = array();
+		foreach (range(0, $iterator->getDepth()) as $depth) {
+			$key = $iterator->getSubIterator($depth)->key();
+			if (gettype($key) === 'string')
+			{
+				$keys[] = $key;
+				$valueIsArray = false;
+			}
+			else
+				$valueIsArray = true;
+		}
+
+		$keyString = join('.', $keys);
+		if (!$valueIsArray)
+			$result[$keyString] = $leafValue;
+		else
+		{
+			if (empty($result[$keyString]) or !is_array($result[$keyString]))
+				$result[$keyString] = array();
+			$result[$keyString][] = $leafValue;
+		}
+	}
+
+	return $result;
+}
+
 // --------------------------------------------------------------------
 
-/*
+/**
  * Helper for form formatting, check for default values and set selected values
  *     check if role belongs to default. if so set default value to checked, for all other roles set default to not-checked.
  *	   set selected value (using _gigparam )
  *
  * @param array $values - gigya login settings
  * @param string $role
- * @param string $setting_role_name
+ * @param string $settings_role_name
  *
  * @return bool $value
  */
@@ -832,28 +971,81 @@ function gigyaSyncLoginSession() {
 // --------------------------------------------------------------------
 
 /**
- * Map social user fields to worpdress user fields
- * @param $gigya_object
- * @param $user_id
+ * Gets RaaS or SL prefix, depending on what the user is using
+ *
+ * @return string
  */
-function _gigya_add_to_wp_user_meta($gigya_object, $user_id) {
+function _gigya_get_mode_prefix()
+{
 	$login_opts = get_option( GIGYA__SETTINGS_LOGIN );
 	if ($login_opts['mode'] == "wp_sl") {
 		$prefix = "map_social_";
 	} elseif ($login_opts['mode'] == "raas") {
 		$prefix = "map_raas_";
 	} else {
-		return;
+		return '';
 	}
-	// Get all mapping options
-	foreach ( $login_opts as $key => $opt ) {
-		if (strpos($key, $prefix) === 0 && $opt == 1) {
-			$k = str_replace($prefix, "",$key);
-			$gigya_key = _wp_key_to_gigya_key($k);
-			update_user_meta($user_id, $k, sanitize_text_field($gigya_object[$gigya_key]));
+	return $prefix;
+}
+
+/**
+ * Map social user fields to WordPress user fields
+ * @param $gigya_object
+ * @param $user_id
+ *
+ * @throws Exception if there are problems with the hook or data
+ */
+function _gigya_add_to_wp_user_meta($gigya_object, $user_id) {
+	$gigya_object = _gigArrayFlatten($gigya_object);
+	$login_opts = get_option( GIGYA__SETTINGS_LOGIN );
+	$prefix = _gigya_get_mode_prefix();
+	if (!$prefix)
+		return;
+
+	if (!empty($login_opts['map_raas_full_map'])) /* Fully customized field mapping options */
+	{
+		/* Hook for modifying the data from Gigya before it is mapped */
+		$gigya_object_orig = $gigya_object;
+		try
+		{
+			do_action( 'gigya_pre_filed_mapping', $gigya_object, get_userdata($user_id) );
+			if (array_keys($gigya_object_orig) != array_keys($gigya_object))
+				throw new Exception('Invalid data returned by the hook. Return array must have the same keys as the input array.');
+		}
+		catch (Exception $e)
+		{
+			throw new Exception('Exception while running hook. Error message: '.$e->getMessage());
+		}
+
+		foreach (json_decode($login_opts['map_raas_full_map']) as $meta_key)
+		{
+			$meta_key = (array)$meta_key;
+			if (!isset($gigya_object[$meta_key['gigyaName']]))
+			{
+				$gigya_object[$meta_key['gigyaName']] = '';
+				/*
+				 * Uncomment this line if you want to send a notice to the WordPress log about *every* field mapping failure on *every* user login/registration.
+				 *
+				 * trigger_error('The Gigya field '.$meta_key['gigyaName'].', specified in the field mapping, does not exist. WP user ID: '.$user_id, E_USER_NOTICE);
+				 */
+			}
+			update_user_meta($user_id, $meta_key['cmsName'], sanitize_text_field($gigya_object[$meta_key['gigyaName']]));
 		}
 	}
-
+	else /* Legacy field mapping options */
+	{
+		foreach ( $login_opts as $key => $opt ) {
+			if (strpos($key, $prefix) === 0 && $opt == 1) {
+				$k = str_replace($prefix, "", $key);
+				$gigya_key = 'profile.'._wp_key_to_gigya_key($k);
+				if (!isset($gigya_object[$gigya_key]))
+				{
+					$gigya_object[$gigya_key] = '';
+				}
+				update_user_meta($user_id, $k, sanitize_text_field($gigya_object[$gigya_key]));
+			}
+		}
+	}
 }
 
 function _wp_key_to_gigya_key( $wp_key ) {
