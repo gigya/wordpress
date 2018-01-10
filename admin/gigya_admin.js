@@ -8,31 +8,30 @@
      * @param $el
      */
     var userManagementPage = function ( $el ) {
-
-      if ( $el.attr( "checked" ) == 'checked' ) {
-        if ( $el.val() == 'wp_only' ) {
+      if ( $el.attr( "checked" ) === 'checked' ) {
+        if ( $el.val() === 'wp_only' ) {
           $( '.global-login-wrapper' ).addClass( 'hidden' );
           $( '.social-login-wrapper' ).addClass( 'hidden' );
           $( '.raas-login-wrapper' ).addClass( 'hidden' );
           $( '.raas_enabled' ).find( '.gigya-raas-warn' ).addClass( 'hidden' );
         }
-        else if ( $el.val() == 'wp_sl' ) {
+        else if ( $el.val() === 'wp_sl' ) {
           $( '.global-login-wrapper' ).removeClass( 'hidden' );
           $( '.social-login-wrapper' ).removeClass( 'hidden' );
           $( '.raas-login-wrapper' ).addClass( 'hidden' );
           $( '.raas_enabled' ).find( '.gigya-raas-warn' ).removeClass( 'hidden' );
         }
-        else if ( $el.val() == 'raas' ) {
+        else if ( $el.val() === 'raas' ) {
           $( '.global-login-wrapper' ).removeClass( 'hidden' );
           $( '.social-login-wrapper' ).addClass( 'hidden' );
           $( '.raas-login-wrapper' ).removeClass( 'hidden' );
           $( '.raas_enabled' ).find( '.gigya-raas-warn' ).addClass( 'hidden' );
         }
       }
-    }
+    };
 
     // Set user management page at page load.
-    $( '#gigya_mode input' ).each( function () {
+    $( '#gigya_mode').find( 'input' ).each( function () {
       userManagementPage( $( this ) );
     } );
 
@@ -42,6 +41,45 @@
     } );
 
 // --------------------------------------------------------------------
+
+	/* Session settings page */
+
+	var sessionManagementPage = function( $select ) {
+		var sessionDurationElement = $( '#gigya_session_duration' );
+		var sessionTypeNumericElement = $( '#session_type_numeric' );
+		switch ( $select.val() )
+		{
+			case 'sliding':
+				sessionDurationElement.parent().removeClass('hidden');
+				sessionTypeNumericElement.val('-1');
+				sessionDurationElement.focus();
+				break;
+			case 'fixed':
+				sessionDurationElement.parent().removeClass('hidden');
+				sessionTypeNumericElement.val('1');
+				sessionDurationElement.focus();
+				break;
+			case 'forever':
+				sessionTypeNumericElement.val('-2');
+				sessionDurationElement.parent().addClass('hidden');
+				break;
+			case 'browser_close':
+				sessionTypeNumericElement.val('0');
+				sessionDurationElement.parent().addClass('hidden');
+				break;
+		}
+	};
+	var sessionTypeElement = $('#gigya_session_type');
+	sessionTypeElement.each( function() {
+		sessionManagementPage( $(this) );
+	} );
+	sessionTypeElement.change( function() {
+		sessionManagementPage( $(this) );
+	} );
+
+// --------------------------------------------------------------------
+
+	  /* Validation functions */
 
     /**
      * JSONLint.
@@ -63,23 +101,17 @@
           e.stopPropagation();
         }
       }
+	};
 
-    }
-
-    // Validate JSON before submit on settings form.
-    $( 'form.gigya-settings' ).on( 'submit', function ( e ) {
-      $( 'form.gigya-settings textarea' ).each( function () {
-        jsonValidate( $( this ), e );
-      } )
-    } );
-
-    // Validate JSON before submit on widget form.
-    var submitEl = $( '.textarea.json' ).parents( 'form' ).find( 'input[type="submit"]' )
-    submitEl.on( 'click', function ( e ) {
-      $( '.textarea.json textarea' ).each( function () {
-        jsonValidate( $( this ), e );
-      } )
-    } );
+	var emptyNumericValidate = function ( textField, e ) {
+		if ($(textField).val().length === 0 || isNaN($(textField).val()))
+		{
+			textField.parent().after( '<div class="msg error">Error: This field\'s value must be non-empty and numeric.</div>' );
+			textField.addClass( 'error' );
+			e.preventDefault();
+			e.stopPropagation();
+		}
+	};
 
 // --------------------------------------------------------------------
 
@@ -92,17 +124,17 @@
     var overrideToggle = function ( el, parentClass, all ) {
       parentClass = '.' + parentClass;
       var elementsToToggle = el.parents( parentClass ).next();
-      if ( typeof all != 'undefined' && all == true ) {
+      if ( typeof all !== 'undefined' && all ) {
         elementsToToggle = el.parents( parentClass ).nextAll();
       }
 
       el.is( ":checked" ) ? elementsToToggle.show() : elementsToToggle.hide();
-    }
+    };
 
     // Conditional admin settings fields.
     $( document ).on( 'change', '.conditional input[type="checkbox"]', function () {
       overrideToggle( $( this ), 'conditional' );
-    } )
+    } );
     $( '.conditional input[type="checkbox"]' ).each( function () {
       overrideToggle( $( this ), 'conditional' );
     } );
@@ -110,7 +142,7 @@
     // Conditional widget overrides fields.
     $( document ).on( 'change', '.gigya-widget-override input[type="checkbox"]', function () {
       overrideToggle( $( this ), 'gigya-widget-override', true );
-    } )
+    } );
     $( '.gigya-widget-override input[type="checkbox"]' ).each( function () {
       overrideToggle( $( this ), 'gigya-widget-override', true );
     } );
@@ -133,7 +165,7 @@
       var req = $.ajax( options );
 
       req.done( function ( res ) {
-        if ( res.success == true ) {
+        if ( res.success ) {
           alert( res.data.msg );
           location.reload();
         }
@@ -142,11 +174,11 @@
       req.fail( function ( jqXHR, textStatus, errorThrown ) {
         console.log( errorThrown );
       } );
-    }
+    };
 
     $( document ).on( 'click', '.gigya-settings .clean-db', function () {
       var r = confirm( "You're about to run a database cleaner.\n\rOld data from Gigya plugin version 4.0 will be deleted permanently from the database.\n\rIt's highly recommended to backup your database before you run this script.\n\rPlease confirm you want to continue." );
-      if ( r == true ) {
+      if ( r ) {
         cleanDB();
       }
     } );
@@ -169,7 +201,7 @@
       var req = $.ajax( options );
 
       req.done( function ( res ) {
-        if ( res.success == true ) {
+        if ( res.success ) {
           var pom = document.createElement( 'a' );
           pom.setAttribute( 'href', 'data:application/json;charset=utf-8,' + encodeURIComponent( JSON.stringify( res.data, null, 4 ) ) );
           pom.setAttribute( 'download', 'gigya-log.json' );
@@ -180,7 +212,7 @@
       req.fail( function ( jqXHR, textStatus, errorThrown ) {
         console.log( errorThrown );
       } );
-    }
+    };
 
     $( document ).on( 'click', '.gigya-debug-log', function () {
       debugLog();
@@ -214,13 +246,13 @@
        */
 
       // Hide the other data center field by default if other is not selected
-      if ( $( "#gigya_data_center").find( "option:selected" ).val() != 'other' )  {
+      if ( $( "#gigya_data_center").find( "option:selected" ).val() !== 'other' )  {
           $( '.other_dataCenter' ).hide();
       }
 
       // Show other data center input field on 'other' selection
       $( '.data_center select' ).change( function() {
-          if ( $( "#gigya_data_center").find( "option:selected" ).text() == 'Other' ) {
+          if ( $( "#gigya_data_center").find( "option:selected" ).text() === 'Other' ) {
               $( '.other_dataCenter' ).show();
           } else {
               $( '.other_dataCenter' ).hide();
@@ -229,8 +261,7 @@
 
       // on filling other data center set the selected value to the input
       $( '#other_ds' ).focusout( function() {
-          $( "#gigya_data_center").find("option:selected" ).val( $( '#other_ds' ).val() + ".gigya.com" );
-
+          $( "#gigya_data_center").find("option:selected" ).val( $( '#other_ds' ).val() );
       });
 
 // --------------------------------------------------------------------
@@ -252,5 +283,22 @@
     });
 // --------------------------------------------------------------------
 
+	  /* Form validation */
+
+	  // Validate form before submit
+	  $( 'form.gigya-settings' ).on( 'submit', function ( e ) {
+		  emptyNumericValidate($('#gigya_session_duration'), e);
+		  $( 'form.gigya-settings textarea' ).each( function () {
+			  jsonValidate( $( this ), e );
+		  } )
+	  } );
+
+	  // Validate JSON before submit on widget form.
+	  var submitEl = $( '.textarea.json' ).parents( 'form' ).find( 'input[type="submit"]' );
+	  submitEl.on( 'click', function ( e ) {
+		  $( '.textarea.json textarea' ).each( function () {
+			  jsonValidate( $( this ), e );
+		  } )
+	  } );
   } );
-})( jQuery );
+} )( jQuery );

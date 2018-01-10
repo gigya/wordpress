@@ -5,17 +5,28 @@
  */
 class GigyaInstall {
 
+	private $global_options;
+	private $login_options;
+	private $session_options;
+	private $share_options;
+	private $comments_options;
+	private $reactions_options;
+	private $gm_options;
+	private $log;
+
+	private $reactions_optionsjson_decode_nice;
+
 	/**
 	 * Constructor.
 	 */
 	public function __construct() {
 		$this->global_options    = get_option( GIGYA__SETTINGS_GLOBAL );
 		$this->login_options     = get_option( GIGYA__SETTINGS_LOGIN );
+		$this->session_options     = get_option( GIGYA__SETTINGS_SESSION );
 		$this->share_options     = get_option( GIGYA__SETTINGS_SHARE );
 		$this->comments_options  = get_option( GIGYA__SETTINGS_COMMENTS );
 		$this->reactions_options = get_option( GIGYA__SETTINGS_REACTIONS );
 		$this->gm_options        = get_option( GIGYA__SETTINGS_GM );
-		$this->feed_options      = get_option( GIGYA__SETTINGS_FEED );
 		$this->log               = get_option( 'gigya_log' );
 	}
 
@@ -28,6 +39,10 @@ class GigyaInstall {
 		// So, on installation we initialize our records with the desired value of autoload.
 		if ( empty ( $this->global_options ) ) {
 			add_option( GIGYA__SETTINGS_GLOBAL, array(), '', 'yes' );
+		}
+
+		if ( empty ( $this->session_options ) ) {
+			add_option( GIGYA__SETTINGS_SESSION, array(), '', 'yes' );
 		}
 
 		if ( empty ( $this->login_options ) ) {
@@ -50,9 +65,9 @@ class GigyaInstall {
 			add_option( GIGYA__SETTINGS_GM, array(), '', 'no' );
 		}
 
-		if ( empty ( $this->feed_options ) ) {
-			add_option( GIGYA__SETTINGS_FEED, array(), '', 'no' );
-		}
+//		if ( empty ( $this->feed_options ) ) {
+//			add_option( GIGYA__SETTINGS_FEED, array(), '', 'no' );
+//		}
 
 		if ( empty ( $this->log ) ) {
 			add_option( 'gigya_log', array(), '', 'no' );
@@ -222,7 +237,6 @@ class GigyaInstall {
 
 		// Creating new widgets based on the old ones.
 		$this->upgradeWidget( 'widget_gigya', 'widget_gigya_login' );
-		$this->upgradeWidget( 'widget_gigyaactivityfeed', 'widget_gigya_feed' );
 		$this->upgradeWidget( 'widget_gigyafollowbar', 'widget_gigya_follow' );
 		$this->upgradeWidget( 'widget_gigyagamification', 'widget_gigya_gamification' );
 
