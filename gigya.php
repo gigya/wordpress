@@ -223,23 +223,26 @@ class GigyaAction {
 			if ( !empty( $this->login_options ) ) /* Empty only happens on initial plugin enable, before configuring it */
 			{
 				// Loads requirements for any Gigya's social login.
-				if ( $this->login_options['mode'] == 'wp_sl' ) {
+				if ( $this->login_options['mode'] == 'wp_sl' )
+				{
 					require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginSet.php';
 					$gigyaLoginSet = new GigyaLoginSet;
 					$gigyaLoginSet->init();
 				}
 
-			// Loads requirements for any Gigya's RaaS login.
-			if ( $this->login_options['mode'] == 'raas' ) {
-				// Loads RaaS links class.
-				require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasSet.php';
-				$gigyaRaasSet = new GigyaRaasSet;
-				$gigyaRaasSet->init();
+				// Loads requirements for any Gigya's RaaS login.
+				if ( $this->login_options['mode'] == 'raas' )
+				{
+					// Loads RaaS links class.
+					require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasSet.php';
+					$gigyaRaasSet = new GigyaRaasSet;
+					$gigyaRaasSet->init();
 
-				// Updates GltExp cookie
-				require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasAjax.php';
-				$raasAjaxObject = new GigyaRaasAjax();
-				$raasAjaxObject->updateGltExpCookie();
+					// Updates GltExp cookie
+					require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasAjax.php';
+					$raasAjaxObject = new GigyaRaasAjax();
+					$raasAjaxObject->updateGltExpCookie();
+				}
 			}
 
 			// Loads requirements for any Gigya's Google-Analytics integration.
