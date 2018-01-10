@@ -8,7 +8,7 @@
 	<div class="header">
 		<span class="icon32" id="icon-options-general"></span>
 
-		<h1>Gigya v:<?php echo GIGYA__VERSION; ?></h1>
+		<h1>Gigya GConnector version <?php echo GIGYA__VERSION; ?></h1>
 	</div>
 	<div class="nav-tab-wrapper">
 		<?php foreach ( GigyaSettings::getSections() as $section ) : ?>
