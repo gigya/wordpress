@@ -504,6 +504,9 @@ class GigyaAction {
 	 * Register widgets.
 	 */
 	public function widgetsInit() {
+		if (empty($this->login_options)) /* Only happens on initial activation, before configuring Gigya */
+			return false;
+
 		// RaaS Widget.
 		$raas_on = $this->login_options['mode'] == 'raas';
 		if ( ! empty( $raas_on ) ) {
@@ -561,6 +564,8 @@ class GigyaAction {
 		// Follow Bar Widget.
 		require_once GIGYA__PLUGIN_DIR . 'features/follow/GigyaFollowWidget.php';
 		register_widget( 'GigyaFollow_Widget' );
+
+		return true;
 	}
 
 	/**
@@ -656,7 +661,7 @@ class GigyaAction {
 
 if ( ! function_exists( 'wp_new_user_notification' ) ) {
 	$login_opts = get_option( GIGYA__SETTINGS_LOGIN );
-	if ( $login_opts['mode'] == 'raas' )
+	if ( isset($login_opts['mode']) and $login_opts['mode'] == 'raas' )
 	{
 		/**
 		 * If we're on raas mode we disabled new user notifications from WP.
@@ -978,6 +983,9 @@ function gigyaSyncLoginSession() {
 function _gigya_get_mode_prefix()
 {
 	$login_opts = get_option( GIGYA__SETTINGS_LOGIN );
+	if (empty($login_opts))
+		return '';
+
 	if ($login_opts['mode'] == "wp_sl") {
 		$prefix = "map_social_";
 	} elseif ($login_opts['mode'] == "raas") {
