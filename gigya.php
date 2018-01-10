@@ -212,19 +212,22 @@ class GigyaAction {
 				// Load Gigya's socialize.js from CDN.
 				wp_enqueue_script( 'gigya_cdn', GIGYA__JS_CDN . GIGYA__API_KEY . '&lang=' . $params['lang'] );
 
-			// Loads requirements for any Gigya's social login.
-			if ( $this->login_options['mode'] == 'wp_sl' ) {
-				require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginSet.php';
-				$gigyaLoginSet = new GigyaLoginSet;
-				$gigyaLoginSet->init();
-			}
+			if ( !empty( $this->login_options ) ) /* Empty only happens on initial plugin enable, before configuring it */
+			{
+				// Loads requirements for any Gigya's social login.
+				if ( $this->login_options['mode'] == 'wp_sl' ) {
+					require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginSet.php';
+					$gigyaLoginSet = new GigyaLoginSet;
+					$gigyaLoginSet->init();
+				}
 
-			// Loads requirements for any Gigya's RaaS login.
-			if ( $this->login_options['mode'] == 'raas' ) {
-				// Loads RaaS links class.
-				require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasSet.php';
-				$gigyaRaasSet = new GigyaRaasSet;
-				$gigyaRaasSet->init();
+				// Loads requirements for any Gigya's RaaS login.
+				if ( $this->login_options['mode'] == 'raas' ) {
+					// Loads RaaS links class.
+					require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasSet.php';
+					$gigyaRaasSet = new GigyaRaasSet;
+					$gigyaRaasSet->init();
+				}
 			}
 
 			// Loads requirements for any Gigya's Google-Analytics integration.
