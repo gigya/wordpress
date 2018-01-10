@@ -1,8 +1,8 @@
 === Gigya - Social Infrastructure  ===
 
 Contributors: gigya.com, konforti, luciodiri
-Tags: Registration, Social Login, Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, Gigya, Social Infrastructure, feed
-Requires at least: 3.6
+Tags: CIAM, CIM, Registration, Social Login, Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, Gigya, Social Infrastructure, feed
+Requires at least: 4.2
 Tested up to: 4.8
 Stable tag: 5.5
 License: GPLv2 or later
@@ -11,7 +11,7 @@ Integrate your WordPress site with Gigya
 
 == Description ==
 Gigya's Customer Identity Management Platform helps companies build better customer relationships by turning unknown visitors into known, loyal and engaged customers. With Gigya’s technology, businesses increase registrations and identify customers across devices, consolidate data into rich customer profiles, and provide better service, products and experiences by integrating data into marketing and service applications.
- 
+
 More than 700 of the world’s leading businesses such as Fox, Forbes, and Verizon rely on Gigya to build identity-driven relationships and to provide scalable, secure Customer Identity Management.
 
 If you don't have an account yet, <a href="https://console.gigya.com/register.aspx" title="sign up">sign up for a free trial</a>.
@@ -30,8 +30,6 @@ If you don't have an account yet, <a href="https://console.gigya.com/register.as
 * Rating & Reviews - Give your customers an easy way to provide feedback on products and content across your site and share that feedback with friends in their social networks.
 * Gamification - Motivate your users to take valuable actions by offering rewards such as higher status, special offers, badges, points and more.
 * Reactions - Make it easy for users to react to content on your site and share their reactions with friends on social networks.
-* Activity Feed - Provide you site visitors with visibility into the real-time activity that is happening on your WordPress blog or website.
-* Follow Bar - Easily add links for users to Like you on Facebook, follow you on Twitter, or otherwise engage with you across a range of social channels.
 
 
 For more information, installation steps and configuration options - please refer to Gigya's documentation:
@@ -120,6 +118,13 @@ For question about installations or configuration, please contact your account m
 
 = 5.2.2.2 =
 * Bug fixes
+
+= 5.5 =
+* The GConnector authentication is now done using an application key and secret, rather than a partner secret, for security reasons. Note that in order for the new version to work, you must change the existing credentials (partner secret) to new ones (application key and secret).
+* Custom field mapping: You can now flexibly map any Gigya field to a Wordpress field
+* Users are now synced between Gigya and Wordpress based on their Gigya UID, and not on their email addresses.
+* If a duplicate user is detected, they are no longer deleted. Instead, an error is displayed.
+
 
 == FAQ ==
 

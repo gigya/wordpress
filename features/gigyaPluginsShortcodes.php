@@ -10,6 +10,7 @@ class gigyaPluginsShortcodes {
 
 	public function gigyaCommentsScode( $attrs ) {
 		require_once GIGYA__PLUGIN_DIR . 'features/comments/GigyaCommentsSet.php';
+
 		$comments = new GigyaCommentsSet();
 		$defaults = $comments->getParams();
 		if ( empty( $attrs ) ) {
@@ -26,35 +27,13 @@ class gigyaPluginsShortcodes {
 			$attrs = $this->attrs_to_gigya($attrs);
 			$attrs = array_merge($defaults, $attrs);
 		}
-		return _gigya_render_tpl( 'admin/tpl/comments.tpl.php', array( 'data' => $attrs ) );
-	}
 
-	public function gigyaFeedScode( $attrs) {
-		require_once GIGYA__PLUGIN_DIR . 'features/feed/GigyaFeedSet.php';
-		$feed = new GigyaFeedSet();
-		$defaults = $feed->getParams();
-		if (empty( $attrs )) {
-			$attrs = $defaults;
-			if ( isset( $attrs['advanced'] )) {
-				$advanced = gigyaCms::jsonToArray( $attrs['advanced'] );
-				if ( is_array( $advanced ) ) {
-					$attrs = array_merge( $attrs, $advanced );
-				} else if ( is_string( $advanced ) ) {
-					_gigya_error_log( "Error in " . __FUNCTION__ . " shortcode advanced parameters message: "
-					                  . $advanced );
-				}
-			}
-		} else {
-			$attrs = $this->attrs_to_gigya($attrs);
-			$attrs = array_merge($defaults, $attrs);
-		}
-		$output = '<div class="gigya-feed-widget"></div>';
-		$output .= '<script class="data-feed" type="application/json">' . json_encode( $attrs ) . '</script>';
-		return $output;
+		return _gigya_render_tpl( 'admin/tpl/comments.tpl.php', array( 'data' => $attrs ) );
 	}
 
 	public function gigyaFollowBarScode( $attrs ) {
 		require_once GIGYA__PLUGIN_DIR . 'features/follow/GigyaFollowSet.php';
+
 		$follow = new GigyaFollowSet();
 		$defaults = $follow->getParams();
 		if (empty( $attrs )) {
@@ -71,9 +50,11 @@ class gigyaPluginsShortcodes {
 		} else {
 			$attrs = array_merge($defaults, $attrs);
 		}
+
 		$attrs = $this->attrs_to_gigya($attrs);
 		$output = '<div class="gigya-follow-widget"></div>';
 		$output .= '<script class="data-follow" type="application/json">' . json_encode( $attrs ) . '</script>';
+
 		return $output;
 	}
 
@@ -93,6 +74,7 @@ class gigyaPluginsShortcodes {
 				$type = "game";
 				break;
 		}
+
 		require_once GIGYA__PLUGIN_DIR . 'features/gamification/GigyaGamificationSet.php';
 		$gm = new GigyaGamificationSet();
 		if (empty( $attrs )) {
@@ -111,6 +93,7 @@ class gigyaPluginsShortcodes {
 		$attrs = $this->attrs_to_gigya($attrs);
 		$output = '<div class="gigya-gamification-widget"></div>';
 		$output .= '<script class="data-gamification" type="application/json">' . json_encode( $attrs ) . '</script>';
+
 		return $output;
 	}
 
@@ -135,8 +118,8 @@ class gigyaPluginsShortcodes {
 		}
 		$output = '<div class="gigya-reactions-widget"></div>';
 		$output .= '<script class="data-reactions" type="application/json">' . json_encode( $attrs ) . '</script>';
-		return $output;
 
+		return $output;
 	}
 
 	public function gigyaShareBarScode ( $attrs) {
@@ -160,8 +143,8 @@ class gigyaPluginsShortcodes {
 		}
 		$output = '<div class="gigya-share-widget"></div>';
 		$output .= '<script class="data-share" type="application/json">' . json_encode( $attrs ) . '</script>';
-		return $output;
 
+		return $output;
 	}
 
 	public function gigyaSocialLoginScode ( $attrs) {
@@ -224,8 +207,6 @@ class gigyaPluginsShortcodes {
 		return $output;
 	}
 
-
-
 	public function attrs_to_gigya( $attrs ) {
 		foreach ( $attrs as $key => $val ) {
 			$new_key = _underscore_to_camelcase($key);
@@ -234,5 +215,4 @@ class gigyaPluginsShortcodes {
 		}
 		return $attrs;
 	}
-
 } 

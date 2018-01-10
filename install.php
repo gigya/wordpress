@@ -12,7 +12,6 @@ class GigyaInstall {
 	private $comments_options;
 	private $reactions_options;
 	private $gm_options;
-	private $feed_options;
 	private $log;
 
 	private $reactions_optionsjson_decode_nice;
@@ -28,7 +27,6 @@ class GigyaInstall {
 		$this->comments_options  = get_option( GIGYA__SETTINGS_COMMENTS );
 		$this->reactions_options = get_option( GIGYA__SETTINGS_REACTIONS );
 		$this->gm_options        = get_option( GIGYA__SETTINGS_GM );
-		$this->feed_options      = get_option( GIGYA__SETTINGS_FEED );
 		$this->log               = get_option( 'gigya_log' );
 	}
 
@@ -67,9 +65,9 @@ class GigyaInstall {
 			add_option( GIGYA__SETTINGS_GM, array(), '', 'no' );
 		}
 
-		if ( empty ( $this->feed_options ) ) {
-			add_option( GIGYA__SETTINGS_FEED, array(), '', 'no' );
-		}
+//		if ( empty ( $this->feed_options ) ) {
+//			add_option( GIGYA__SETTINGS_FEED, array(), '', 'no' );
+//		}
 
 		if ( empty ( $this->log ) ) {
 			add_option( 'gigya_log', array(), '', 'no' );
@@ -239,7 +237,6 @@ class GigyaInstall {
 
 		// Creating new widgets based on the old ones.
 		$this->upgradeWidget( 'widget_gigya', 'widget_gigya_login' );
-		$this->upgradeWidget( 'widget_gigyaactivityfeed', 'widget_gigya_feed' );
 		$this->upgradeWidget( 'widget_gigyafollowbar', 'widget_gigya_follow' );
 		$this->upgradeWidget( 'widget_gigyagamification', 'widget_gigya_gamification' );
 
