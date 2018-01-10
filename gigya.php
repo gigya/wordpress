@@ -485,19 +485,22 @@ class GigyaAction {
 	 *
 	 * @param	array	$atts
 	 * @param	$info
+	 *
+	 * @return string
 	 */
 	private function shortcodeUserInfo( $atts, $info = NULL ) {
 		/**
 		 * @var	WP_User
 		 */
 		$wp_user = wp_get_current_user();
+		$user_info = array();
 
 		if ( $info == NULL ) {
 			$gigyaCMS  = new GigyaCMS();
 			$user_info = $gigyaCMS->getUserInfo( $wp_user->UID );
 		}
 
-		return $user_info->getString( key( $atts ), current( $atts ) );
+		return json_encode($user_info);
 	}
 
 	/**
