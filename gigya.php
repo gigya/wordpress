@@ -231,7 +231,7 @@ class GigyaAction {
 				}
 
 				// Loads requirements for any Gigya's RaaS login.
-				if ( $this->login_options['mode'] == 'raas' and ( ! empty(GIGYA__USER_KEY) ) )
+				if ( $this->login_options['mode'] == 'raas' and defined( 'GIGYA__USER_KEY' ) and ( ! empty(GIGYA__USER_KEY) ) )
 				{
 					// Loads RaaS links class.
 					require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasSet.php';
