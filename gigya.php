@@ -3,7 +3,7 @@
  * Plugin Name: Gigya - Make Your Site Social
  * Plugin URI: http://gigya.com
  * Description: Allows sites to utilize the Gigya API for authentication and social network updates.
- * Version: 5.2.2.2
+ * Version: 5.5
  * Author: Gigya
  * Author URI: http://gigya.com
  * License: GPL2+
@@ -14,9 +14,9 @@
 /**
  * Global constants.
  */
-define( 'GIGYA__MINIMUM_WP_VERSION', '3.5' );
+define( 'GIGYA__MINIMUM_WP_VERSION', '3.6' );
 define( 'GIGYA__MINIMUM_PHP_VERSION', '5.4' );
-define( 'GIGYA__VERSION', '5.2.2.2' );
+define( 'GIGYA__VERSION', '5.5' );
 define( 'GIGYA__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GIGYA__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'GIGYA__CDN_PROTOCOL', ! empty( $_SERVER['HTTPS'] ) ? 'https://cdns' : 'http://cdn' );
@@ -75,7 +75,8 @@ class GigyaAction {
 		if (!empty($this->global_options))
 		{
 			define( 'GIGYA__API_KEY', $this->global_options['api_key'] );
-			define( 'GIGYA__USER_KEY', $this->global_options['user_key'] );
+			if (isset($this->global_options['user_key'])) /* Backwards compatibility */
+				define( 'GIGYA__USER_KEY', $this->global_options['user_key'] );
 			define( 'GIGYA__API_SECRET', $this->global_options['api_secret'] );
 			define( 'GIGYA__API_DOMAIN', $this->global_options['data_center'] );
 			define( 'GIGYA__API_DEBUG', $this->global_options['debug'] );
@@ -211,12 +212,14 @@ class GigyaAction {
 				// Load Gigya's socialize.js from CDN.
 				wp_enqueue_script( 'gigya_cdn', GIGYA__JS_CDN . GIGYA__API_KEY . '&lang=' . $params['lang'] );
 
-			// Loads requirements for any Gigya's social login.
-			if ( $this->login_options['mode'] == 'wp_sl' ) {
-				require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginSet.php';
-				$gigyaLoginSet = new GigyaLoginSet;
-				$gigyaLoginSet->init();
-			}
+			if ( !empty( $this->login_options ) ) /* Empty only happens on initial plugin enable, before configuring it */
+			{
+				// Loads requirements for any Gigya's social login.
+				if ( $this->login_options['mode'] == 'wp_sl' ) {
+					require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginSet.php';
+					$gigyaLoginSet = new GigyaLoginSet;
+					$gigyaLoginSet->init();
+				}
 
 			// Loads requirements for any Gigya's RaaS login.
 			if ( $this->login_options['mode'] == 'raas' ) {
@@ -489,25 +492,31 @@ class GigyaAction {
 	 *
 	 * @param	array	$atts
 	 * @param	$info
+	 *
+	 * @return string
 	 */
 	private function shortcodeUserInfo( $atts, $info = NULL ) {
 		/**
 		 * @var	WP_User
 		 */
 		$wp_user = wp_get_current_user();
+		$user_info = array();
 
 		if ( $info == NULL ) {
 			$gigyaCMS  = new GigyaCMS();
 			$user_info = $gigyaCMS->getUserInfo( $wp_user->UID );
 		}
 
-		return $user_info->getString( key( $atts ), current( $atts ) );
+		return json_encode($user_info);
 	}
 
 	/**
 	 * Register widgets.
 	 */
 	public function widgetsInit() {
+		if (empty($this->login_options)) /* Only happens on initial activation, before configuring Gigya */
+			return false;
+
 		// RaaS Widget.
 		$raas_on = $this->login_options['mode'] == 'raas';
 		if ( ! empty( $raas_on ) ) {
@@ -565,6 +574,8 @@ class GigyaAction {
 		// Follow Bar Widget.
 		require_once GIGYA__PLUGIN_DIR . 'features/follow/GigyaFollowWidget.php';
 		register_widget( 'GigyaFollow_Widget' );
+
+		return true;
 	}
 
 	/**
@@ -660,7 +671,7 @@ class GigyaAction {
 
 if ( ! function_exists( 'wp_new_user_notification' ) ) {
 	$login_opts = get_option( GIGYA__SETTINGS_LOGIN );
-	if ( $login_opts['mode'] == 'raas' )
+	if ( isset($login_opts['mode']) and $login_opts['mode'] == 'raas' )
 	{
 		/**
 		 * If we're on raas mode we disabled new user notifications from WP.
@@ -992,6 +1003,9 @@ function gigyaSyncLoginSession( $mode, $session_opts = null ) {
 function _gigya_get_mode_prefix()
 {
 	$login_opts = get_option( GIGYA__SETTINGS_LOGIN );
+	if (empty($login_opts))
+		return '';
+
 	if ($login_opts['mode'] == "wp_sl") {
 		$prefix = "map_social_";
 	} elseif ($login_opts['mode'] == "raas") {

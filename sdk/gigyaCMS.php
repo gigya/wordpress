@@ -125,18 +125,18 @@ class GigyaCMS {
 	 *   the user info from Gigya.
 	 */
 	public function getUserInfo( $guid ) {
-		static $user_info = NULL;
-		if ( $user_info === NULL ) {
+		static $user_info = null;
+		if ( $user_info === null ) {
 			if ( ! empty( $guid ) ) {
 				$params = array(
-						'uid' => $guid,
+					'uid' => $guid,
 				);
 
 				return $this->call( 'getUserInfo', $params );
 			}
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	/**
