@@ -49,19 +49,19 @@ class GigyaSettings {
         return CUSTOM_GIGYA_EDIT;
     }
 
-	/**
-	 * @param $input
-	 *
-	 * @return mixed
-	 */
-	public function validate( $input ) {
+//	/**
+//	 * @param $input
+//	 *
+//	 * @return mixed
+//	 */
+//	public function validate( $input ) {
 //		$cms = new gigyaCMS();
-//		$res = $cms->apiValidate( $input['api_key'], $input['api_secret'], $input['data_center'] );
-//		if ( $res['error'] == 301001 ) {
+//		$res = $cms->apiValidate( $input['api_key'], $input['user_key'], $input['api_secret'], $input['data_center'] );
+//		if ( $res->getErrorCode() == 301001 ) {
 //			add_settings_error( 'gigiya_data_canter', 'validation', 'Incorrect value entered!', 'error' );
 //		}
-		return $input;
-	}
+//		return $input;
+//	}
 
 	/**
 	 * Hook admin_menu callback.
@@ -218,6 +218,7 @@ class GigyaSettings {
     public static function _keepOldApiValues() {
         $options = static::_setSiteOptions();
         $_POST['gigya_global_settings']['api_key'] = $options['api_key'];
+        $_POST['gigya_global_settings']['user_key'] = $options['user_key'];
         $_POST['gigya_global_settings']['api_secret'] = $options['api_secret'];
         $_POST['gigya_global_settings']['data_center'] = $options['data_center'];
     }
