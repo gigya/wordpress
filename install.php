@@ -237,7 +237,6 @@ class GigyaInstall {
 
 		// Creating new widgets based on the old ones.
 		$this->upgradeWidget( 'widget_gigya', 'widget_gigya_login' );
-//		$this->upgradeWidget( 'widget_gigyafollowbar', 'widget_gigya_follow' );
 		$this->upgradeWidget( 'widget_gigyagamification', 'widget_gigya_gamification' );
 
 		// Updating the sidebars.

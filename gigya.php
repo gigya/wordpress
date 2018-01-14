@@ -31,11 +31,9 @@ define( 'GIGYA__SETTINGS_GLOBAL', 'gigya_global_settings' );
 define( 'GIGYA__SETTINGS_LOGIN', 'gigya_login_settings' );
 define( 'GIGYA__SETTINGS_SESSION', 'gigya_session_management' );
 define( 'GIGYA__SETTINGS_SHARE', 'gigya_share_settings' );
-//define( 'GIGYA__SETTINGS_FOLLOW', 'gigya_follow_settings' );
 define( 'GIGYA__SETTINGS_COMMENTS', 'gigya_comments_settings' );
 define( 'GIGYA__SETTINGS_REACTIONS', 'gigya_reactions_settings' );
 define( 'GIGYA__SETTINGS_GM', 'gigya_gm_settings' );
-//define( 'GIGYA__SETTINGS_FEED', 'gigya_feed_settings' );
 
 /**
  * Session constants
@@ -125,7 +123,7 @@ class GigyaAction {
             add_filter( 'comments_template', array( $this, 'commentsTemplate' ) );
         }
 
-		// Plugins shortcode activation switches
+		/* Plugins shortcode activation switches */
 		require_once GIGYA__PLUGIN_DIR . 'features/gigyaPluginsShortcodes.php';
 		$shortcodes_class = new gigyaPluginsShortcodes();
 
@@ -152,7 +150,7 @@ class GigyaAction {
 			add_shortcode( 'gigya-gm-leaderboard',  array( $shortcodes_class, 'gigyaGmScode'));
 			add_shortcode( 'gigya-gm-user-status',  array( $shortcodes_class, 'gigyaGmScode'));
 		}
-		// End plugins shortcodes activation switches
+		/* End plugins shortcodes activation switches */
 	}
 
 	/**
@@ -427,8 +425,7 @@ class GigyaAction {
 	 */
 	public function raas_wp_login_custom_message() {
 		if (isset($_GET['rperm']) ) {
-			$message = "<div id='login_error'><strong>Access denied: </strong>
-			this login requires administrator permission. <br/>Click <a href='/wp-login.php'>here</a> to login to the site.</div>";
+			$message = "<div id='login_error'><strong>Access denied: </strong> this login requires administrator permission. <br/>Click <a href='/wp-login.php'>here</a> to login to the site.</div>";
 			return $message;
 		}
 		return false;
@@ -733,22 +730,24 @@ function _gigya_form_render( $form, $name_prefix = '' ) {
 			{
 				if ( ! empty( $name_prefix ) )
 				{
-					// In cases like on admin multipage the element
-					// name is build from the section and the ID.
-					// This tells WP under which option to save this field value.
+					/*
+					 * In cases like on admin multipage the element
+					 * name is build from the section and the ID.
+					 * This tells WP under which option to save this field value.
+					 */
 					$el['name'] = $name_prefix . '[' . $id . ']';
 				}
 				else
 				{
-					// Usually the element name is just the ID.
+					/* Usually the element name is just the ID */
 					$el['name'] = $id;
 				}
 			}
 
-			// Add the ID value to the array.
+			/* Add the ID value to the array */
 			$el['id'] = $id;
 
-			// Render each element.
+			/* Render each element */
 			$render .= _gigya_render_tpl( 'admin/tpl/formEl-' . $el['type'] . '.tpl.php', $el );
 		}
 	}
@@ -978,6 +977,10 @@ function _gigya_get_session_expiration($length, $user_id, $remember) {
 	return $length;
 }
 
+/**
+ * @param $cookie
+ * @param $expiration
+ */
 function updateCookie( $cookie, $expiration ) {
 	if (isset($_COOKIE[LOGGED_IN_COOKIE]))
 	{
@@ -1014,6 +1017,7 @@ function gigyaSyncLoginSession( $mode, $session_opts = null ) {
 					break;
 			}
 
+			/* Updates WP cookie expiration--doing apply_filters only does not perform this action */
 			add_filter( 'auth_cookie_expiration', function($length, $user_id = null, $remember = null) use ($expiration) {
 							return _gigya_get_session_expiration($expiration, $user_id, $remember);
 						},
