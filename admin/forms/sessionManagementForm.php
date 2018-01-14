@@ -29,7 +29,7 @@ function sessionManagementForm() {
 		'type' => 'text',
 		'label' => __( 'Duration' ),
 		'value' => _gigParam( $values, 'session_duration', GIGYA__DEFAULT_COOKIE_EXPIRATION ),
-		'markup' => 's',
+		'markup' => 'seconds',
 		'size' => 10,
 		'class' => 'hidden',
 	);

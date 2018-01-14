@@ -4,7 +4,7 @@ Contributors: gigya.com, konforti, luciodiri
 Tags: CIAM, CIM, Registration, Social Login, Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, Gigya, Social Infrastructure, feed
 Requires at least: 4.2
 Tested up to: 4.8
-Stable tag: 5.5
+Stable tag: 5.6
 License: GPLv2 or later
 
 Integrate your WordPress site with Gigya
@@ -124,6 +124,9 @@ For question about installations or configuration, please contact your account m
 * Custom field mapping: You can now flexibly map any Gigya field to a Wordpress field
 * Users are now synced between Gigya and Wordpress based on their Gigya UID, and not on their email addresses.
 * If a duplicate user is detected, they are no longer deleted. Instead, an error is displayed.
+
+= 5.6 =
+*
 
 
 == FAQ ==
