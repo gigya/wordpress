@@ -237,7 +237,7 @@ class GigyaInstall {
 
 		// Creating new widgets based on the old ones.
 		$this->upgradeWidget( 'widget_gigya', 'widget_gigya_login' );
-		$this->upgradeWidget( 'widget_gigyafollowbar', 'widget_gigya_follow' );
+//		$this->upgradeWidget( 'widget_gigyafollowbar', 'widget_gigya_follow' );
 		$this->upgradeWidget( 'widget_gigyagamification', 'widget_gigya_gamification' );
 
 		// Updating the sidebars.
@@ -247,11 +247,8 @@ class GigyaInstall {
 				$brk = explode( '-', $widget );
 				if ( $brk[0] == 'gigya' ) {
 					$sb[$k][] = 'gigya_login-' . $brk[1];
-				} elseif ( $brk[0] == 'gigyaactivityfeed' ) {
-					$sb[$k][] = 'gigya_feed-' . $brk[1];
-				} elseif ( $brk[0] == 'gigyafollowbar' ) {
-					$sb[$k][] = 'gigya_follow-' . $brk[1];
-				} elseif ( $brk[0] == 'gigyagamification' ) {
+				}
+				elseif ( $brk[0] == 'gigyagamification' ) {
 					$sb[$k][] = 'gigya_gamification-' . $brk[1];
 				}
 			}

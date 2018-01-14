@@ -31,32 +31,32 @@ class gigyaPluginsShortcodes {
 		return _gigya_render_tpl( 'admin/tpl/comments.tpl.php', array( 'data' => $attrs ) );
 	}
 
-	public function gigyaFollowBarScode( $attrs ) {
-		require_once GIGYA__PLUGIN_DIR . 'features/follow/GigyaFollowSet.php';
-
-		$follow = new GigyaFollowSet();
-		$defaults = $follow->getParams();
-		if (empty( $attrs )) {
-			$attrs = $defaults;
-			if ( isset( $attrs['advanced'] )) {
-				$advanced = gigyaCms::jsonToArray( $attrs['advanced'] );
-				if ( is_array( $advanced ) ) {
-					$attrs = array_merge( $attrs, $advanced );
-				} else if ( is_string( $advanced ) ) {
-					_gigya_error_log( "Error in " . __FUNCTION__ . " shortcode advanced parameters message: "
-					                  . $advanced );
-				}
-			}
-		} else {
-			$attrs = array_merge($defaults, $attrs);
-		}
-
-		$attrs = $this->attrs_to_gigya($attrs);
-		$output = '<div class="gigya-follow-widget"></div>';
-		$output .= '<script class="data-follow" type="application/json">' . json_encode( $attrs ) . '</script>';
-
-		return $output;
-	}
+//	public function gigyaFollowBarScode( $attrs ) {
+//		require_once GIGYA__PLUGIN_DIR . 'features/follow/GigyaFollowSet.php';
+//
+//		$follow = new GigyaFollowSet();
+//		$defaults = $follow->getParams();
+//		if (empty( $attrs )) {
+//			$attrs = $defaults;
+//			if ( isset( $attrs['advanced'] )) {
+//				$advanced = gigyaCms::jsonToArray( $attrs['advanced'] );
+//				if ( is_array( $advanced ) ) {
+//					$attrs = array_merge( $attrs, $advanced );
+//				} else if ( is_string( $advanced ) ) {
+//					_gigya_error_log( "Error in " . __FUNCTION__ . " shortcode advanced parameters message: "
+//					                  . $advanced );
+//				}
+//			}
+//		} else {
+//			$attrs = array_merge($defaults, $attrs);
+//		}
+//
+//		$attrs = $this->attrs_to_gigya($attrs);
+//		$output = '<div class="gigya-follow-widget"></div>';
+//		$output .= '<script class="data-follow" type="application/json">' . json_encode( $attrs ) . '</script>';
+//
+//		return $output;
+//	}
 
 	public function gigyaGmScode ( $attrs, $content, $tag) {
 		$type = "";

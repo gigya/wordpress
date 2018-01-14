@@ -138,11 +138,6 @@ class GigyaSettings {
 						'func'  => 'gmSettingsForm',
 						'slug'  => 'gigya_gm_settings'
 				),
-				'gigya_follow_settings'      => array(
-					'title' => 'Follow Bar Settings',
-					'func'  => 'followSettingsForm',
-					'slug'  => 'gigya_follow_settings'
-				),
 		);
 	}
 

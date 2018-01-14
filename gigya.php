@@ -31,7 +31,7 @@ define( 'GIGYA__SETTINGS_GLOBAL', 'gigya_global_settings' );
 define( 'GIGYA__SETTINGS_LOGIN', 'gigya_login_settings' );
 define( 'GIGYA__SETTINGS_SESSION', 'gigya_session_management' );
 define( 'GIGYA__SETTINGS_SHARE', 'gigya_share_settings' );
-define( 'GIGYA__SETTINGS_FOLLOW', 'gigya_follow_settings' );
+//define( 'GIGYA__SETTINGS_FOLLOW', 'gigya_follow_settings' );
 define( 'GIGYA__SETTINGS_COMMENTS', 'gigya_comments_settings' );
 define( 'GIGYA__SETTINGS_REACTIONS', 'gigya_reactions_settings' );
 define( 'GIGYA__SETTINGS_GM', 'gigya_gm_settings' );
@@ -136,10 +136,6 @@ class GigyaAction {
 		$comments_switch = get_option(GIGYA__SETTINGS_COMMENTS);
 		if ( (count($comments_switch) > 0) && ($comments_switch['on'] == true || $comments_switch['on'] == '1') ) {
 			add_shortcode( 'gigya-comments', array( $shortcodes_class, 'gigyaCommentsScode' ) );
-		}
-		$follow_bar_switch = get_option(GIGYA__SETTINGS_FOLLOW);
-		if ( (count($follow_bar_switch) > 0) &&  ($follow_bar_switch['on'] == true  || $follow_bar_switch['on'] == '1') ) {
-			add_shortcode( 'gigya-follow-bar',  array( $shortcodes_class, 'gigyaFollowBarScode'));
 		}
 		$reaction_switch = get_option(GIGYA__SETTINGS_REACTIONS);
 		if (  (count($reaction_switch) > 0) && ($reaction_switch['on'] == true || $reaction_switch['on'] == '1') ) {
@@ -418,7 +414,8 @@ class GigyaAction {
                 }
 			}
 		}
-		// if no role match then the user is not allowed login
+
+		/* If no role match then the user is not allowed login */
 		return $allowed;
 	}
 
@@ -573,18 +570,6 @@ class GigyaAction {
 			require_once GIGYA__PLUGIN_DIR . 'features/gamification/GigyaGamificationWidget.php';
 			register_widget( 'GigyaGamification_Widget' );
 		}
-
-		// Activity Feed Widget.
-//		$feed_options = get_option( GIGYA__SETTINGS_FEED );
-//		$feed_on      = _gigParamDefaultOn( $feed_options, 'on' );
-//		if ( ! empty( $feed_on ) ) {
-//			require_once GIGYA__PLUGIN_DIR . 'features/feed/GigyaFeedWidget.php';
-//			register_widget( 'GigyaFeed_Widget' );
-//		}
-
-		// Follow Bar Widget.
-		require_once GIGYA__PLUGIN_DIR . 'features/follow/GigyaFollowWidget.php';
-		register_widget( 'GigyaFollow_Widget' );
 
 		return true;
 	}
@@ -962,7 +947,7 @@ function _DefaultAdminValue( $values, $role, $settings_role_name ) {
  * @internal param $log
  */
 function _gigya_error_log( $new_log ) {
-	// Get global debug.
+	/* Get global debug */
 	$gigya_debug = GIGYA__API_DEBUG;
 	if ( ! empty( $gigya_debug ) && is_array( $new_log ) ) {
 
