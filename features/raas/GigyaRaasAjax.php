@@ -10,11 +10,13 @@ class GigyaRaasAjax {
 	private $gigya_account;
 	private $global_options;
 	private $login_options;
+	private $session_options;
 
 	public function __construct() {
 		// Get settings variables.
 		$this->global_options = get_option( GIGYA__SETTINGS_GLOBAL );
 		$this->login_options  = get_option( GIGYA__SETTINGS_LOGIN );
+		$this->session_options  = get_option( GIGYA__SETTINGS_SESSION );
 	}
 
 	/**
@@ -50,6 +52,9 @@ class GigyaRaasAjax {
 		else
 			$this->gigya_account = $this->gigya_account->getData()->serialize();
 
+		/* Initialize cookie */
+		$this->updateGltExpCookie();
+
 		/* Check if there is already a WP user with the same UID. Failing that, checks by email for backwards compatibility. */
 		$wp_user = get_users(array(
 								'meta_key' => 'gigya_uid',
@@ -67,8 +72,6 @@ class GigyaRaasAjax {
 			// If this user is not the primary user account in Gigya
 			// we delete the account (we don't want two different users with the same email)
 			if ( !$is_primary_user ) {
-				$gigyaCMS->deleteAccountByGUID( $this->gigya_account['UID'] );
-
 				$msg =  __( 'We found your email in our system.<br />Please use your existing account to login to the site, or create a new account using a different email address.' );
 
 				$prm = array( 'msg' => $msg );
@@ -165,5 +168,60 @@ class GigyaRaasAjax {
 				}
 			}
 		}
+	}
+
+	public function updateGltExpCookie() {
+		if (isset($_COOKIE['glt_'.GIGYA__API_KEY]))
+		{
+			if (!is_array($this->session_options))
+				$this->session_options = array('session_type_numeric' => GIGYA__SESSION_SLIDING, 'session_duration' => GIGYA__DEFAULT_COOKIE_EXPIRATION);
+
+			$session_type = intval($this->session_options['session_type_numeric']);
+			$session_duration = $this->session_options['session_duration'];
+
+			$glt_cookie = $_COOKIE['glt_'.GIGYA__API_KEY];
+			$token = (!empty(explode('|', $glt_cookie)[0])) ? explode('|', $glt_cookie)[0] : null; /* PHP 5.4+ */
+
+			$cookie_expiration = time() + (10 * YEAR_IN_SECONDS);
+			switch ($session_type)
+			{
+				case GIGYA__SESSION_FOREVER: /* Keep session indefinitely */
+					$expiration = strval(time() + (10 * YEAR_IN_SECONDS));
+					break;
+				case GIGYA__SESSION_DEFAULT: /* Remove GltExp */
+					$expiration = 1;
+					$cookie_expiration = 1;
+					break;
+				default: /* Session defined with expiration time */
+					$expiration = strval($_SERVER['REQUEST_TIME'] + intval($session_duration));
+					break;
+			}
+
+			$gltexp_cookie = isset($_COOKIE['gltexp_' . GIGYA__API_KEY]) ? $_COOKIE['gltexp_' . GIGYA__API_KEY] : '';
+			$gltexp_cookie_timestamp = explode('_', $gltexp_cookie)[0]; /* PHP 5.4+ */
+			if (!$host = $_SERVER['SERVER_NAME']) {
+				$host = $_SERVER['SERVER_ADDR'];
+			}
+			if ((empty($gltexp_cookie_timestamp) and $session_type !== GIGYA__SESSION_DEFAULT) or (time() < $gltexp_cookie_timestamp and $session_type < 0))
+			{
+				if (!empty($token))
+				{
+					$session_sig = $this->calcDynamicSessionSig(
+						$token, $expiration, GIGYA__API_KEY,
+						GIGYA__API_SECRET
+					);
+					setrawcookie('gltexp_' . GIGYA__API_KEY, rawurlencode($session_sig), $cookie_expiration, '/', $host);
+				}
+			}
+			elseif ($session_type === GIGYA__SESSION_DEFAULT)
+				setrawcookie('gltexp_' . GIGYA__API_KEY, '', $cookie_expiration, '/', $host); /* Unset cookie */
+		}
+	}
+
+	private function calcDynamicSessionSig($token, $expiration, $userKey, $secret) {
+		$unsignedExpString = utf8_encode($token . "_" . $expiration . "_" . $userKey);
+		$rawHmac = hash_hmac("sha1", utf8_encode($unsignedExpString), base64_decode($secret), true);
+		$sig = base64_encode($rawHmac);
+		return $expiration . '_' . $userKey . '_' . $sig;
 	}
 }

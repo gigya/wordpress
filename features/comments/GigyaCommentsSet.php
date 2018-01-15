@@ -6,12 +6,12 @@
  * An AJAX handler for login or register user to WP.
  */
 class GigyaCommentsSet {
+	private $comments_options;
 
 	public function __construct() {
 
 		// Get settings variables.
 		$this->comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
-		$this->feed_options     = get_option( GIGYA__SETTINGS_FEED );
 
 		// Load custom Gigya comments script.
 		wp_enqueue_script( 'gigya_comments_js', GIGYA__PLUGIN_URL . 'features/comments/gigya_comments.js' );
@@ -29,8 +29,8 @@ class GigyaCommentsSet {
 				'rating'                => _gigParam( $this->comments_options, 'rating', 0 ),
 				'enabledShareProviders' => _gigParam( $this->comments_options, 'enabledShareProviders', '*' ),
 				'streamID'              => get_the_ID(),
-				'scope'                 => _gigParam( $this->feed_options, 'scope', 'external' ),
-				'privacy'               => _gigParam( $this->feed_options, 'privacy', 'private' ),
+				'scope'					=> '', /* Backwards compatibility for activity feed deprecation */
+				'privacy'				=> '', /* Backwards compatibility for activity feed deprecation */
 				'version'               => 2,
 		);
 

@@ -1,0 +1,58 @@
+<?php
+/**
+ * Form builder for 'Global Settings' configuration page.
+ */
+function sessionManagementForm() {
+
+	$values = _getGigyaSettingsValues( GIGYA__SETTINGS_SESSION );
+	$form = array();
+
+	$form['session_type'] = array(
+		'type' => 'select',
+		'label' => __( 'Type' ),
+		'options' => array(
+			'sliding' => __( 'Sliding' ),
+			'fixed' => __( 'Fixed' ),
+			'forever' => __( 'Valid forever' ),
+			'browser_close' => __( 'Until browser close' ),
+		),
+		'value' => _gigParam( $values, 'session_type', 'sliding' ),
+	);
+
+	$form['session_type_numeric'] = array(
+		'type' => 'hidden',
+		'label' => __( 'Type Numeric' ),
+		'value' => _gigParam( $values, 'session_type_numeric', '1' ),
+	);
+
+	$form['session_duration'] = array(
+		'type' => 'text',
+		'label' => __( 'Duration' ),
+		'value' => _gigParam( $values, 'session_duration', GIGYA__DEFAULT_COOKIE_EXPIRATION ),
+		'markup' => 'seconds',
+		'size' => 10,
+		'class' => 'hidden',
+	);
+
+	// use this field in multisite to flag when sub site settings are saved locally for site
+	if ( is_multisite() && ! $values['sub_site_settings_saved'] )
+	{
+		$form['sub_site_settings_saved'] = array(
+			'type' => 'hidden',
+			'id' => 'sub_site_settings_saved',
+			'value' => 1,
+			'msg' => 1,
+			'msg_txt' => __( 'Settings are set to match the main site. once saved they will become independent' ),
+			'class' => 'gigya-raas-warn',
+		);
+	}
+
+	if ( get_option( 'gigya_settings_fields' ) )
+	{
+		$form['clean_db'] = array(
+			'markup' => '<a href="javascript:void(0)" class="clean-db">Database cleaner after upgrade</a><br><small>Press this button to remove all unnecessary elements of the previous version from your database.Please make sure to backup your database before performing the clean. Learn more about upgrading from the previous version <a href="https://developers.gigya.com/display/GD/WordPress+Plugin#WordPressPlugin-InstallingtheGigyaPluginforWordPress">here.</a></small>',
+		);
+	}
+
+	echo _gigya_form_render( $form, GIGYA__SETTINGS_SESSION );
+}

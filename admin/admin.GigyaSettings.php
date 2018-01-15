@@ -113,6 +113,11 @@ class GigyaSettings {
 						'func'  => 'loginSettingsForm',
 						'slug'  => 'gigya_login_settings'
 				),
+				'gigya_session_management'     => array(
+					'title' => 'Session Management',
+					'func'  => 'sessionManagementForm',
+					'slug'  => 'gigya_session_management'
+				),
 				'gigya_share_settings'     => array(
 						'title' => 'Share Settings',
 						'func'  => 'shareSettingsForm',
@@ -132,11 +137,6 @@ class GigyaSettings {
 						'title' => 'Gamification Settings',
 						'func'  => 'gmSettingsForm',
 						'slug'  => 'gigya_gm_settings'
-				),
-				'gigya_feed_settings'      => array(
-						'title' => 'Activity Feed Settings',
-						'func'  => 'feedSettingsForm',
-						'slug'  => 'gigya_feed_settings'
 				),
 				'gigya_follow_settings'      => array(
 					'title' => 'Follow Bar Settings',
@@ -174,7 +174,8 @@ class GigyaSettings {
 	 */
 	public static function onSave() {
 		// When a Gigya's setting page is submitted.
-		if ( isset( $_POST['gigya_login_settings'] ) ) {
+		if ( isset( $_POST['gigya_login_settings'] ) )
+		{
 			// When we turn on the Gigya's social login plugin,
 			// We also turn on the WP 'Membership: Anyone can register' option.
 			if ( $_POST['gigya_login_settings']['mode'] == 'wp_sl' ) {
@@ -183,7 +184,9 @@ class GigyaSettings {
 				update_option( 'users_can_register', 0 );
 			}
 
-		} elseif ( isset( $_POST['gigya_global_settings'] ) ) {
+		}
+		elseif ( isset( $_POST['gigya_global_settings'] ) )
+		{
 			$cms = new gigyaCMS();
 			static::_setSecret();
 			$res = $cms->apiValidate( $_POST['gigya_global_settings']['api_key'], $_POST['gigya_global_settings']['user_key'], $_POST['gigya_global_settings']['api_secret'], $_POST['gigya_global_settings']['data_center'] );
