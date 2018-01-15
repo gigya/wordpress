@@ -126,7 +126,10 @@ For question about installations or configuration, please contact your account m
 * If a duplicate user is detected, they are no longer deleted. Instead, an error is displayed.
 
 = 5.6 =
-*
+* Support for Gigya-led session management, including fixed and sliding user sessions
+* Support for Russia and China data centers
+* Removed Activity Feed from the connector
+* Bug fixes
 
 
 == FAQ ==
