@@ -49,20 +49,6 @@ class GigyaSettings {
         return CUSTOM_GIGYA_EDIT;
     }
 
-//	/**
-//	 * @param $input
-//	 *
-//	 * @return mixed
-//	 */
-//	public function validate( $input ) {
-//		$cms = new gigyaCMS();
-//		$res = $cms->apiValidate( $input['api_key'], $input['user_key'], $input['api_secret'], $input['data_center'] );
-//		if ( $res->getErrorCode() == 301001 ) {
-//			add_settings_error( 'gigiya_data_canter', 'validation', 'Incorrect value entered!', 'error' );
-//		}
-//		return $input;
-//	}
-
 	/**
 	 * Hook admin_menu callback.
 	 * Set Gigya's Setting area.
@@ -95,8 +81,7 @@ class GigyaSettings {
 		}
 
 	}
-
-
+	
 	/**
 	 * Returns the form sections definition.
 	 * @return array
