@@ -14,7 +14,7 @@ function sessionManagementForm() {
 			'sliding' => __( 'Sliding' ),
 			'fixed' => __( 'Fixed' ),
 			'forever' => __( 'Valid forever' ),
-			'browser_close' => __( 'Until browser close' ),
+			'browser_close' => __( 'Until browser closes' ),
 		),
 		'value' => _gigParam( $values, 'session_type', 'sliding' ),
 	);
