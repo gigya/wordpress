@@ -269,6 +269,11 @@ class GigyaAction
 
 	public function ajaxLogout() {
 		wp_logout();
+		if (isset($_COOKIE['gltexp_' . GIGYA__API_KEY]))
+		{
+			unset($_COOKIE['gltexp_' . GIGYA__API_KEY]);
+			setrawcookie('gltexp_' . GIGYA__API_KEY, null, -1, '/');
+		}
 		wp_send_json_success();
 	}
 

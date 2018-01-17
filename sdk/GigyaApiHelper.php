@@ -36,7 +36,7 @@ class GigyaApiHelper
 			$confArray = json_decode(file_get_contents($this->defConfigFilePath));
 		}
 		$this->key = !empty($key) ? $key : $confArray['appKey'];
-		$this->secret = !empty($secret) ? self::decrypt($secret) : self::decrypt($confArray['appSecret']);
+		$this->secret = !empty($secret) ? self::decrypt($secret, SECURE_AUTH_KEY) : self::decrypt($confArray['appSecret'], SECURE_AUTH_KEY);
 		$this->apiKey = !empty($apiKey) ? $apiKey : $confArray['apiKey'];
 		$this->dataCenter = !empty($dataCenter) ? $dataCenter : $confArray['dataCenter'];
 

@@ -13,7 +13,7 @@ class GigyaCMS {
 	 */
 	public function __construct() {
 		$this->api_key    = GIGYA__API_KEY;
-		$this->api_secret = GIGYA__API_SECRET;
+		$this->api_secret = GigyaApiHelper::decrypt(GIGYA__API_SECRET, SECURE_AUTH_KEY);
 	}
 
 	/**
