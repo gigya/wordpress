@@ -28,9 +28,10 @@ class GigyaCMS {
 	 *   The Gigya response.
 	 */
 	public function call( $method, $params ) {
+
 		// Initialize new request.
 		$request   = new GSRequest( $this->api_key, $this->api_secret, $method );
-		$user_info = null;
+		$user_info = NULL;
 		if ( ! empty( $params ) ) {
 			foreach ( $params as $param => $val ) {
 				$request->setParam( $param, $val );

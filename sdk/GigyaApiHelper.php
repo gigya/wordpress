@@ -8,6 +8,7 @@
 
 class GigyaApiHelper
 {
+
 	private $key;
 	private $secret;
 	private $apiKey;
@@ -173,7 +174,7 @@ class GigyaApiHelper
 		return $obj;
 	}
 
-	//-------- static --------//
+	// static
 
 	/**
 	 * @param string        $str
@@ -202,7 +203,7 @@ class GigyaApiHelper
 	 * @param null | string $key
 	 * @return string
 	 */
-	public static function encrypt($str, $key = null) {
+	static public function enc($str, $key = null) {
 		if (null == $key)
 		{
 			$key = getenv("KEK");
@@ -211,6 +212,17 @@ class GigyaApiHelper
 		$crypt = openssl_encrypt($str, 'AES-256-CBC', $key, null, $iv);
 
 		return trim(base64_encode($iv . $crypt));
+	}
+
+	/**
+	 * Alias of enc()
+	 *
+	 * @param string        $str
+	 * @param null | string $key
+	 * @return string
+	 */
+	public static function encrypt($str, $key = null) {
+		return GigyaApiHelper::enc($str, $key);
 	}
 
 	/**
