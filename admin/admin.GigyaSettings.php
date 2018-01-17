@@ -15,6 +15,7 @@ class GigyaSettings {
 	 * Constructor.
 	 */
 	public function __construct() {
+
 		// Add Javascript and css to admin page
 		wp_enqueue_style( 'gigya_admin_css', GIGYA__PLUGIN_URL . 'admin/gigya_admin.css' );
 		wp_enqueue_script( 'gigya_admin_js', GIGYA__PLUGIN_URL . 'admin/gigya_admin.js' );
@@ -23,6 +24,7 @@ class GigyaSettings {
 		// Actions.
 		add_action( 'admin_init', array( $this, 'adminInit' ) );
 		add_action( 'admin_menu', array( $this, 'adminMenu' ) );
+
 	}
 
 	/**
@@ -66,6 +68,7 @@ class GigyaSettings {
 	 * Set Gigya's Setting area.
 	 */
 	public function adminMenu() {
+
 		// Default admin capabilities
 		if (current_user_can('GIGYA__PERMISSION_LEVEL')) {
 			// Register the main Gigya setting route page.
@@ -90,7 +93,9 @@ class GigyaSettings {
 
 			}
 		}
+
 	}
+
 
 	/**
 	 * Returns the form sections definition.
@@ -168,57 +173,47 @@ class GigyaSettings {
 	 * On Setting page save event.
 	 */
 	public static function onSave() {
-		/* When a Gigya's setting page is submitted */
+		// When a Gigya's setting page is submitted.
 		if ( isset( $_POST['gigya_login_settings'] ) )
 		{
-			/*
-			 * When we turn on the Gigya's social login plugin, we also turn on the WP 'Membership: Anyone can register' option
-			 */
+			// When we turn on the Gigya's social login plugin,
+			// We also turn on the WP 'Membership: Anyone can register' option.
 			if ( $_POST['gigya_login_settings']['mode'] == 'wp_sl' ) {
 				update_option( 'users_can_register', 1 );
 			} elseif ( $_POST['gigya_login_settings']['mode'] == 'raas' ) {
 				update_option( 'users_can_register', 0 );
 			}
+
 		}
 		elseif ( isset( $_POST['gigya_global_settings'] ) )
 		{
 			$cms = new gigyaCMS();
 			static::_setSecret();
-			$res = $cms->apiValidate( $_POST['gigya_global_settings']['api_key'], $_POST['gigya_global_settings']['user_key'], GigyaApiHelper::decrypt($_POST['gigya_global_settings']['api_secret'], SECURE_AUTH_KEY), $_POST['gigya_global_settings']['data_center'] );
-			if (!empty($res))
-			{
+			$res = $cms->apiValidate( $_POST['gigya_global_settings']['api_key'], $_POST['gigya_global_settings']['user_key'], $_POST['gigya_global_settings']['api_secret'], $_POST['gigya_global_settings']['data_center'] );
+			if (!empty($res)) {
 				$gigyaErrCode = $res->getErrorCode();
-				if ( $gigyaErrCode > 0 )
-				{
-					$gigyaErrMsg = $res->getErrorMessage();
-					$errorsLink = "<a href='https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST' target='_blank' rel='noopener noreferrer'>Response_Codes_and_Errors</a>";
-					$message = "Gigya API error: {$gigyaErrCode} - {$gigyaErrMsg}. For more information please refer to {$errorsLink}";
+				if ( $gigyaErrCode > 0 ) {
+                    $gigyaErrMsg = $res->getErrorMessage();
+                    $errorsLink = "<a href='https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST' target='_blank' rel='noopener noreferrer'>Response_Codes_and_Errors</a>";
+                    $message = "Gigya API error: {$gigyaErrCode} - {$gigyaErrMsg}. For more information please refer to {$errorsLink}";
 					add_settings_error( 'gigya_global_settings', 'api_validate', $message, 'error' );
-
-					/* Prevent updating values */
-					static::_keepOldApiValues();
+                    // prevent updating values
+                    static::_keepOldApiValues();
 				}
-			}
-			else
-			{
+			} else {
 				add_settings_error( 'gigya_global_settings', 'api_validate', 'Error sending request to gigya', 'error' );
 			}
 		}
 	}
 
 	/**
-	 * Set the POSTed secret key.
+	 * Set the POST'ed secret key.
 	 * If its not submitted, take it from DB.
 	 */
 	public static function _setSecret() {
-		if ( empty($_POST['gigya_global_settings']['api_secret']) )
-		{
+		if ( empty($_POST['gigya_global_settings']['api_secret']) ) {
 			$options = static::_setSiteOptions();
 			$_POST['gigya_global_settings']['api_secret'] = $options['api_secret'];
-		}
-		else
-		{
-			$_POST['gigya_global_settings']['api_secret'] = GigyaApiHelper::encrypt($_POST['gigya_global_settings']['api_secret'], SECURE_AUTH_KEY);
 		}
 	}
 
