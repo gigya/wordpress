@@ -72,7 +72,7 @@ class GigyaAction
 			add_filter( 'comments_template', array( $this, 'commentsTemplate' ) );
 		}
 
-		// Plugins shortcode activation switches
+		/* Plugins shortcode activation switches */
 		require_once GIGYA__PLUGIN_DIR . 'features/gigyaPluginsShortcodes.php';
 		$shortcodes_class = new gigyaPluginsShortcodes();
 
@@ -84,11 +84,6 @@ class GigyaAction
 		if ( ( count( $comments_switch ) > 0 ) and ( $comments_switch['on'] == true or $comments_switch['on'] == '1' ) )
 		{
 			add_shortcode( 'gigya-comments', array( $shortcodes_class, 'gigyaCommentsScode' ) );
-		}
-		$follow_bar_switch = get_option( GIGYA__SETTINGS_FOLLOW );
-		if ( ( count( $follow_bar_switch ) > 0 ) and ( $follow_bar_switch['on'] == true or $follow_bar_switch['on'] == '1' ) )
-		{
-			add_shortcode( 'gigya-follow-bar', array( $shortcodes_class, 'gigyaFollowBarScode' ) );
 		}
 		$reaction_switch = get_option( GIGYA__SETTINGS_REACTIONS );
 		if ( ( count( $reaction_switch ) > 0 ) and ( $reaction_switch['on'] == true or $reaction_switch['on'] == '1' ) )
@@ -108,7 +103,7 @@ class GigyaAction
 			add_shortcode( 'gigya-gm-leaderboard', array( $shortcodes_class, 'gigyaGmScode' ) );
 			add_shortcode( 'gigya-gm-user-status', array( $shortcodes_class, 'gigyaGmScode' ) );
 		}
-		// End plugins shortcodes activation switches
+		/* End plugins shortcodes activation switches */
 	}
 
 	/**
@@ -150,7 +145,7 @@ class GigyaAction
 			'jsonExampleURL' => GIGYA__PLUGIN_URL . 'admin/forms/json/advance_example.json',
 			'enabledProviders' => _gigParam( $this->global_options, 'enabledProviders', '*' ),
 			'lang' => _gigParam( $this->global_options, 'lang', 'en' ),
-			'sessionExpiration' => gigyaSyncLoginSession( $this->login_options['mode'], $this->session_options ),
+			'sessionExpiration' => gigyaSyncLoginSession( isset($this->login_options['mode']) ? $this->login_options['mode'] : '', $this->session_options ),
 		);
 
 		/* Add advanced parameters if exist */
@@ -383,7 +378,7 @@ class GigyaAction
 				}
 			}
 		}
-		// if no role match then the user is not allowed login
+		/* If no role match then the user is not allowed login */
 		return $allowed;
 	}
 
@@ -396,8 +391,7 @@ class GigyaAction
 	public function raas_wp_login_custom_message() {
 		if ( isset( $_GET['rperm'] ) )
 		{
-			$message = "<div id='login_error'><strong>Access denied: </strong>
-			this login requires administrator permission. <br/>Click <a href='/wp-login.php'>here</a> to login to the site.</div>";
+			$message = "<div id='login_error'><strong>Access denied: </strong> this login requires administrator permission. <br/>Click <a href='/wp-login.php'>here</a> to login to the site.</div>";
 			return $message;
 		}
 		return false;
@@ -554,18 +548,6 @@ class GigyaAction
 			require_once GIGYA__PLUGIN_DIR . 'features/gamification/GigyaGamificationWidget.php';
 			register_widget( 'GigyaGamification_Widget' );
 		}
-
-		// Activity Feed Widget.
-//		$feed_options = get_option( GIGYA__SETTINGS_FEED );
-//		$feed_on      = _gigParamDefaultOn( $feed_options, 'on' );
-//		if ( ! empty( $feed_on ) ) {
-//			require_once GIGYA__PLUGIN_DIR . 'features/feed/GigyaFeedWidget.php';
-//			register_widget( 'GigyaFeed_Widget' );
-//		}
-
-		// Follow Bar Widget.
-		require_once GIGYA__PLUGIN_DIR . 'features/follow/GigyaFollowWidget.php';
-		register_widget( 'GigyaFollow_Widget' );
 
 		return true;
 	}
