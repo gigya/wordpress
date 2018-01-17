@@ -31,11 +31,9 @@ define( 'GIGYA__SETTINGS_GLOBAL', 'gigya_global_settings' );
 define( 'GIGYA__SETTINGS_LOGIN', 'gigya_login_settings' );
 define( 'GIGYA__SETTINGS_SESSION', 'gigya_session_management' );
 define( 'GIGYA__SETTINGS_SHARE', 'gigya_share_settings' );
-define( 'GIGYA__SETTINGS_FOLLOW', 'gigya_follow_settings' );
 define( 'GIGYA__SETTINGS_COMMENTS', 'gigya_comments_settings' );
 define( 'GIGYA__SETTINGS_REACTIONS', 'gigya_reactions_settings' );
 define( 'GIGYA__SETTINGS_GM', 'gigya_gm_settings' );
-//define( 'GIGYA__SETTINGS_FEED', 'gigya_feed_settings' );
 
 /**
  * Session constants
@@ -125,7 +123,7 @@ class GigyaAction {
             add_filter( 'comments_template', array( $this, 'commentsTemplate' ) );
         }
 
-		// Plugins shortcode activation switches
+		/* Plugins shortcode activation switches */
 		require_once GIGYA__PLUGIN_DIR . 'features/gigyaPluginsShortcodes.php';
 		$shortcodes_class = new gigyaPluginsShortcodes();
 
@@ -136,10 +134,6 @@ class GigyaAction {
 		$comments_switch = get_option(GIGYA__SETTINGS_COMMENTS);
 		if ( (count($comments_switch) > 0) && ($comments_switch['on'] == true || $comments_switch['on'] == '1') ) {
 			add_shortcode( 'gigya-comments', array( $shortcodes_class, 'gigyaCommentsScode' ) );
-		}
-		$follow_bar_switch = get_option(GIGYA__SETTINGS_FOLLOW);
-		if ( (count($follow_bar_switch) > 0) &&  ($follow_bar_switch['on'] == true  || $follow_bar_switch['on'] == '1') ) {
-			add_shortcode( 'gigya-follow-bar',  array( $shortcodes_class, 'gigyaFollowBarScode'));
 		}
 		$reaction_switch = get_option(GIGYA__SETTINGS_REACTIONS);
 		if (  (count($reaction_switch) > 0) && ($reaction_switch['on'] == true || $reaction_switch['on'] == '1') ) {
@@ -156,7 +150,7 @@ class GigyaAction {
 			add_shortcode( 'gigya-gm-leaderboard',  array( $shortcodes_class, 'gigyaGmScode'));
 			add_shortcode( 'gigya-gm-user-status',  array( $shortcodes_class, 'gigyaGmScode'));
 		}
-		// End plugins shortcodes activation switches
+		/* End plugins shortcodes activation switches */
 	}
 
 	/**
@@ -198,7 +192,7 @@ class GigyaAction {
 				'jsonExampleURL'              => GIGYA__PLUGIN_URL . 'admin/forms/json/advance_example.json',
 				'enabledProviders'            => _gigParam( $this->global_options, 'enabledProviders', '*' ),
 				'lang'                        => _gigParam( $this->global_options, 'lang', 'en' ),
-				'sessionExpiration'           => gigyaSyncLoginSession( $this->login_options['mode'], $this->session_options ),
+				'sessionExpiration'           => gigyaSyncLoginSession( isset($this->login_options['mode']) ? $this->login_options['mode'] : '', $this->session_options ),
 		);
 
 		// Add advanced parameters if exist.
@@ -418,7 +412,8 @@ class GigyaAction {
                 }
 			}
 		}
-		// if no role match then the user is not allowed login
+
+		/* If no role match then the user is not allowed login */
 		return $allowed;
 	}
 
@@ -430,8 +425,7 @@ class GigyaAction {
 	 */
 	public function raas_wp_login_custom_message() {
 		if (isset($_GET['rperm']) ) {
-			$message = "<div id='login_error'><strong>Access denied: </strong>
-			this login requires administrator permission. <br/>Click <a href='/wp-login.php'>here</a> to login to the site.</div>";
+			$message = "<div id='login_error'><strong>Access denied: </strong> this login requires administrator permission. <br/>Click <a href='/wp-login.php'>here</a> to login to the site.</div>";
 			return $message;
 		}
 		return false;
@@ -573,18 +567,6 @@ class GigyaAction {
 			require_once GIGYA__PLUGIN_DIR . 'features/gamification/GigyaGamificationWidget.php';
 			register_widget( 'GigyaGamification_Widget' );
 		}
-
-		// Activity Feed Widget.
-//		$feed_options = get_option( GIGYA__SETTINGS_FEED );
-//		$feed_on      = _gigParamDefaultOn( $feed_options, 'on' );
-//		if ( ! empty( $feed_on ) ) {
-//			require_once GIGYA__PLUGIN_DIR . 'features/feed/GigyaFeedWidget.php';
-//			register_widget( 'GigyaFeed_Widget' );
-//		}
-
-		// Follow Bar Widget.
-		require_once GIGYA__PLUGIN_DIR . 'features/follow/GigyaFollowWidget.php';
-		register_widget( 'GigyaFollow_Widget' );
 
 		return true;
 	}
@@ -748,22 +730,24 @@ function _gigya_form_render( $form, $name_prefix = '' ) {
 			{
 				if ( ! empty( $name_prefix ) )
 				{
-					// In cases like on admin multipage the element
-					// name is build from the section and the ID.
-					// This tells WP under which option to save this field value.
+					/*
+					 * In cases like on admin multipage the element
+					 * name is build from the section and the ID.
+					 * This tells WP under which option to save this field value.
+					 */
 					$el['name'] = $name_prefix . '[' . $id . ']';
 				}
 				else
 				{
-					// Usually the element name is just the ID.
+					/* Usually the element name is just the ID */
 					$el['name'] = $id;
 				}
 			}
 
-			// Add the ID value to the array.
+			/* Add the ID value to the array */
 			$el['id'] = $id;
 
-			// Render each element.
+			/* Render each element */
 			$render .= _gigya_render_tpl( 'admin/tpl/formEl-' . $el['type'] . '.tpl.php', $el );
 		}
 	}
@@ -962,7 +946,7 @@ function _DefaultAdminValue( $values, $role, $settings_role_name ) {
  * @internal param $log
  */
 function _gigya_error_log( $new_log ) {
-	// Get global debug.
+	/* Get global debug */
 	$gigya_debug = GIGYA__API_DEBUG;
 	if ( ! empty( $gigya_debug ) && is_array( $new_log ) ) {
 
@@ -993,6 +977,10 @@ function _gigya_get_session_expiration($length, $user_id, $remember) {
 	return $length;
 }
 
+/**
+ * @param $cookie
+ * @param $expiration
+ */
 function updateCookie( $cookie, $expiration ) {
 	if (isset($_COOKIE[LOGGED_IN_COOKIE]))
 	{
@@ -1029,6 +1017,7 @@ function gigyaSyncLoginSession( $mode, $session_opts = null ) {
 					break;
 			}
 
+			/* Updates WP cookie expiration--doing apply_filters only does not perform this action */
 			add_filter( 'auth_cookie_expiration', function($length, $user_id = null, $remember = null) use ($expiration) {
 							return _gigya_get_session_expiration($expiration, $user_id, $remember);
 						},
