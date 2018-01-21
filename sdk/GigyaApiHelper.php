@@ -67,7 +67,12 @@ class GigyaApiHelper
 		$params['UID'] = $uid;
 		$params['UIDSignature'] = $uidSignature;
 		$params['signatureTimestamp'] = $signatureTimestamp;
-		$res = $this->sendApiCall("socialize.exchangeUIDSignature", $params);
+		try {
+			$res = $this->sendApiCall("socialize.exchangeUIDSignature", $params);
+		}
+		catch (Exception $e) {
+			return false;
+		}
 		$sig = $res->getData()->getString("UIDSignature", null);
 		$sigTimestamp = $res->getData()->getString("signatureTimestamp", null);
 		if (null !== $sig && null !== $sigTimestamp)
