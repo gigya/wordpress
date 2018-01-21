@@ -40,7 +40,7 @@ For more information, installation steps and configuration options - please refe
 
 You can read more about the installation steps and other advanced configuration options in Gigya's online documentation <a href="https://developers.gigya.com/display/GD/WordPress+Plugin" title="Installation and Configuration guide">here</a>
 
-1.	After downloading the Gigya plug-in, unpack and upload the folder to the the / wp-content/plugins/ directory on your blog.
+1.	After downloading the Gigya plug-in, unpack and upload the folder to the the /wp-content/plugins/ directory on your blog.
 2.	Go to the Plug-in tab in the WordPress administration panel, find the Gigya plug-in on the list and click Activate.
 3.	Proceed to the plug-in settings page ("Gigya" item on the left sidebar) to configure your plug-in. The plug-in needs your API information in the Gigya settings menu, so please grab your API key, and secret code from the <a href="https://platform.gigya.com/" title="Gigya">Gigya's website</a>.
 
@@ -126,7 +126,10 @@ For question about installations or configuration, please contact your account m
 * If a duplicate user is detected, they are no longer deleted. Instead, an error is displayed.
 
 = 5.6 =
-*
+* Support for Gigya-led session management, including fixed and sliding user sessions
+* Support for Russia and China data centers
+* Removed Activity Feed from the connector
+* Bug fixes
 
 
 == FAQ ==

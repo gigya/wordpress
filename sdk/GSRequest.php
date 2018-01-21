@@ -24,6 +24,7 @@ class GSRequest
 
     private $apiKey;
     private $userKey;
+    private $secretKey;
     private $params; //GSObject
     private $useHTTPS;
     private $apiDomain = self::DEFAULT_API_DOMAIN;
@@ -50,7 +51,7 @@ class GSRequest
      */
     public function __construct($apiKey, $secret, $apiMethod, $params = null, $useHTTPS = false, $userKey = null)
     {
-        if (!isset($apiMethod) || strlen($apiMethod) == 0)
+    	if (!isset($apiMethod) || strlen($apiMethod) == 0)
             return;
 
         if (substr($apiMethod, 0, 1) == "/")
@@ -98,7 +99,7 @@ class GSRequest
     /**
      * Sets the domain used for making API calls. This method provides the option to override the default domain "gigya.com" and specify an alternative data center to be used.
      * Parameters:
-     *    $apiDomain - the domain of the data center to be used. For example: "eu1.gigya.com" for Europe data center.
+     * @param string $apiDomain - the domain of the data center to be used. For example: "eu1.gigya.com" for Europe data center.
      */
     public function setAPIDomain($apiDomain)
     {
@@ -131,6 +132,10 @@ class GSRequest
 
     /**
      * Send the request synchronously
+	 *
+	 * @param	$timeout
+	 *
+	 * @return GSResponse
      */
     public function send($timeout = null)
     {
