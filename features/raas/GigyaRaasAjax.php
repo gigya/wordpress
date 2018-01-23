@@ -173,11 +173,8 @@ class GigyaRaasAjax {
 	public function updateGltExpCookie() {
 		if (isset($_COOKIE['glt_'.GIGYA__API_KEY]))
 		{
-			if (!is_array($this->session_options))
-				$this->session_options = array('session_type_numeric' => GIGYA__SESSION_SLIDING, 'session_duration' => GIGYA__DEFAULT_COOKIE_EXPIRATION);
-
-			$session_type = intval($this->session_options['session_type_numeric']);
-			$session_duration = $this->session_options['session_duration'];
+			$session_type = isset($this->session_options['session_type_numeric']) ? intval($this->session_options['session_type_numeric']) : GIGYA__SESSION_SLIDING;
+			$session_duration = isset($this->session_options['session_duration']) ? $this->session_options['session_duration'] : GIGYA__DEFAULT_COOKIE_EXPIRATION;
 
 			$glt_cookie = $_COOKIE['glt_'.GIGYA__API_KEY];
 			$token = (!empty(explode('|', $glt_cookie)[0])) ? explode('|', $glt_cookie)[0] : null; /* PHP 5.4+ */
