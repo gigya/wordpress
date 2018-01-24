@@ -16,7 +16,7 @@ if ( empty ( $data ) ) {
 	$comments_options['position'] = "here";
 }
 ?>
-<?php if ( $comments_options['position'] !== 'none' ) : ?>
+<?php if ( isset($comments_options['position']) and $comments_options['position'] !== 'none' ) : ?>
 	<?php if ( ! empty( $comments_options['rating'] ) ) : ?>
 		<div class="gigya-rating-widget"></div>
 	<?php endif ?>
