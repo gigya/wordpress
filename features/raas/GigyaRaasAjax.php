@@ -114,9 +114,9 @@ class GigyaRaasAjax {
 	private function register() {
 		// Register a new user to WP with params from Gigya.
 		if ( isset($this->gigya_account['profile']['username']) ) {
-			$name = $this->gigya_account['profile']['username'];
+			$name = sanitize_user($this->gigya_account['profile']['username']);
 		} else {
-			$name  = $this->gigya_account['profile']['firstName'] . '_' . $this->gigya_account['profile']['lastName'];
+			$name = sanitize_user($this->gigya_account['profile']['firstName'] . '_' . $this->gigya_account['profile']['lastName']);
 		}
 		$email = $this->gigya_account['profile']['email'];
 
