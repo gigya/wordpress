@@ -411,8 +411,8 @@ class GigyaAction
 		/* Registered through RaaS */
 		if ( isset( $_POST['data']['UID'] ) )
 			add_user_meta( $uid, 'gigya_uid', $_POST['data']['UID'] );
-		// New user was registered through our custom extra-details form.
-		if ( $_POST['form_name'] == 'registerform-gigya-extra' and ! empty( $_POST['gigyaUID'] ) )
+		/* New user was registered through our custom extra-details form. */
+		if ( isset($_POST['form_name']) and $_POST['form_name'] == 'registerform-gigya-extra' and ! empty( $_POST['gigyaUID'] ) )
 		{
 			add_user_meta( $uid, 'gigya_uid', $_POST['gigyaUID'] );
 		}
