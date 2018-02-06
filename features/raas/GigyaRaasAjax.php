@@ -192,7 +192,7 @@ class GigyaRaasAjax {
 					$expiration = 1;
 					$cookie_expiration = 1;
 					break;
-				default: /* Session defined with expiration time */
+				default: /* Session fixed or defined with expiration time */
 					$expiration = strval($_SERVER['REQUEST_TIME'] + intval($session_duration));
 					break;
 			}
