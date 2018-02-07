@@ -278,8 +278,8 @@ class GigyaAction
 	}
 
 	/**
-	 * Hook to wp user login.
-	 * If user logs in with wp form, check if raas is enabled,
+	 * Hook to WP user login.
+	 * If user logs in with WP form, check if raas is enabled,
 	 * if so check if user has allowed capabilities
 	 * if not log user out, if yes notify gigya.
 	 *
