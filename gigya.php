@@ -441,7 +441,7 @@ function gigyaSyncLoginSession( $mode, $session_opts = null ) {
 		}
 	}
 
-	return (int) $session_type;
+	return (int) $expiration;
 }
 
 // --------------------------------------------------------------------
