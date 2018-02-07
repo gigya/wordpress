@@ -387,11 +387,9 @@ function _gigya_get_session_expiration($length, $user_id, $remember) {
  * @param $cookie
  * @param $expiration
  */
-function updateCookie( $cookie, $expiration ) {
+function updateCookie( $cookie ) {
 	if (isset($_COOKIE[LOGGED_IN_COOKIE]))
-	{
 		$_COOKIE[LOGGED_IN_COOKIE] = $cookie;
-	}
 }
 
 /**
@@ -405,6 +403,7 @@ function updateCookie( $cookie, $expiration ) {
 function gigyaSyncLoginSession( $mode, $session_opts = null ) {
 	$default_expiration = GIGYA__DEFAULT_COOKIE_EXPIRATION;
 	$expiration = $default_expiration;
+	$session_type = $expiration;
 
 	if ($mode == 'raas')
 	{
@@ -437,12 +436,12 @@ function gigyaSyncLoginSession( $mode, $session_opts = null ) {
 				$user = wp_get_current_user();
 				wp_set_auth_cookie( $user->ID );
 
-				do_action( 'set_logged_in_cookie', null, $expiration );
+				do_action( 'set_logged_in_cookie', null );
 			}
 		}
 	}
 
-	return (int) $expiration;
+	return (int) $session_type;
 }
 
 // --------------------------------------------------------------------
