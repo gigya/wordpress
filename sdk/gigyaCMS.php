@@ -13,7 +13,7 @@ class GigyaCMS {
 	 */
 	public function __construct() {
 		$this->api_key    = GIGYA__API_KEY;
-		$this->api_secret = GigyaApiHelper::decrypt(GIGYA__API_SECRET, SECURE_AUTH_KEY);
+		$this->api_secret = GigyaApiHelper::decrypt( GIGYA__API_SECRET, SECURE_AUTH_KEY );
 	}
 
 	/**
@@ -47,9 +47,9 @@ class GigyaCMS {
 		$request->setAPIDomain( $domain );
 
 		// Make the request.
-		ini_set('arg_separator.output', '&');
+		ini_set( 'arg_separator.output', '&' );
 		$response = $request->send();
-		ini_restore ( 'arg_separator.output' );
+		ini_restore( 'arg_separator.output' );
 
 		// Check for errors
 		$err_code = $response->getErrorCode();
@@ -58,17 +58,18 @@ class GigyaCMS {
 			if ( function_exists( '_gigya_error_log' ) ) {
 				$log = explode( "\r\n", $response->getLog() );
 				_gigya_error_log( $log );
-				return new WP_Error($err_code, $response->getErrorMessage());
+
+				return new WP_Error( $err_code, $response->getErrorMessage() );
 			}
 		} else {
 			if ( ! empty( $user_info ) ) {
 
 				// Check validation in the response.
 				$valid = SigUtils::validateUserSignature(
-						$response->getString( "UID", "" ),
-						$response->getString( "signatureTimestamp", "" ),
-						$this->api_secret,
-						$response->getString( "UIDSignature", "" )
+					$response->getString( "UID", "" ),
+					$response->getString( "signatureTimestamp", "" ),
+					$this->api_secret,
+					$response->getString( "UIDSignature", "" )
 				);
 
 				if ( ! empty( $valid ) ) {
@@ -85,13 +86,12 @@ class GigyaCMS {
 	 *
 	 * @param $data
 	 *   The JSON data.
-	 * @param $data
 	 *
 	 * @return array
 	 *   The converted array from the JSON.
 	 */
 	public static function jsonToArray( $data ) {
-		return json_decode( $data, TRUE );
+		return json_decode( $data, true );
 	}
 
 	/**
@@ -333,28 +333,33 @@ class GigyaCMS {
 
 	public function isRaaS() {
 		$res = $this->call( 'accounts.getSchema', array() );
-		if ( is_wp_error($res)) {
+		if ( is_wp_error( $res )) {
 			if ( $res->get_error_code() === 403036) {
 				return false;
 			}
 		}
+
 		return true;
 	}
 
 	public function isRaaNotIds( ) {
 		$res = $this->call( 'accounts.getScreenSets', array() );
-		if ( is_wp_error($res)) {
+		if ( is_wp_error( $res )) {
 			if ( $res->get_error_code() === 403036) {
 				return false;
 			}
 		}
+
 		return true;
 	}
 
 	/**
 	 * @param $guid
 	 *
-	 * @return mixed
+	 * @return GSResponse
+	 * @throws Exception
+	 * @throws GSApiException
+	 * @throws GSException
 	 */
 	public function getAccount( $guid ) {
 		$req_params = array(
@@ -365,7 +370,8 @@ class GigyaCMS {
 
 		// Because we can only trust the UID parameter from the origin object,
 		// We'll ask Gigya's API for account-info straight from the server.
-		$gigya_api_helper = new GigyaApiHelper(GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__API_SECRET, GIGYA__API_DOMAIN);
+		$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__API_SECRET, GIGYA__API_DOMAIN );
+
 		return $gigya_api_helper->sendApiCall( 'accounts.getAccountInfo', $req_params );
 	}
 
@@ -375,14 +381,14 @@ class GigyaCMS {
 	public function deleteAccount( $account ) {
 
 		// Get info about the primary account.
-		$email = $this->cleanEmail($account->data->user_email);
+		$email = $this->cleanEmail( $account->data->user_email );
 		$query = "select UID from accounts where loginIDs.emails = '{$email}'";
 
 		// Get the UID from Email.
 		$res = $this->call( 'accounts.search', array( 'query' => $query ) );
 
 		// Delete the user.
-		if (!is_wp_error($res)) {
+		if ( ! is_wp_error( $res ) ) {
 			$this->call( 'accounts.deleteAccount', array( 'UID' => $res['results'][0]['UID'] ) );
 		}
 	}
@@ -391,10 +397,8 @@ class GigyaCMS {
 	 * @param $guid
 	 */
 	public function deleteAccountByGUID( $guid ) {
-
 		// Delete the user.
 		$this->call( 'accounts.deleteAccount', array( 'UID' => $guid ) );
-
 	}
 
 	/**
@@ -503,11 +507,12 @@ class GigyaCMS {
 	}
 
 	/**
-	* Prepare email string to be sent via HTTP
-	*
-	* @param string $email
-	* @return string
-	*/
+	 * Prepare email string to be sent via HTTP
+	 *
+	 * @param string $email
+	 *
+	 * @return string
+	 */
 	protected function cleanEmail($email) {
 		$email = str_replace(' ', '', $email);
 		$clean_email = htmlspecialchars($email);

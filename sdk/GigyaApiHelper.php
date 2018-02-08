@@ -42,7 +42,19 @@ class GigyaApiHelper
 
 	}
 
+	/**
+	 * @param $method
+	 * @param array $params
+	 *
+	 * @return GSResponse
+	 *
+	 * @throws Exception
+	 * @throws GSApiException
+	 * @throws GSException
+	 */
 	public function sendApiCall($method, $params) {
+		$params['environment'] = '{"cms_name":"WordPress","cms_version":"WordPress_'.get_bloginfo('version').'","gigya_version":"Gigya_module_' . GIGYA__VERSION . '","php_version":"'.phpversion().'"}'; /* WordPress only */
+
 		$req = GSFactory::createGSRequestAppKey($this->apiKey, $this->key, $this->secret, $method,
 												GSFactory::createGSObjectFromArray($params), $this->dataCenter);
 
@@ -60,6 +72,8 @@ class GigyaApiHelper
 	 * @param array $org_params
 	 *
 	 * @return bool|GigyaUser
+	 * @throws GSException
+	 * @throws GSApiException
 	 */
 	public function validateUid($uid, $uidSignature, $signatureTimestamp, $include = null, $extraProfileFields = null, $org_params = array()) {
 		$params = $org_params;
@@ -86,6 +100,16 @@ class GigyaApiHelper
 		return false;
 	}
 
+	/**
+	 * @param       $uid
+	 * @param null  $include
+	 * @param null  $extraProfileFields
+	 * @param array $params
+	 *
+	 * @return GigyaUser
+	 * @throws GSApiException
+	 * @throws GSException
+	 */
 	public function fetchGigyaAccount($uid, $include = null, $extraProfileFields = null, $params = array()) {
 		if (null == $include)
 		{
@@ -120,6 +144,7 @@ class GigyaApiHelper
 	 * @param array  $profile
 	 * @param array  $data
 	 *
+	 * @throws GSException
 	 * @throws GSApiException
 	 */
 	public function updateGigyaAccount($uid, $profile = array(), $data = array()) {
@@ -139,6 +164,10 @@ class GigyaApiHelper
 		$this->sendApiCall("accounts.setAccountInfo", $paramsArray);
 	}
 
+	/**
+	 * @throws GSApiException
+	 * @throws GSException
+	 */
 	public function getSiteSchema() {
 		$params = GSFactory::createGSObjectFromArray(array("apiKey" => $this->apiKey));
 		$this->sendApiCall("accounts.getSchema", $params);
@@ -146,6 +175,12 @@ class GigyaApiHelper
 		//TODO: implement
 	}
 
+	/**
+	 * @param null $apiKey
+	 *
+	 * @return bool
+	 * @throws GSException
+	 */
 	public function isRaasEnabled($apiKey = null) {
 		if (null === $apiKey)
 		{
