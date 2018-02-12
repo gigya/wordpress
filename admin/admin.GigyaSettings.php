@@ -132,10 +132,11 @@ class GigyaSettings {
 		echo _gigya_render_tpl( 'admin/tpl/adminPage-wrapper.tpl.php', array( 'page' => $page ) );
 		settings_errors();
 
-		echo '<form class="gigya-settings" action="options.php" method="post">';
-		echo '<input type="hidden" name="action" value="gigya_settings_submit">';
+		echo '<form class="gigya-settings" action="options.php" method="post">'.PHP_EOL;
+		echo '<input type="hidden" name="action" value="gigya_settings_submit">'.PHP_EOL;
 
 		wp_nonce_field( 'update-options' );
+		wp_nonce_field( 'wp_rest', 'wp_rest_nonce' );
 		settings_fields( $page . '-group' );
 		do_settings_sections( $page );
 		submit_button();

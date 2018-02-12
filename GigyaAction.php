@@ -61,6 +61,7 @@ class GigyaAction
 		add_action( 'wpmu_delete_user', array( $this, 'deleteUser' ) );
 		add_action( 'widgets_init', array( $this, 'widgetsInit' ) );
 		add_action( 'set_logged_in_cookie', 'updateCookie', 10, 2 );
+		add_action( 'rest_api_init', array( $this, 'appendUserMetaToRestAPI' ) );
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 		add_filter( 'the_content', array( $this, 'theContent' ) );
 		add_filter( 'get_avatar', array( $this, 'getGigyaAvatar' ), 10, 5 );
@@ -139,13 +140,15 @@ class GigyaAction
 
 		/* Parameters to be sent to the DOM */
 		$params = array(
-			'ajaxurl' => admin_url( 'admin-ajax.php' ),
-			'logoutUrl' => wp_logout_url(),
+			'ajaxurl'                     => admin_url( 'admin-ajax.php' ),
+			'logoutUrl'                   => wp_logout_url(),
 			'connectWithoutLoginBehavior' => _gigParam( $this->login_options, 'connectWithoutLoginBehavior', 'loginExistingUser' ),
-			'jsonExampleURL' => GIGYA__PLUGIN_URL . 'admin/forms/json/advance_example.json',
-			'enabledProviders' => _gigParam( $this->global_options, 'enabledProviders', '*' ),
-			'lang' => _gigParam( $this->global_options, 'lang', 'en' ),
-			'sessionExpiration' => gigyaSyncLoginSession( isset($this->login_options['mode']) ? $this->login_options['mode'] : '', $this->session_options ),
+			'jsonExampleURL'              => GIGYA__PLUGIN_URL . 'admin/forms/json/advance_example.json',
+			'enabledProviders'            => _gigParam( $this->global_options, 'enabledProviders', '*' ),
+			'lang'                        => _gigParam( $this->global_options, 'lang', 'en' ),
+			'sessionExpiration'           => gigyaSyncLoginSession(
+				isset( $this->login_options['mode'] ) ? $this->login_options['mode'] : '', $this->session_options
+			),
 		);
 
 		/* Add advanced parameters if exist */
@@ -269,12 +272,24 @@ class GigyaAction
 
 	public function ajaxLogout() {
 		wp_logout();
-		if (isset($_COOKIE['gltexp_' . GIGYA__API_KEY]))
+		if ( isset( $_COOKIE['gltexp_' . GIGYA__API_KEY] ) )
 		{
-			unset($_COOKIE['gltexp_' . GIGYA__API_KEY]);
-			setrawcookie('gltexp_' . GIGYA__API_KEY, null, -1, '/');
+			unset( $_COOKIE['gltexp_' . GIGYA__API_KEY] );
+			setrawcookie( 'gltexp_' . GIGYA__API_KEY, null, -1, '/' );
 		}
 		wp_send_json_success();
+	}
+
+	public function appendUserMetaToRestAPI() {
+		register_rest_field( 'user',
+			'meta',
+			array(
+				'get_callback' => function () {
+					$meta = get_user_meta( get_current_user_id() );
+					return ($meta) ? $meta : array(); /* array() for fallback compatibility */
+				},
+			)
+		);
 	}
 
 	/**
@@ -341,6 +356,7 @@ class GigyaAction
 	 * admin roles are auto allowed, subscriber role is auto denied.
 	 *
 	 * @param array $user_roles
+	 *
 	 * @return bool $allowed
 	 */
 	public function check_raas_allowed_user_role( $user_roles ) {
@@ -397,8 +413,10 @@ class GigyaAction
 		if ( isset( $_GET['rperm'] ) )
 		{
 			$message = "<div id='login_error'><strong>Access denied: </strong> this login requires administrator permission. <br/>Click <a href='/wp-login.php'>here</a> to login to the site.</div>";
+
 			return $message;
 		}
+
 		return false;
 	}
 
@@ -412,7 +430,7 @@ class GigyaAction
 		if ( isset( $_POST['data']['UID'] ) )
 			add_user_meta( $uid, 'gigya_uid', $_POST['data']['UID'] );
 		/* New user was registered through our custom extra-details form. */
-		if ( isset($_POST['form_name']) and $_POST['form_name'] == 'registerform-gigya-extra' and ! empty( $_POST['gigyaUID'] ) )
+		if ( isset( $_POST['form_name'] ) and $_POST['form_name'] == 'registerform-gigya-extra' and ! empty( $_POST['gigyaUID'] ) )
 		{
 			add_user_meta( $uid, 'gigya_uid', $_POST['gigyaUID'] );
 		}
@@ -603,6 +621,7 @@ class GigyaAction
 	 * Hook comments_template.
 	 *
 	 * @param $comment_template
+	 *
 	 * @return string
 	 */
 	public function commentsTemplate( $comment_template ) {
