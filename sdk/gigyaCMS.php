@@ -3,8 +3,8 @@
 /**
  * Class GigyaCMS
  */
-class GigyaCMS {
-
+class GigyaCMS
+{
 	protected $api_key;
 	protected $api_secret;
 
@@ -231,11 +231,11 @@ class GigyaCMS {
 	 */
 	public function hasCapability( $guid, $capability ) {
 		$capabilities = $this->getCapabilities( $guid );
-		if ( array_search( $capability, $capabilities ) === FALSE ) {
-			return FALSE;
+		if ( array_search( $capability, $capabilities ) === false ) {
+			return false;
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	/**
@@ -342,7 +342,7 @@ class GigyaCMS {
 		return true;
 	}
 
-	public function isRaaNotIds( ) {
+	public function isRaaNotIds() {
 		$res = $this->call( 'accounts.getScreenSets', array() );
 		if ( is_wp_error( $res )) {
 			if ( $res->get_error_code() === 403036) {
@@ -388,16 +388,15 @@ class GigyaCMS {
 		$res = $this->call( 'accounts.search', array( 'query' => $query ) );
 
 		// Delete the user.
-		if ( ! is_wp_error( $res ) ) {
+		if ( ! is_wp_error( $res ) )
 			$this->call( 'accounts.deleteAccount', array( 'UID' => $res['results'][0]['UID'] ) );
-		}
 	}
 
 	/**
 	 * @param $guid
 	 */
 	public function deleteAccountByGUID( $guid ) {
-		// Delete the user.
+		/* Delete the user */
 		$this->call( 'accounts.deleteAccount', array( 'UID' => $guid ) );
 	}
 
@@ -423,14 +422,15 @@ class GigyaCMS {
 	 */
 	public static function parseJSON( $json ) {
 
-		// decode the JSON data
+		/* Decode the JSON data */
 		$result = json_decode( $json, true );
 
 		$err = json_last_error();
-		if ( $err != JSON_ERROR_NONE ) {
-
-			// switch and check possible JSON errors
-			switch ( json_last_error() ) {
+		if ( $err != JSON_ERROR_NONE )
+		{
+			/* switch and check possible JSON errors */
+			switch ( json_last_error() )
+			{
 				case JSON_ERROR_DEPTH:
 					$msg = 'Maximum stack depth exceeded.';
 					break;
@@ -454,37 +454,8 @@ class GigyaCMS {
 			return $msg;
 		}
 
-		// Everything is OK.Return associative array.
+		/* Everything is OK. Return associative array. */
 		return $result;
-	}
-
-	/**
-	 * (Deprecated. use JSON and @see parseJSON())
-	 * Helper function to convert a text field key|value to an array.
-	 *
-	 * @param string $values
-	 *
-	 * @return array | false
-	 */
-	public static function advancedValuesParser( $values ) {
-
-		if ( ! empty( $values ) ) {
-			$lines  = array();
-			$values = explode( "\n", $values );
-
-			// Clean up values.
-			$values = array_map( 'trim', $values );
-			$values = array_filter( $values, 'strlen' );
-
-			foreach ( $values as $value ) {
-				preg_match( '/(.*)\|(.*)/', $value, $matches );
-				$lines[$matches[1]] = $matches[2];
-			}
-
-			return $lines;
-		}
-
-		return false;
 	}
 
 	/**
@@ -513,7 +484,7 @@ class GigyaCMS {
 	 *
 	 * @return string
 	 */
-	protected function cleanEmail($email) {
+	protected function cleanEmail( $email ) {
 		$email = str_replace(' ', '', $email);
 		$clean_email = htmlspecialchars($email);
 		return $clean_email;

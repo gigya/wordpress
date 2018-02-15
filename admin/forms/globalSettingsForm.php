@@ -108,7 +108,7 @@ function globalSettingsForm() {
 			'type'  => 'textarea',
 			'value' => _gigParam( $values, 'advanced', '' ),
 			'label' => __( 'Additional Parameters (advanced)' ),
-			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://developers.gigya.com/display/GD/Global+Configuration" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
+			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://developers.gigya.com/display/GD/Global+Configuration#GlobalConfiguration-DataMembers" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
 	);
 
 	$form['google_analytics'] = array(
@@ -124,7 +124,7 @@ function globalSettingsForm() {
 			'desc'  => __( 'Log all Gigya\'s requests and responses. You can then find the log' ) . ' <a href="javascript:void(0)" class="gigya-debug-log">' . __( 'here' ) . '</a>'
 	);
 
-    // use this field in multisite to flag when sub site settings are saved locally for site
+    /* Use this field in multisite to flag when sub site settings are saved locally for site */
     if ( is_multisite() && !$values['sub_site_settings_saved'] ) {
         $form['sub_site_settings_saved'] = array(
             'type' => 'hidden',

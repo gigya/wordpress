@@ -155,7 +155,8 @@ class GigyaAction
 		if ( ! empty( $this->global_options['advanced'] ) )
 		{
 			$advanced = gigyaCMS::parseJSON( _gigParam( $this->global_options, 'advanced', '' ) );
-			$params = array_merge( $params, $advanced );
+			if (is_array($advanced))
+				$params = array_merge( $params, $advanced );
 		}
 
 		/* Let others plugins to modify the global parameters */
