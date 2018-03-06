@@ -155,7 +155,7 @@ class GigyaAction
 		if ( ! empty( $this->global_options['advanced'] ) )
 		{
 			$advanced = gigyaCMS::parseJSON( _gigParam( $this->global_options, 'advanced', '' ) );
-			if (is_array($advanced))
+			if ( is_array( $advanced ) )
 				$params = array_merge( $params, $advanced );
 		}
 
@@ -283,13 +283,13 @@ class GigyaAction
 
 	public function appendUserMetaToRestAPI() {
 		register_rest_field( 'user',
-			'meta',
-			array(
-				'get_callback' => function () {
-					$meta = get_user_meta( get_current_user_id() );
-					return ($meta) ? $meta : array(); /* array() for fallback compatibility */
-				},
-			)
+							 'meta',
+							 array(
+								 'get_callback' => function() {
+									 $meta = get_user_meta( get_current_user_id() );
+									 return ( $meta ) ? $meta : array(); /* array() for fallback compatibility */
+								 },
+							 )
 		);
 	}
 
