@@ -79,7 +79,14 @@ class GigyaRaasAjax {
 			}
 
 			/* Log this user in */
-			$this->login( $wp_user );
+			try {
+				$this->login( $wp_user );
+			}
+			catch ( Exception $e )
+			{
+				$prm = array( 'msg' => __( 'Unable to log in.' ) );
+				wp_send_json_error( $prm );
+			}
 		}
 		else
 		{
@@ -94,6 +101,8 @@ class GigyaRaasAjax {
 	 * Login existing WP user.
 	 *
 	 * @param $wp_user
+	 *
+	 * @throws Exception
 	 */
 	public function login( $wp_user ) {
 		// Login procedure.
@@ -199,17 +208,20 @@ class GigyaRaasAjax {
 
 			$gltexp_cookie = isset($_COOKIE['gltexp_' . GIGYA__API_KEY]) ? $_COOKIE['gltexp_' . GIGYA__API_KEY] : '';
 			$gltexp_cookie_timestamp = explode('_', $gltexp_cookie)[0]; /* PHP 5.4+ */
+
 			if (!$host = $_SERVER['SERVER_NAME']) {
 				$host = $_SERVER['SERVER_ADDR'];
 			}
+
 			if ((empty($gltexp_cookie_timestamp) and $session_type !== GIGYA__SESSION_DEFAULT) or (time() < $gltexp_cookie_timestamp and $session_type < 0))
 			{
 				if (!empty($token))
 				{
 					$session_sig = $this->calcDynamicSessionSig(
-						$token, $expiration, GIGYA__API_KEY,
-						GIGYA__API_SECRET
+						$token, $expiration, GIGYA__USER_KEY,
+						GigyaApiHelper::decrypt( GIGYA__API_SECRET, SECURE_AUTH_KEY )
 					);
+
 					setrawcookie('gltexp_' . GIGYA__API_KEY, rawurlencode($session_sig), $cookie_expiration, '/', $host);
 				}
 			}
@@ -218,10 +230,10 @@ class GigyaRaasAjax {
 		}
 	}
 
-	private function calcDynamicSessionSig($token, $expiration, $userKey, $secret) {
-		$unsignedExpString = utf8_encode($token . "_" . $expiration . "_" . $userKey);
-		$rawHmac = hash_hmac("sha1", utf8_encode($unsignedExpString), base64_decode($secret), true);
+	private function calcDynamicSessionSig($token, $expiration, $user_key, $secret) {
+		$unsigned_exp_string = utf8_encode($token . "_" . $expiration . "_" . $user_key);
+		$rawHmac = hash_hmac("sha1", utf8_encode($unsigned_exp_string), base64_decode($secret), true);
 		$sig = base64_encode($rawHmac);
-		return $expiration . '_' . $userKey . '_' . $sig;
+		return $expiration . '_' . $user_key . '_' . $sig;
 	}
 }

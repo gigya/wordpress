@@ -417,7 +417,11 @@ function gigyaSyncLoginSession( $mode, $session_opts = null ) {
 				case GIGYA__SESSION_FOREVER: /* Forever */
 					$expiration = YEAR_IN_SECONDS;
 					break;
+				case GIGYA__SESSION_SLIDING:
+					$expiration = $session_opts['session_duration'];
+					break;
 				default:
+					$session_type = $session_opts['session_duration'];
 					$expiration = $session_opts['session_duration'];
 					break;
 			}
@@ -441,7 +445,7 @@ function gigyaSyncLoginSession( $mode, $session_opts = null ) {
 		}
 	}
 
-	return (int) $expiration;
+	return (int) $session_type;
 }
 
 // --------------------------------------------------------------------
