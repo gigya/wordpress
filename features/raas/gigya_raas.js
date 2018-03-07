@@ -9,76 +9,88 @@
 		 */
 
 		/**
-		 * @class	gigya.accounts
-		 * @function	gigya.accounts.showScreenSet
-		 * @function	gigya.accounts.addEventHandlers
+		 * @class    gigya.accounts
+		 * @function    gigya.accounts.showScreenSet
+		 * @function    gigya.accounts.addEventHandlers
 		 */
 		/**
-		 * @class	gigyaParams
-		 * @property	{String}	ajaxurl
+		 * @class    gigyaParams
+		 * @property    {String}    ajaxurl
 		 */
 		/**
-		 * @class	gigyaRaasParams
-		 * @property	actionRaas
-		 * @property	canEditUsers
-		 * @property	raasLoginDiv
-		 * @property	raasLoginScreen
-		 * @property	raasMobileScreen
-		 * @property	raasOverrideLinks
-		 * @property	raasProfileDiv
-		 * @property	raasProfileMobileScreen
-		 * @property	raasProfileWebScreen
-		 * @property	raasRegisterDiv
-		 * @property	raasRegisterScreen
-		 * @property	raasWebScreen
+		 * @class    gigyaRaasParams
+		 * @property    actionRaas
+		 * @property    canEditUsers
+		 * @property    raasLoginDiv
+		 * @property    raasLoginScreen
+		 * @property    raasMobileScreen
+		 * @property    raasOverrideLinks
+		 * @property    raasProfileDiv
+		 * @property    raasProfileMobileScreen
+		 * @property    raasProfileWebScreen
+		 * @property    raasRegisterDiv
+		 * @property    raasRegisterScreen
+		 * @property    raasWebScreen
 		 */
 
 		var raasLogout = function () {
 			gigya.accounts.logout();
 		};
 		var overrideLinks = function () {
-      $( document ).on( 'click', 'a[href]', function ( e ) {
-	  	/** @function	gigya.accounts.showScreenSet */
-        var path = $( this )[0].pathname;
-        var search = $( this )[0].search;
-        if ( path.indexOf( 'wp-login.php' ) !== -1 ) {
+			$(document).on('click', 'a[href]', function (e) {
+				/** @function    gigya.accounts.showScreenSet */
+				var path = $(this)[0].pathname;
+				var search = $(this)[0].search;
+				console.log(path);
+				if (path.indexOf('wp-login.php') !== -1) {
 
-          switch ( true ) {
+					switch (true) {
 
-            case (search === ''):
-              // Login page
-              gigya.accounts.showScreenSet( {screenSet: gigyaRaasParams.raasWebScreen, mobileScreenSet: gigyaRaasParams.raasMobileScreen, startScreen: gigyaRaasParams.raasLoginScreen} );
-              e.preventDefault();
-              break;
+						case (search === ''):
+							// Login page
+							gigya.accounts.showScreenSet({
+								screenSet: gigyaRaasParams.raasWebScreen,
+								mobileScreenSet: gigyaRaasParams.raasMobileScreen,
+								startScreen: gigyaRaasParams.raasLoginScreen
+							});
+							e.preventDefault();
+							break;
 
-            case (search === '?action=register'):
-              // Register page
-              gigya.accounts.showScreenSet( {screenSet: gigyaRaasParams.raasWebScreen, mobileScreenSet: gigyaRaasParams.raasMobileScreen, startScreen: gigyaRaasParams.raasRegisterScreen} );
-              e.preventDefault();
-              break;
+						case (search === '?action=register'):
+							// Register page
+							gigya.accounts.showScreenSet({
+								screenSet: gigyaRaasParams.raasWebScreen,
+								mobileScreenSet: gigyaRaasParams.raasMobileScreen,
+								startScreen: gigyaRaasParams.raasRegisterScreen
+							});
+							e.preventDefault();
+							break;
 
-            case (search === '?action=lostpassword'):
-              // Lost Password page
-              e.preventDefault();
-              break;
+						case (search === '?action=lostpassword'):
+							// Lost Password page
+							e.preventDefault();
+							break;
 
-            case (search.includes('?action=logout')):
-              //Logout
-              raasLogout();
-              break;
-          }
-        }
-        else if ( path.indexOf( 'profile.php' ) !== -1 && gigyaRaasParams.canEditUsers != 1 ) {
+						case (search.includes('?action=logout')):
+							//Logout
+							raasLogout();
+							break;
+					}
+				}
+				else if (path.indexOf('profile.php') !== -1 && gigyaRaasParams.canEditUsers !== 1) {
+					/* Profile page */
+					gigya.accounts.showScreenSet({
+						screenSet: gigyaRaasParams.raasProfileWebScreen,
+						mobileScreenSet: gigyaRaasParams.raasProfileMobileScreen,
+						onAfterSubmit: raasUpdatedProfile
+					});
+					e.preventDefault();
+				}
+			});
 
-          /* Profile page */
-          gigya.accounts.showScreenSet( {screenSet: gigyaRaasParams.raasProfileWebScreen, mobileScreenSet: gigyaRaasParams.raasProfileMobileScreen, onAfterSubmit: raasUpdatedProfile} );
-          e.preventDefault();
-        }
-      } );
-
-      // Hide the WP login screens navigation.
-      $( '#login' ).find( '#nav' ).hide();
-    };
+			/* Hide the WP login screens navigation */
+			$('#login').find('#nav').hide();
+		};
 
 // --------------------------------------------------------------------
 
@@ -100,7 +112,11 @@
 			}
 
 			/* Embed Screens */
-			if (location.search.indexOf('admin=true') === -1 && !admin) {
+			/* Note:
+			 * If there is a reason to access the default WordPress profile page for the administrator, replace the following line with this one:
+			 * if (location.search.indexOf('admin=true') === -1 && !admin) {
+			 */
+			if (location.search.indexOf('admin=true') === -1) {
 				gigya.accounts.showScreenSet({
 					screenSet: gigyaRaasParams.raasWebScreen,
 					mobileScreenSet: gigyaRaasParams.raasMobileScreen,
@@ -114,7 +130,7 @@
 					containerID: gigyaRaasParams.raasRegisterDiv
 				});
 
-				if (gigyaRaasParams.canEditUsers != 1) {
+				if (gigyaRaasParams.canEditUsers !== 1) {
 					gigya.accounts.showScreenSet({
 						screenSet: gigyaRaasParams.raasProfileWebScreen,
 						mobileScreenSet: gigyaRaasParams.raasProfileMobileScreen,
@@ -160,10 +176,10 @@
 
 		/**
 		 * On RaaS login with Gigya behavior.
-		 * @param	response				object
-		 * @param	response.provider		string	Login service provider, such as "googleplus" etc., or native RaaS ("")
-		 * @param	response.UID			string	User's UID
-		 * @param	response.UIDSignature	string	User's API signature which is calculated using the secret key and other parameters
+		 * @param    response                object
+		 * @param    response.provider        string    Login service provider, such as "googleplus" etc., or native RaaS ("")
+		 * @param    response.UID            string    User's UID
+		 * @param    response.UIDSignature    string    User's API signature which is calculated using the secret key and other parameters
 		 */
 		var raasLogin = function (response) {
 			if (response.provider === 'site') {
