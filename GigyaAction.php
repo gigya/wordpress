@@ -283,13 +283,18 @@ class GigyaAction
 
 	public function appendUserMetaToRestAPI() {
 		register_rest_field( 'user',
-							 'meta',
-							 array(
-								 'get_callback' => function() {
-									 $meta = get_user_meta( get_current_user_id() );
-									 return ( $meta ) ? $meta : array(); /* array() for fallback compatibility */
-								 },
-							 )
+			'meta',
+			array(
+				'get_callback' => function ( $user_data ) {
+					if ( apply_filters( 'rest_show_user_meta', $user_data['id'] ) )
+					{
+						$meta = get_user_meta( $user_data['id'] );
+						return ( $meta ) ? $meta : array(); /* array() for fallback compatibility */
+					}
+					else
+						return array();
+				},
+			)
 		);
 	}
 
