@@ -3,7 +3,7 @@
  * Plugin Name: Gigya - Make Your Site Social
  * Plugin URI: http://gigya.com
  * Description: Allows sites to utilize the Gigya API for authentication and social network updates.
- * Version: 5.6
+ * Version: 5.7
  * Author: Gigya
  * Author URI: http://gigya.com
  * License: GPL2+
@@ -14,9 +14,9 @@
 /**
  * Global constants.
  */
-define( 'GIGYA__MINIMUM_WP_VERSION', '3.6' );
+define( 'GIGYA__MINIMUM_WP_VERSION', '4.2' );
 define( 'GIGYA__MINIMUM_PHP_VERSION', '5.4' );
-define( 'GIGYA__VERSION', '5.6' );
+define( 'GIGYA__VERSION', '5.7' );
 define( 'GIGYA__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GIGYA__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'GIGYA__CDN_PROTOCOL', ! empty( $_SERVER['HTTPS'] ) ? 'https://cdns' : 'http://cdn' );
@@ -31,11 +31,9 @@ define( 'GIGYA__SETTINGS_GLOBAL', 'gigya_global_settings' );
 define( 'GIGYA__SETTINGS_LOGIN', 'gigya_login_settings' );
 define( 'GIGYA__SETTINGS_SESSION', 'gigya_session_management' );
 define( 'GIGYA__SETTINGS_SHARE', 'gigya_share_settings' );
-define( 'GIGYA__SETTINGS_FOLLOW', 'gigya_follow_settings' );
 define( 'GIGYA__SETTINGS_COMMENTS', 'gigya_comments_settings' );
 define( 'GIGYA__SETTINGS_REACTIONS', 'gigya_reactions_settings' );
 define( 'GIGYA__SETTINGS_GM', 'gigya_gm_settings' );
-//define( 'GIGYA__SETTINGS_FEED', 'gigya_feed_settings' );
 
 /**
  * Session constants
@@ -748,22 +746,24 @@ function _gigya_form_render( $form, $name_prefix = '' ) {
 			{
 				if ( ! empty( $name_prefix ) )
 				{
-					// In cases like on admin multipage the element
-					// name is build from the section and the ID.
-					// This tells WP under which option to save this field value.
+					/*
+					 * In cases like on admin multipage the element
+					 * name is build from the section and the ID.
+					 * This tells WP under which option to save this field value.
+					 */
 					$el['name'] = $name_prefix . '[' . $id . ']';
 				}
 				else
 				{
-					// Usually the element name is just the ID.
+					/* Usually the element name is just the ID */
 					$el['name'] = $id;
 				}
 			}
 
-			// Add the ID value to the array.
+			/* Add the ID value to the array */
 			$el['id'] = $id;
 
-			// Render each element.
+			/* Render each element */
 			$render .= _gigya_render_tpl( 'admin/tpl/formEl-' . $el['type'] . '.tpl.php', $el );
 		}
 	}
@@ -962,7 +962,7 @@ function _DefaultAdminValue( $values, $role, $settings_role_name ) {
  * @internal param $log
  */
 function _gigya_error_log( $new_log ) {
-	// Get global debug.
+	/* Get global debug */
 	$gigya_debug = GIGYA__API_DEBUG;
 	if ( ! empty( $gigya_debug ) && is_array( $new_log ) ) {
 
@@ -993,11 +993,13 @@ function _gigya_get_session_expiration($length, $user_id, $remember) {
 	return $length;
 }
 
+/**
+ * @param $cookie
+ * @param $expiration
+ */
 function updateCookie( $cookie, $expiration ) {
 	if (isset($_COOKIE[LOGGED_IN_COOKIE]))
-	{
 		$_COOKIE[LOGGED_IN_COOKIE] = $cookie;
-	}
 }
 
 /**
@@ -1011,6 +1013,7 @@ function updateCookie( $cookie, $expiration ) {
 function gigyaSyncLoginSession( $mode, $session_opts = null ) {
 	$default_expiration = GIGYA__DEFAULT_COOKIE_EXPIRATION;
 	$expiration = $default_expiration;
+	$session_type = $expiration;
 
 	if ($mode == 'raas')
 	{
@@ -1024,11 +1027,16 @@ function gigyaSyncLoginSession( $mode, $session_opts = null ) {
 				case GIGYA__SESSION_FOREVER: /* Forever */
 					$expiration = YEAR_IN_SECONDS;
 					break;
+				case GIGYA__SESSION_SLIDING:
+					$expiration = $session_opts['session_duration'];
+					break;
 				default:
+					$session_type = $session_opts['session_duration'];
 					$expiration = $session_opts['session_duration'];
 					break;
 			}
 
+			/* Updates WP cookie expiration--doing apply_filters only does not perform this action */
 			add_filter( 'auth_cookie_expiration', function($length, $user_id = null, $remember = null) use ($expiration) {
 							return _gigya_get_session_expiration($expiration, $user_id, $remember);
 						},
@@ -1047,7 +1055,7 @@ function gigyaSyncLoginSession( $mode, $session_opts = null ) {
 		}
 	}
 
-	return (int) $expiration;
+	return (int) $session_type;
 }
 
 // --------------------------------------------------------------------

@@ -37,13 +37,25 @@ class GigyaApiHelper
 			$confArray = json_decode(file_get_contents($this->defConfigFilePath));
 		}
 		$this->key = !empty($key) ? $key : $confArray['appKey'];
-		$this->secret = !empty($secret) ? self::decrypt($secret) : self::decrypt($confArray['appSecret']);
+		$this->secret = !empty($secret) ? self::decrypt($secret, SECURE_AUTH_KEY) : self::decrypt($confArray['appSecret'], SECURE_AUTH_KEY);
 		$this->apiKey = !empty($apiKey) ? $apiKey : $confArray['apiKey'];
 		$this->dataCenter = !empty($dataCenter) ? $dataCenter : $confArray['dataCenter'];
 
 	}
 
+	/**
+	 * @param $method
+	 * @param array $params
+	 *
+	 * @return GSResponse
+	 *
+	 * @throws Exception
+	 * @throws GSApiException
+	 * @throws GSException
+	 */
 	public function sendApiCall($method, $params) {
+		$params['environment'] = '{"cms_name":"WordPress","cms_version":"WordPress_'.get_bloginfo('version').'","gigya_version":"Gigya_module_' . GIGYA__VERSION . '","php_version":"'.phpversion().'"}'; /* WordPress only */
+
 		$req = GSFactory::createGSRequestAppKey($this->apiKey, $this->key, $this->secret, $method,
 												GSFactory::createGSObjectFromArray($params), $this->dataCenter);
 
@@ -61,13 +73,20 @@ class GigyaApiHelper
 	 * @param array $org_params
 	 *
 	 * @return bool|GigyaUser
+	 * @throws GSException
+	 * @throws GSApiException
 	 */
 	public function validateUid($uid, $uidSignature, $signatureTimestamp, $include = null, $extraProfileFields = null, $org_params = array()) {
 		$params = $org_params;
 		$params['UID'] = $uid;
 		$params['UIDSignature'] = $uidSignature;
 		$params['signatureTimestamp'] = $signatureTimestamp;
-		$res = $this->sendApiCall("socialize.exchangeUIDSignature", $params);
+		try {
+			$res = $this->sendApiCall("socialize.exchangeUIDSignature", $params);
+		}
+		catch (Exception $e) {
+			return false;
+		}
 		$sig = $res->getData()->getString("UIDSignature", null);
 		$sigTimestamp = $res->getData()->getString("signatureTimestamp", null);
 		if (null !== $sig && null !== $sigTimestamp)
@@ -82,6 +101,16 @@ class GigyaApiHelper
 		return false;
 	}
 
+	/**
+	 * @param       $uid
+	 * @param null  $include
+	 * @param null  $extraProfileFields
+	 * @param array $params
+	 *
+	 * @return GigyaUser
+	 * @throws GSApiException
+	 * @throws GSException
+	 */
 	public function fetchGigyaAccount($uid, $include = null, $extraProfileFields = null, $params = array()) {
 		if (null == $include)
 		{
@@ -116,6 +145,7 @@ class GigyaApiHelper
 	 * @param array  $profile
 	 * @param array  $data
 	 *
+	 * @throws GSException
 	 * @throws GSApiException
 	 */
 	public function updateGigyaAccount($uid, $profile = array(), $data = array()) {
@@ -135,6 +165,10 @@ class GigyaApiHelper
 		$this->sendApiCall("accounts.setAccountInfo", $paramsArray);
 	}
 
+	/**
+	 * @throws GSApiException
+	 * @throws GSException
+	 */
 	public function getSiteSchema() {
 		$params = GSFactory::createGSObjectFromArray(array("apiKey" => $this->apiKey));
 		$this->sendApiCall("accounts.getSchema", $params);
@@ -142,6 +176,12 @@ class GigyaApiHelper
 		//TODO: implement
 	}
 
+	/**
+	 * @param null $apiKey
+	 *
+	 * @return bool
+	 * @throws GSException
+	 */
 	public function isRaasEnabled($apiKey = null) {
 		if (null === $apiKey)
 		{

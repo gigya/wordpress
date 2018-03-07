@@ -20,6 +20,13 @@ class GSFactory {
 		return new GigyaApiRequest($token, null, $apiMethod, $params, $dataCenter, $useHTTPS);
 	}
 
+	/**
+	 * @param array $array
+	 *
+	 * @return GSObject
+	 * @throws Exception
+	 * @throws GSException
+	 */
 	public static function createGSObjectFromArray($array) {
 		if (!is_array($array)) {
 			throw new GSException("Array is expected got " . gettype($array) );

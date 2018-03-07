@@ -3,8 +3,8 @@
 /**
  * Class GigyaCMS
  */
-class GigyaCMS {
-
+class GigyaCMS
+{
 	protected $api_key;
 	protected $api_secret;
 
@@ -13,7 +13,7 @@ class GigyaCMS {
 	 */
 	public function __construct() {
 		$this->api_key    = GIGYA__API_KEY;
-		$this->api_secret = GIGYA__API_SECRET;
+		$this->api_secret = GigyaApiHelper::decrypt( GIGYA__API_SECRET, SECURE_AUTH_KEY );
 	}
 
 	/**
@@ -48,9 +48,9 @@ class GigyaCMS {
 		$request->setAPIDomain( $domain );
 
 		// Make the request.
-		ini_set('arg_separator.output', '&');
+		ini_set( 'arg_separator.output', '&' );
 		$response = $request->send();
-		ini_restore ( 'arg_separator.output' );
+		ini_restore( 'arg_separator.output' );
 
 		// Check for errors
 		$err_code = $response->getErrorCode();
@@ -59,17 +59,18 @@ class GigyaCMS {
 			if ( function_exists( '_gigya_error_log' ) ) {
 				$log = explode( "\r\n", $response->getLog() );
 				_gigya_error_log( $log );
-				return new WP_Error($err_code, $response->getErrorMessage());
+
+				return new WP_Error( $err_code, $response->getErrorMessage() );
 			}
 		} else {
 			if ( ! empty( $user_info ) ) {
 
 				// Check validation in the response.
 				$valid = SigUtils::validateUserSignature(
-						$response->getString( "UID", "" ),
-						$response->getString( "signatureTimestamp", "" ),
-						$this->api_secret,
-						$response->getString( "UIDSignature", "" )
+					$response->getString( "UID", "" ),
+					$response->getString( "signatureTimestamp", "" ),
+					$this->api_secret,
+					$response->getString( "UIDSignature", "" )
 				);
 
 				if ( ! empty( $valid ) ) {
@@ -86,13 +87,12 @@ class GigyaCMS {
 	 *
 	 * @param $data
 	 *   The JSON data.
-	 * @param $data
 	 *
 	 * @return array
 	 *   The converted array from the JSON.
 	 */
 	public static function jsonToArray( $data ) {
-		return json_decode( $data, TRUE );
+		return json_decode( $data, true );
 	}
 
 	/**
@@ -232,11 +232,11 @@ class GigyaCMS {
 	 */
 	public function hasCapability( $guid, $capability ) {
 		$capabilities = $this->getCapabilities( $guid );
-		if ( array_search( $capability, $capabilities ) === FALSE ) {
-			return FALSE;
+		if ( array_search( $capability, $capabilities ) === false ) {
+			return false;
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	/**
@@ -254,7 +254,7 @@ class GigyaCMS {
 	 * @return bool|null|string True if the notify login request succeeded or the error message from Gigya
 	 */
 	function notifyLogin( $uid, $is_new_user = false, $user_info = null ) {
-
+		error_log('a');
 		$params['siteUID'] = $uid;
 
 		// Set a new user flag if true.
@@ -334,28 +334,33 @@ class GigyaCMS {
 
 	public function isRaaS() {
 		$res = $this->call( 'accounts.getSchema', array() );
-		if ( is_wp_error($res)) {
+		if ( is_wp_error( $res )) {
 			if ( $res->get_error_code() === 403036) {
 				return false;
 			}
 		}
+
 		return true;
 	}
 
-	public function isRaaNotIds( ) {
+	public function isRaaNotIds() {
 		$res = $this->call( 'accounts.getScreenSets', array() );
-		if ( is_wp_error($res)) {
+		if ( is_wp_error( $res )) {
 			if ( $res->get_error_code() === 403036) {
 				return false;
 			}
 		}
+
 		return true;
 	}
 
 	/**
 	 * @param $guid
 	 *
-	 * @return mixed
+	 * @return GSResponse
+	 * @throws Exception
+	 * @throws GSApiException
+	 * @throws GSException
 	 */
 	public function getAccount( $guid ) {
 		$req_params = array(
@@ -366,7 +371,8 @@ class GigyaCMS {
 
 		// Because we can only trust the UID parameter from the origin object,
 		// We'll ask Gigya's API for account-info straight from the server.
-		$gigya_api_helper = new GigyaApiHelper(GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__API_SECRET, GIGYA__API_DOMAIN);
+		$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__API_SECRET, GIGYA__API_DOMAIN );
+
 		return $gigya_api_helper->sendApiCall( 'accounts.getAccountInfo', $req_params );
 	}
 
@@ -376,26 +382,23 @@ class GigyaCMS {
 	public function deleteAccount( $account ) {
 
 		// Get info about the primary account.
-		$email = $this->cleanEmail($account->data->user_email);
+		$email = $this->cleanEmail( $account->data->user_email );
 		$query = "select UID from accounts where loginIDs.emails = '{$email}'";
 
 		// Get the UID from Email.
 		$res = $this->call( 'accounts.search', array( 'query' => $query ) );
 
 		// Delete the user.
-		if (!is_wp_error($res)) {
+		if ( ! is_wp_error( $res ) )
 			$this->call( 'accounts.deleteAccount', array( 'UID' => $res['results'][0]['UID'] ) );
-		}
 	}
 
 	/**
 	 * @param $guid
 	 */
 	public function deleteAccountByGUID( $guid ) {
-
-		// Delete the user.
+		/* Delete the user */
 		$this->call( 'accounts.deleteAccount', array( 'UID' => $guid ) );
-
 	}
 
 	/**
@@ -420,14 +423,15 @@ class GigyaCMS {
 	 */
 	public static function parseJSON( $json ) {
 
-		// decode the JSON data
+		/* Decode the JSON data */
 		$result = json_decode( $json, true );
 
 		$err = json_last_error();
-		if ( $err != JSON_ERROR_NONE ) {
-
-			// switch and check possible JSON errors
-			switch ( json_last_error() ) {
+		if ( $err != JSON_ERROR_NONE )
+		{
+			/* switch and check possible JSON errors */
+			switch ( json_last_error() )
+			{
 				case JSON_ERROR_DEPTH:
 					$msg = 'Maximum stack depth exceeded.';
 					break;
@@ -451,37 +455,8 @@ class GigyaCMS {
 			return $msg;
 		}
 
-		// Everything is OK.Return associative array.
+		/* Everything is OK. Return associative array. */
 		return $result;
-	}
-
-	/**
-	 * (Deprecated. use JSON and @see parseJSON())
-	 * Helper function to convert a text field key|value to an array.
-	 *
-	 * @param string $values
-	 *
-	 * @return array | false
-	 */
-	public static function advancedValuesParser( $values ) {
-
-		if ( ! empty( $values ) ) {
-			$lines  = array();
-			$values = explode( "\n", $values );
-
-			// Clean up values.
-			$values = array_map( 'trim', $values );
-			$values = array_filter( $values, 'strlen' );
-
-			foreach ( $values as $value ) {
-				preg_match( '/(.*)\|(.*)/', $value, $matches );
-				$lines[$matches[1]] = $matches[2];
-			}
-
-			return $lines;
-		}
-
-		return false;
 	}
 
 	/**
@@ -504,12 +479,13 @@ class GigyaCMS {
 	}
 
 	/**
-	* Prepare email string to be sent via HTTP
-	*
-	* @param string $email
-	* @return string
-	*/
-	protected function cleanEmail($email) {
+	 * Prepare email string to be sent via HTTP
+	 *
+	 * @param string $email
+	 *
+	 * @return string
+	 */
+	protected function cleanEmail( $email ) {
 		$email = str_replace(' ', '', $email);
 		$clean_email = htmlspecialchars($email);
 		return $clean_email;

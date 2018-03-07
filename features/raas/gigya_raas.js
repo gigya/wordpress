@@ -166,7 +166,6 @@
 		 * @param	response.UIDSignature	string	User's API signature which is calculated using the secret key and other parameters
 		 */
 		var raasLogin = function (response) {
-			console.log(response); ////
 			if (response.provider === 'site') {
 				return false;
 			}

@@ -79,7 +79,14 @@ class GigyaRaasAjax {
 			}
 
 			/* Log this user in */
-			$this->login( $wp_user );
+			try {
+				$this->login( $wp_user );
+			}
+			catch ( Exception $e )
+			{
+				$prm = array( 'msg' => __( 'Unable to log in.' ) );
+				wp_send_json_error( $prm );
+			}
 		}
 		else
 		{
@@ -94,6 +101,8 @@ class GigyaRaasAjax {
 	 * Login existing WP user.
 	 *
 	 * @param $wp_user
+	 *
+	 * @throws Exception
 	 */
 	public function login( $wp_user ) {
 		// Login procedure.
@@ -114,9 +123,11 @@ class GigyaRaasAjax {
 	private function register() {
 		// Register a new user to WP with params from Gigya.
 		if ( isset($this->gigya_account['profile']['username']) ) {
-			$name = $this->gigya_account['profile']['username'];
+			$display_name = $this->gigya_account['profile']['username'];
+			$name = sanitize_user($display_name, true);
 		} else {
-			$name  = $this->gigya_account['profile']['firstName'] . '_' . $this->gigya_account['profile']['lastName'];
+			$display_name = $this->gigya_account['profile']['firstName'] . '_' . $this->gigya_account['profile']['lastName'];
+			$name = sanitize_user($display_name, true);
 		}
 		$email = $this->gigya_account['profile']['email'];
 
@@ -145,6 +156,7 @@ class GigyaRaasAjax {
 			// Return JSON to client.
 			wp_send_json_error( array( 'msg' => $msg ) );
 		}
+		wp_update_user((object)array('ID' => $user_id, 'display_name' => $display_name)); /* If non-Latin characters are used in the first/last name, it will still use the correct display name */
 		_gigya_add_to_wp_user_meta($this->gigya_account, $user_id);
 
 		// Login the user.
@@ -173,11 +185,8 @@ class GigyaRaasAjax {
 	public function updateGltExpCookie() {
 		if (isset($_COOKIE['glt_'.GIGYA__API_KEY]))
 		{
-			if (!is_array($this->session_options))
-				$this->session_options = array('session_type_numeric' => GIGYA__SESSION_SLIDING, 'session_duration' => GIGYA__DEFAULT_COOKIE_EXPIRATION);
-
-			$session_type = intval($this->session_options['session_type_numeric']);
-			$session_duration = $this->session_options['session_duration'];
+			$session_type = isset($this->session_options['session_type_numeric']) ? intval($this->session_options['session_type_numeric']) : GIGYA__SESSION_SLIDING;
+			$session_duration = isset($this->session_options['session_duration']) ? $this->session_options['session_duration'] : GIGYA__DEFAULT_COOKIE_EXPIRATION;
 
 			$glt_cookie = $_COOKIE['glt_'.GIGYA__API_KEY];
 			$token = (!empty(explode('|', $glt_cookie)[0])) ? explode('|', $glt_cookie)[0] : null; /* PHP 5.4+ */
@@ -192,24 +201,27 @@ class GigyaRaasAjax {
 					$expiration = 1;
 					$cookie_expiration = 1;
 					break;
-				default: /* Session defined with expiration time */
+				default: /* Session fixed or defined with expiration time */
 					$expiration = strval($_SERVER['REQUEST_TIME'] + intval($session_duration));
 					break;
 			}
 
 			$gltexp_cookie = isset($_COOKIE['gltexp_' . GIGYA__API_KEY]) ? $_COOKIE['gltexp_' . GIGYA__API_KEY] : '';
 			$gltexp_cookie_timestamp = explode('_', $gltexp_cookie)[0]; /* PHP 5.4+ */
+
 			if (!$host = $_SERVER['SERVER_NAME']) {
 				$host = $_SERVER['SERVER_ADDR'];
 			}
+
 			if ((empty($gltexp_cookie_timestamp) and $session_type !== GIGYA__SESSION_DEFAULT) or (time() < $gltexp_cookie_timestamp and $session_type < 0))
 			{
 				if (!empty($token))
 				{
 					$session_sig = $this->calcDynamicSessionSig(
-						$token, $expiration, GIGYA__API_KEY,
-						GIGYA__API_SECRET
+						$token, $expiration, GIGYA__USER_KEY,
+						GigyaApiHelper::decrypt( GIGYA__API_SECRET, SECURE_AUTH_KEY )
 					);
+
 					setrawcookie('gltexp_' . GIGYA__API_KEY, rawurlencode($session_sig), $cookie_expiration, '/', $host);
 				}
 			}
@@ -218,10 +230,10 @@ class GigyaRaasAjax {
 		}
 	}
 
-	private function calcDynamicSessionSig($token, $expiration, $userKey, $secret) {
-		$unsignedExpString = utf8_encode($token . "_" . $expiration . "_" . $userKey);
-		$rawHmac = hash_hmac("sha1", utf8_encode($unsignedExpString), base64_decode($secret), true);
+	private function calcDynamicSessionSig($token, $expiration, $user_key, $secret) {
+		$unsigned_exp_string = utf8_encode($token . "_" . $expiration . "_" . $user_key);
+		$rawHmac = hash_hmac("sha1", utf8_encode($unsigned_exp_string), base64_decode($secret), true);
 		$sig = base64_encode($rawHmac);
-		return $expiration . '_' . $userKey . '_' . $sig;
+		return $expiration . '_' . $user_key . '_' . $sig;
 	}
 }

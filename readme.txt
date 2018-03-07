@@ -3,8 +3,8 @@
 Contributors: gigya.com, konforti, luciodiri
 Tags: CIAM, CIM, Registration, Social Login, Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, Gigya, Social Infrastructure, feed
 Requires at least: 4.2
-Tested up to: 4.8
-Stable tag: 5.6
+Tested up to: 4.9
+Stable tag: 5.7
 License: GPLv2 or later
 
 Integrate your WordPress site with Gigya
@@ -40,7 +40,7 @@ For more information, installation steps and configuration options - please refe
 
 You can read more about the installation steps and other advanced configuration options in Gigya's online documentation <a href="https://developers.gigya.com/display/GD/WordPress+Plugin" title="Installation and Configuration guide">here</a>
 
-1.	After downloading the Gigya plug-in, unpack and upload the folder to the the / wp-content/plugins/ directory on your blog.
+1.	After downloading the Gigya plug-in, unpack and upload the folder to the the /wp-content/plugins/ directory on your blog.
 2.	Go to the Plug-in tab in the WordPress administration panel, find the Gigya plug-in on the list and click Activate.
 3.	Proceed to the plug-in settings page ("Gigya" item on the left sidebar) to configure your plug-in. The plug-in needs your API information in the Gigya settings menu, so please grab your API key, and secret code from the <a href="https://platform.gigya.com/" title="Gigya">Gigya's website</a>.
 
@@ -129,6 +129,11 @@ For question about installations or configuration, please contact your account m
 * Support for Gigya-led session management, including fixed and sliding user sessions
 * Support for Russia and China data centers
 * Removed Activity Feed from the connector
+* Bug fixes
+
+= 5.7 =
+* The secret key is now fully encrypted
+* Removed Follow Bar from the connector
 * Bug fixes
 
 

@@ -50,20 +50,6 @@ class GigyaSettings {
     }
 
 	/**
-	 * @param $input
-	 *
-	 * @return mixed
-	 */
-	public function validate( $input ) {
-//		$cms = new gigyaCMS();
-//		$res = $cms->apiValidate( $input['api_key'], $input['api_secret'], $input['data_center'] );
-//		if ( $res['error'] == 301001 ) {
-//			add_settings_error( 'gigiya_data_canter', 'validation', 'Incorrect value entered!', 'error' );
-//		}
-		return $input;
-	}
-
-	/**
 	 * Hook admin_menu callback.
 	 * Set Gigya's Setting area.
 	 */
@@ -138,11 +124,6 @@ class GigyaSettings {
 						'func'  => 'gmSettingsForm',
 						'slug'  => 'gigya_gm_settings'
 				),
-				'gigya_follow_settings'      => array(
-					'title' => 'Follow Bar Settings',
-					'func'  => 'followSettingsForm',
-					'slug'  => 'gigya_follow_settings'
-				),
 		);
 	}
 
@@ -156,10 +137,11 @@ class GigyaSettings {
 		echo _gigya_render_tpl( 'admin/tpl/adminPage-wrapper.tpl.php', array( 'page' => $page ) );
 		settings_errors();
 
-		echo '<form class="gigya-settings" action="options.php" method="post">';
-		echo '<input type="hidden" name="action" value="gigya_settings_submit">';
+		echo '<form class="gigya-settings" action="options.php" method="post">'.PHP_EOL;
+		echo '<input type="hidden" name="action" value="gigya_settings_submit">'.PHP_EOL;
 
-		wp_nonce_field( 'update-options' );
+		wp_nonce_field( 'update-options', 'update_options_nonce' );
+		wp_nonce_field( 'wp_rest', 'wp_rest_nonce' );
 		settings_fields( $page . '-group' );
 		do_settings_sections( $page );
 		submit_button();
@@ -223,6 +205,7 @@ class GigyaSettings {
     public static function _keepOldApiValues() {
         $options = static::_setSiteOptions();
         $_POST['gigya_global_settings']['api_key'] = $options['api_key'];
+        $_POST['gigya_global_settings']['user_key'] = $options['user_key'];
         $_POST['gigya_global_settings']['api_secret'] = $options['api_secret'];
         $_POST['gigya_global_settings']['data_center'] = $options['data_center'];
     }
