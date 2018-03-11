@@ -288,8 +288,14 @@ class GigyaAction
 				'get_callback' => function ( $user_data ) {
 					if ( apply_filters( 'rest_show_user_meta', $user_data['id'] ) )
 					{
-						$meta = get_user_meta( $user_data['id'] );
-						return ( $meta ) ? $meta : array(); /* array() for fallback compatibility */
+						$nonce = ( isset( $_REQUEST['_wpnonce'] ) ) ? $_REQUEST['_wpnonce'] : '';
+						if ( wp_verify_nonce( $nonce, 'wp_rest' ) )
+						{
+							$meta = get_user_meta( $user_data['id'] );
+							return ( $meta ) ? $meta : array(); /* array() for fallback compatibility */
+						}
+						else
+							return array();
 					}
 					else
 						return array();
