@@ -199,7 +199,11 @@ function _gigParam( $array, $key, $default = null, $obfuscate = false ) {
 
 	if ($obfuscate)
 	{
-		$return = substr($return, 0, 2).str_repeat('*', strlen($return) - 4).substr($return, -2);
+		if (!strlen($return))
+			$multiplier = 6;
+		else
+			$multiplier = strlen($return) - 4;
+		$return = substr($return, 0, 2).str_repeat('*', $multiplier).substr($return, -2);
 	}
 
 	return $return;
