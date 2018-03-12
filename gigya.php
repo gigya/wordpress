@@ -409,13 +409,13 @@ function gigyaSyncLoginSession( $mode, $session_opts = null ) {
 	$expiration = $default_expiration;
 	$session_type = $expiration;
 
-	if ($mode == 'raas')
+	if ( $mode == 'raas' )
 	{
-		if (isset($session_opts['session_type_numeric']))
+		if ( isset( $session_opts['session_type_numeric'] ) )
 		{
-			$session_type = intval($session_opts['session_type_numeric']);
+			$session_type = intval( $session_opts['session_type_numeric'] );
 
-			switch ($session_type)
+			switch ( $session_type )
 			{
 				case GIGYA__SESSION_DEFAULT: /* Until browser closes */
 				case GIGYA__SESSION_FOREVER: /* Forever */
@@ -431,15 +431,13 @@ function gigyaSyncLoginSession( $mode, $session_opts = null ) {
 			}
 
 			/* Updates WP cookie expiration--doing apply_filters only does not perform this action */
-			add_filter( 'auth_cookie_expiration', function($length, $user_id = null, $remember = null) use ($expiration) {
-							return _gigya_get_session_expiration($expiration, $user_id, $remember);
-						},
-						10, 3
-			);
+			add_filter( 'auth_cookie_expiration', function( $length, $user_id = null, $remember = null ) use ( $expiration ) {
+							return _gigya_get_session_expiration( $expiration, $user_id, $remember );
+						}, 10, 3 );
 
-			$gltexp_cookie = isset($_COOKIE['gltexp_' . GIGYA__API_KEY]) ? $_COOKIE['gltexp_' . GIGYA__API_KEY] : '';
-			$gltexp_cookie_timestamp = explode('_', $gltexp_cookie)[0]; /* PHP 5.4+ */
-			if (($session_type === GIGYA__SESSION_SLIDING) and (time() < $gltexp_cookie_timestamp))
+			$gltexp_cookie = isset( $_COOKIE['gltexp_' . GIGYA__API_KEY] ) ? $_COOKIE['gltexp_' . GIGYA__API_KEY] : '';
+			$gltexp_cookie_timestamp = explode( '_', $gltexp_cookie )[0]; /* PHP 5.4+ */
+			if ( ( $session_type === GIGYA__SESSION_SLIDING ) and ( time() < $gltexp_cookie_timestamp ) )
 			{
 				$user = wp_get_current_user();
 				wp_set_auth_cookie( $user->ID );
