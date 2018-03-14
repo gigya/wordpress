@@ -283,7 +283,7 @@ class GigyaAction
 
 	public function appendUserMetaToRestAPI() {
 		register_rest_field( 'user',
-			'meta',
+			'gigya_fields',
 			array(
 				'get_callback' => function ( $user_data ) {
 					if ( apply_filters( 'rest_show_user_meta', $user_data['id'] ) )
@@ -291,8 +291,23 @@ class GigyaAction
 						$nonce = ( isset( $_REQUEST['_wpnonce'] ) ) ? $_REQUEST['_wpnonce'] : '';
 						if ( wp_verify_nonce( $nonce, 'wp_rest' ) )
 						{
+							$login_opts = get_option( GIGYA__SETTINGS_LOGIN );
 							$meta = get_user_meta( $user_data['id'] );
-							return ( $meta ) ? $meta : array(); /* array() for fallback compatibility */
+
+							if ( ! empty( $login_opts['map_raas_full_map'] ) ) /* Fully customized field mapping options */
+							{
+								foreach ( json_decode( $login_opts['map_raas_full_map'] ) as $meta_key )
+								{
+									$key = ((array) $meta_key)['cmsName'];
+
+									if (isset($meta[$key]))
+										$meta_trimmed[$key] = $meta[$key];
+								}
+
+								return (!empty($meta_trimmed)) ? $meta_trimmed : array(); /* array() for fallback compatibility */
+							}
+							else
+								return array();
 						}
 						else
 							return array();

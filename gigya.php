@@ -500,19 +500,19 @@ function _gigya_add_to_wp_user_meta($gigya_object, $user_id) {
 		$gigya_object_orig = $gigya_object;
 		try
 		{
-			$gigya_object = apply_filters( 'gigya_pre_field_mapping', $gigya_object_orig, get_userdata($user_id) );
-			if (array_keys($gigya_object_orig) != array_keys($gigya_object))
-				throw new Exception('Invalid data returned by the hook. Return array must have the same keys as the input array.');
+			$gigya_object = apply_filters( 'gigya_pre_field_mapping', $gigya_object_orig, get_userdata( $user_id ) );
+			if ( array_keys( $gigya_object_orig ) != array_keys( $gigya_object ) )
+				throw new Exception( 'Invalid data returned by the hook. Return array must have the same keys as the input array.' );
 		}
-		catch (Exception $e)
+		catch ( Exception $e )
 		{
-			throw new Exception('Exception while running hook. Error message: '.$e->getMessage());
+			throw new Exception( 'Exception while running hook. Error message: ' . $e->getMessage() );
 		}
 
-		foreach (json_decode($login_opts['map_raas_full_map']) as $meta_key)
+		foreach ( json_decode( $login_opts['map_raas_full_map'] ) as $meta_key )
 		{
-			$meta_key = (array)$meta_key;
-			if (!isset($gigya_object[$meta_key['gigyaName']]))
+			$meta_key = (array) $meta_key;
+			if ( ! isset( $gigya_object[$meta_key['gigyaName']] ) )
 			{
 				$gigya_object[$meta_key['gigyaName']] = '';
 				/*
@@ -521,7 +521,7 @@ function _gigya_add_to_wp_user_meta($gigya_object, $user_id) {
 				 * trigger_error('The Gigya field '.$meta_key['gigyaName'].', specified in the field mapping, does not exist. WP user ID: '.$user_id, E_USER_NOTICE);
 				 */
 			}
-			update_user_meta($user_id, $meta_key['cmsName'], sanitize_text_field($gigya_object[$meta_key['gigyaName']]));
+			update_user_meta( $user_id, $meta_key['cmsName'], sanitize_text_field( $gigya_object[$meta_key['gigyaName']] ) );
 		}
 	}
 	else /* Legacy field mapping options */
