@@ -75,7 +75,7 @@ class GigyaRaasAjax {
 
 		if ( ! empty( $wp_user ) )
 		{
-			$is_primary_user = $gigyaCMS->isPrimaryUser( $this->gigya_account['loginIDs']['emails'], strtolower($wp_user->data->user_email) );
+			$is_primary_user = $gigyaCMS->isPrimaryUser( $this->gigya_account['loginIDs']['emails'], strtolower( $wp_user->data->user_email ) );
 
 			// If this user is not the primary user account in Gigya
 			// we delete the account (we don't want two different users with the same email)
@@ -87,7 +87,8 @@ class GigyaRaasAjax {
 			}
 
 			/* Log this user in */
-			try {
+			try
+			{
 				$this->login( $wp_user );
 			}
 			catch ( Exception $e )
@@ -113,15 +114,16 @@ class GigyaRaasAjax {
 	 * @throws Exception
 	 */
 	public function login( $wp_user ) {
-		// Login procedure.
+		/* Login procedure */
 		wp_clear_auth_cookie();
 		wp_set_current_user( $wp_user->ID );
 		wp_set_auth_cookie( $wp_user->ID );
-		_gigya_add_to_wp_user_meta($this->gigya_account, $wp_user->ID);
-		// Hook for changing WP user metadata from Gigya's user.
+		_gigya_add_to_wp_user_meta( $this->gigya_account, $wp_user->ID );
+
+		/* Hook for changing WP user metadata from Gigya's user */
 		do_action( 'gigya_after_raas_login', $this->gigya_account, $wp_user );
 
-		// Do other login Implementations.
+		/* Do other login Implementations */
 		do_action( 'wp_login', $wp_user->data->user_login, $wp_user );
 	}
 
@@ -167,9 +169,17 @@ class GigyaRaasAjax {
 		wp_update_user((object)array('ID' => $user_id, 'display_name' => $display_name)); /* If non-Latin characters are used in the first/last name, it will still use the correct display name */
 		_gigya_add_to_wp_user_meta($this->gigya_account, $user_id);
 
-		// Login the user.
+		/* Log the user in */
 		$wp_user = get_userdata( $user_id );
-		$this->login( $wp_user );
+		try
+		{
+			$this->login( $wp_user );
+		}
+		catch ( Exception $e )
+		{
+			$prm = array( 'msg' => __( 'Unable to log in.' ) );
+			wp_send_json_error( $prm );
+		}
 	}
 
 	public function updateProfile( $data ) {
