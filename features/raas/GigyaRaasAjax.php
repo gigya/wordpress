@@ -221,7 +221,7 @@ class GigyaRaasAjax {
 				$host = $_SERVER['SERVER_ADDR'];
 			}
 
-			if ((empty($gltexp_cookie_timestamp) and $session_type !== GIGYA__SESSION_DEFAULT) or (time() < $gltexp_cookie_timestamp and $session_type < 0))
+			if ((empty($gltexp_cookie_timestamp) and $session_type === GIGYA__SESSION_SLIDING) or (time() < $gltexp_cookie_timestamp and $session_type < 0))
 			{
 				if (!empty($token))
 				{
