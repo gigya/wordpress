@@ -13,10 +13,10 @@ class GigyaRaasAjax {
 	private $session_options;
 
 	public function __construct() {
-		// Get settings variables.
-		$this->global_options = get_option( GIGYA__SETTINGS_GLOBAL );
-		$this->login_options  = get_option( GIGYA__SETTINGS_LOGIN );
-		$this->session_options  = get_option( GIGYA__SETTINGS_SESSION );
+		/* Get settings variables */
+		$this->global_options  = get_option( GIGYA__SETTINGS_GLOBAL );
+		$this->login_options   = get_option( GIGYA__SETTINGS_LOGIN );
+		$this->session_options = get_option( GIGYA__SETTINGS_SESSION );
 	}
 
 	/**
@@ -33,19 +33,27 @@ class GigyaRaasAjax {
 		}
 
 		/* Check Gigya's signature validation */
-		$gigya_api_helper = new GigyaApiHelper(GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__API_SECRET, GIGYA__API_DOMAIN);
-		$is_sig_validate = $gigya_api_helper->validateUid($data['UID'], $data['UIDSignature'], $data['signatureTimestamp']);
+		$gigya_api_helper    = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__API_SECRET, GIGYA__API_DOMAIN );
+		$raas_validate_error = array( 'msg' => __( 'RaaS: There is a problem validating your user' ) );
+		$is_sig_validate     = false;
+		try
+		{
+			$is_sig_validate = $gigya_api_helper->validateUid( $data['UID'], $data['UIDSignature'], $data['signatureTimestamp'] );
+		}
+		catch ( Exception $e )
+		{
+			wp_send_json_error( $raas_validate_error );
+		}
 
 		/* Gigya user validate trap */
-		if ( !( $is_sig_validate ) ) {
-			$prm = array( 'msg' => __( 'RaaS: There is a problem validating your user' ) );
-			wp_send_json_error( $prm );
-		}
+		if ( !( $is_sig_validate ) )
+			wp_send_json_error( $raas_validate_error );
 
 		/* Initialize Gigya account */
 		$gigyaCMS            = new GigyaCMS();
 		$this->gigya_account = $gigyaCMS->getAccount( $data['UID'] );
-		if ( is_wp_error($this->gigya_account) ) {
+		if ( is_wp_error($this->gigya_account) )
+		{
 			$prm = array( 'msg' => __( 'Oops! Something went wrong during your login process. Please try to login again.' ) );
 			wp_send_json_error( $prm );
 		}
@@ -56,18 +64,18 @@ class GigyaRaasAjax {
 		$this->updateGltExpCookie();
 
 		/* Check if there is already a WP user with the same UID. Failing that, checks by email for backwards compatibility. */
-		$wp_user = get_users(array(
-								'meta_key' => 'gigya_uid',
-								'meta_value' => $data['UID'],
-							 ));
-		if (!empty($wp_user))
+		$wp_user = get_users( array(
+			                      'meta_key'   => 'gigya_uid',
+			                      'meta_value' => $data['UID'],
+		                      ) );
+		if ( ! empty( $wp_user ) )
 			$wp_user = $wp_user[0];
 		else /* Comment this ELSE statement to verify *only* by UID */
 			$wp_user = get_user_by( 'email', $this->gigya_account['profile']['email'] );
 
 		if ( ! empty( $wp_user ) )
 		{
-			$is_primary_user = $gigyaCMS->isPrimaryUser( $this->gigya_account['loginIDs']['emails'], strtolower($wp_user->data->user_email) );
+			$is_primary_user = $gigyaCMS->isPrimaryUser( $this->gigya_account['loginIDs']['emails'], strtolower( $wp_user->data->user_email ) );
 
 			// If this user is not the primary user account in Gigya
 			// we delete the account (we don't want two different users with the same email)
@@ -79,7 +87,8 @@ class GigyaRaasAjax {
 			}
 
 			/* Log this user in */
-			try {
+			try
+			{
 				$this->login( $wp_user );
 			}
 			catch ( Exception $e )
@@ -105,15 +114,16 @@ class GigyaRaasAjax {
 	 * @throws Exception
 	 */
 	public function login( $wp_user ) {
-		// Login procedure.
+		/* Login procedure */
 		wp_clear_auth_cookie();
 		wp_set_current_user( $wp_user->ID );
 		wp_set_auth_cookie( $wp_user->ID );
-		_gigya_add_to_wp_user_meta($this->gigya_account, $wp_user->ID);
-		// Hook for changing WP user metadata from Gigya's user.
+		_gigya_add_to_wp_user_meta( $this->gigya_account, $wp_user->ID );
+
+		/* Hook for changing WP user metadata from Gigya's user */
 		do_action( 'gigya_after_raas_login', $this->gigya_account, $wp_user );
 
-		// Do other login Implementations.
+		/* Do other login Implementations */
 		do_action( 'wp_login', $wp_user->data->user_login, $wp_user );
 	}
 
@@ -159,9 +169,17 @@ class GigyaRaasAjax {
 		wp_update_user((object)array('ID' => $user_id, 'display_name' => $display_name)); /* If non-Latin characters are used in the first/last name, it will still use the correct display name */
 		_gigya_add_to_wp_user_meta($this->gigya_account, $user_id);
 
-		// Login the user.
+		/* Log the user in */
 		$wp_user = get_userdata( $user_id );
-		$this->login( $wp_user );
+		try
+		{
+			$this->login( $wp_user );
+		}
+		catch ( Exception $e )
+		{
+			$prm = array( 'msg' => __( 'Unable to log in.' ) );
+			wp_send_json_error( $prm );
+		}
 	}
 
 	public function updateProfile( $data ) {
@@ -213,7 +231,7 @@ class GigyaRaasAjax {
 				$host = $_SERVER['SERVER_ADDR'];
 			}
 
-			if ((empty($gltexp_cookie_timestamp) and $session_type !== GIGYA__SESSION_DEFAULT) or (time() < $gltexp_cookie_timestamp and $session_type < 0))
+			if ((empty($gltexp_cookie_timestamp) and $session_type === GIGYA__SESSION_SLIDING) or (time() < $gltexp_cookie_timestamp and $session_type < 0))
 			{
 				if (!empty($token))
 				{
