@@ -57,7 +57,7 @@ var GigyaWp = GigyaWp || {};
 			/* Refresh */
 			redirectTarget = window.location.href;
 		}
-		gigya.setSSOToken({ redirectURL: redirectTarget });
+		location.replace(redirectTarget);
 	};
 	GigyaWp.getEssentialParams = function (gigyaObj) {
 		var esData = {};
