@@ -253,7 +253,6 @@ class GigyaCMS
 	 * @return bool|null|string True if the notify login request succeeded or the error message from Gigya
 	 */
 	function notifyLogin( $uid, $is_new_user = false, $user_info = null ) {
-		error_log('a');
 		$params['siteUID'] = $uid;
 
 		// Set a new user flag if true.
