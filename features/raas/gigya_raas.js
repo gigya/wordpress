@@ -41,7 +41,6 @@
 				/** @function    gigya.accounts.showScreenSet */
 				var path = $(this)[0].pathname;
 				var search = $(this)[0].search;
-				console.log(path);
 				if (path.indexOf('wp-login.php') !== -1) {
 
 					switch (true) {
@@ -71,7 +70,7 @@
 							e.preventDefault();
 							break;
 
-						case (search.includes('?action=logout')):
+						case (search.indexOf('?action=logout') !== -1):
 							//Logout
 							raasLogout();
 							break;

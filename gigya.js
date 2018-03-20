@@ -22,7 +22,7 @@ var GigyaWp = GigyaWp || {};
 
 		GigyaWp.logout = function ( response ) {
 			/** @function	wp_loginout */
-		  wp_loginout(gigyaParams.logoutUrl);
+			wp_loginout(gigyaParams.logoutUrl);
 		};
 	} );
 
@@ -43,19 +43,21 @@ var GigyaWp = GigyaWp || {};
 // --------------------------------------------------------------------
 
 	GigyaWp.redirect = function () {
+		var redirectTarget = '';
 		if (location.pathname.indexOf('wp-login.php') !== -1) {
 			/* Redirect after login page */
 			if (typeof gigyaLoginParams !== 'undefined') {
-				location.replace(gigyaLoginParams.redirect);
+				redirectTarget = gigyaLoginParams.redirect;
 			}
 			else if (typeof gigyaRaasParams !== 'undefined') {
-				location.replace(gigyaRaasParams.redirect);
+				redirectTarget = gigyaRaasParams.redirect;
 			}
 		}
 		else {
 			/* Refresh */
-			location.reload();
+			redirectTarget = window.location.href;
 		}
+		location.replace(redirectTarget);
 	};
 	GigyaWp.getEssentialParams = function (gigyaObj) {
 		var esData = {};
