@@ -425,7 +425,7 @@ function gigyaSyncLoginSession( $mode, $session_opts = null ) {
 					$expiration = $session_opts['session_duration'];
 					break;
 				default:
-					$session_type = $session_opts['session_duration'];
+					$session_type = -1;
 					$expiration = $session_opts['session_duration'];
 					break;
 			}
@@ -437,7 +437,7 @@ function gigyaSyncLoginSession( $mode, $session_opts = null ) {
 
 			$gltexp_cookie = isset( $_COOKIE['gltexp_' . GIGYA__API_KEY] ) ? $_COOKIE['gltexp_' . GIGYA__API_KEY] : '';
 			$gltexp_cookie_timestamp = explode( '_', $gltexp_cookie )[0]; /* PHP 5.4+ */
-			if ( ( $session_type === GIGYA__SESSION_SLIDING ) and ( time() < $gltexp_cookie_timestamp ) )
+			if ( ( $session_type === GIGYA__SESSION_SLIDING or $session_type > 0 ) and ( time() < $gltexp_cookie_timestamp ) )
 			{
 				$user = wp_get_current_user();
 				wp_set_auth_cookie( $user->ID );

@@ -201,50 +201,46 @@ class GigyaRaasAjax {
 	}
 
 	public function updateGltExpCookie() {
-		if (isset($_COOKIE['glt_'.GIGYA__API_KEY]))
-		{
-			$session_type = isset($this->session_options['session_type_numeric']) ? intval($this->session_options['session_type_numeric']) : GIGYA__SESSION_SLIDING;
-			$session_duration = isset($this->session_options['session_duration']) ? $this->session_options['session_duration'] : GIGYA__DEFAULT_COOKIE_EXPIRATION;
+		if ( isset( $_COOKIE[ 'glt_' . GIGYA__API_KEY ] ) ) {
+			$session_type     = isset( $this->session_options['session_type_numeric'] ) ? intval( $this->session_options['session_type_numeric'] ) : GIGYA__SESSION_SLIDING;
+			$session_duration = isset( $this->session_options['session_duration'] ) ? $this->session_options['session_duration'] : GIGYA__DEFAULT_COOKIE_EXPIRATION;
 
-			$glt_cookie = $_COOKIE['glt_'.GIGYA__API_KEY];
-			$token = (!empty(explode('|', $glt_cookie)[0])) ? explode('|', $glt_cookie)[0] : null; /* PHP 5.4+ */
+			$glt_cookie = $_COOKIE[ 'glt_' . GIGYA__API_KEY ];
+			$token      = ( ! empty( explode( '|', $glt_cookie )[0] ) ) ? explode( '|', $glt_cookie )[0] : null; /* PHP 5.4+ */
 
-			$cookie_expiration = time() + (10 * YEAR_IN_SECONDS);
-			switch ($session_type)
-			{
+			$cookie_expiration = time() + ( 10 * YEAR_IN_SECONDS );
+			switch ( $session_type ) {
 				case GIGYA__SESSION_FOREVER: /* Keep session indefinitely */
-					$expiration = strval(time() + (10 * YEAR_IN_SECONDS));
+					$expiration = strval( time() + ( 10 * YEAR_IN_SECONDS ) );
 					break;
 				case GIGYA__SESSION_DEFAULT: /* Remove GltExp */
-					$expiration = 1;
+					$expiration        = 1;
 					$cookie_expiration = 1;
 					break;
 				default: /* Session fixed or defined with expiration time */
-					$expiration = strval($_SERVER['REQUEST_TIME'] + intval($session_duration));
+					$expiration = strval( $_SERVER['REQUEST_TIME'] + intval( $session_duration ) );
 					break;
 			}
 
 			$gltexp_cookie = isset($_COOKIE['gltexp_' . GIGYA__API_KEY]) ? $_COOKIE['gltexp_' . GIGYA__API_KEY] : '';
 			$gltexp_cookie_timestamp = explode('_', $gltexp_cookie)[0]; /* PHP 5.4+ */
 
-			if (!$host = $_SERVER['SERVER_NAME']) {
+			if ( ! $host = $_SERVER['SERVER_NAME'] ) {
 				$host = $_SERVER['SERVER_ADDR'];
 			}
 
-			if ((empty($gltexp_cookie_timestamp) and $session_type === GIGYA__SESSION_SLIDING) or (time() < $gltexp_cookie_timestamp and $session_type < 0))
-			{
-				if (!empty($token))
-				{
+			if ( ( empty( $gltexp_cookie_timestamp ) and ( $session_type === GIGYA__SESSION_SLIDING or $session_type > 0 ) ) or ( time() < $gltexp_cookie_timestamp and $session_type < 0 ) ) {
+				if ( ! empty( $token ) ) {
 					$session_sig = $this->calcDynamicSessionSig(
 						$token, $expiration, GIGYA__USER_KEY,
 						GigyaApiHelper::decrypt( GIGYA__API_SECRET, SECURE_AUTH_KEY )
 					);
 
-					setrawcookie('gltexp_' . GIGYA__API_KEY, rawurlencode($session_sig), $cookie_expiration, '/', $host);
+					setrawcookie( 'gltexp_' . GIGYA__API_KEY, rawurlencode( $session_sig ), $cookie_expiration, '/', $host );
 				}
+			} elseif ( $session_type === GIGYA__SESSION_DEFAULT ) /* Unset cookie */ {
+				setrawcookie( 'gltexp_' . GIGYA__API_KEY, '', $cookie_expiration, '/', $host );
 			}
-			elseif ($session_type === GIGYA__SESSION_DEFAULT)
-				setrawcookie('gltexp_' . GIGYA__API_KEY, '', $cookie_expiration, '/', $host); /* Unset cookie */
 		}
 	}
 
