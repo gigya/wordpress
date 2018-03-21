@@ -1,3 +1,4 @@
+var sendSetSSOToken;
 var GigyaWp = GigyaWp || {};
 
 (function ($) {
@@ -57,7 +58,11 @@ var GigyaWp = GigyaWp || {};
 			/* Refresh */
 			redirectTarget = window.location.href;
 		}
-		location.replace(redirectTarget);
+
+		if (typeof sendSetSSOToken === 'undefined')
+			location.replace(redirectTarget);
+		else if (sendSetSSOToken === true)
+			gigya.setSSOToken({ redirectURL: redirectTarget });
 	};
 	GigyaWp.getEssentialParams = function (gigyaObj) {
 		var esData = {};
