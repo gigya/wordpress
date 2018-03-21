@@ -298,7 +298,8 @@ class GigyaAction
 							{
 								foreach ( json_decode( $login_opts['map_raas_full_map'] ) as $meta_key )
 								{
-									$key = ((array) $meta_key)['cmsName'];
+									$meta_key = ((array) $meta_key);
+									$key = $meta_key['cmsName'];
 
 									if (isset($meta[$key]))
 										$meta_trimmed[$key] = $meta[$key];
