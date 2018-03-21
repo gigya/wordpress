@@ -238,8 +238,6 @@ class GigyaRaasAjax {
 
 					setrawcookie( 'gltexp_' . GIGYA__API_KEY, rawurlencode( $session_sig ), $cookie_expiration, '/', $host );
 				}
-			} elseif ( $session_type === GIGYA__SESSION_DEFAULT ) /* Unset cookie */ {
-				setrawcookie( 'gltexp_' . GIGYA__API_KEY, '', $cookie_expiration, '/', $host );
 			}
 		}
 	}
