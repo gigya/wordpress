@@ -234,7 +234,6 @@ class GigyaInstall {
 	 * Upgrade enable widgets.
 	 */
 	private function upgradeWidgets() {
-
 		// Creating new widgets based on the old ones.
 		$this->upgradeWidget( 'widget_gigya', 'widget_gigya_login' );
 		$this->upgradeWidget( 'widget_gigyagamification', 'widget_gigya_gamification' );
@@ -242,13 +241,19 @@ class GigyaInstall {
 		// Updating the sidebars.
 		$sb = get_option( 'sidebars_widgets' );
 		foreach ( $sb as $k => $sidebar ) {
-			foreach ( $sidebar as $widget ) {
-				$brk = explode( '-', $widget );
-				if ( $brk[0] == 'gigya' ) {
-					$sb[$k][] = 'gigya_login-' . $brk[1];
-				}
-				elseif ( $brk[0] == 'gigyagamification' ) {
-					$sb[$k][] = 'gigya_gamification-' . $brk[1];
+			if ( count( $sidebar ) > 0 )
+			{
+				foreach ( $sidebar as $widget )
+				{
+					$brk = explode( '-', $widget );
+					if ( $brk[0] == 'gigya' )
+					{
+						$sb[$k][] = 'gigya_login-' . $brk[1];
+					}
+					elseif ( $brk[0] == 'gigyagamification' )
+					{
+						$sb[$k][] = 'gigya_gamification-' . $brk[1];
+					}
 				}
 			}
 		}

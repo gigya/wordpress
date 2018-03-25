@@ -1,4 +1,3 @@
-var sendSetSSOToken;
 var GigyaWp = GigyaWp || {};
 
 (function ($) {
