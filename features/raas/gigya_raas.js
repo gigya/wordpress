@@ -34,8 +34,9 @@
 		 */
 
 		var raasLogout = function () {
-			gigya.accounts.logout();
+			gigya.accounts.logout({ callback: location.replace(gigyaParams.logoutUrl) });
 		};
+
 		var overrideLinks = function () {
 			$(document).on('click', 'a[href]', function (e) {
 				/** @function    gigya.accounts.showScreenSet */
