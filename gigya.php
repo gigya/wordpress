@@ -401,10 +401,11 @@ function updateCookie( $cookie, $expiration ) {
  *
  * @param	string	$mode			Whether RaaS (raas) or Social Login (wp_sl)
  * @param	array	$session_opts	Login options for RaaS (session duration etc.)
+ * @param	int		$forced_expiration	If set, will override the WP cookie expiration time defined in the configuration
  *
  * @return	integer
  */
-function gigyaSyncLoginSession( $mode, $session_opts = null ) {
+function gigyaSyncLoginSession( $mode, $session_opts, $forced_expiration = null ) {
 	$default_expiration = GIGYA__DEFAULT_COOKIE_EXPIRATION;
 	$expiration = $default_expiration;
 	$session_type = $expiration;
@@ -430,6 +431,10 @@ function gigyaSyncLoginSession( $mode, $session_opts = null ) {
 					break;
 			}
 
+			/* Overrides expiration time set in plugin's config--used for SSO */
+			if ( $forced_expiration )
+				$expiration = $forced_expiration;
+
 			/* Updates WP cookie expiration--doing apply_filters only does not perform this action */
 			add_filter( 'auth_cookie_expiration', function( $length, $user_id = null, $remember = null ) use ( $expiration ) {
 							return _gigya_get_session_expiration( $expiration, $user_id, $remember );
@@ -437,10 +442,11 @@ function gigyaSyncLoginSession( $mode, $session_opts = null ) {
 
 			$gltexp_cookie = isset( $_COOKIE['gltexp_' . GIGYA__API_KEY] ) ? $_COOKIE['gltexp_' . GIGYA__API_KEY] : '';
 			$gltexp_cookie_timestamp = explode( '_', $gltexp_cookie )[0]; /* PHP 5.4+ */
-			if ( ( $session_type === GIGYA__SESSION_SLIDING ) and ( time() < $gltexp_cookie_timestamp ) )
+			if ( ( ( $session_type === GIGYA__SESSION_SLIDING ) and ( time() < $gltexp_cookie_timestamp ) )
+				or ( $session_type > 0 and $forced_expiration ) )
 			{
-				$user = wp_get_current_user();
-				wp_set_auth_cookie( $user->ID );
+				$wp_user = wp_get_current_user();
+				wp_set_auth_cookie( $wp_user->ID );
 
 				do_action( 'set_logged_in_cookie', null, $expiration );
 			}

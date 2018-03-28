@@ -51,6 +51,8 @@ class GigyaAction
 		add_action( 'wp_ajax_nopriv_gigya_raas', array( $this, 'ajaxRaasLogin' ) );
 		add_action( 'wp_ajax_custom_login', array( $this, 'ajaxCustomLogin' ) );
 		add_action( 'wp_ajax_nopriv_custom_login', array( $this, 'ajaxCustomLogin' ) );
+		add_action( 'wp_ajax_fixed_session_cookie', array( $this, 'ajaxSetFixedSessionCookie' ) );
+		add_action( 'wp_ajax_nopriv_fixed_session_cookie', array( $this, 'ajaxSetFixedSessionCookie' ) );
 		add_action( 'wp_ajax_debug_log', array( $this, 'ajaxDebugLog' ) );
 		add_action( 'wp_ajax_clean_db', array( $this, 'ajaxCleanDB' ) );
 		add_action( 'wp_ajax_gigya_logout', array( $this, 'ajaxLogout' ) );
@@ -147,7 +149,7 @@ class GigyaAction
 			'enabledProviders'            => _gigParam( $this->global_options, 'enabledProviders', '*' ),
 			'lang'                        => _gigParam( $this->global_options, 'lang', 'en' ),
 			'sessionExpiration'           => gigyaSyncLoginSession(
-				isset( $this->login_options['mode'] ) ? $this->login_options['mode'] : '', $this->session_options
+				( isset( $this->login_options['mode'] ) ? $this->login_options['mode'] : '' ), $this->session_options
 			),
 		);
 
@@ -279,6 +281,23 @@ class GigyaAction
 			setrawcookie( 'gltexp_' . GIGYA__API_KEY, null, -1, '/' );
 		}
 		wp_send_json_success();
+	}
+
+	public function ajaxSetFixedSessionCookie() {
+		$return = array(
+			$_POST['expiration'],
+			time() + $this->session_options['session_duration'],
+		);
+
+		$expiration = intval( $_POST['expiration'] / 1000 ) - time();
+		if ( $this->login_options['mode'] == 'raas' and $this->session_options['session_type_numeric'] > 0 ) /* Fixed session in RaaS */
+		{
+			$return[] = gigyaSyncLoginSession( 'raas', $this->session_options, $expiration );
+		}
+
+		echo json_encode( $return );
+
+		wp_die();
 	}
 
 	public function appendUserMetaToRestAPI() {
