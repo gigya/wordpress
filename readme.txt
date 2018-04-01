@@ -4,7 +4,7 @@ Contributors: gigya.com, konforti, luciodiri
 Tags: CIAM, CIM, Registration, Social Login, Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, Gigya, Social Infrastructure, feed
 Requires at least: 4.2
 Tested up to: 4.9
-Stable tag: 5.7.3
+Stable tag: 5.7.4
 License: GPLv2 or later
 
 Integrate your WordPress site with Gigya
@@ -145,6 +145,9 @@ For question about installations or configuration, please contact your account m
 
 = 5.7.3 =
 * It is now possible to enable setSSOToken through the global configuration
+
+= 5.7.4 =
+* Fixed session sync in SSO is now more accurate
 
 
 == FAQ ==

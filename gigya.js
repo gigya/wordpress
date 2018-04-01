@@ -20,9 +20,10 @@ var GigyaWp = GigyaWp || {};
 		// jQueryUI dialog element.
 		$('body').append('<div id="dialog-modal"></div>');
 
-		GigyaWp.logout = function ( response ) {
-			/** @function	wp_loginout */
-			wp_loginout(gigyaParams.logoutUrl);
+		GigyaWp.logout = function (response) {
+			jQuery.post(ajaxurl, {action: 'gigya_logout'}, function (response) {
+				window.location.reload();
+			});
 		};
 	} );
 
@@ -45,7 +46,7 @@ var GigyaWp = GigyaWp || {};
 	GigyaWp.redirect = function () {
 		var redirectTarget = '';
 		if (location.pathname.indexOf('wp-login.php') !== -1) {
-			/* Redirect after login page */
+			/* Sets redirect after login page */
 			if (typeof gigyaLoginParams !== 'undefined') {
 				redirectTarget = gigyaLoginParams.redirect;
 			}
@@ -54,14 +55,16 @@ var GigyaWp = GigyaWp || {};
 			}
 		}
 		else {
-			/* Refresh */
+			/* Sets self-redirect (refresh) */
 			redirectTarget = window.location.href;
 		}
 
+		/* This part relies on a global variable called sendSetSSOToken, which is not part of the connector's code base. It needs to be set in an ourside script.
+		 * This was done in order to allow to add logic to this variable from the outside, ideally in Gigya's global configuration, which can be set in the connector's UI. */
 		if (typeof sendSetSSOToken === 'undefined')
 			location.replace(redirectTarget);
 		else if (sendSetSSOToken === true)
-			gigya.setSSOToken({ redirectURL: redirectTarget });
+			gigya.setSSOToken({redirectURL: redirectTarget});
 	};
 	GigyaWp.getEssentialParams = function (gigyaObj) {
 		var esData = {};

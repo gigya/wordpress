@@ -34,8 +34,13 @@
 		 */
 
 		var raasLogout = function () {
-			gigya.accounts.logout();
+			gigya.accounts.logout({
+				callback: function (e) {
+					location.replace(gigyaParams.logoutUrl)
+				}
+			});
 		};
+
 		var overrideLinks = function () {
 			$(document).on('click', 'a[href]', function (e) {
 				/** @function    gigya.accounts.showScreenSet */
@@ -181,6 +186,12 @@
 		 * @param    response.UIDSignature    string    User's API signature which is calculated using the secret key and other parameters
 		 */
 		var raasLogin = function (response) {
+			var exp_timestamp = 0;
+			if (typeof response.expires_in !== 'undefined')
+			{
+				exp_timestamp = Date.now() + (response.expires_in * 1000);
+			}
+
 			if (response.provider === 'site') {
 				return false;
 			}
@@ -206,16 +217,27 @@
 
 			req.done(function (res) {
 				if (res.success) {
+					if (typeof response.expires_in !== 'undefined')
+					{
+						jQuery.post(gigyaParams.ajaxurl, {action: 'fixed_session_cookie', expiration: exp_timestamp}, function (ajax_response) {
+							/* A valid JSON array is returned by this function with the relevant expiration timestamps */
+						});
+					}
+
 					GigyaWp.redirect();
 				}
 				else {
 					if (typeof res.data !== 'undefined') {
-						// The user didn't logged in.
+						/* The user didn't log in */
 						var dialog_modal = $('#dialog-modal');
 						dialog_modal.html(res.data.msg);
 						dialog_modal.dialog({modal: true});
 					}
-					gigya.accounts.logout();
+					gigya.accounts.logout({
+						callback: function (e) {
+							location.replace(gigyaParams.logoutUrl)
+						}
+					});
 				}
 			});
 
