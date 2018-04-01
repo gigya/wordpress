@@ -34,7 +34,11 @@
 		 */
 
 		var raasLogout = function () {
-			gigya.accounts.logout({ callback: location.replace(gigyaParams.logoutUrl) });
+			gigya.accounts.logout({
+				callback: function (e) {
+					location.replace(gigyaParams.logoutUrl)
+				}
+			});
 		};
 
 		var overrideLinks = function () {
@@ -229,7 +233,11 @@
 						dialog_modal.html(res.data.msg);
 						dialog_modal.dialog({modal: true});
 					}
-					gigya.accounts.logout();
+					gigya.accounts.logout({
+						callback: function (e) {
+							location.replace(gigyaParams.logoutUrl)
+						}
+					});
 				}
 			});
 
