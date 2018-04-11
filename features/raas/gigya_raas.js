@@ -217,14 +217,22 @@
 
 			req.done(function (res) {
 				if (res.success) {
-					if (typeof response.expires_in !== 'undefined')
-					{
-						jQuery.post(gigyaParams.ajaxurl, {action: 'fixed_session_cookie', expiration: exp_timestamp}, function (ajax_response) {
-							/* A valid JSON array is returned by this function with the relevant expiration timestamps */
-						});
+					if (typeof response.expires_in !== 'undefined') {
+                        var reqFixedSession = $.ajax({
+                            url: gigyaParams.ajaxurl,
+                            type: 'POST',
+                            dataType: 'json',
+                            data: {
+                                action: 'fixed_session_cookie',
+                                expiration: exp_timestamp
+                            }
+                        });
+                        reqFixedSession.done(function(responseFixedSession) {
+                            GigyaWp.redirect();
+						})
+					} else {
+                        GigyaWp.redirect();
 					}
-
-					GigyaWp.redirect();
 				}
 				else {
 					if (typeof res.data !== 'undefined') {
