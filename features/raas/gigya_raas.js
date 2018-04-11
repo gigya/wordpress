@@ -78,6 +78,7 @@
 						case (search.indexOf('?action=logout') !== -1):
 							//Logout
 							raasLogout();
+							return false;
 							break;
 					}
 				}
