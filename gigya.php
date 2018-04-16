@@ -16,7 +16,7 @@
  */
 define( 'GIGYA__MINIMUM_WP_VERSION', '4.2' );
 define( 'GIGYA__MINIMUM_PHP_VERSION', '5.4' );
-define( 'GIGYA__VERSION', '5.7.4' );
+define( 'GIGYA__VERSION', '5.7.5' );
 define( 'GIGYA__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GIGYA__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'GIGYA__CDN_PROTOCOL', ! empty( $_SERVER['HTTPS'] ) ? 'https://cdns' : 'http://cdn' );
