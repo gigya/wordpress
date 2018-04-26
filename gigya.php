@@ -45,8 +45,8 @@ define( 'GIGYA__SESSION_FOREVER', -2 );
 /**
  * Register activation hook
  */
-register_activation_hook( __FILE__, 'registerActivationHook' );
-function registerActivationHook() {
+register_activation_hook( __FILE__, 'gigyaActivationHook' );
+function gigyaActivationHook() {
 	require_once GIGYA__PLUGIN_DIR . 'install.php';
 	$install = new GigyaInstall();
 	$install->init();
