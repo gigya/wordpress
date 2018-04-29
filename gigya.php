@@ -3,7 +3,7 @@
  * Plugin Name: Gigya - Make Your Site Social
  * Plugin URI: http://gigya.com
  * Description: Allows sites to utilize the Gigya API for authentication and social network updates.
- * Version: 5.7.4
+ * Version: 5.7.5
  * Author: Gigya
  * Author URI: http://gigya.com
  * License: GPL2+
@@ -15,7 +15,7 @@
  * Global constants.
  */
 define( 'GIGYA__MINIMUM_WP_VERSION', '4.2' );
-define( 'GIGYA__MINIMUM_PHP_VERSION', '5.4' );
+define( 'GIGYA__MINIMUM_PHP_VERSION', '5.6' );
 define( 'GIGYA__VERSION', '5.7.5' );
 define( 'GIGYA__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GIGYA__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
