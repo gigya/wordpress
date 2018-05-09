@@ -12,7 +12,7 @@ class GigyaLoginAjax {
 	protected $gigya_user;
 
 	public function __construct() {
-		// Get settings variables.
+		/* Get settings variables */
 		$this->global_options = get_option( GIGYA__SETTINGS_GLOBAL );
 		$this->login_options  = get_option( GIGYA__SETTINGS_LOGIN );
 	}
@@ -24,52 +24,56 @@ class GigyaLoginAjax {
 		/* Get the data from the client (AJAX) */
 		$data = $_POST['data'];
 
-		// Trap for login users
+		/* Trap for login users */
 		if ( is_user_logged_in() ) {
 			wp_send_json_error( array( 'msg' => __( 'There is already a logged in user' ) ) );
 		}
 
 		/* Check Gigya's signature validation */
-		$is_sig_validate = SigUtils::validateUserSignature(
-				$data['UID'],
-				$data['timestamp'],
-				GIGYA__API_SECRET,
-				$data['signature']
-		);
+		$login_validate_error = 'Login: There was a problem validating your user';
+		$gigya_api_helper     = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__API_SECRET, GIGYA__API_DOMAIN );
+		$is_sig_validate      = false;
 
-		// Gigya user validate trap.
-		if ( !( $is_sig_validate ) ) {
-			wp_send_json_error( array( 'msg' => __( 'Login: There was a problem validating your user' ) ) );
+		try
+		{
+			$is_sig_validate = $gigya_api_helper->validateUid( $data['UID'], $data['UIDSignature'], $data['signatureTimestamp'], 'login' );
+		}
+		catch ( Exception $e )
+		{
+			error_log($login_validate_error);
+			wp_send_json_error( array( 'msg' => __( $login_validate_error ) ) );
 		}
 
-		// Initialize Gigya user.
+		/* Gigya user validate trap */
+		if ( !( $is_sig_validate ) ) {
+			wp_send_json_error( array( 'msg' => __( $login_validate_error ) ) );
+		}
+
+		/* Initialize Gigya user */
 		$this->gigya_user = $data['user'];
 
-		// Checking if the Gigya UID is a number.
-		// When the Gigya UID is a number, it means
-		// we already notifyRegistration for Gigya
-		// and the Gigya UID is the WP UID.
+		/* Checking if the Gigya UID is a number.
+		* When the Gigya UID is a number, it means
+		* we already notifyRegistration for Gigya
+		* and the Gigya UID is the WP UID. */
 		if ( is_numeric( $this->gigya_user['UID'] ) && $this->gigya_user['isSiteUID'] == true && ( is_object( $wp_user = get_userdata( $this->gigya_user['UID'] ) ) ) ) {
-
-			// Login the user.
+			/* Log the user in */
 			$this->login( $wp_user );
-
 		} else {
-
-			// There might be a user who never verified his email.
-			// So we are looking for a user who has 'gigya_uid' meta
-			// with the value of the original (NOT-number) Gigya UID.
+			/* There might be a user who never verified his email.
+			 * So we are looking for a user who has 'gigya_uid' meta
+			 * with the value of the original (NOT-number) Gigya UID. */
 			$users = get_users( 'meta_key=gigya_uid&meta_value=' . $this->gigya_user['UID'] );
 
 			if ( ! empty( $users ) ) {
-				// If there one we return the login form to client.
+				/* If there one we return the login form to client */
 				wp_send_json_success( array(
-						'type' => 'form',
-						'html' => $this->emailVerifyForm()
+					'type' => 'form',
+					'html' => $this->emailVerifyForm()
 				) );
 			} else {
-				// We now sure there no user in WP records connected
-				// to this Gigya's UID. Lets try to register the user.
+				/* We now sure there no user in WP records connected
+				 * to this Gigya's UID. Lets try to register the user. */
 				$this->register();
 			}
 		}
@@ -83,16 +87,15 @@ class GigyaLoginAjax {
 	 * @param $wp_user
 	 */
 	public function login( $wp_user ) {
-
-		// Login procedure.
+		/* Login procedure */
 		wp_clear_auth_cookie();
 		wp_set_current_user( $wp_user->ID );
 		wp_set_auth_cookie( $wp_user->ID );
 
-		// Hook for changing WP user metadata from Gigya's user.
+		/* Hook for changing WP user metadata from Gigya's user */
 		do_action( 'gigya_after_social_login', $this->gigya_user, $wp_user );
 
-		// Do others login Implementations.
+		/* Do others login implementations */
 		do_action( 'wp_login', $wp_user->data->user_login, $wp_user );
 	}
 
