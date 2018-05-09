@@ -6,7 +6,7 @@
  * Date: 2/17/16
  * Time: 2:29 PM
  */
-class GSApiException extends \Exception{
+class GSApiException extends Exception {
 	private $longMessage;
 	private $callId;
 

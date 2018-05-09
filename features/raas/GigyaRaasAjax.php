@@ -38,7 +38,7 @@ class GigyaRaasAjax {
 		$is_sig_validate     = false;
 		try
 		{
-			$is_sig_validate = $gigya_api_helper->validateUid( $data['UID'], $data['UIDSignature'], $data['signatureTimestamp'] );
+			$is_sig_validate = $gigya_api_helper->validateUid( $data['UID'], $data['UIDSignature'], $data['signatureTimestamp'], 'raas' );
 		}
 		catch ( Exception $e )
 		{
@@ -52,7 +52,7 @@ class GigyaRaasAjax {
 		/* Initialize Gigya account */
 		$gigyaCMS            = new GigyaCMS();
 		$this->gigya_account = $gigyaCMS->getAccount( $data['UID'] );
-		if ( is_wp_error($this->gigya_account) )
+		if ( is_wp_error( $this->gigya_account ) )
 		{
 			$prm = array( 'msg' => __( 'Oops! Something went wrong during your login process. Please try to login again.' ) );
 			wp_send_json_error( $prm );

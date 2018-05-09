@@ -74,30 +74,30 @@ class GigyaApiHelper
 	 *
 	 * @throws Exception
 	 * @throws GSException
-	 * @throws GSApiException
 	 */
-	public function validateUid( $uid, $uidSignature, $signatureTimestamp, $include = null, $extraProfileFields = null, $org_params = array() ) {
+	public function validateUid( $uid, $uidSignature, $signatureTimestamp, $mode, $include = null, $extraProfileFields = null, $org_params = array() ) {
 		$params                       = $org_params;
 		$params['UID']                = $uid;
 		$params['UIDSignature']       = $uidSignature;
 		$params['signatureTimestamp'] = $signatureTimestamp;
-		try
-		{
+
+		try {
 			$res = $this->sendApiCall( "socialize.exchangeUIDSignature", $params );
-		}
-		catch ( Exception $e )
-		{
+		} catch ( Exception $e ) {
 			return false;
 		}
+
 		$sig          = $res->getData()->getString( "UIDSignature", null );
 		$sigTimestamp = $res->getData()->getString( "signatureTimestamp", null );
+
 		if ( null !== $sig && null !== $sigTimestamp )
 		{
 			if ( SigUtils::validateUserSignature( $uid, $sigTimestamp, $this->secret, $sig ) )
 			{
-				$user = $this->fetchGigyaAccount( $uid, $include, $extraProfileFields, $org_params );
-
-				return $user;
+				if ($mode === 'raas')
+					return $this->fetchGigyaAccount( $uid, $include, $extraProfileFields, $org_params );
+				else
+					return true;
 			}
 		}
 
@@ -110,10 +110,9 @@ class GigyaApiHelper
 	 * @param null  $extraProfileFields
 	 * @param array $params
 	 *
-	 * @return GigyaUser
+	 * @return GigyaUser|false
 	 *
 	 * @throws Exception
-	 * @throws GSApiException
 	 * @throws GSException
 	 */
 	public function fetchGigyaAccount($uid, $include = null, $extraProfileFields = null, $params = array()) {
@@ -135,7 +134,16 @@ class GigyaApiHelper
 		$params['include'] = $include;
 		$params['extraProfileFields'] = $extraProfileFields;
 
-		$res = $this->sendApiCall("accounts.getAccountInfo", $params);
+		try
+		{
+			$res = $this->sendApiCall("accounts.getAccountInfo", $params);
+		}
+		catch (GSApiException $e)
+		{
+			error_log( 'Error fetching Gigya account: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
+			return false;
+		}
+
 		$dataArray = $res->getData()->serialize();
 		$profileArray = $dataArray['profile'];
 		$gigyaUser = GigyaUserFactory::createGigyaUserFromArray($dataArray);
