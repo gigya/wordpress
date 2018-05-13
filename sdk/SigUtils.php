@@ -1,23 +1,25 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Yaniv Aran-Shamir
- * Date: 4/6/16
- * Time: 8:57 PM
- */
-
 class SigUtils
 {
+	/**
+	 * @param $UID
+	 * @param $timestamp
+	 * @param $secret
+	 * @param $signature
+	 *
+	 * @return bool
+	 */
     public static function validateUserSignature($UID, $timestamp, $secret, $signature)
     {
-        $now = time();
-        if (abs($now - $timestamp) > 180) {
+		$now = time();
+		if (abs($now - $timestamp) > 180) {
             return false;
         }
 
         $baseString = $timestamp . "_" . $UID;
         $expectedSig = self::calcSignature($baseString, $secret);
-        return $expectedSig == $signature;
+
+		return ($expectedSig == $signature);
     }
 
     public static function validateFriendSignature($UID, $timestamp, $friendUID, $secret, $signature)
@@ -29,20 +31,21 @@ class SigUtils
 
         $baseString = $timestamp . "_" . $friendUID . "_" . $UID;
         $expectedSig = self::calcSignature($baseString, $secret);
+
         return $expectedSig == $signature;
     }
 
     static function currentTimeMillis()
     {
-        // get utc time in ms
+        /* Get UTC time in ms */
         list($msecs, $uts) = explode(' ', microtime());
         return floor(($uts + $msecs) * 1000);
     }
 
     public static function getDynamicSessionSignature($glt_cookie, $timeoutInSeconds, $secret)
     {
-        // cookie format:
-        // <expiration time in unix time format>_BASE64(HMACSHA1(secret key, <login token>_<expiration time in unix time format>))
+        /* Cookie format:
+         * <expiration time in unix time format>_BASE64(HMACSHA1(secret key, <login token>_<expiration time in unix time format>)) */
         $expirationTimeUnixMS = (SigUtils::currentTimeMillis() / 1000) + $timeoutInSeconds;
         $expirationTimeUnix = (string)floor($expirationTimeUnixMS);
         $unsignedExpString = $glt_cookie . "_" . $expirationTimeUnix;
