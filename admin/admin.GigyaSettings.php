@@ -195,7 +195,7 @@ class GigyaSettings {
 	public static function _setSecret() {
 		if ( empty($_POST['gigya_global_settings']['api_secret']) )
 		{
-			$options = static::_setSiteOptions();
+			$options = static::_getSiteOptions();
 			$_POST['gigya_global_settings']['api_secret'] = $options['api_secret'];
 		}
 		else
@@ -208,7 +208,7 @@ class GigyaSettings {
      * Set the posted api related values to the old (from DB) values
      */
     public static function _keepOldApiValues() {
-        $options = static::_setSiteOptions();
+        $options = static::_getSiteOptions();
         $_POST['gigya_global_settings']['api_key'] = $options['api_key'];
         $_POST['gigya_global_settings']['user_key'] = $options['user_key'];
         $_POST['gigya_global_settings']['api_secret'] = $options['api_secret'];
@@ -218,7 +218,7 @@ class GigyaSettings {
     /**
      * If multisite, get options from main site, else from current site
      */
-    public static function _setSiteOptions() {
+    public static function _getSiteOptions() {
         if ( is_multisite() ) {
             $options = get_blog_option( 1, GIGYA__SETTINGS_GLOBAL );
         } else {
