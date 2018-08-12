@@ -190,7 +190,7 @@ class GigyaSettings {
 
 	/**
 	 * Set the POSTed secret key.
-	 * If its not submitted, take it from DB.
+	 * If it's not submitted, take it from DB.
 	 */
 	public static function _setSecret() {
 		if ( empty($_POST['gigya_global_settings']['api_secret']) )
@@ -220,7 +220,7 @@ class GigyaSettings {
      */
     public static function _getSiteOptions() {
         if ( is_multisite() ) {
-            $options = get_blog_option( 1, GIGYA__SETTINGS_GLOBAL );
+			$options = get_blog_option( get_current_blog_id(), GIGYA__SETTINGS_GLOBAL );
         } else {
             $options = get_option( GIGYA__SETTINGS_GLOBAL );
         }
