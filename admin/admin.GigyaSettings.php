@@ -208,11 +208,12 @@ class GigyaSettings {
      * Set the posted api related values to the old (from DB) values
      */
     public static function _keepOldApiValues() {
-        $options = static::_getSiteOptions();
+		$options = static::_getSiteOptions();
         $_POST['gigya_global_settings']['api_key'] = $options['api_key'];
         $_POST['gigya_global_settings']['user_key'] = $options['user_key'];
         $_POST['gigya_global_settings']['api_secret'] = $options['api_secret'];
         $_POST['gigya_global_settings']['data_center'] = $options['data_center'];
+        $_POST['gigya_global_settings']['sub_site_settings_saved'] = $options['sub_site_settings_saved'];
     }
 
     /**
