@@ -84,23 +84,19 @@ class GigyaAction
 		add_shortcode( 'gigya-social-login', array( $shortcodes_class, 'gigyaSocialLoginScode' ) );
 
 		$comments_switch = get_option( GIGYA__SETTINGS_COMMENTS );
-		if ( ( count( $comments_switch ) > 0 ) and ( $comments_switch['on'] == true or $comments_switch['on'] == '1' ) )
-		{
+		if ( ! empty( $comments_switch ) and ( count( $comments_switch ) > 0 ) and ( $comments_switch['on'] == true or $comments_switch['on'] == '1' ) ) {
 			add_shortcode( 'gigya-comments', array( $shortcodes_class, 'gigyaCommentsScode' ) );
 		}
 		$reaction_switch = get_option( GIGYA__SETTINGS_REACTIONS );
-		if ( ( count( $reaction_switch ) > 0 ) and ( $reaction_switch['on'] == true or $reaction_switch['on'] == '1' ) )
-		{
+		if ( ! empty( $reaction_switch ) and ( count( $reaction_switch ) > 0 ) and ( $reaction_switch['on'] == true or $reaction_switch['on'] == '1' ) ) {
 			add_shortcode( 'gigya-reactions', array( $shortcodes_class, 'gigyaReactionsScode' ) );
 		}
 		$share_switch = get_option( GIGYA__SETTINGS_SHARE );
-		if ( ( count( $share_switch ) > 0 ) and ( $share_switch['on'] == true or $share_switch['on'] == '1' ) )
-		{
+		if ( ! empty( $share_switch ) and ( count( $share_switch ) > 0 ) and ( $share_switch['on'] == true or $share_switch['on'] == '1' ) ) {
 			add_shortcode( 'gigya-share-bar', array( $shortcodes_class, 'gigyaShareBarScode' ) );
 		}
 		$gm_switch = get_option( GIGYA__SETTINGS_GM );
-		if ( ( count( $gm_switch ) > 0 ) and ( $gm_switch['on'] == true or $gm_switch['on'] == '1' ) )
-		{
+		if ( ! empty( $gm_switch ) and ( count( $gm_switch ) > 0 ) and ( $gm_switch['on'] == true or $gm_switch['on'] == '1' ) ) {
 			add_shortcode( 'gigya-gm-achievements', array( $shortcodes_class, 'gigyaGmScode' ) );
 			add_shortcode( 'gigya-gm-challenge-status', array( $shortcodes_class, 'gigyaGmScode' ) );
 			add_shortcode( 'gigya-gm-leaderboard', array( $shortcodes_class, 'gigyaGmScode' ) );
