@@ -10,6 +10,8 @@ function globalSettingsForm() {
 	$form['api_key'] = array(
 			'type'  => 'text',
 			'label' => __( 'Gigya API Key' ),
+			'size' => 64,
+			'style' => 'font-family: monospace',
 			'value' => _gigParam( $values, 'api_key', '' )
 	);
 
@@ -31,6 +33,7 @@ function globalSettingsForm() {
 			'type'  => 'customText',
 			'label' => __( 'Gigya Secret Key' ),
 			'class' => 'secret_key_placeholder',
+			'size' => 100,
 			'id' => 'secret_key_placeholder'
 		);
 	}

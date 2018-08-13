@@ -43,12 +43,12 @@ class GigyaRaasSet {
 			'canEditUsers'            => current_user_can( 'edit_users' ),
 
 			// Screen set.
-			'raasWebScreen'           => _gigParam( $this->login_options, 'raasWebScreen', 'Default-RegistrationLogin' ),
-			'raasMobileScreen'        => _gigParam( $this->login_options, 'raasMobileScreen', 'DefaultMobile-RegistrationLogin' ),
-			'raasLoginScreen'         => _gigParam( $this->login_options, 'raasLoginScreen', 'gigya-login-screen' ),
-			'raasRegisterScreen'      => _gigParam( $this->login_options, 'raasRegisterScreen', 'gigya-register-screen' ),
-			'raasProfileWebScreen'    => _gigParam( $this->login_options, 'raasProfileWebScreen', 'Default-ProfileUpdate' ),
-			'raasProfileMobileScreen' => _gigParam( $this->login_options, 'raasProfileMobileScreen', 'DefaultMobile-ProfileUpdate' ),
+			'raasWebScreen'           => _gigParam($this->login_options, 'raasWebScreen', 'Default-RegistrationLogin'),
+			'raasMobileScreen'        => _gigParam($this->login_options, 'raasMobileScreen', 'DefaultMobile-RegistrationLogin'),
+			'raasLoginScreen'         => _gigParam($this->login_options, 'raasLoginScreen', 'gigya-login-screen'),
+			'raasRegisterScreen'      => _gigParam($this->login_options, 'raasRegisterScreen', 'gigya-register-screen'),
+			'raasProfileWebScreen'    => _gigParam($this->login_options, 'raasProfileWebScreen', 'Default-ProfileUpdate'),
+			'raasProfileMobileScreen' => _gigParam($this->login_options, 'raasProfileMobileScreen', 'DefaultMobile-ProfileUpdate'),
 
 			// Override links.
 			'raasOverrideLinks'       => _gigParamDefaultOn( $this->login_options, 'raasOverrideLinks' ),

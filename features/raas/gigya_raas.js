@@ -31,6 +31,7 @@
 		 * @property    raasRegisterDiv
 		 * @property    raasRegisterScreen
 		 * @property    raasWebScreen
+		 * @property    raasLang
 		 */
 
 		var raasLogout = function () {
@@ -99,6 +100,14 @@
 
 // --------------------------------------------------------------------
 
+		var onScreenSetErrorHandler = function (eventObj) {
+			console.log('Error when loading Gigya screenset:');
+			console.log(eventObj.response);
+		};
+
+		/**
+		 * Creates login/register screen set that goes on top of, or overrides, WP's default login screen. Also registers relevant event handlers for RaaS to work.
+		 */
 		var raasInit = function () {
 			/* Override default WP links to use Gigya's RaaS behavior */
 			if (gigyaRaasParams.raasOverrideLinks > 0) {
@@ -122,12 +131,15 @@
 			 * if (location.search.indexOf('admin=true') === -1 && !admin) {
 			 */
 			if (location.search.indexOf('admin=true') === -1) {
+				/* Login screens */
 				gigya.accounts.showScreenSet({
 					screenSet: gigyaRaasParams.raasWebScreen,
 					mobileScreenSet: gigyaRaasParams.raasMobileScreen,
 					startScreen: gigyaRaasParams.raasLoginScreen,
-					containerID: gigyaRaasParams.raasLoginDiv
+					containerID: gigyaRaasParams.raasLoginDiv,
+					onError: onScreenSetErrorHandler
 				});
+				/* Reg screens */
 				gigya.accounts.showScreenSet({
 					screenSet: gigyaRaasParams.raasWebScreen,
 					mobileScreenSet: gigyaRaasParams.raasMobileScreen,
@@ -135,7 +147,8 @@
 					containerID: gigyaRaasParams.raasRegisterDiv
 				});
 
-				if (gigyaRaasParams.canEditUsers !== 1) {
+				/* Profile screens */
+				if (parseInt(gigyaRaasParams.canEditUsers) !== 1) {
 					gigya.accounts.showScreenSet({
 						screenSet: gigyaRaasParams.raasProfileWebScreen,
 						mobileScreenSet: gigyaRaasParams.raasProfileMobileScreen,
@@ -154,7 +167,7 @@
 
 			/* Attach event handlers */
 			if (typeof GigyaWp.regEvents === 'undefined') {
-				/* Raas Login */
+				/* RaaS Login */
 				gigya.accounts.addEventHandlers({
 					onLogin: raasLogin,
 					onLogout: GigyaWp.logout
