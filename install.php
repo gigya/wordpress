@@ -65,10 +65,6 @@ class GigyaInstall {
 			add_option( GIGYA__SETTINGS_GM, array(), '', 'no' );
 		}
 
-//		if ( empty ( $this->feed_options ) ) {
-//			add_option( GIGYA__SETTINGS_FEED, array(), '', 'no' );
-//		}
-
 		if ( empty ( $this->log ) ) {
 			add_option( 'gigya_log', array(), '', 'no' );
 		}

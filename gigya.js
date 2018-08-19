@@ -59,9 +59,9 @@ var GigyaWp = GigyaWp || {};
 			redirectTarget = window.location.href;
 		}
 
-		/* This part relies on a global variable called sendSetSSOToken, which is not part of the connector's code base. It needs to be set in an ourside script.
+		/* This part relies on a global variable called sendSetSSOToken, which is not part of the connector's code base. It needs to be set in an outside script.
 		 * This was done in order to allow to add logic to this variable from the outside, ideally in Gigya's global configuration, which can be set in the connector's UI. */
-		if (typeof sendSetSSOToken === 'undefined')
+		if (typeof sendSetSSOToken === 'undefined' || sendSetSSOToken === false)
 			location.replace(redirectTarget);
 		else if (sendSetSSOToken === true)
 			gigya.setSSOToken({redirectURL: redirectTarget});

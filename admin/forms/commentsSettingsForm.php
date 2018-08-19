@@ -51,17 +51,20 @@ function commentsSettingsForm() {
 			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://developers.gigya.com/display/GD/comments.showCommentsUI+JS" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
 	);
 
-    // use this field in multisite to flag when sub site settings are saved locally for site
-    if ( is_multisite() && !$values['sub_site_settings_saved'] ) {
-        $form['sub_site_settings_saved'] = array(
-            'type' => 'hidden',
-            'id' => 'sub_site_settings_saved',
-            'value' => 1,
-            'msg' => 1,
-            'msg_txt' => 'Settings are set to match the main site. once saved they will become independent',
-            'class' => 'gigya-raas-warn'
-        );
-    }
+	/* Use this field in multisite to flag when sub site settings are saved locally for site */
+	if ( is_multisite() ) {
+		$form['sub_site_settings_saved'] = array(
+			'type'  => 'hidden',
+			'id'    => 'sub_site_settings_saved',
+			'value' => 1,
+			'class' => 'gigya-raas-warn'
+		);
+
+		if ( empty( $values['sub_site_settings_saved'] ) ) {
+			$form['sub_site_settings_saved']['msg']     = 1;
+			$form['sub_site_settings_saved']['msg_txt'] = __( 'Settings are set to match the main site. Once saved they will become independent' );
+		}
+	}
 
 	echo _gigya_form_render( $form, GIGYA__SETTINGS_COMMENTS );
 }

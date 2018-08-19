@@ -3,7 +3,7 @@
  * Plugin Name: Gigya - Make Your Site Social
  * Plugin URI: http://gigya.com
  * Description: Allows sites to utilize the Gigya API for authentication and social network updates.
- * Version: 5.7.4
+ * Version: 5.7.6
  * Author: Gigya
  * Author URI: http://gigya.com
  * License: GPL2+
@@ -15,8 +15,8 @@
  * Global constants.
  */
 define( 'GIGYA__MINIMUM_WP_VERSION', '4.2' );
-define( 'GIGYA__MINIMUM_PHP_VERSION', '5.4' );
-define( 'GIGYA__VERSION', '5.7.5' );
+define( 'GIGYA__MINIMUM_PHP_VERSION', '5.6' );
+define( 'GIGYA__VERSION', '5.7.6' );
 define( 'GIGYA__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GIGYA__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'GIGYA__CDN_PROTOCOL', ! empty( $_SERVER['HTTPS'] ) ? 'https://cdns' : 'http://cdn' );
@@ -45,8 +45,8 @@ define( 'GIGYA__SESSION_FOREVER', -2 );
 /**
  * Register activation hook
  */
-register_activation_hook( __FILE__, 'registerActivationHook' );
-function registerActivationHook() {
+register_activation_hook( __FILE__, 'gigyaActivationHook' );
+function gigyaActivationHook() {
 	require_once GIGYA__PLUGIN_DIR . 'install.php';
 	$install = new GigyaInstall();
 	$install->init();
@@ -573,24 +573,26 @@ function _underscore_to_camelcase( $str ) {
 /**
  * Check if this is Multi site setup,
  *  if multi site, check if settings were already saved once in the sub site
- *   if so set default values to main site values
- *   Once settings are saved on sub site once, they are independent from main site.
+ *  if so set default values to main site values
+ *  Once settings are saved on sub site once, they are independent from main site.
  *
  * @param string $settings_section
+ *
  * @return array $values
  */
 function _getGigyaSettingsValues( $settings_section ) {
-    // get section settings for the site
-    $section_values = get_option( $settings_section );
-    if (is_multisite()) {
-        $sub_site_settings_saved = $section_values['sub_site_settings_saved'];
-        if ($sub_site_settings_saved == TRUE) {
-            $values = $section_values;
-        } else {
-            $values = get_blog_option( 1, GIGYA__SETTINGS_GLOBAL );
-        }
-    } else { // this is a standard installation, so just use site values
-        $values = $section_values;
-    }
-    return $values;
+	/* Get section settings for the site */
+	$section_values = get_option( $settings_section );
+	if ( is_multisite() ) {
+		$sub_site_settings_saved = ( !empty($section_values['sub_site_settings_saved']) ) ? $section_values['sub_site_settings_saved'] : false;
+		if ( $sub_site_settings_saved == true ) {
+			$values = $section_values;
+		} else {
+			$values = get_blog_option( 1, GIGYA__SETTINGS_GLOBAL );
+		}
+	} else { /* This is a standard installation, so just use site values */
+		$values = $section_values;
+	}
+
+	return $values;
 }
