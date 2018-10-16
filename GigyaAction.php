@@ -362,6 +362,10 @@ class GigyaAction
 			$gigyaCMS->notifyLogin( $account->ID );
 		}
 
+		if ( empty( $_POST['action'] ) and ! empty( $_POST['data']['action'] ) ) {
+			$_POST['action'] = $_POST['data']['action'];
+		}
+
 		/* RaaS Login */
 		if ( $_POST['action'] === 'gigya_raas' )
 		{

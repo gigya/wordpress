@@ -26,6 +26,9 @@ class GSResponse
 	private $method = null;
 	private $traceLog = null;
 
+	/**
+	 * @throws Exception
+	 */
 	public static function init() {
 		self::$errorMsgDic = new GSObject();
 		self::$errorMsgDic->put(400002, "Required parameter is missing");
@@ -93,7 +96,18 @@ class GSResponse
 		return $this->data->getArray($key);
 	}
 
-	/* C'tor */
+	/**
+	 * GSResponse constructor.
+	 *
+	 * @param $method
+	 * @param null $responseText
+	 * @param null $params
+	 * @param null $errorCode
+	 * @param null $errorMessage
+	 * @param null $traceLog
+	 *
+	 * @throws Exception
+	 */
 	public function __construct($method, $responseText = null, $params = null, $errorCode = null, $errorMessage = null, $traceLog = null) {
 		$this->data = new GSObject();
 		$this->traceLog = $traceLog;

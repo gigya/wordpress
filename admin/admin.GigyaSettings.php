@@ -174,8 +174,9 @@ class GigyaSettings {
 				{
 					$gigyaErrMsg = $res->getErrorMessage();
 					$errorsLink = "<a href='https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST' target='_blank' rel='noopener noreferrer'>Response_Codes_and_Errors</a>";
-					$message = "Gigya API error: {$gigyaErrCode} - {$gigyaErrMsg}. For more information please refer to {$errorsLink}";
-					add_settings_error( 'gigya_global_settings', 'api_validate', $message, 'error' );
+					$message = "Gigya API error: {$gigyaErrCode} - {$gigyaErrMsg}.";
+					add_settings_error( 'gigya_global_settings', 'api_validate', $message . " For more information please refer to {$errorsLink}", 'error' );
+					error_log('Error updating Gigya settings: ' . $message . ' Call ID: '.$res->getString("callId", "N/A"));
 
 					/* Prevent updating values */
 					static::_keepOldApiValues();
