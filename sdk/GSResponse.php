@@ -100,11 +100,11 @@ class GSResponse
 	 * GSResponse constructor.
 	 *
 	 * @param $method
-	 * @param null $responseText
-	 * @param null $params
-	 * @param null $errorCode
-	 * @param null $errorMessage
-	 * @param null $traceLog
+	 * @param $responseText
+	 * @param $params
+	 * @param $errorCode
+	 * @param $errorMessage
+	 * @param $traceLog
 	 *
 	 * @throws Exception
 	 */
