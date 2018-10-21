@@ -100,9 +100,14 @@
 
 // --------------------------------------------------------------------
 
+		/**
+		 * @param eventObj
+		 * @param eventObj.errorCode
+		 * @param eventObj.errorMessage
+		 */
 		var onScreenSetErrorHandler = function (eventObj) {
-			console.log('Error when loading Gigya screenset:');
-			console.log(eventObj.response);
+			console.log('Error when loading Gigya screenset: ');
+			console.log(eventObj.errorCode + " – " + eventObj.errorMessage);
 		};
 
 		/**
@@ -194,10 +199,11 @@
 
 		/**
 		 * On RaaS login with Gigya behavior.
-		 * @param    response                object
+		 * @param    response                 object
 		 * @param    response.provider        string    Login service provider, such as "googleplus" etc., or native RaaS ("")
-		 * @param    response.UID            string    User's UID
+		 * @param    response.UID             string    User's UID
 		 * @param    response.UIDSignature    string    User's API signature which is calculated using the secret key and other parameters
+		 * @param    response.expires_in      int       When the fixed session in an SSO group expires (only works on Site 2 and further in an SSO group with fixed session)
 		 */
 		var raasLogin = function (response) {
 			var exp_timestamp = 0;
@@ -274,7 +280,6 @@
 // --------------------------------------------------------------------
 
 		raasInit();
-
 	});
 })(jQuery);
 
