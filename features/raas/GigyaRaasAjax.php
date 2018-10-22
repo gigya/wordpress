@@ -29,7 +29,7 @@ class GigyaRaasAjax {
 		$data = $_POST['data'];
 
 		/* Trap for login users */
-		if ( is_user_logged_in() and ( is_multisite() and ! is_main_site() ) ) {
+		if ( is_user_logged_in() and ( ! is_multisite() ) ) {
 			$prm = array( 'msg' => __( 'You are already logged in' ) );
 			wp_send_json_error( $prm );
 		}
