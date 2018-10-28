@@ -21,13 +21,15 @@ class GigyaRaasAjax {
 
 	/**
 	 * This is Gigya login AJAX callback
+	 *
+	 * @throws Exception In cases where getAccountInfo returns an error
 	 */
 	public function init() {
 		/* Get the data from the client (AJAX). */
 		$data = $_POST['data'];
 
 		/* Trap for login users */
-		if ( is_user_logged_in() ) {
+		if ( is_user_logged_in() and ( ! is_multisite() ) ) {
 			$prm = array( 'msg' => __( 'You are already logged in' ) );
 			wp_send_json_error( $prm );
 		}
@@ -36,12 +38,9 @@ class GigyaRaasAjax {
 		$gigya_api_helper    = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__API_SECRET, GIGYA__API_DOMAIN );
 		$raas_validate_error = array( 'msg' => __( 'RaaS: There is a problem validating your user' ) );
 		$is_sig_validate     = false;
-		try
-		{
+		try {
 			$is_sig_validate = $gigya_api_helper->validateUid( $data['UID'], $data['UIDSignature'], $data['signatureTimestamp'], 'raas' );
-		}
-		catch ( Exception $e )
-		{
+		} catch ( Exception $e ) {
 			wp_send_json_error( $raas_validate_error );
 		}
 
@@ -77,22 +76,19 @@ class GigyaRaasAjax {
 		{
 			$is_primary_user = $gigyaCMS->isPrimaryUser( $this->gigya_account['loginIDs']['emails'], strtolower( $wp_user->data->user_email ) );
 
-			// If this user is not the primary user account in Gigya
-			// we delete the account (we don't want two different users with the same email)
-			if ( !$is_primary_user ) {
-				$msg =  __( 'We found your email in our system.<br />Please use your existing account to login to the site, or create a new account using a different email address.' );
+			/*	If this user is not the primary user account in Gigya
+				we delete the account (we don't want two different users with the same email) */
+			if ( ! $is_primary_user ) {
+				$msg = __( 'We found your email in our system.<br />Please use your existing account to login to the site, or create a new account using a different email address.' );
 
 				$prm = array( 'msg' => $msg );
 				wp_send_json_error( $prm );
 			}
 
 			/* Log this user in */
-			try
-			{
+			try {
 				$this->login( $wp_user );
-			}
-			catch ( Exception $e )
-			{
+			} catch ( Exception $e ) {
 				$prm = array( 'msg' => __( 'Unable to log in.' ) );
 				wp_send_json_error( $prm );
 			}
@@ -128,10 +124,12 @@ class GigyaRaasAjax {
 	}
 
 	/**
-	 * Register new WP user from Gigya user.
+	 * Register new WP user from Gigya user
+	 *
+	 * @throws Exception
 	 */
 	private function register() {
-		// Register a new user to WP with params from Gigya.
+		/* Register a new user to WP with params from Gigya */
 		if ( isset($this->gigya_account['profile']['username']) ) {
 			$display_name = $this->gigya_account['profile']['username'];
 			$name = sanitize_user($display_name, true);
@@ -141,9 +139,9 @@ class GigyaRaasAjax {
 		}
 		$email = $this->gigya_account['profile']['email'];
 
-		// If the name of the new user already exists in the system,
-		// WP will reject the registration and return an error. to prevent this
-		// we attach an extra value to the name to make it unique.
+		/*	If the name of the new user already exists in the system,
+			WP will reject the registration and return an error. to prevent this
+			we attach an extra value to the name to make it unique. */
 		$username_exist = username_exists( $name );
 		if ( ! empty( $username_exist ) ) {
 			$name .= uniqid( '-' );
@@ -163,7 +161,7 @@ class GigyaRaasAjax {
 				}
 			}
 
-			// Return JSON to client.
+			/* Return JSON to client */
 			wp_send_json_error( array( 'msg' => $msg ) );
 		}
 		wp_update_user((object)array('ID' => $user_id, 'display_name' => $display_name)); /* If non-Latin characters are used in the first/last name, it will still use the correct display name */
@@ -182,6 +180,13 @@ class GigyaRaasAjax {
 		}
 	}
 
+	/**
+	 * @param $data
+	 *
+	 * @throws GSApiException
+	 * @throws GSException
+	 * @throws Exception
+	 */
 	public function updateProfile( $data ) {
 		if ( is_user_logged_in() ) {
 			$is_sig_validate = SigUtils::validateUserSignature(

@@ -1,14 +1,13 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: Yaniv Aran-Shamir
- * Date: 1/4/16
- * Time: 4:59 PM
- */
-
 class GigyaApiRequest extends GSRequest
 {
+	/**
+	 * @param null $timeout
+	 *
+	 * @return GSResponse
+	 * @throws GSApiException
+	 */
 	public function send($timeout = null) {
 		$res = parent::send($timeout);
 		if ($res->getErrorCode() == 0)
@@ -21,12 +20,13 @@ class GigyaApiRequest extends GSRequest
 	/**
 	 * GSRequestNg constructor.
 	 *
-	 * @param string   $apiKey
-	 * @param string   $secret
-	 * @param string   $apiMethod
+	 * @param string $apiKey
+	 * @param string $secret
+	 * @param string $apiMethod
 	 * @param GSObject $params
-	 * @param bool     $useHTTPS
-	 * @param null     $userKey
+	 * @param string $dataCenter
+	 * @param bool $useHTTPS
+	 * @param null $userKey
 	 */
 	public function __construct($apiKey, $secret, $apiMethod, $params, $dataCenter, $useHTTPS = true, $userKey = null) {
 		parent::__construct($apiKey, $secret, $apiMethod, $params, $useHTTPS, $userKey);

@@ -153,7 +153,7 @@ For question about installations or configuration, please contact your account m
 * Fixed issue with logout
 
 = 5.7.6 =
-* Fixed multiple issue with plugin configuration on multi-site (network) setups
+* Fixed multiple issues with plugin configuration on multi-site (network) setups
 * Fixed edit user profile administrator page redirecting to the admin's own profile edit page
 
 == FAQ ==

@@ -165,25 +165,28 @@ class GigyaSettings {
 		elseif ( isset( $_POST['gigya_global_settings'] ) )
 		{
 			$cms = new gigyaCMS();
-			static::_setSecret();
-			$res = $cms->apiValidate( $_POST['gigya_global_settings']['api_key'], $_POST['gigya_global_settings']['user_key'], GigyaApiHelper::decrypt($_POST['gigya_global_settings']['api_secret'], SECURE_AUTH_KEY), $_POST['gigya_global_settings']['data_center'] );
-			if (!empty($res))
+			if (static::_setSecret())
 			{
-				$gigyaErrCode = $res->getErrorCode();
-				if ( $gigyaErrCode > 0 )
+				$res = $cms->apiValidate( $_POST['gigya_global_settings']['api_key'], $_POST['gigya_global_settings']['user_key'], GigyaApiHelper::decrypt( $_POST['gigya_global_settings']['api_secret'], SECURE_AUTH_KEY ), $_POST['gigya_global_settings']['data_center'] );
+				if ( ! empty( $res ) )
 				{
-					$gigyaErrMsg = $res->getErrorMessage();
-					$errorsLink = "<a href='https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST' target='_blank' rel='noopener noreferrer'>Response_Codes_and_Errors</a>";
-					$message = "Gigya API error: {$gigyaErrCode} - {$gigyaErrMsg}. For more information please refer to {$errorsLink}";
-					add_settings_error( 'gigya_global_settings', 'api_validate', $message, 'error' );
+					$gigyaErrCode = $res->getErrorCode();
+					if ( $gigyaErrCode > 0 )
+					{
+						$gigyaErrMsg = $res->getErrorMessage();
+						$errorsLink = "<a href='https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST' target='_blank' rel='noopener noreferrer'>Response_Codes_and_Errors</a>";
+						$message = "Gigya API error: {$gigyaErrCode} - {$gigyaErrMsg}.";
+						add_settings_error( 'gigya_global_settings', 'api_validate', __( $message . " For more information please refer to {$errorsLink}", 'error' ) );
+						error_log( 'Error updating Gigya settings: ' . $message . ' Call ID: ' . $res->getString( "callId", "N/A" ) );
 
-					/* Prevent updating values */
-					static::_keepOldApiValues();
+						/* Prevent updating values */
+						static::_keepOldApiValues();
+					}
+				} else {
+					add_settings_error( 'gigya_global_settings', 'api_validate', __( 'Error sending request to Gigya' ), 'error' );
 				}
-			}
-			else
-			{
-				add_settings_error( 'gigya_global_settings', 'api_validate', 'Error sending request to gigya', 'error' );
+			} else {
+				add_settings_error( 'gigya_global_settings', 'api_validate', __( 'Error retrieving existing secret key from the database. This is normal if you have a multisite setup. Please re-enter the secret key.' ), 'error' );
 			}
 		}
 	}
@@ -196,12 +199,17 @@ class GigyaSettings {
 		if ( empty($_POST['gigya_global_settings']['api_secret']) )
 		{
 			$options = static::_getSiteOptions();
+			if ($options === false)
+				return false;
+
 			$_POST['gigya_global_settings']['api_secret'] = $options['api_secret'];
 		}
 		else
 		{
 			$_POST['gigya_global_settings']['api_secret'] = GigyaApiHelper::encrypt($_POST['gigya_global_settings']['api_secret'], SECURE_AUTH_KEY);
 		}
+
+		return true;
 	}
 
     /**
