@@ -167,8 +167,8 @@ class GigyaSettings {
 			$cms = new gigyaCMS();
 			if (static::_setSecret())
 			{
-				$res = $cms->apiValidate( $_POST['gigya_global_settings']['api_key'], $_POST['gigya_global_settings']['user_key'], GigyaApiHelper::decrypt($_POST['gigya_global_settings']['api_secret'], SECURE_AUTH_KEY), $_POST['gigya_global_settings']['data_center'] );
-				if (!empty($res))
+				$res = $cms->apiValidate( $_POST['gigya_global_settings']['api_key'], $_POST['gigya_global_settings']['user_key'], GigyaApiHelper::decrypt( $_POST['gigya_global_settings']['api_secret'], SECURE_AUTH_KEY ), $_POST['gigya_global_settings']['data_center'] );
+				if ( ! empty( $res ) )
 				{
 					$gigyaErrCode = $res->getErrorCode();
 					if ( $gigyaErrCode > 0 )
