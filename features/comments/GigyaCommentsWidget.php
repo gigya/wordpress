@@ -103,7 +103,7 @@ class GigyaComments_Widget extends WP_Widget {
 				'type'  => 'text',
 				'label' => __( 'Category ID' ),
 				'value' => esc_attr( _gigParam( $instance, 'categoryID', '' ) ),
-				'desc'  => __( "The category ID on 'Comments category name' at Gigya's settings" ) . ' ' . '<a href=https://platform.gigya.com/Site/partners/Settings.aspx#cmd=Settings.CommentsSetup>' . __( 'here' ) . '</a>',
+				'desc'  => __( "The category ID on 'Comments category name' at Gigya's settings" ) . ' ' . '<a href=https://console.gigya.com/Site/partners/Settings.aspx#cmd=Settings.CommentsSetup>' . __( 'here' ) . '</a>',
 				'class' => 'size',
 				'name'  => $this->get_field_name( 'categoryID' )
 
