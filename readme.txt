@@ -4,7 +4,7 @@ Contributors: gigya.com, konforti, luciodiri
 Tags: CIAM, CIM, Registration, Social Login, Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, Gigya, Social Infrastructure, feed
 Requires at least: 4.2
 Tested up to: 4.9
-Stable tag: 5.7.6
+Stable tag: 5.7.7
 License: GPLv2 or later
 
 Integrate your WordPress site with Gigya
@@ -42,7 +42,7 @@ You can read more about the installation steps and other advanced configuration 
 
 1.	After downloading the Gigya plug-in, unpack and upload the folder to the the /wp-content/plugins/ directory on your blog.
 2.	Go to the Plug-in tab in the WordPress administration panel, find the Gigya plug-in on the list and click Activate.
-3.	Proceed to the plug-in settings page ("Gigya" item on the left sidebar) to configure your plug-in. The plug-in needs your API information in the Gigya settings menu, so please grab your API key, and secret code from the <a href="https://platform.gigya.com/" title="Gigya">Gigya's website</a>.
+3.	Proceed to the plug-in settings page ("Gigya" item on the left sidebar) to configure your plug-in. The plug-in needs your API information in the Gigya settings menu, so please grab your API key, and secret code from the <a href="https://console.gigya.com/" title="Gigya">Gigya's website</a>.
 
 For question about installations or configuration, please contact your account manager or contact our support via the support page on the Gigya site.
 
@@ -155,6 +155,10 @@ For question about installations or configuration, please contact your account m
 = 5.7.6 =
 * Fixed multiple issues with plugin configuration on multi-site (network) setups
 * Fixed edit user profile administrator page redirecting to the admin's own profile edit page
+
+= 5.7.7 =
+* Improved error handling on multisite
+* Fixed an issue with login to a child site on multisite setups
 
 == FAQ ==
 

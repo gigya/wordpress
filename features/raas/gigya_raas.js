@@ -1,6 +1,6 @@
 (function ($) {
 
-	$(document).ready(function () {
+	$(function () {
 
 // --------------------------------------------------------------------
 
@@ -144,6 +144,7 @@
 					containerID: gigyaRaasParams.raasLoginDiv,
 					onError: onScreenSetErrorHandler
 				});
+
 				/* Reg screens */
 				gigya.accounts.showScreenSet({
 					screenSet: gigyaRaasParams.raasWebScreen,
@@ -238,20 +239,20 @@
 			req.done(function (res) {
 				if (res.success) {
 					if (typeof response.expires_in !== 'undefined') {
-                        var reqFixedSession = $.ajax({
-                            url: gigyaParams.ajaxurl,
-                            type: 'POST',
-                            dataType: 'json',
-                            data: {
-                                action: 'fixed_session_cookie',
-                                expiration: exp_timestamp
-                            }
-                        });
-                        reqFixedSession.done(function(responseFixedSession) {
-                            GigyaWp.redirect();
+						var reqFixedSession = $.ajax({
+							url: gigyaParams.ajaxurl,
+							type: 'POST',
+							dataType: 'json',
+							data: {
+								action: 'fixed_session_cookie',
+								expiration: exp_timestamp
+							}
+						});
+						reqFixedSession.done(function (responseFixedSession) {
+							GigyaWp.redirect();
 						})
 					} else {
-                        GigyaWp.redirect();
+						GigyaWp.redirect();
 					}
 				}
 				else {
