@@ -26,11 +26,12 @@ class GSResponse
 	private $method = null;
 	private $traceLog = null;
 
-	/**
-	 * @throws Exception
-	 */
 	public static function init() {
-		self::$errorMsgDic = new GSObject();
+		try {
+			self::$errorMsgDic = new GSObject();
+		} catch (Exception $e) {
+			/* An exception can only be thrown if the constructor gets JSON input, which is not the case here. */
+		}
 		self::$errorMsgDic->put(400002, "Required parameter is missing");
 		self::$errorMsgDic->put(400003, "You must set a certificate for HTTPS requests");
 		self::$errorMsgDic->put(500000, "General server error");
@@ -40,6 +41,10 @@ class GSResponse
 		return $this->errorCode;
 	}
 
+	/**
+	 * @return string
+	 * @throws GSKeyNotFoundException
+	 */
 	public function getErrorMessage() {
 		if (isset($this->errorMessage))
 			return $this->errorMessage;
@@ -61,37 +66,78 @@ class GSResponse
 		return $this->data;
 	}
 
-	/* GET BOOLEAN */
+	/**
+	 * Get Boolean
+	 *
+	 * @param $key
+	 * @param string $defaultValue
+	 *
+	 * @return bool
+	 * @throws GSKeyNotFoundException
+	 */
 	public function getBool($key, $defaultValue = GSObject::DEFAULT_VALUE) {
 		return $this->data->getBool($key, $defaultValue);
 	}
 
-	/* GET INTEGER */
+	/**
+	 * Get Integer
+	 *
+	 * @param $key
+	 * @param string $defaultValue
+	 *
+	 * @return int
+	 * @throws GSKeyNotFoundException
+	 */
 	public function getInt($key, $defaultValue = GSObject::DEFAULT_VALUE) {
 		return $this->data->getInt($key, $defaultValue);
 	}
 
-	/* GET LONG */
-	public function getLong($key, $defaultValue = GSObject::DEFAULT_VALUE) {
-		return $this->data->getLong($key, $defaultValue);
+	/**
+	 * Get Float
+	 *
+	 * @param $key
+	 * @param string $defaultValue
+	 *
+	 * @return float
+	 * @throws GSKeyNotFoundException
+	 */
+	public function getFloat($key, $defaultValue = GSObject::DEFAULT_VALUE) {
+		return $this->data->getFloat($key, $defaultValue);
 	}
 
-	/* GET INTEGER */
-	public function getDouble($key, $defaultValue = GSObject::DEFAULT_VALUE) {
-		return $this->data->getDouble($key, $defaultValue);
-	}
-
-	/* GET STRING */
+	/**
+	 * Get String
+	 *
+	 * @param $key
+	 * @param string $defaultValue
+	 *
+	 * @return string
+	 * @throws GSKeyNotFoundException
+	 */
 	public function getString($key, $defaultValue = GSObject::DEFAULT_VALUE) {
 		return $this->data->getString($key, $defaultValue);
 	}
 
-	/* GET GSOBJECT */
+	/**
+	 * Get GSObject
+	 *
+	 * @param $key
+	 *
+	 * @return object
+	 * @throws GSKeyNotFoundException
+	 */
 	public function getObject($key) {
 		return $this->data->getObject($key);
 	}
 
-	/* GET GSOBJECT[] */
+	/**
+	 * Get GSObject array
+	 *
+	 * @param $key
+	 *
+	 * @return mixed
+	 * @throws GSKeyNotFoundException
+	 */
 	public function getArray($key) {
 		return $this->data->getArray($key);
 	}
@@ -166,6 +212,9 @@ class GSResponse
 		}
 	}
 
+	/**
+	 * @throws GSKeyNotFoundException
+	 */
 	private function populateClientResponseText() {
 		if ($this->params->getString("format", "json"))
 		{
@@ -177,7 +226,7 @@ class GSResponse
 				"<?xml version=\"1.0\" encoding=\"utf-8\"?>"
 			, "<" . $this->method . "Response xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"urn:com:gigya:api http://socialize-api.gigya.com/schema\" xmlns=\"urn:com:gigya:api\">"
 			, "<errorCode>" . $this->errorCode . "</errorCode>"
-			, "<errorMessage>" . $this->errorMessage . "</errorMessager>"
+			, "<errorMessage>" . $this->errorMessage . "</errorMessage>"
 			, "</" . $this->method . "Response>",
 			);
 

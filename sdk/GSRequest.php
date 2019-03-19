@@ -35,20 +35,22 @@ class GSRequest
         GSRequest::$cafile = realpath(dirname(__FILE__) . "/cacert.pem");
     }
 
-    /**
-     * Constructs a request using an apiKey and secretKey.
-     * You must provide a user ID (UID) of the tage user.
-     * Suitable for calling our old REST API
-     *
-     * @param string $apiKey
-     * @param string $secret
-     * @param string $apiMethod the api method (including namespace) to call. for example: socialize.getUserInfo
-     * If namespaces is not supplied "socialize" is assumed
-     * @param GSObject $params the request parameters
-     * @param bool $useHTTPS useHTTPS set this to true if you want to use HTTPS.
-     * @param string $userKey userKey A key of an admin user with extra permissions.
-     * If this parameter is provided, then the secretKey parameter is assumed to be the admin user's secret key and not the site's secret key.
-     */
+	/**
+	 * Constructs a request using an apiKey and secretKey.
+	 * You must provide a user ID (UID) of the tage user.
+	 * Suitable for calling our old REST API
+	 *
+	 * @param string $apiKey
+	 * @param string $secret
+	 * @param string $apiMethod the api method (including namespace) to call. for example: socialize.getUserInfo
+	 * If namespaces is not supplied "socialize" is assumed
+	 * @param GSObject $params the request parameters
+	 * @param bool $useHTTPS useHTTPS set this to true if you want to use HTTPS.
+	 * @param string $userKey userKey A key of an admin user with extra permissions.
+	 * If this parameter is provided, then the secretKey parameter is assumed to be the admin user's secret key and not the site's secret key.
+	 *
+	 * @throws Exception
+	 */
     public function __construct($apiKey, $secret, $apiMethod, $params = null, $useHTTPS = false, $userKey = null)
     {
     	if (!isset($apiMethod) || strlen($apiMethod) == 0)
@@ -130,13 +132,15 @@ class GSRequest
         $this->traceField("curlArray", $curlArray);
     }
 
-    /**
-     * Send the request synchronously
+	/**
+	 * Send the request synchronously
 	 *
-	 * @param	$timeout
+	 * @param    $timeout
 	 *
 	 * @return GSResponse
-     */
+	 *
+	 * @throws Exception
+	 */
     public function send($timeout = null)
     {
         $format = $this->params->getString("format", null);
@@ -202,7 +206,10 @@ class GSRequest
 	 * @param bool $useHTTPS
 	 * @param $timeout
 	 * @param string $userKey
+	 *
 	 * @return bool|string
+	 *
+	 * @throws Exception
 	 */
     private function sendRequest($method, $domain, $path, $params, $token, $secret, $useHTTPS = false, $timeout = null, $userKey = null)
     {
