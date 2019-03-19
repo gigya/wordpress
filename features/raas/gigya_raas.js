@@ -48,9 +48,7 @@
 				var path = $(this)[0].pathname;
 				var search = $(this)[0].search;
 				if (path.indexOf('wp-login.php') !== -1) {
-
 					switch (true) {
-
 						case (search === ''):
 							// Login page
 							gigya.accounts.showScreenSet({
@@ -137,21 +135,27 @@
 			 */
 			if (location.search.indexOf('admin=true') === -1) {
 				/* Login screens */
-				gigya.accounts.showScreenSet({
-					screenSet: gigyaRaasParams.raasWebScreen,
-					mobileScreenSet: gigyaRaasParams.raasMobileScreen,
-					startScreen: gigyaRaasParams.raasLoginScreen,
-					containerID: gigyaRaasParams.raasLoginDiv,
-					onError: onScreenSetErrorHandler
-				});
+				if ($('#' + gigyaRaasParams.raasLoginDiv).length > 0) {
+					var loginScreenSetParams = {
+						screenSet: gigyaRaasParams.raasWebScreen,
+						mobileScreenSet: gigyaRaasParams.raasMobileScreen,
+						startScreen: gigyaRaasParams.raasLoginScreen,
+						containerID: gigyaRaasParams.raasLoginDiv,
+						onError: onScreenSetErrorHandler
+					};
+					gigya.accounts.showScreenSet(loginScreenSetParams);
+				}
 
 				/* Reg screens */
-				gigya.accounts.showScreenSet({
-					screenSet: gigyaRaasParams.raasWebScreen,
-					mobileScreenSet: gigyaRaasParams.raasMobileScreen,
-					startScreen: gigyaRaasParams.raasRegisterScreen,
-					containerID: gigyaRaasParams.raasRegisterDiv
-				});
+				if ($('#' + gigyaRaasParams.raasRegisterDiv).length > 0) {
+					var regScreenSetParams = {
+						screenSet: gigyaRaasParams.raasWebScreen,
+						mobileScreenSet: gigyaRaasParams.raasMobileScreen,
+						startScreen: gigyaRaasParams.raasRegisterScreen,
+						containerID: gigyaRaasParams.raasRegisterDiv
+					};
+					gigya.accounts.showScreenSet(regScreenSetParams);
+				}
 
 				/* Profile screens */
 				if (parseInt(gigyaRaasParams.canEditUsers) !== 1) {
