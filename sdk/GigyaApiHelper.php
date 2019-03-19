@@ -43,7 +43,7 @@ class GigyaApiHelper
 
 	/**
 	 * @param $method
-	 * @param array $params
+	 * @param array|object $params
 	 *
 	 * @return GSResponse
 	 *
@@ -192,7 +192,7 @@ class GigyaApiHelper
 	}
 
 	/**
-	 * @param null $apiKey
+	 * @param string $apiKey
 	 *
 	 * @return bool
 	 *

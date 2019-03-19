@@ -7,12 +7,14 @@ class GigyaCMS
 {
 	protected $api_key;
 	protected $api_secret;
+	protected $user_key;
 
 	/**
 	 * Constructs a GigyaApi object.
 	 */
 	public function __construct() {
 		$this->api_key    = GIGYA__API_KEY;
+		$this->user_key    = GIGYA__USER_KEY ?: ''; /* For backwards compatibility--in the past the user key had not been required */
 		$this->api_secret = GigyaApiHelper::decrypt( GIGYA__API_SECRET, SECURE_AUTH_KEY );
 	}
 
@@ -26,10 +28,12 @@ class GigyaCMS
 	 *
 	 * @return array | WP_Error | integer
 	 *   The Gigya response.
+	 *
+	 * @throws Exception
 	 */
 	public function call( $method, $params ) {
 		// Initialize new request.
-		$request   = new GSRequest( $this->api_key, $this->api_secret, $method );
+		$request   = (isset($this->user_key)) ? new GSRequest( $this->api_key, $this->api_secret, $method, null, null, $this->user_key ) : new GSRequest( $this->api_key, $this->api_secret, $method );
 		$user_info = null;
 		if ( ! empty( $params ) ) {
 			foreach ( $params as $param => $val ) {
@@ -54,7 +58,6 @@ class GigyaCMS
 		// Check for errors
 		$err_code = $response->getErrorCode();
 		if ( $err_code != 0 ) {
-
 			if ( function_exists( '_gigya_error_log' ) ) {
 				$log = explode( "\r\n", $response->getLog() );
 				_gigya_error_log( $log );
@@ -97,18 +100,19 @@ class GigyaCMS
 	/**
 	 * Check validation of the data center.
 	 *
-	 * @param	string	$api_key
-	 * @param	string	$user_key
-	 * @param	string	$api_secret
-	 * @param	string	$api_domain
+	 * @param    string $api_key
+	 * @param    string $user_key
+	 * @param    string $api_secret
+	 * @param    string $api_domain
 	 *
-	 * @return	GSResponse	$res
+	 * @return    GSResponse    $res
+	 *
+	 * @throws Exception
 	 */
 	public function apiValidate( $api_key, $user_key, $api_secret, $api_domain ) {
-		$request = new GSRequest( $api_key, $api_secret, 'socialize.shortenURL', null, null, $user_key );
+		$request = new GSRequest( $api_key, $api_secret, 'socialize.getProvidersConfig', null, null, $user_key );
 
 		$request->setAPIDomain( $api_domain );
-		$request->setParam( 'url', 'http://www.gigya.com' );
 		ini_set('arg_separator.output', '&');
 		$res = $request->send();
 		ini_restore ( 'arg_separator.output' );
@@ -122,6 +126,8 @@ class GigyaCMS
 	 *
 	 * @return array | false
 	 *   the user info from Gigya.
+	 *
+	 * @throws Exception
 	 */
 	public function getUserInfo( $guid ) {
 		static $user_info = null;
@@ -152,9 +158,11 @@ class GigyaCMS
 	/**
 	 * Social logout.
 	 *
-	 * @param	$guid
+	 * @param    $guid
 	 *
-	 * @return	array|WP_Error|integer|boolean
+	 * @return    array|WP_Error|integer|boolean
+	 *
+	 * @throws Exception
 	 */
 	public function userLogout( $guid ) {
 		if ( ! empty( $guid ) ) {
@@ -178,6 +186,8 @@ class GigyaCMS
 	 * @see http://developers.gigya.com/020_Client_API/020_Methods/socialize.getFriends
 	 * @return array | false
 	 *      the response from gigya.
+	 *
+	 * @throws Exception
 	 */
 	public function getFriends( $guid, $params = array() ) {
 		if ( ! empty( $guid ) ) {
@@ -198,6 +208,8 @@ class GigyaCMS
 	 *
 	 * @return array
 	 *   the response from gigya if we successfuly get the data from gigya or empty array if not.
+	 *
+	 * @throws Exception
 	 */
 	public function getCapabilities( $guid ) {
 		if ( $bio = $this->getUserInfo( $guid ) ) {
@@ -220,7 +232,7 @@ class GigyaCMS
 	}
 
 	/**
-	 *  Check if the user has a specific capability.
+	 * Check if the user has a specific capability.
 	 *
 	 * @param $guid
 	 * @param $capability
@@ -228,6 +240,7 @@ class GigyaCMS
 	 *
 	 * @return boolean
 	 *    TRUE if the user has the capability FALSE if not.
+	 * @throws Exception
 	 */
 	public function hasCapability( $guid, $capability ) {
 		$capabilities = $this->getCapabilities( $guid );
@@ -241,16 +254,18 @@ class GigyaCMS
 	/**
 	 * Logs user in to Gigya's service and optionally registers them.
 	 *
-	 * @param string  $uid
+	 * @param string $uid
 	 *   The CMS User ID.
 	 * @param boolean $is_new_user
 	 *   Tell Gigya if we add a new user.
 	 *
-	 * @param null    $user_info
+	 * @param $user_info
 	 *
 	 * @see      gigya_user_login()
 	 *
 	 * @return bool|null|string True if the notify login request succeeded or the error message from Gigya
+	 *
+	 * @throws Exception
 	 */
 	function notifyLogin( $uid, $is_new_user = false, $user_info = null ) {
 		$params['siteUID'] = $uid;
@@ -291,6 +306,8 @@ class GigyaCMS
 	 *   The CMS User ID.
 	 *
 	 * @return array|bool
+	 *
+	 * @throws Exception
 	 */
 	public function notifyRegistration( $guid, $uid ) {
 		if ( ! empty( $guid ) && ! empty( $uid ) ) {
@@ -312,6 +329,8 @@ class GigyaCMS
 	 *   The CMS User ID.
 	 *
 	 * @return bool
+	 *
+	 * @throws Exception
 	 */
 	public function deleteUser( $uid ) {
 		if ( ! empty( $uid ) ) {
@@ -330,6 +349,11 @@ class GigyaCMS
 //            RaaS             //
 /////////////////////////////////
 
+	/**
+	 * @return bool
+	 *
+	 * @throws Exception
+	 */
 	public function isRaaS() {
 		$res = $this->call( 'accounts.getSchema', array() );
 		if ( is_wp_error( $res )) {
@@ -341,6 +365,11 @@ class GigyaCMS
 		return true;
 	}
 
+	/**
+	 * @return bool
+	 *
+	 * @throws Exception
+	 */
 	public function isRaaNotIds() {
 		$res = $this->call( 'accounts.getScreenSets', array() );
 		if ( is_wp_error( $res )) {
@@ -376,6 +405,8 @@ class GigyaCMS
 
 	/**
 	 * @param $account
+	 *
+	 * @throws Exception
 	 */
 	public function deleteAccount( $account ) {
 
@@ -393,6 +424,8 @@ class GigyaCMS
 
 	/**
 	 * @param $guid
+	 *
+	 * @throws Exception
 	 */
 	public function deleteAccountByGUID( $guid ) {
 		/* Delete the user */
