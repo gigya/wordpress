@@ -18,7 +18,7 @@ function globalSettingsForm() {
 	$form['user_key'] = array(
 		'type'  => 'text',
 		'label' => __( 'Gigya User Key' ),
-		'value' => _gigParam( $values, 'user_key', '' )
+		'value' => trim(_gigParam( $values, 'user_key', '' ))
 	);
 
  	if ( current_user_can( GIGYA__SECRET_PERMISSION_LEVEL ) || current_user_can( CUSTOM_GIGYA_EDIT_SECRET ) ) {

@@ -27,7 +27,6 @@ class GSObject
             if (gettype($json) == 'string') {
                 $obj = json_decode($json, false);
 
-
                 if ($obj == null) {
                     throw new GSException();
                 }
@@ -82,6 +81,13 @@ class GSObject
         $this->map[$key] = $value;
     }
 
+	/**
+	 * @param $key
+	 * @param $defaultValue
+	 *
+	 * @return mixed
+	 * @throws GSKeyNotFoundException
+	 */
     private function get($key, $defaultValue)
     {
         if (array_key_exists($key, $this->map)) {
@@ -94,44 +100,84 @@ class GSObject
         throw new GSKeyNotFoundException($key);
     }
 
-    /* GET BOOLEAN */
+	/**
+	 * Get Boolean
+	 *
+	 * @param $key
+	 * @param string $defaultValue
+	 *
+	 * @return bool
+	 * @throws GSKeyNotFoundException
+	 */
     public function getBool($key, $defaultValue = GSObject::DEFAULT_VALUE)
     {
         return (bool)$this->get($key, $defaultValue);
     }
 
-    /* GET INTEGER */
+	/**
+	 * Get Integer
+	 *
+	 * @param $key
+	 * @param string $defaultValue
+	 *
+	 * @return int
+	 * @throws GSKeyNotFoundException
+	 */
     public function getInt($key, $defaultValue = GSObject::DEFAULT_VALUE)
     {
         return (int)$this->get($key, $defaultValue);
     }
 
-    /* GET LONG */
-    public function getLong($key, $defaultValue = GSObject::DEFAULT_VALUE)
+	/**
+	 * Get Float
+	 *
+	 * @param $key
+	 * @param string $defaultValue
+	 *
+	 * @return float
+	 * @throws GSKeyNotFoundException
+	 */
+    public function getFloat($key, $defaultValue = GSObject::DEFAULT_VALUE)
     {
         return (float)$this->get($key, $defaultValue);
     }
 
-    /* GET DOUBLE */
-    public function getDouble($key, $defaultValue = GSObject::DEFAULT_VALUE)
-    {
-        return (double)$this->get($key, $defaultValue);
-    }
-
-    /* GET STRING */
+	/**
+	 * Get String
+	 *
+	 * @param $key
+	 * @param string $defaultValue
+	 *
+	 * @return string
+	 * @throws GSKeyNotFoundException
+	 */
     public function getString($key, $defaultValue = GSObject::DEFAULT_VALUE)
     {
         $obj = $this->get($key, $defaultValue);
         return (string)$obj;
     }
 
-    /* GET GSOBJECT */
+	/**
+	 * Get GSObject
+	 *
+	 * @param $key
+	 *
+	 * @return object
+	 * @throws GSKeyNotFoundException
+	 */
     public function getObject($key)
     {
         return (object)$this->get($key, null);
     }
 
-    /* GET GSOBJECT[] */
+	/**
+	 * Get GSObject array
+	 *
+	 * @param $key
+	 *
+	 * @return mixed
+	 * @throws GSKeyNotFoundException
+	 */
     public function getArray($key)
     {
         return $this->get($key, null);
@@ -140,7 +186,7 @@ class GSObject
     /**
      * Parse parameters from URL into the dictionary
      *
-     * @param url
+     * @param $url
      */
     public function parseURL($url)
     {
@@ -158,7 +204,7 @@ class GSObject
     /**
      * Parse parameters from query string
      *
-     * @param qs
+     * @param $qs
      */
     public function parseQueryString($qs)
     {
@@ -206,20 +252,30 @@ class GSObject
         }
     }
 
+	/**
+	 * @param $jo
+	 * @param GSObject $parentObj
+	 *
+	 * @return mixed
+	 * @throws GSException
+	 */
     private static function processJsonObject($jo, $parentObj)
     {
         if (!empty($jo))
             foreach ($jo as $name => $value) {
-                //array
-                if (is_array(($value))) {
+                if (is_array(($value))) { /* Array */
                     $parentObj->put($name, new GSArray($value));
-                } //object
-                elseif (is_object($value)) {
-                    $childObj = new GSObject();
-                    $parentObj->put($name, $childObj);
-                    self::processJsonObject($value, $childObj);
-                } //primitive
-                else {
+                }
+                elseif (is_object($value)) { /* Object */
+					try {
+						$childObj = new GSObject();
+						$parentObj->put($name, $childObj);
+						self::processJsonObject($value, $childObj);
+					} catch ( Exception $e ) {
+						/* An exception can only be thrown here if the GSObject constructor gets JSON input, which is not the case here. */
+					}
+                }
+                else { /* Primitive */
                     $parentObj->put($name, $value);
                 }
             }
