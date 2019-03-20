@@ -1,12 +1,5 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: Yan Nasonov et al.
- * Date: 15/01/2018
- * Time: 17:41
- */
-
-/**
  * The main plugin class.
  */
 class GigyaAction
@@ -232,6 +225,8 @@ class GigyaAction
 
 	/**
 	 * Hook AJAX RaaS login.
+	 *
+	 * @throws Exception
 	 */
 	public function ajaxRaasLogin() {
 		// Loads Gigya's RaaS class.
@@ -240,6 +235,10 @@ class GigyaAction
 		$gigyaLoginAjax->init();
 	}
 
+	/**
+	 * @throws GSApiException
+	 * @throws GSException
+	 */
 	public function ajaxUpdateProfile() {
 		// Loads Gigya's RaaS class.
 		require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasAjax.php';
@@ -343,6 +342,8 @@ class GigyaAction
 	 *
 	 * @param $user_login
 	 * @param $account
+	 *
+	 * @throws Exception
 	 */
 	public function wpLogin( $user_login, $account ) {
 		/* Login through WP form. */
@@ -364,6 +365,8 @@ class GigyaAction
 
 		if ( empty( $_POST['action'] ) and ! empty( $_POST['data']['action'] ) ) {
 			$_POST['action'] = $_POST['data']['action'];
+		} elseif ( empty( $_POST['action'] ) ) {
+			error_log( 'Login: No POST action specified' );
 		}
 
 		/* RaaS Login */
@@ -471,6 +474,8 @@ class GigyaAction
 	 * Hook user register.
 	 *
 	 * @param $uid
+	 *
+	 * @throws Exception
 	 */
 	public function userRegister( $uid ) {
 		/* Registered through RaaS */
@@ -521,6 +526,8 @@ class GigyaAction
 	 * Hook delete user.
 	 *
 	 * @param $user_id
+	 *
+	 * @throws Exception
 	 */
 	public function deleteUser( $user_id ) {
 		$gigyaCMS = new GigyaCMS();
@@ -543,6 +550,8 @@ class GigyaAction
 	 * @param          $info
 	 *
 	 * @return string
+	 *
+	 * @throws Exception
 	 */
 	private function shortcodeUserInfo( $atts, $info = null ) {
 		/**

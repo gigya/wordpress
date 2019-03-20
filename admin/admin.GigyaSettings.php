@@ -148,6 +148,8 @@ class GigyaSettings {
 
 	/**
 	 * On Setting page save event.
+	 *
+	 * @throws Exception
 	 */
 	public static function onSave() {
 		/* When a Gigya's setting page is submitted */
