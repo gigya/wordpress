@@ -4,7 +4,7 @@ Contributors: gigya.com, konforti, luciodiri
 Tags: CIAM, CIM, Registration, Social Login, Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, Gigya, Social Infrastructure, feed
 Requires at least: 4.2
 Tested up to: 4.9
-Stable tag: 5.7.7
+Stable tag: 5.7.8
 License: GPLv2 or later
 
 Integrate your WordPress site with Gigya
@@ -159,6 +159,9 @@ For question about installations or configuration, please contact your account m
 = 5.7.7 =
 * Improved error handling on multisite
 * Fixed an issue with login to a child site on multisite setups
+
+= 5.7.8 =
+* Fixed an issue configuring the Gigya plugin caused by internal changes
 
 == FAQ ==
 
