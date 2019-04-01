@@ -4,7 +4,7 @@
  * Render with @see _gigya_render_tpl().
  */
 ?>
-<div class="row radio <?php echo $class ?>">
+<div class="gigya-form-field row radio <?php echo $class ?>">
 	<fieldset id="gigya_<?php echo $id; ?>">
 		<legend><?php echo isset($label) ? $label : ''; ?></legend>
 		<?php foreach ( $options as $key => $option ) : ?>

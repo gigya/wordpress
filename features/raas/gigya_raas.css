@@ -1,5 +1,5 @@
 #login {
-	width: auto;
+	width: auto !important;
 }
 
 .gigya-wp-account-widget .gigya-wp-avatar {
@@ -21,4 +21,18 @@
 
 .gigya-wp-account-widget .gigya-wp-name {
 	display: block;
+}
+
+.gigya-wp-field-error {
+	border: red solid 1px !important;
+	box-shadow: inset 0 1px 2px rgba(255, 0, 0, 0.3) !important;
+}
+
+.gigya-wp-settings-table {
+	border: #ccc solid 1px;
+	margin: 10px 0px;
+}
+
+.gigya-wp-settings-table td {
+	padding: 5px;
 }

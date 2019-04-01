@@ -90,17 +90,17 @@ var jsonlint = function () {
 
       function p() {
         var a;
-        return a = c.lexer.lex() || 1, typeof a != "number" && (a = c.symbols_[a] || a), a
+        return a = c.lexer.lex() || 1, typeof a !== "number" && (a = c.symbols_[a] || a), a
       }
 
       var c = this, d = [0], e = [null], f = [], g = this.table, h = "", i = 0, j = 0, k = 0, l = 2, m = 1;
       this.lexer.setInput( b ), this.lexer.yy = this.yy, this.yy.lexer = this.lexer, typeof this.lexer.yylloc == "undefined" && (this.lexer.yylloc = {});
       var n = this.lexer.yylloc;
-      f.push( n ), typeof this.yy.parseError == "function" && (this.parseError = this.yy.parseError);
+      f.push( n ), typeof this.yy.parseError === "function" && (this.parseError = this.yy.parseError);
       var q, r, s, t, u, v, w = {}, x, y, z, A;
       for ( ; ; ) {
         s = d[d.length - 1], this.defaultActions[s] ? t = this.defaultActions[s] : (q == null && (q = p()), t = g[s] && g[s][q]);
-        if ( typeof t == "undefined" || !t.length || !t[0] ) {
+        if ( typeof t === "undefined" || !t.length || !t[0] ) {
           if ( !k ) {
             A = [];
             for ( x in g[s] )this.terminals_[x] && x > 2 && A.push( "'" + this.terminals_[x] + "'" );
@@ -133,7 +133,7 @@ var jsonlint = function () {
             break;
           case 2:
             y = this.productions_[t[1]][1], w.$ = e[e.length - y], w._$ = {first_line: f[f.length - (y || 1)].first_line, last_line: f[f.length - 1].last_line, first_column: f[f.length - (y || 1)].first_column, last_column: f[f.length - 1].last_column}, v = this.performAction.call( w, h, j, i, this.yy, t[1], e, f );
-            if ( typeof v != "undefined" ) {
+            if ( typeof v !== "undefined" ) {
               return v;
             }
             y && (d = d.slice( 0, -1 * y * 2 ), e = e.slice( 0, -1 * y ), f = f.slice( 0, -1 * y )), d.push( this.productions_[t[1]][0] ), e.push( w.$ ), f.push( w._$ ), z = g[d[d.length - 2]][d[d.length - 1]], d.push( z );
@@ -201,7 +201,7 @@ var jsonlint = function () {
         this.parseError( "Lexical error on line " + (this.yylineno + 1) + ". Unrecognized text.\n" + this.showPosition(), {text: "", token: null, line: this.yylineno} )
       }, lex          : function () {
         var b = this.next();
-        return typeof b != "undefined" ? b : this.lex()
+        return typeof b !== "undefined" ? b : this.lex()
       }, begin        : function ( b ) {
         this.conditionStack.push( b )
       }, popState     : function () {
@@ -249,18 +249,18 @@ var jsonlint = function () {
     }();
     return a.lexer = b, a
   }();
-  return typeof a != "undefined" && typeof c != "undefined" && (c.parser = d, c.parse = function () {
+  return typeof a !== "undefined" && typeof c !== "undefined" && (c.parser = d, c.parse = function () {
     return d.parse.apply( d, arguments )
   }, c.main = function ( d ) {
     if ( !d[1] ) {
       throw new Error( "Usage: " + d[0] + " FILE" );
     }
-    if ( typeof process != "undefined" ) {
+    if ( typeof process !== "undefined" ) {
       var e = a( "fs" ).readFileSync( a( "path" ).join( process.cwd(), d[1] ), "utf8" );
     }
     else {
       var f = a( "file" ).path( a( "file" ).cwd() ), e = f.join( d[1] ).read( {charset: "utf-8"} );
     }
     return c.parser.parse( e )
-  }, typeof b != "undefined" && a.main === b && c.main( typeof process != "undefined" ? process.argv.slice( 1 ) : a( "system" ).args )), c
+  }, typeof b !== "undefined" && a.main === b && c.main( typeof process !== "undefined" ? process.argv.slice( 1 ) : a( "system" ).args )), c
 }();
