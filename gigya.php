@@ -29,6 +29,7 @@ define( 'GIGYA__DEFAULT_COOKIE_EXPIRATION', 1800 ); /* WordPress defaults to 172
  */
 define( 'GIGYA__SETTINGS_GLOBAL', 'gigya_global_settings' );
 define( 'GIGYA__SETTINGS_LOGIN', 'gigya_login_settings' );
+define( 'GIGYA__SETTINGS_SCREENSETS', 'gigya_screenset_settings' );
 define( 'GIGYA__SETTINGS_SESSION', 'gigya_session_management' );
 define( 'GIGYA__SETTINGS_SHARE', 'gigya_share_settings' );
 define( 'GIGYA__SETTINGS_COMMENTS', 'gigya_comments_settings' );
@@ -80,7 +81,7 @@ if ( ! function_exists( 'wp_new_user_notification' ) )
 }
 
 /**
- * Renders a default template.
+ * Renders a default template
  *
  * @param $template_file
  *   The filename of the template to render.
@@ -97,13 +98,59 @@ function _gigya_render_tpl( $template_file, $variables = array() ) {
 	ob_start();
 
 	// Include the template file
-	include GIGYA__PLUGIN_DIR . '/' . $template_file;
+	if ( file_exists( GIGYA__PLUGIN_DIR . '/' . $template_file ) ) {
+		include GIGYA__PLUGIN_DIR . '/' . $template_file;
+	}
 
 	// End buffering and return its contents
 	return ob_get_clean();
 }
 
 //--------------------------------------------------------------------
+
+function _gigya_element_render( $el, $id, $name_prefix = '' ) {
+	$allowed_form_elements = array('checkbox', 'customText', 'hidden', 'password', 'radio', 'select', 'text', 'textarea');
+
+	$render = '';
+
+	if ( empty( $el['type'] ) || $el['type'] == 'markup' ) {
+		$render .= $el['markup'];
+	} elseif ( $el['type'] == 'table' ) {
+		$el['name_prefix'] = $name_prefix;
+		if ( empty( $el['name'] ) ) { /* Name field is required for the table, and it will be propagated to child elements */
+			$el['name'] = $id;
+		}
+		$render .= _gigya_render_tpl( 'admin/tpl/table.tpl.php', $el ) . PHP_EOL;
+	} elseif ( $el['type'] == 'dynamic_field_line' ) {
+		foreach ( $el['fields'] as $key => $field ) {
+			$el['fields'][ $key ]['name'] = $name_prefix . '[' . $id . ']' . '[' . $field['name'] . ']';
+		}
+
+		$render .= _gigya_render_tpl( 'admin/tpl/dynamic-field-line.tpl.php', $el ) . PHP_EOL;
+	} elseif ( in_array( $el['type'], $allowed_form_elements ) ) {
+		if ( empty( $el['name'] ) ) {
+			if ( ! empty( $name_prefix ) ) {
+				/*
+				 * In cases like on admin multi-page the element
+				 * name is built from the section and the ID.
+				 * This tells WP under which option to save this field value.
+				 */
+				$el['name'] = $name_prefix . '[' . $id . ']';
+			} else {
+				/* Usually the element name is just the ID */
+				$el['name'] = $id;
+			}
+		}
+
+		/* Add the ID value to the array */
+		$el['id'] = $id;
+
+		/* Render each element */
+		$render .= _gigya_render_tpl( 'admin/tpl/formEl-' . $el['type'] . '.tpl.php', $el ) . PHP_EOL;
+	}
+
+	return $render;
+}
 
 /**
  * Render a form.
@@ -117,38 +164,22 @@ function _gigya_render_tpl( $template_file, $variables = array() ) {
 function _gigya_form_render( $form, $name_prefix = '' ) {
 	$render = '';
 
+	/* Inject display dependencies */
 	foreach ( $form as $id => $el ) {
+		if ( isset( $el['depends_on'] ) ) {
 
-		if ( empty( $el['type'] ) || $el['type'] == 'markup' )
-		{
-			$render .= $el['markup'];
-		}
-		else
-		{
-			if ( empty( $el['name'] ) )
-			{
-				if ( ! empty( $name_prefix ) )
-				{
-					/*
-					 * In cases like on admin multipage the element
-					 * name is build from the section and the ID.
-					 * This tells WP under which option to save this field value.
-					 */
-					$el['name'] = $name_prefix . '[' . $id . ']';
-				}
-				else
-				{
-					/* Usually the element name is just the ID */
-					$el['name'] = $id;
-				}
+			$search = str_replace( '][', '-', $el['depends_on'][0] );
+			$search = preg_replace( '/(^\[)|(\]$)/', '', $search );
+			$search = preg_replace( '/[\[\]]/', '-', $search );
+
+			if ( ! empty( $form[ $search ] ) and $el['depends_on'][1] === $form[ $search ]['value'] ) {
+				$form[ $id ]['display'] = true;
 			}
-
-			/* Add the ID value to the array */
-			$el['id'] = $id;
-
-			/* Render each element */
-			$render .= _gigya_render_tpl( 'admin/tpl/formEl-' . $el['type'] . '.tpl.php', $el );
 		}
+	}
+
+	foreach ( $form as $id => $el ) {
+		$render .= _gigya_element_render( $el, $id, $name_prefix );
 	}
 
 	return $render;
@@ -290,7 +321,8 @@ function _gigParamDefaultOn( $array, $key ) {
  * Flattens array into dot notation.
  *
  * @param	array	$array	Input array
- * @returns array
+ *
+ * @return array
  */
 function _gigArrayFlatten( $array )
 {
@@ -383,6 +415,13 @@ function _gigya_error_log( $new_log ) {
 
 // --------------------------------------------------------------------
 
+/**
+ * @param $length
+ * @param $user_id
+ * @param $remember
+ *
+ * @return integer
+ */
 function _gigya_get_session_expiration($length, $user_id, $remember) {
 	return $length;
 }

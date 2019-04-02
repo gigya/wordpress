@@ -576,7 +576,11 @@ class GigyaAction
 		if ( empty( $this->login_options ) ) /* Only happens on initial activation, before configuring Gigya */
 			return false;
 
-		// RaaS Widget.
+		/* Screen-set Widget */
+		require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaScreenSetWidget.php';
+		register_widget( 'GigyaScreenSet_Widget' );
+
+		/* RaaS Widget */
 		$raas_on = $this->login_options['mode'] == 'raas';
 		if ( ! empty( $raas_on ) )
 		{
@@ -584,7 +588,7 @@ class GigyaAction
 			register_widget( 'GigyaRaas_Widget' );
 		}
 
-		// Login Widget.
+		/* Login Widget */
 		$login_on = $this->login_options['mode'] == 'wp_sl';
 		if ( ! empty( $login_on ) )
 		{
@@ -592,7 +596,7 @@ class GigyaAction
 			register_widget( 'GigyaLogin_Widget' );
 		}
 
-		// Share Widget.
+		/* Share Widget */
 		$share_options = get_option( GIGYA__SETTINGS_SHARE );
 		$share_on = _gigParamDefaultOn( $share_options, 'on' );
 		if ( ! empty( $share_on ) )
@@ -601,7 +605,7 @@ class GigyaAction
 			register_widget( 'GigyaShare_Widget' );
 		}
 
-		// Comment Widget.
+		/* Comment Widget */
 		$comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
 		$comments_on = _gigParamDefaultOn( $comments_options, 'on' );
 		if ( ! empty( $comments_on ) )
@@ -610,7 +614,7 @@ class GigyaAction
 			register_widget( 'GigyaComments_Widget' );
 		}
 
-		// Reactions Widget.
+		/* Reactions Widget */
 		$reactions_options = get_option( GIGYA__SETTINGS_REACTIONS );
 		$reactions_on = _gigParamDefaultOn( $reactions_options, 'on' );
 		if ( ! empty( $reactions_on ) )
@@ -619,7 +623,7 @@ class GigyaAction
 			register_widget( 'GigyaReactions_Widget' );
 		}
 
-		// Gamification Widget.
+		/* Gamification Widget */
 		$gm_options = get_option( GIGYA__SETTINGS_GM );
 		$gm_on = _gigParamDefaultOn( $gm_options, 'on' );
 		if ( ! empty( $gm_on ) )

@@ -36,3 +36,7 @@
 .gigya-wp-settings-table td {
 	padding: 5px;
 }
+
+.gigya-wp-settings-table .gigya-remove-dynamic-field-line {
+	padding: 3px;
+}

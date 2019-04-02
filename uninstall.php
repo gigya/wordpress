@@ -8,6 +8,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) || ! WP_UNINSTALL_PLUGIN || dirname( WP_
 // Delete Gigya admin settings options.
 delete_option( GIGYA__SETTINGS_GLOBAL );
 delete_option( GIGYA__SETTINGS_LOGIN );
+delete_option( GIGYA__SETTINGS_SCREENSETS );
 delete_option( GIGYA__SETTINGS_SESSION );
 delete_option( GIGYA__SETTINGS_SHARE );
 delete_option( GIGYA__SETTINGS_COMMENTS );
