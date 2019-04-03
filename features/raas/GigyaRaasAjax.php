@@ -130,12 +130,12 @@ class GigyaRaasAjax {
 	 */
 	private function register() {
 		/* Register a new user to WP with params from Gigya */
-		if ( isset($this->gigya_account['profile']['username']) ) {
+		if ( isset( $this->gigya_account['profile']['username'] ) ) {
 			$display_name = $this->gigya_account['profile']['username'];
-			$name = sanitize_user($display_name, true);
+			$name         = sanitize_user( $display_name, true );
 		} else {
 			$display_name = $this->gigya_account['profile']['firstName'] . '_' . $this->gigya_account['profile']['lastName'];
-			$name = sanitize_user($display_name, true);
+			$name         = sanitize_user( $display_name, true );
 		}
 		$email = $this->gigya_account['profile']['email'];
 
@@ -164,17 +164,17 @@ class GigyaRaasAjax {
 			/* Return JSON to client */
 			wp_send_json_error( array( 'msg' => $msg ) );
 		}
-		wp_update_user((object)array('ID' => $user_id, 'display_name' => $display_name)); /* If non-Latin characters are used in the first/last name, it will still use the correct display name */
-		_gigya_add_to_wp_user_meta($this->gigya_account, $user_id);
+		wp_update_user( (object) array(
+			'ID'           => $user_id,
+			'display_name' => $display_name
+		) ); /* If non-Latin characters are used in the first/last name, it will still use the correct display name */
+		_gigya_add_to_wp_user_meta( $this->gigya_account, $user_id );
 
 		/* Log the user in */
 		$wp_user = get_userdata( $user_id );
-		try
-		{
+		try {
 			$this->login( $wp_user );
-		}
-		catch ( Exception $e )
-		{
+		} catch ( Exception $e ) {
 			$prm = array( 'msg' => __( 'Unable to log in.' ) );
 			wp_send_json_error( $prm );
 		}

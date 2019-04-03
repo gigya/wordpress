@@ -527,59 +527,59 @@ function gigyaAfterRaasLogin( $gig_user, $wp_user ) {
 
 /**
  * Map social user fields to WordPress user fields
- * @param $gigya_object
- * @param $user_id
  *
- * @throws Exception if there are problems with the hook or data
+ * @param array|GSResponse|GSObject $gigya_object
+ * @param string $user_id
+ *
+ * @throws Exception If there are problems with the hook or data
  */
-function _gigya_add_to_wp_user_meta($gigya_object, $user_id) {
-	$gigya_object = _gigArrayFlatten($gigya_object);
+function _gigya_add_to_wp_user_meta( $gigya_object, $user_id ) {
+	if ( $gigya_object instanceof GSResponse ) {
+		$gigya_object = $gigya_object->getData()->serialize();
+	} elseif ( $gigya_object instanceof GSObject ) {
+		$gigya_object = $gigya_object->serialize();
+	}
+
+	$gigya_object = _gigArrayFlatten( $gigya_object );
 	$login_opts = get_option( GIGYA__SETTINGS_LOGIN );
 	$prefix = _gigya_get_mode_prefix();
-	if (!$prefix)
+	if ( ! $prefix ) {
 		return;
+	}
 
-	if (!empty($login_opts['map_raas_full_map'])) /* Fully customized field mapping options */
-	{
+	if ( ! empty( $login_opts['map_raas_full_map'] ) ) /* Fully customized field mapping options */ {
 		/* Hook for modifying the data from Gigya before it is mapped */
 		$gigya_object_orig = $gigya_object;
-		try
-		{
+		try {
 			$gigya_object = apply_filters( 'gigya_pre_field_mapping', $gigya_object_orig, get_userdata( $user_id ) );
-			if ( array_keys( $gigya_object_orig ) != array_keys( $gigya_object ) )
+			if ( array_keys( $gigya_object_orig ) != array_keys( $gigya_object ) ) {
 				throw new Exception( 'Invalid data returned by the hook. Return array must have the same keys as the input array.' );
-		}
-		catch ( Exception $e )
-		{
+			}
+		} catch ( Exception $e ) {
 			throw new Exception( 'Exception while running hook. Error message: ' . $e->getMessage() );
 		}
 
-		foreach ( json_decode( $login_opts['map_raas_full_map'] ) as $meta_key )
-		{
+		foreach ( json_decode( $login_opts['map_raas_full_map'] ) as $meta_key ) {
 			$meta_key = (array) $meta_key;
-			if ( ! isset( $gigya_object[$meta_key['gigyaName']] ) )
-			{
-				$gigya_object[$meta_key['gigyaName']] = '';
+			if ( ! isset( $gigya_object[ $meta_key['gigyaName'] ] ) ) {
+				$gigya_object[ $meta_key['gigyaName'] ] = '';
 				/*
 				 * Uncomment this line if you want to send a notice to the WordPress log about *every* field mapping failure on *every* user login/registration.
 				 *
 				 * trigger_error('The Gigya field '.$meta_key['gigyaName'].', specified in the field mapping, does not exist. WP user ID: '.$user_id, E_USER_NOTICE);
 				 */
 			}
-			update_user_meta( $user_id, $meta_key['cmsName'], sanitize_text_field( $gigya_object[$meta_key['gigyaName']] ) );
+			update_user_meta( $user_id, $meta_key['cmsName'], sanitize_text_field( $gigya_object[ $meta_key['gigyaName'] ] ) );
 		}
-	}
-	else /* Legacy field mapping options */
-	{
+	} else /* Legacy field mapping options */ {
 		foreach ( $login_opts as $key => $opt ) {
-			if (strpos($key, $prefix) === 0 && $opt == 1) {
-				$k = str_replace($prefix, "", $key);
-				$gigya_key = 'profile.'._wp_key_to_gigya_key($k);
-				if (!isset($gigya_object[$gigya_key]))
-				{
-					$gigya_object[$gigya_key] = '';
+			if ( strpos( $key, $prefix ) === 0 && $opt == 1 ) {
+				$k         = str_replace( $prefix, "", $key );
+				$gigya_key = 'profile.' . _wp_key_to_gigya_key( $k );
+				if ( ! isset( $gigya_object[ $gigya_key ] ) ) {
+					$gigya_object[ $gigya_key ] = '';
 				}
-				update_user_meta($user_id, $k, sanitize_text_field($gigya_object[$gigya_key]));
+				update_user_meta( $user_id, $k, sanitize_text_field( $gigya_object[ $gigya_key ] ) );
 			}
 		}
 	}

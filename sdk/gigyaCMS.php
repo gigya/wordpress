@@ -382,9 +382,10 @@ class GigyaCMS
 	}
 
 	/**
-	 * @param $guid
+	 * @param string $guid  Gigya UID
 	 *
 	 * @return GSResponse
+	 *
 	 * @throws Exception
 	 * @throws GSApiException
 	 * @throws GSException
@@ -409,7 +410,6 @@ class GigyaCMS
 	 * @throws Exception
 	 */
 	public function deleteAccount( $account ) {
-
 		// Get info about the primary account.
 		$email = $this->cleanEmail( $account->data->user_email );
 		$query = "select UID from accounts where loginIDs.emails = '{$email}'";

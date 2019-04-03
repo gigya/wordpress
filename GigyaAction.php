@@ -42,6 +42,8 @@ class GigyaAction
 		add_action( 'wp_ajax_nopriv_gigya_login', array( $this, 'ajaxLogin' ) );
 		add_action( 'wp_ajax_gigya_raas', array( $this, 'ajaxRaasLogin' ) );
 		add_action( 'wp_ajax_nopriv_gigya_raas', array( $this, 'ajaxRaasLogin' ) );
+		add_action( 'wp_ajax_gigya_process_field_mapping', array( $this, 'ajaxProcessFieldMapping' ) );
+		add_action( 'wp_ajax_nopriv_gigya_process_field_mapping', array( $this, 'ajaxProcessFieldMapping' ) );
 		add_action( 'wp_ajax_custom_login', array( $this, 'ajaxCustomLogin' ) );
 		add_action( 'wp_ajax_nopriv_custom_login', array( $this, 'ajaxCustomLogin' ) );
 		add_action( 'wp_ajax_fixed_session_cookie', array( $this, 'ajaxSetFixedSessionCookie' ) );
@@ -205,8 +207,10 @@ class GigyaAction
 	}
 
 	/**
-	 * admin_action_ hook.
+	 * admin_action_ hook
 	 * Fires when an 'action' REQUEST variable is sent.
+	 *
+	 * @throws Exception
 	 */
 	public function adminActionUpdate() {
 		require_once GIGYA__PLUGIN_DIR . 'admin/admin.GigyaSettings.php';
@@ -214,7 +218,9 @@ class GigyaAction
 	}
 
 	/**
-	 * Hook AJAX login.
+	 * Hook AJAX login
+	 *
+	 * @throws Exception
 	 */
 	public function ajaxLogin() {
 		// Loads Gigya's social login class.
@@ -233,6 +239,40 @@ class GigyaAction
 		require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasAjax.php';
 		$gigyaLoginAjax = new GigyaRaasAjax;
 		$gigyaLoginAjax->init();
+	}
+
+	/**
+	 * Process field mapping
+	 *
+	 * @throws Exception
+	 */
+	public function ajaxProcessFieldMapping() {
+		$wp_uid      = get_current_user_id();
+		$generic_msg = 'You are not logged in correctly';
+
+		if ( ! empty( $wp_uid ) ) {
+			$gigya_uid = get_user_meta( $wp_uid, 'gigya_uid', true );
+
+			if ( ! empty( $gigya_uid ) ) {
+				$gigya_cms     = new GigyaCMS();
+
+				try {
+					$gigya_account = $gigya_cms->getAccount( $gigya_uid );
+
+					_gigya_add_to_wp_user_meta( $gigya_account, $wp_uid );
+
+					wp_send_json_success();
+				} catch ( Exception $e ) {
+					error_log( 'Unable to process field mapping for Gigya user ' . $gigya_uid );
+
+					wp_send_json_error( array( 'msg' => $generic_msg ) );
+				}
+			} else {
+				wp_send_json_error( array( 'msg' => $generic_msg ) );
+			}
+		} else {
+			wp_send_json_error( array( 'msg' => $generic_msg ) );
+		}
 	}
 
 	/**
