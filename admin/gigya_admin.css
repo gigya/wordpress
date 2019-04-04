@@ -51,7 +51,7 @@ input[type=checkbox] {
 	padding: 0;
 }
 
-.widget-content .size input {
+.widget-content .size input, .widget-content .size select {
 	width: 100%;
 }
 

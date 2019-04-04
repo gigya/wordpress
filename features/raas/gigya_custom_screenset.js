@@ -19,37 +19,44 @@
 			});
 		};
 
-		/**
-		 * @var array gigyaScreenSetParams
-		 * @property gigyaScreenSetParams.link_id
-		 * @property gigyaScreenSetParams.screenset_id
-		 * @property gigyaScreenSetParams.mobile_screenset_id
-		 * @property gigyaScreenSetParams.container_id
-		 * @property gigyaScreenSetParams.is_sync_data
-		 */
-		if (typeof(gigyaScreenSetParams) !== 'undefined') {
-			if (gigyaScreenSetParams.mobile_screenset_id === undefined)
-				gigyaScreenSetParams.mobile_screenset_id = gigyaScreenSetParams.screenset_id;
+		$('.gigya-screenset-widget-outer-div').each(function() {
+			if ($(this).attr('data-machine-name') !== undefined) {
+				var varName = '_gig_' + $(this).attr('data-machine-name');
+				var gigyaScreenSetParams = window[varName];
 
-			var screenSetParams = {
-				screenSet: gigyaScreenSetParams.screenset_id,
-				mobileScreenSet: gigyaScreenSetParams.mobile_screenset_id
-			};
+				/**
+				 * @var array gigyaScreenSetParams
+				 * @property gigyaScreenSetParams.link_id
+				 * @property gigyaScreenSetParams.screenset_id
+				 * @property gigyaScreenSetParams.mobile_screenset_id
+				 * @property gigyaScreenSetParams.container_id
+				 * @property gigyaScreenSetParams.is_sync_data
+				 */
+				if (typeof(gigyaScreenSetParams) !== 'undefined') {
+					if (gigyaScreenSetParams.mobile_screenset_id === undefined)
+						gigyaScreenSetParams.mobile_screenset_id = gigyaScreenSetParams.screenset_id;
 
-			if (gigyaScreenSetParams.is_sync_data) {
-				screenSetParams['onAfterSubmit'] = processFieldMapping;
+					var screenSetParams = {
+						screenSet: gigyaScreenSetParams.screenset_id,
+						mobileScreenSet: gigyaScreenSetParams.mobile_screenset_id
+					};
+
+					if (gigyaScreenSetParams.is_sync_data) {
+						screenSetParams['onAfterSubmit'] = processFieldMapping;
+					}
+
+					$('#' + gigyaScreenSetParams.link_id).on('click', function (e) {
+						e.preventDefault();
+
+						gigya.accounts.showScreenSet(screenSetParams);
+					});
+
+					if (gigyaScreenSetParams.type === 'embed') {
+						screenSetParams['containerID'] = gigyaScreenSetParams.container_id;
+						gigya.accounts.showScreenSet(screenSetParams);
+					}
+				}
 			}
-
-			$('#' + gigyaScreenSetParams.link_id).on('click', function (e) {
-				e.preventDefault();
-
-				gigya.accounts.showScreenSet(screenSetParams);
-			});
-
-			if (gigyaScreenSetParams.type === 'embed') {
-				screenSetParams['containerID'] = gigyaScreenSetParams.container_id;
-				gigya.accounts.showScreenSet(screenSetParams);
-			}
-		}
+		});
 	});
 })(jQuery);
