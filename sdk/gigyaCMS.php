@@ -393,7 +393,7 @@ class GigyaCMS
 	public function getAccount( $guid ) {
 		$req_params = array(
 			'UID'                => $guid,
-			'include'            => 'profile,data,loginIDs',
+			'include'            => 'profile,data,preferences,subscriptions,loginIDs',
 			'extraProfileFields' => "languages,address,phones,education,honors,publications,patents,certifications,professionalHeadline,bio,industry,specialties,work,skills,religion,politicalView,interestedIn,relationshipStatus,hometown,favorites,followersCount,followingCount,username,locale,verified,timezone,likes"
 		);
 
