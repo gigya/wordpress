@@ -36,7 +36,6 @@
 				mobileScreenSet: gigyaScreenSetParams.mobile_screenset_id
 			};
 
-			gigyaScreenSetParams.is_sync_data = true; ////
 			if (gigyaScreenSetParams.is_sync_data) {
 				screenSetParams['onAfterSubmit'] = processFieldMapping;
 			}

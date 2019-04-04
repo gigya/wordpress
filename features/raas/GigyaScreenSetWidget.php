@@ -42,6 +42,7 @@ class GigyaScreenSet_Widget extends WP_Widget {
 		foreach ( $custom_screen_sets as $screen_set ) {
 			if ( $screen_set['desktop'] == $instance['screenset_id'] ) {
 				$instance['mobile_screenset_id'] = ( ! empty( $instance['screenset_id'] ) ) ? $screen_set['mobile'] : $screen_set['desktop'];
+				$instance['is_sync_data'] = ( ! empty( $screen_set['is_sync'] ) );
 			}
 		}
 

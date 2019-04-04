@@ -18,6 +18,12 @@ function buildCustomScreenSetRow( $values = array(), $more_options = array(), $m
 				'label' => 'Mobile Screen-Set',
 				'value' => ( ! empty( $values[1] ) ) ? $values[1] : '',
 			],
+			[
+				'type'  => 'checkbox',
+				'name'  => 'is_sync',
+				'label' => 'Sync Data?',
+				'value' => ( ! empty( $values[2] ) ) ? $values[2] : 0,
+			],
 		],
 	];
 
