@@ -1,5 +1,5 @@
-#login {
-	width: auto !important;
+div#login {
+	width: auto;
 }
 
 .gigya-wp-account-widget .gigya-wp-avatar {
