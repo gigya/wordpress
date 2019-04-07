@@ -8,14 +8,14 @@ class GigyaScreenSet_Widget extends WP_Widget {
 	/**
 	 * Register widget with WordPress.
 	 */
-	function __construct() {
+	public function __construct() {
 		$args = array(
 			'description' => __( 'Custom Gigya Screen-Set' )
 		);
 		parent::__construct( 'gigya_screenset', __( 'Gigya ScreenSet' ), $args );
 	}
 
-	private function setWidgetMachineName( $widget_id ) {
+	protected function setWidgetMachineName( $widget_id ) {
 		$pattern = '/[^a-zA-Z0-9]/';
 
 		return trim( preg_replace( $pattern, '', (string) $widget_id ) );
@@ -102,24 +102,6 @@ class GigyaScreenSet_Widget extends WP_Widget {
 			),
 			'class'   => 'size',
 			'value'   => esc_attr( _gigParam( $instance, 'type', '' ) ),
-		);
-
-		$form[$this->get_field_id( 'link_id' )] = array(
-			'type'  => 'text',
-			'name'  => $this->get_field_name( 'link_id' ),
-			'value' => esc_attr( _gigParam( $instance, 'link_id', '' ) ),
-			'label' => __( 'Link ID' ),
-			'class' => 'size',
-			'depends_on' => array( $this->get_field_name( 'type' ), 'popup' ),
-		);
-
-		$form[$this->get_field_id( 'link_class' )] = array(
-			'type'  => 'text',
-			'name'  => $this->get_field_name( 'link_class' ),
-			'value' => esc_attr( _gigParam( $instance, 'link_class', '' ) ),
-			'label' => __( 'Link CSS Class' ),
-			'class' => 'size',
-			'depends_on' => array( $this->get_field_name( 'type' ), 'popup' ),
 		);
 
 		echo _gigya_form_render( $form );
