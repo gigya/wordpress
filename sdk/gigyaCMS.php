@@ -345,9 +345,9 @@ class GigyaCMS
 		return false;
 	}
 
-/////////////////////////////////
+/*******************************/
 //            RaaS             //
-/////////////////////////////////
+/*******************************/
 
 	/**
 	 * @return bool
@@ -382,9 +382,10 @@ class GigyaCMS
 	}
 
 	/**
-	 * @param $guid
+	 * @param string $guid  Gigya UID
 	 *
 	 * @return GSResponse
+	 *
 	 * @throws Exception
 	 * @throws GSApiException
 	 * @throws GSException
@@ -392,7 +393,7 @@ class GigyaCMS
 	public function getAccount( $guid ) {
 		$req_params = array(
 			'UID'                => $guid,
-			'include'            => 'profile,data,loginIDs',
+			'include'            => 'profile,data,preferences,subscriptions,loginIDs',
 			'extraProfileFields' => "languages,address,phones,education,honors,publications,patents,certifications,professionalHeadline,bio,industry,specialties,work,skills,religion,politicalView,interestedIn,relationshipStatus,hometown,favorites,followersCount,followingCount,username,locale,verified,timezone,likes"
 		);
 
@@ -409,7 +410,6 @@ class GigyaCMS
 	 * @throws Exception
 	 */
 	public function deleteAccount( $account ) {
-
 		// Get info about the primary account.
 		$email = $this->cleanEmail( $account->data->user_email );
 		$query = "select UID from accounts where loginIDs.emails = '{$email}'";

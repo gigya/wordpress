@@ -19,6 +19,8 @@ class GigyaLoginAjax {
 
 	/**
 	 * This is Gigya login AJAX callback
+	 *
+	 * @throws Exception
 	 */
 	public function init() {
 		/* Get the data from the client (AJAX) */
@@ -101,6 +103,8 @@ class GigyaLoginAjax {
 
 	/**
 	 * Register new WP user from Gigya user.
+	 *
+	 * @throws Exception
 	 */
 	private function register() {
 		// Before we insert new user to the system, we check
@@ -163,8 +167,8 @@ class GigyaLoginAjax {
 		if ( ! empty( $this->gigya_user['email_not_verified'] ) ) {
 			// Return JSON with login form to client.
 			wp_send_json_success( array(
-					'type' => 'form',
-					'html' => $this->emailVerifyForm()
+				'type' => 'form',
+				'html' => $this->emailVerifyForm()
 			) );
 		}
 
@@ -179,8 +183,8 @@ class GigyaLoginAjax {
 		parse_str( $_POST['data'], $data );
 
 		$creds = array(
-				'user_login'    => $data['log'],
-				'user_password' => $data['pwd']
+			'user_login'    => $data['log'],
+			'user_password' => $data['pwd']
 		);
 
 		$user = wp_signon( $creds );
@@ -201,9 +205,9 @@ class GigyaLoginAjax {
 		}
 	}
 
-	///////////////////////////
+	/*************************/
 	//         Forms         //
-	///////////////////////////
+	/*************************/
 
 	/**
 	 * Generate form for email verify.

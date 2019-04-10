@@ -48,9 +48,14 @@ class GSObject
         return $arr;
     }
 
+	/**
+	 * @param $gsd
+	 *
+	 * @return array
+	 */
     public static function serializeGSObject($gsd)
     {
-        $arr = Array();
+        $arr = array();
         foreach ($gsd->map as $name => $value) {
 
             $val = GSObject::serializeValue($value);

@@ -29,6 +29,7 @@ define( 'GIGYA__DEFAULT_COOKIE_EXPIRATION', 1800 ); /* WordPress defaults to 172
  */
 define( 'GIGYA__SETTINGS_GLOBAL', 'gigya_global_settings' );
 define( 'GIGYA__SETTINGS_LOGIN', 'gigya_login_settings' );
+define( 'GIGYA__SETTINGS_SCREENSETS', 'gigya_screenset_settings' );
 define( 'GIGYA__SETTINGS_SESSION', 'gigya_session_management' );
 define( 'GIGYA__SETTINGS_SHARE', 'gigya_share_settings' );
 define( 'GIGYA__SETTINGS_COMMENTS', 'gigya_comments_settings' );
@@ -80,7 +81,7 @@ if ( ! function_exists( 'wp_new_user_notification' ) )
 }
 
 /**
- * Renders a default template.
+ * Renders a default template
  *
  * @param $template_file
  *   The filename of the template to render.
@@ -97,13 +98,59 @@ function _gigya_render_tpl( $template_file, $variables = array() ) {
 	ob_start();
 
 	// Include the template file
-	include GIGYA__PLUGIN_DIR . '/' . $template_file;
+	if ( file_exists( GIGYA__PLUGIN_DIR . '/' . $template_file ) ) {
+		include GIGYA__PLUGIN_DIR . '/' . $template_file;
+	}
 
 	// End buffering and return its contents
 	return ob_get_clean();
 }
 
 //--------------------------------------------------------------------
+
+function _gigya_element_render( $el, $id, $name_prefix = '' ) {
+	$allowed_form_elements = array('checkbox', 'customText', 'hidden', 'password', 'radio', 'select', 'text', 'textarea');
+
+	$render = '';
+
+	if ( empty( $el['type'] ) || $el['type'] == 'markup' ) {
+		$render .= $el['markup'];
+	} elseif ( $el['type'] == 'table' ) {
+		$el['name_prefix'] = $name_prefix;
+		if ( empty( $el['name'] ) ) { /* Name field is required for the table, and it will be propagated to child elements */
+			$el['name'] = $id;
+		}
+		$render .= _gigya_render_tpl( 'admin/tpl/table.tpl.php', $el ) . PHP_EOL;
+	} elseif ( $el['type'] == 'dynamic_field_line' ) {
+		foreach ( $el['fields'] as $key => $field ) {
+			$el['fields'][ $key ]['name'] = $name_prefix . '[' . $id . ']' . '[' . $field['name'] . ']';
+		}
+
+		$render .= _gigya_render_tpl( 'admin/tpl/dynamic-field-line.tpl.php', $el ) . PHP_EOL;
+	} elseif ( in_array( $el['type'], $allowed_form_elements ) ) {
+		if ( empty( $el['name'] ) ) {
+			if ( ! empty( $name_prefix ) ) {
+				/*
+				 * In cases like on admin multi-page the element
+				 * name is built from the section and the ID.
+				 * This tells WP under which option to save this field value.
+				 */
+				$el['name'] = $name_prefix . '[' . $id . ']';
+			} else {
+				/* Usually the element name is just the ID */
+				$el['name'] = $id;
+			}
+		}
+
+		/* Add the ID value to the array */
+		$el['id'] = $id;
+
+		/* Render each element */
+		$render .= _gigya_render_tpl( 'admin/tpl/formEl-' . $el['type'] . '.tpl.php', $el ) . PHP_EOL;
+	}
+
+	return $render;
+}
 
 /**
  * Render a form.
@@ -117,38 +164,22 @@ function _gigya_render_tpl( $template_file, $variables = array() ) {
 function _gigya_form_render( $form, $name_prefix = '' ) {
 	$render = '';
 
+	/* Inject display dependencies */
 	foreach ( $form as $id => $el ) {
+		if ( isset( $el['depends_on'] ) ) {
 
-		if ( empty( $el['type'] ) || $el['type'] == 'markup' )
-		{
-			$render .= $el['markup'];
-		}
-		else
-		{
-			if ( empty( $el['name'] ) )
-			{
-				if ( ! empty( $name_prefix ) )
-				{
-					/*
-					 * In cases like on admin multipage the element
-					 * name is build from the section and the ID.
-					 * This tells WP under which option to save this field value.
-					 */
-					$el['name'] = $name_prefix . '[' . $id . ']';
-				}
-				else
-				{
-					/* Usually the element name is just the ID */
-					$el['name'] = $id;
-				}
+			$search = str_replace( '][', '-', $el['depends_on'][0] );
+			$search = preg_replace( '/(^\[)|(\]$)/', '', $search );
+			$search = preg_replace( '/[\[\]]/', '-', $search );
+
+			if ( ! empty( $form[ $search ] ) and $el['depends_on'][1] === $form[ $search ]['value'] ) {
+				$form[ $id ]['display'] = true;
 			}
-
-			/* Add the ID value to the array */
-			$el['id'] = $id;
-
-			/* Render each element */
-			$render .= _gigya_render_tpl( 'admin/tpl/formEl-' . $el['type'] . '.tpl.php', $el );
 		}
+	}
+
+	foreach ( $form as $id => $el ) {
+		$render .= _gigya_element_render( $el, $id, $name_prefix );
 	}
 
 	return $render;
@@ -290,7 +321,8 @@ function _gigParamDefaultOn( $array, $key ) {
  * Flattens array into dot notation.
  *
  * @param	array	$array	Input array
- * @returns array
+ *
+ * @return array
  */
 function _gigArrayFlatten( $array )
 {
@@ -383,6 +415,13 @@ function _gigya_error_log( $new_log ) {
 
 // --------------------------------------------------------------------
 
+/**
+ * @param $length
+ * @param $user_id
+ * @param $remember
+ *
+ * @return integer
+ */
 function _gigya_get_session_expiration($length, $user_id, $remember) {
 	return $length;
 }
@@ -488,59 +527,59 @@ function gigyaAfterRaasLogin( $gig_user, $wp_user ) {
 
 /**
  * Map social user fields to WordPress user fields
- * @param $gigya_object
- * @param $user_id
  *
- * @throws Exception if there are problems with the hook or data
+ * @param array|GSResponse|GSObject $gigya_object
+ * @param string $user_id
+ *
+ * @throws Exception If there are problems with the hook or data
  */
-function _gigya_add_to_wp_user_meta($gigya_object, $user_id) {
-	$gigya_object = _gigArrayFlatten($gigya_object);
+function _gigya_add_to_wp_user_meta( $gigya_object, $user_id ) {
+	if ( $gigya_object instanceof GSResponse ) {
+		$gigya_object = $gigya_object->getData()->serialize();
+	} elseif ( $gigya_object instanceof GSObject ) {
+		$gigya_object = $gigya_object->serialize();
+	}
+
+	$gigya_object = _gigArrayFlatten( $gigya_object );
 	$login_opts = get_option( GIGYA__SETTINGS_LOGIN );
 	$prefix = _gigya_get_mode_prefix();
-	if (!$prefix)
+	if ( ! $prefix ) {
 		return;
+	}
 
-	if (!empty($login_opts['map_raas_full_map'])) /* Fully customized field mapping options */
-	{
+	if ( ! empty( $login_opts['map_raas_full_map'] ) ) /* Fully customized field mapping options */ {
 		/* Hook for modifying the data from Gigya before it is mapped */
 		$gigya_object_orig = $gigya_object;
-		try
-		{
+		try {
 			$gigya_object = apply_filters( 'gigya_pre_field_mapping', $gigya_object_orig, get_userdata( $user_id ) );
-			if ( array_keys( $gigya_object_orig ) != array_keys( $gigya_object ) )
+			if ( array_keys( $gigya_object_orig ) != array_keys( $gigya_object ) ) {
 				throw new Exception( 'Invalid data returned by the hook. Return array must have the same keys as the input array.' );
-		}
-		catch ( Exception $e )
-		{
+			}
+		} catch ( Exception $e ) {
 			throw new Exception( 'Exception while running hook. Error message: ' . $e->getMessage() );
 		}
 
-		foreach ( json_decode( $login_opts['map_raas_full_map'] ) as $meta_key )
-		{
+		foreach ( json_decode( $login_opts['map_raas_full_map'] ) as $meta_key ) {
 			$meta_key = (array) $meta_key;
-			if ( ! isset( $gigya_object[$meta_key['gigyaName']] ) )
-			{
-				$gigya_object[$meta_key['gigyaName']] = '';
+			if ( ! isset( $gigya_object[ $meta_key['gigyaName'] ] ) ) {
+				$gigya_object[ $meta_key['gigyaName'] ] = '';
 				/*
 				 * Uncomment this line if you want to send a notice to the WordPress log about *every* field mapping failure on *every* user login/registration.
 				 *
 				 * trigger_error('The Gigya field '.$meta_key['gigyaName'].', specified in the field mapping, does not exist. WP user ID: '.$user_id, E_USER_NOTICE);
 				 */
 			}
-			update_user_meta( $user_id, $meta_key['cmsName'], sanitize_text_field( $gigya_object[$meta_key['gigyaName']] ) );
+			update_user_meta( $user_id, $meta_key['cmsName'], sanitize_text_field( $gigya_object[ $meta_key['gigyaName'] ] ) );
 		}
-	}
-	else /* Legacy field mapping options */
-	{
+	} else /* Legacy field mapping options */ {
 		foreach ( $login_opts as $key => $opt ) {
-			if (strpos($key, $prefix) === 0 && $opt == 1) {
-				$k = str_replace($prefix, "", $key);
-				$gigya_key = 'profile.'._wp_key_to_gigya_key($k);
-				if (!isset($gigya_object[$gigya_key]))
-				{
-					$gigya_object[$gigya_key] = '';
+			if ( strpos( $key, $prefix ) === 0 && $opt == 1 ) {
+				$k         = str_replace( $prefix, "", $key );
+				$gigya_key = 'profile.' . _wp_key_to_gigya_key( $k );
+				if ( ! isset( $gigya_object[ $gigya_key ] ) ) {
+					$gigya_object[ $gigya_key ] = '';
 				}
-				update_user_meta($user_id, $k, sanitize_text_field($gigya_object[$gigya_key]));
+				update_user_meta( $user_id, $k, sanitize_text_field( $gigya_object[ $gigya_key ] ) );
 			}
 		}
 	}

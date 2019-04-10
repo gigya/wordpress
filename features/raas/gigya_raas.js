@@ -204,7 +204,7 @@
 
 		/**
 		 * On RaaS login with Gigya behavior.
-		 * @param    response                 object
+		 * @param    response                 object    SDK response object
 		 * @param    response.provider        string    Login service provider, such as "googleplus" etc., or native RaaS ("")
 		 * @param    response.UID             string    User's UID
 		 * @param    response.UIDSignature    string    User's API signature which is calculated using the secret key and other parameters
@@ -212,8 +212,7 @@
 		 */
 		var raasLogin = function (response) {
 			var exp_timestamp = 0;
-			if (typeof response.expires_in !== 'undefined')
-			{
+			if (typeof response.expires_in !== 'undefined') {
 				exp_timestamp = Date.now() + (response.expires_in * 1000);
 			}
 

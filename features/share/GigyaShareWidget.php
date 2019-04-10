@@ -85,14 +85,6 @@ class GigyaShare_Widget extends WP_Widget {
 				'name'  => $this->get_field_name( 'title' )
 		);
 
-//		$form[$this->get_field_id( 'override' )] = array(
-//				'type'  => 'checkbox',
-//				'value' => esc_attr( _gigParam( $instance,'override' ), '' ),
-//				'label' => __( 'Override' ),
-//				'class' => 'gigya-widget-override',
-//				'name'  => $this->get_field_name( 'override' )
-//		);
-
 		echo _gigya_form_render( $form );
 	}
 
