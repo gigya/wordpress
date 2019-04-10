@@ -7,6 +7,7 @@ class GigyaInstall {
 
 	private $global_options;
 	private $login_options;
+	private $screenset_options;
 	private $session_options;
 	private $share_options;
 	private $comments_options;
@@ -14,7 +15,7 @@ class GigyaInstall {
 	private $gm_options;
 	private $log;
 
-	private $reactions_optionsjson_decode_nice;
+	private $reactions_options_nice;
 
 	/**
 	 * Constructor.
@@ -22,7 +23,8 @@ class GigyaInstall {
 	public function __construct() {
 		$this->global_options    = get_option( GIGYA__SETTINGS_GLOBAL );
 		$this->login_options     = get_option( GIGYA__SETTINGS_LOGIN );
-		$this->session_options     = get_option( GIGYA__SETTINGS_SESSION );
+		$this->screenset_options = get_option( GIGYA__SETTINGS_SCREENSETS );
+		$this->session_options   = get_option( GIGYA__SETTINGS_SESSION );
 		$this->share_options     = get_option( GIGYA__SETTINGS_SHARE );
 		$this->comments_options  = get_option( GIGYA__SETTINGS_COMMENTS );
 		$this->reactions_options = get_option( GIGYA__SETTINGS_REACTIONS );
@@ -47,6 +49,10 @@ class GigyaInstall {
 
 		if ( empty ( $this->login_options ) ) {
 			add_option( GIGYA__SETTINGS_LOGIN, array(), '', 'yes' );
+		}
+
+		if ( empty ( $this->screenset_options ) ) {
+			add_option( GIGYA__SETTINGS_SCREENSETS, array(), '', 'yes' );
 		}
 
 		if ( empty ( $this->share_options ) ) {
@@ -208,7 +214,7 @@ class GigyaInstall {
 		$this->setVar( $this->reactions_options, 'countType', $old['reaction_count_type'] );
 		$this->setVar( $this->reactions_options, 'multipleReactions', $old['reaction_multiple'] );
 
-		$this->setJson( $this->reactions_optionsjson_decode_nice, 'advanced', $old['reactions_custom_code'] );
+		$this->setJson( $this->reactions_options_nice, 'advanced', $old['reactions_custom_code'] );
 
 		update_option( GIGYA__SETTINGS_REACTIONS, $this->reactions_options );
 	}

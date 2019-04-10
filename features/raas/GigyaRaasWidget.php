@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Adds LoginWidget widget.
+ * Adds LoginWidget widget
  */
 class GigyaRaas_Widget extends WP_Widget {
 
@@ -16,7 +16,7 @@ class GigyaRaas_Widget extends WP_Widget {
 	}
 
 	/**
-	 * Front-end display of widget.
+	 * Front-end display of widget
 	 *
 	 * @see WP_Widget::widget()
 	 *
@@ -37,20 +37,6 @@ class GigyaRaas_Widget extends WP_Widget {
 		$output = '';
 		$title  = apply_filters( 'widget_title', $instance['title'] );
 
-		// Get the data from the argument.
-//		require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaRaasSet.php';
-//		$raas = new GigyaLoginSet();
-//		$data  = $raas->getParams();
-//
-//		// Override params or take the defaults.
-//		if ( ! empty( $instance['override'] ) ) {
-//			foreach ( $instance as $key => $value ) {
-//				if ( ! empty( $value ) ) {
-//					$data['ui'][$key] = esc_attr( $value );
-//				}
-//			}
-//		}
-
 		// Set the output.
 		$output .= $args['before_widget'];
 		if ( ! empty( $title ) ) {
@@ -61,7 +47,6 @@ class GigyaRaas_Widget extends WP_Widget {
 			$output .= '<a href="wp-login.php">' . __('Login') . '</a> | ';
 			$output .= '<a href="wp-login.php?action=register">' . __('Register') . '</a>';
 			$output .= '</div>';
-
 		} else {
 			$current_user = wp_get_current_user();
 			$output .= '<div class="gigya-wp-account-widget">';
@@ -78,7 +63,7 @@ class GigyaRaas_Widget extends WP_Widget {
 	}
 
 	/**
-	 * Back-end widget form.
+	 * Back-end widget form
 	 *
 	 * @see WP_Widget::form()
 	 *
@@ -90,43 +75,43 @@ class GigyaRaas_Widget extends WP_Widget {
 
 		$form = array();
 
-		$form[$this->get_field_id( 'title' )] = array(
-				'type'  => 'text',
-				'value' => esc_attr( _gigParam( $instance, 'title', '' ) ),
-				'label' => __( 'Title' ),
-				'class' => 'size',
-				'name'  => $this->get_field_name( 'title' )
+		$form[ $this->get_field_id( 'title' ) ] = array(
+			'type'  => 'text',
+			'value' => esc_attr( _gigParam( $instance, 'title', '' ) ),
+			'label' => __( 'Title' ),
+			'class' => 'size',
+			'name'  => $this->get_field_name( 'title' )
 		);
 
-		$form[$this->get_field_id( 'override' )] = array(
-				'type'  => 'checkbox',
-				'value' => esc_attr( _gigParam( $instance, 'override', '' ) ),
-				'label' => __( 'Override' ),
-				'class' => 'gigya-widget-override',
-				'name'  => $this->get_field_name( 'override' )
+		$form[ $this->get_field_id( 'override' ) ] = array(
+			'type'  => 'checkbox',
+			'value' => esc_attr( _gigParam( $instance, 'override', '' ) ),
+			'label' => __( 'Override' ),
+			'class' => 'gigya-widget-override',
+			'name'  => $this->get_field_name( 'override' )
 		);
 
-		$form[$this->get_field_id( 'width' )] = array(
-				'type'  => 'text',
-				'value' => esc_attr( _gigParam( $instance, 'width', '' ) ),
-				'label' => __( 'Width' ),
-				'class' => 'size',
-				'name'  => $this->get_field_name( 'width' )
+		$form[ $this->get_field_id( 'width' ) ] = array(
+			'type'  => 'text',
+			'value' => esc_attr( _gigParam( $instance, 'width', '' ) ),
+			'label' => __( 'Width' ),
+			'class' => 'size',
+			'name'  => $this->get_field_name( 'width' )
 		);
 
-		$form[$this->get_field_id( 'height' )] = array(
-				'type'  => 'text',
-				'value' => esc_attr( _gigParam( $instance, 'height', '' ) ),
-				'label' => __( 'Height' ),
-				'class' => 'size',
-				'name'  => $this->get_field_name( 'height' )
+		$form[ $this->get_field_id( 'height' ) ] = array(
+			'type'  => 'text',
+			'value' => esc_attr( _gigParam( $instance, 'height', '' ) ),
+			'label' => __( 'Height' ),
+			'class' => 'size',
+			'name'  => $this->get_field_name( 'height' )
 		);
 
 		echo _gigya_form_render( $form );
 	}
 
 	/**
-	 * Sanitize widget form values as they are saved.
+	 * Sanitize widget form values as they are saved
 	 *
 	 * @see WP_Widget::update()
 	 *

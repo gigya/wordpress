@@ -79,46 +79,51 @@ class GigyaSettings {
 	}
 
 	/**
-	 * Returns the form sections definition.
+	 * Returns the form sections definition
 	 * @return array
 	 */
 	public static function getSections() {
 		return array(
-				'gigya_global_settings'    => array(
-						'title' => 'Global Settings',
-						'func'  => 'globalSettingsForm',
-						'slug'  => 'gigya_global_settings'
-				),
-				'gigya_login_settings'     => array(
-						'title' => 'User Management Settings',
-						'func'  => 'loginSettingsForm',
-						'slug'  => 'gigya_login_settings'
-				),
-				'gigya_session_management'     => array(
-					'title' => 'Session Management',
-					'func'  => 'sessionManagementForm',
-					'slug'  => 'gigya_session_management'
-				),
-				'gigya_share_settings'     => array(
-						'title' => 'Share Settings',
-						'func'  => 'shareSettingsForm',
-						'slug'  => 'gigya_share_settings'
-				),
-				'gigya_comments_settings'  => array(
-						'title' => 'Comments Settings',
-						'func'  => 'commentsSettingsForm',
-						'slug'  => 'gigya_comments_settings'
-				),
-				'gigya_reactions_settings' => array(
-						'title' => 'Reactions Settings',
-						'func'  => 'reactionsSettingsForm',
-						'slug'  => 'gigya_reactions_settings'
-				),
-				'gigya_gm_settings'        => array(
-						'title' => 'Gamification Settings',
-						'func'  => 'gmSettingsForm',
-						'slug'  => 'gigya_gm_settings'
-				),
+			'gigya_global_settings'    => array(
+				'title' => 'Global Settings',
+				'func'  => 'globalSettingsForm',
+				'slug'  => 'gigya_global_settings'
+			),
+			'gigya_login_settings'     => array(
+				'title' => 'User Management Settings',
+				'func'  => 'loginSettingsForm',
+				'slug'  => 'gigya_login_settings'
+			),
+			'gigya_screenset_settings' => array(
+				'title' => 'Screen-Set Settings',
+				'func'  => 'screenSetSettingsForm',
+				'slug'  => 'gigya_screenset_settings'
+			),
+			'gigya_session_management' => array(
+				'title' => 'Session Management',
+				'func'  => 'sessionManagementForm',
+				'slug'  => 'gigya_session_management'
+			),
+			'gigya_share_settings'     => array(
+				'title' => 'Share Settings',
+				'func'  => 'shareSettingsForm',
+				'slug'  => 'gigya_share_settings'
+			),
+			'gigya_comments_settings'  => array(
+				'title' => 'Comments Settings',
+				'func'  => 'commentsSettingsForm',
+				'slug'  => 'gigya_comments_settings'
+			),
+			'gigya_reactions_settings' => array(
+				'title' => 'Reactions Settings',
+				'func'  => 'reactionsSettingsForm',
+				'slug'  => 'gigya_reactions_settings'
+			),
+			'gigya_gm_settings'        => array(
+				'title' => 'Gamification Settings',
+				'func'  => 'gmSettingsForm',
+				'slug'  => 'gigya_gm_settings'
+			),
 		);
 	}
 
@@ -153,31 +158,16 @@ class GigyaSettings {
 	 */
 	public static function onSave() {
 		/* When a Gigya's setting page is submitted */
-		if ( isset( $_POST['gigya_login_settings'] ) )
-		{
-			/*
-			 * When we turn on the Gigya's social login plugin, we also turn on the WP 'Membership: Anyone can register' option
-			 */
-			if ( $_POST['gigya_login_settings']['mode'] == 'wp_sl' ) {
-				update_option( 'users_can_register', 1 );
-			} elseif ( $_POST['gigya_login_settings']['mode'] == 'raas' ) {
-				update_option( 'users_can_register', 0 );
-			}
-		}
-		elseif ( isset( $_POST['gigya_global_settings'] ) )
-		{
+		if ( isset( $_POST['gigya_global_settings'] ) ) {
 			$cms = new gigyaCMS();
-			if (static::_setSecret())
-			{
+			if ( static::_setSecret() ) {
 				$res = $cms->apiValidate( $_POST['gigya_global_settings']['api_key'], $_POST['gigya_global_settings']['user_key'], GigyaApiHelper::decrypt( $_POST['gigya_global_settings']['api_secret'], SECURE_AUTH_KEY ), $_POST['gigya_global_settings']['data_center'] );
-				if ( ! empty( $res ) )
-				{
+				if ( ! empty( $res ) ) {
 					$gigyaErrCode = $res->getErrorCode();
-					if ( $gigyaErrCode > 0 )
-					{
+					if ( $gigyaErrCode > 0 ) {
 						$gigyaErrMsg = $res->getErrorMessage();
-						$errorsLink = "<a href='https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST' target='_blank' rel='noopener noreferrer'>Response_Codes_and_Errors</a>";
-						$message = "Gigya API error: {$gigyaErrCode} - {$gigyaErrMsg}.";
+						$errorsLink  = "<a href='https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST' target='_blank' rel='noopener noreferrer'>Response_Codes_and_Errors</a>";
+						$message     = "Gigya API error: {$gigyaErrCode} - {$gigyaErrMsg}.";
 						add_settings_error( 'gigya_global_settings', 'api_validate', __( $message . " For more information please refer to {$errorsLink}", 'error' ) );
 						error_log( 'Error updating Gigya settings: ' . $message . ' Call ID: ' . $res->getString( "callId", "N/A" ) );
 
@@ -189,6 +179,15 @@ class GigyaSettings {
 				}
 			} else {
 				add_settings_error( 'gigya_global_settings', 'api_validate', __( 'Error retrieving existing secret key from the database. This is normal if you have a multisite setup. Please re-enter the secret key.' ), 'error' );
+			}
+		} elseif ( isset( $_POST['gigya_login_settings'] ) ) {
+			/*
+			 * When we turn on the Gigya's social login plugin, we also turn on the WP 'Membership: Anyone can register' option
+			 */
+			if ( $_POST['gigya_login_settings']['mode'] == 'wp_sl' ) {
+				update_option( 'users_can_register', 1 );
+			} elseif ( $_POST['gigya_login_settings']['mode'] == 'raas' ) {
+				update_option( 'users_can_register', 0 );
 			}
 		}
 	}

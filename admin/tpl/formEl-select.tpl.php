@@ -4,7 +4,7 @@
  * Render with @see _gigya_render_tpl().
  */
 ?>
-<div class="row select <?php echo isset($class) ? $class : ''; ?>">
+<div class="gigya-form-field row select <?php echo isset($class) ? $class : ''; ?>">
 	<label for="gigya_<?php echo $id; ?>"><?php echo $label; ?></label>
 	<select id="gigya_<?php echo $id; ?>" name="<?php echo $name ?>">
 		<?php foreach ( $options as $key => $option ) : ?>

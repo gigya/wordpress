@@ -1,6 +1,6 @@
 <?php
 /**
- * Form builder for 'Social Login Settings' configuration page.
+ * Form builder for 'User Management Settings' configuration page.
  */
 function loginSettingsForm() {
 	$values = get_option( GIGYA__SETTINGS_LOGIN );
@@ -159,81 +159,11 @@ function loginSettingsForm() {
 		'markup' => '<div class="raas-login-wrapper">'
 	);
 
-	$form['raas_txt'] = array(
-		'markup' => '<h4>'.__('Registration-as-a-Service Settings').'</h4><small><span>RaaS requires initial configuration in Gigya\'s Admin Console. Screen sets can be defined in the <a class="link-https" target="_blank" rel="external nofollow noopener noreferrer" href="https://console.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets" title="https://console.gigya.com/site/partners/Settings.aspx#/screen-sets-app/dashboard">UI Builder</a>. The page will display a list of predefined default screen-sets, each with an ID. Click on the "Visual Editor" link next to the screen-set that you want to use, this will open the <a class="external" target="_blank" title="UI Builder" rel="internal" href="https://developers.gigya.com/display/GD/UI+Builder">Visual Editor</a> window. You can modify the screens, or just hit the "Save" button to activate them. Please make sure that the screen-set IDs that are defined below match the IDs of the screen-sets you have configured in the <a class="link-https" target="_blank" rel="external nofollow noopener noreferrer" href="https://console.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets" title="https://console.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets">UI Builder</a> page.</span></small>'
-	);
-
-	$form['raas_screens'] = array(
-		'markup' => '<h4>'.__('Login/Registration Screen Sets').'</h4>'
-	);
-
-	$form['raasWebScreen'] = array(
-			'type'  => 'text',
-			'label' => __( 'Web Screen Set ID' ),
-			'value' => _gigParam( $values, 'raasWebScreen', 'Default-RegistrationLogin' )
-	);
-
-	$form['raasMobileScreen'] = array(
-			'type'  => 'text',
-			'label' => __( 'Mobile Screen Set ID' ),
-            'value' => _gigParam( $values, 'raasMobileScreen', '' )
-	);
-
-	$form['raasLoginScreen'] = array(
-			'type'  => 'text',
-			'label' => __( 'Login Screen ID' ),
-			'value' => _gigParam( $values, 'raasLoginScreen', 'gigya-login-screen' )
-	);
-
-	$form['raasRegisterScreen'] = array(
-			'type'  => 'text',
-			'label' => __( 'Register Screen ID' ),
-			'value' => _gigParam( $values, 'raasRegisterScreen', 'gigya-register-screen' )
-	);
-
-	$form['raas_profile_screens'] = array(
-			'markup' => '<h4>' . __( 'Profile Screen Sets' ) . '</h4>',
-	);
-
-	$form['raasProfileWebScreen'] = array(
-			'type'  => 'text',
-			'label' => __( 'Web Screen Set ID' ),
-			'value' => _gigParam( $values, 'raasProfileWebScreen', 'Default-ProfileUpdate' )
-	);
-
-	$form['raasProfileMobileScreen'] = array(
-			'type'  => 'text',
-			'label' => __( 'Mobile Screen Set ID' ),
-			'value' => _gigParam( $values, 'raasProfileMobileScreen', '' )
-	);
-
 	$form['raasOverrideLinks'] = array(
 			'type'  => 'checkbox',
 			'label' => __( 'Override WordPress Link' ),
 			'desc'  => __( 'When checked, the WordPress default "Login", "Registration" and "Edit Profile" links pop-up RaaS screens instead of WordPress screens.' ),
 			'value' => _gigParamDefaultOn( $values, 'raasOverrideLinks' )
-	);
-
-	$form['raas_divs'] = array(
-			'markup' => '<h4>DIV IDs</h4><small>' . __( 'Specify the DIV IDs in which to embed the screen-sets.' ) . '</small>'
-	);
-
-	$form['raasLoginDiv'] = array(
-			'type'  => 'text',
-			'label' => __( 'Login' ),
-			'value' => _gigParam( $values, 'raasLoginDiv', 'loginform' )
-	);
-
-	$form['raasRegisterDiv'] = array(
-			'type'  => 'text',
-			'label' => __( 'Register' ),
-			'value' => _gigParam( $values, 'raasRegisterDiv', 'registerform' )
-	);
-
-	$form['raasProfileDiv'] = array(
-			'type'  => 'text',
-			'label' => __( 'Profile' ),
-			'value' => _gigParam( $values, 'raasProfileDiv', 'profile-page' )
 	);
 
 	$form['map_rass_title'] = array(
@@ -259,7 +189,7 @@ function loginSettingsForm() {
 		'type'  => 'checkbox',
 		'label' => __( 'Check All' ),
 		'value' => 0,
-		'class' => 'raas_allowed_admin_checkall'
+		'class' => 'raas_allowed_admin_checkall',
 	);
 	// create the roles checkboxes
 	foreach ( $roles as $role ) {
