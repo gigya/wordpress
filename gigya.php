@@ -172,7 +172,8 @@ function _gigya_form_render( $form, $name_prefix = '' ) {
 			$search = preg_replace( '/(^\[)|(\]$)/', '', $search );
 			$search = preg_replace( '/[\[\]]/', '-', $search );
 
-			if ( ! empty( $form[ $search ] ) and $el['depends_on'][1] === $form[ $search ]['value'] ) {
+			$dependee_values = array_slice( $el['depends_on'], 1 );
+			if ( ! empty( $form[ $search ] ) and in_array( $form[ $search ]['value'], $dependee_values ) ) {
 				$form[ $id ]['display'] = true;
 			}
 		}
