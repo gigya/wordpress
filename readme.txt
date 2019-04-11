@@ -5,7 +5,7 @@ Tags: CIAM, CIM, Registration, Social Login, Oauth, OpenSocial, Graph API, Faceb
 Requires at least: 4.2
 Tested up to: 4.9
 Stable tag: 5.8.0
-License: GPLv2 or later
+License: Apache v2.0
 
 Integrate your WordPress site with Gigya
 
@@ -165,6 +165,7 @@ For question about installations or configuration, please contact your account m
 
 = 5.8 =
 * It is now possible to load custom screen-sets from Gigya and place them anywhere on the website as widgets
+* Changed license from GPL v2 to Apache 2.0
 
 == FAQ ==
 

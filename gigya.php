@@ -6,7 +6,7 @@
  * Version: 5.8.0
  * Author: Gigya
  * Author URI: http://gigya.com
- * License: GPL2+
+ * License: Apache v2.0
  */
 //
 // --------------------------------------------------------------------
