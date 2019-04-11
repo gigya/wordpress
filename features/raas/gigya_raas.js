@@ -78,7 +78,6 @@
 							//Logout
 							raasLogout();
 							return false;
-							break;
 					}
 				}
 				else if (path.indexOf('profile.php') !== -1 && gigyaRaasParams.canEditUsers !== 1) {
@@ -198,7 +197,6 @@
 					action: 'raas_update_profile'
 				}
 			};
-			var req = $.ajax(options);
 		};
 // --------------------------------------------------------------------
 
@@ -286,4 +284,3 @@
 		raasInit();
 	});
 })(jQuery);
-
