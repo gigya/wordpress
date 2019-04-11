@@ -23,6 +23,7 @@ define( 'GIGYA__CDN_PROTOCOL', ! empty( $_SERVER['HTTPS'] ) ? 'https://cdns' : '
 define( 'GIGYA__JS_CDN', GIGYA__CDN_PROTOCOL . '.gigya.com/js/socialize.js?apiKey=' );
 define( 'GIGYA__LOG_LIMIT', 50 );
 define( 'GIGYA__DEFAULT_COOKIE_EXPIRATION', 1800 ); /* WordPress defaults to 172800 (48 hours) */
+define( 'GIGYA__DEFAULT_REMEMBER_COOKIE_EXPIRATION', 1209600 ); /* 2 weeks */
 
 /**
  * Gigya constants for admin settings sections.
@@ -439,22 +440,34 @@ function updateCookie( $cookie, $expiration ) {
 /**
  * Get Login session time from Gigya's plugin, as configured by the user, and syncs it with WordPress using the auth_cookie_expiration hook
  *
- * @param	string	$mode			Whether RaaS (raas) or Social Login (wp_sl)
- * @param	array	$session_opts	Login options for RaaS (session duration etc.)
- * @param	int		$forced_expiration	If set, will override the WP cookie expiration time defined in the configuration
+ * @param string $mode Whether RaaS (raas) or Social Login (wp_sl)
+ * @param string $remember_mode Can be either 'normal' or 'remember'
+ * @param array $session_opts Login options for RaaS (session duration etc.)
+ * @param int $forced_expiration If set, will override the WP cookie expiration time defined in the configuration
  *
- * @return	integer
+ * @return    integer
  */
-function gigyaSyncLoginSession( $mode, $session_opts, $forced_expiration = null ) {
+function gigyaSyncLoginSession( $mode, $remember_mode, $session_opts, $forced_expiration = null ) {
 	$default_expiration = GIGYA__DEFAULT_COOKIE_EXPIRATION;
 	$expiration = $default_expiration;
 	$session_type = $expiration;
 
+	/* Determined where to get the session expiration config from -- normal session params or Remember Me params */
+	if ( empty( $remember_mode ) or $remember_mode == 'normal' ) {
+		$session_type_conf     = 'session_type_numeric';
+		$session_duration_conf = 'session_duration';
+	} elseif ( $remember_mode == 'remember' ) {
+		$session_type_conf     = 'remember_session_type_numeric';
+		$session_duration_conf = 'remember_session_duration';
+	} else {
+		throw new InvalidArgumentException( 'Invalid session Remember Me mode' );
+	}
+
 	if ( $mode == 'raas' )
 	{
-		if ( isset( $session_opts['session_type_numeric'] ) )
+		if ( isset( $session_opts[$session_type_conf] ) )
 		{
-			$session_type = intval( $session_opts['session_type_numeric'] );
+			$session_type = intval( $session_opts[$session_type_conf] );
 
 			switch ( $session_type )
 			{
@@ -463,11 +476,11 @@ function gigyaSyncLoginSession( $mode, $session_opts, $forced_expiration = null 
 					$expiration = YEAR_IN_SECONDS;
 					break;
 				case GIGYA__SESSION_SLIDING:
-					$expiration = $session_opts['session_duration'];
+					$expiration = $session_opts[$session_duration_conf];
 					break;
 				default:
-					$session_type = $session_opts['session_duration'];
-					$expiration = $session_opts['session_duration'];
+					$session_type = $session_opts[$session_duration_conf];
+					$expiration = $session_opts[$session_duration_conf];
 					break;
 			}
 

@@ -165,6 +165,10 @@ For question about installations or configuration, please contact your account m
 
 = 5.8 =
 * It is now possible to load custom screen-sets from Gigya and place them anywhere on the website as widgets
+* Fixed a UI issue vis-a-vis WordPress 5.x
+
+= 5.9 =
+* There is now a separate configuration for Remember Me session length
 
 == FAQ ==
 

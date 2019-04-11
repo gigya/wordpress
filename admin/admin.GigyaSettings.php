@@ -15,12 +15,12 @@ class GigyaSettings {
 	 * Constructor.
 	 */
 	public function __construct() {
-		// Add Javascript and css to admin page
+		/* Add Javascript and css to admin page */
 		wp_enqueue_style( 'gigya_admin_css', GIGYA__PLUGIN_URL . 'admin/gigya_admin.css' );
 		wp_enqueue_script( 'gigya_admin_js', GIGYA__PLUGIN_URL . 'admin/gigya_admin.js' );
 		wp_enqueue_script( 'gigya_jsonlint_js', GIGYA__PLUGIN_URL . 'admin/jsonlint.js' );
 
-		// Actions.
+		/* Actions */
 		add_action( 'admin_init', array( $this, 'adminInit' ) );
 		add_action( 'admin_menu', array( $this, 'adminMenu' ) );
 	}
@@ -30,8 +30,7 @@ class GigyaSettings {
 	 * Initialize Admin section.
 	 */
 	public function adminInit() {
-
-		// Add settings sections.
+		/* Add settings sections */
 		foreach ( $this->getSections() as $id => $section ) {
             $option_group = $section['slug'] . '-group';
 			add_settings_section( $id, $section['title'], $section['func'], $section['slug'] );
@@ -85,42 +84,42 @@ class GigyaSettings {
 	public static function getSections() {
 		return array(
 			'gigya_global_settings'    => array(
-				'title' => 'Global Settings',
+				'title' => __( 'Global Settings' ),
 				'func'  => 'globalSettingsForm',
 				'slug'  => 'gigya_global_settings'
 			),
 			'gigya_login_settings'     => array(
-				'title' => 'User Management Settings',
+				'title' => __( 'User Management Settings' ),
 				'func'  => 'loginSettingsForm',
 				'slug'  => 'gigya_login_settings'
 			),
 			'gigya_screenset_settings' => array(
-				'title' => 'Screen-Set Settings',
+				'title' => __( 'Screen-Set Settings' ),
 				'func'  => 'screenSetSettingsForm',
 				'slug'  => 'gigya_screenset_settings'
 			),
 			'gigya_session_management' => array(
-				'title' => 'Session Management',
+				'title' => __( 'Session Management' ),
 				'func'  => 'sessionManagementForm',
 				'slug'  => 'gigya_session_management'
 			),
 			'gigya_share_settings'     => array(
-				'title' => 'Share Settings',
+				'title' => __( 'Share Settings' ),
 				'func'  => 'shareSettingsForm',
 				'slug'  => 'gigya_share_settings'
 			),
 			'gigya_comments_settings'  => array(
-				'title' => 'Comments Settings',
+				'title' => __( 'Comments Settings' ),
 				'func'  => 'commentsSettingsForm',
 				'slug'  => 'gigya_comments_settings'
 			),
 			'gigya_reactions_settings' => array(
-				'title' => 'Reactions Settings',
+				'title' => __( 'Reactions Settings' ),
 				'func'  => 'reactionsSettingsForm',
 				'slug'  => 'gigya_reactions_settings'
 			),
 			'gigya_gm_settings'        => array(
-				'title' => 'Gamification Settings',
+				'title' => __( 'Gamification Settings' ),
 				'func'  => 'gmSettingsForm',
 				'slug'  => 'gigya_gm_settings'
 			),

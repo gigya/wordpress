@@ -8,6 +8,9 @@ var GigyaWp = GigyaWp || {};
 	 *
 	 * @class gigyaLoginParams
 	 * @class gigyaRaasParams
+	 *
+	 * @var string ajaxurl
+	 * @var boolean sendSetSSOToken
 	 */
 
 // --------------------------------------------------------------------
@@ -16,7 +19,7 @@ var GigyaWp = GigyaWp || {};
 
 // --------------------------------------------------------------------
 
-	$(document).ready(function () {
+	$(function () {
 		// jQueryUI dialog element.
 		$('body').append('<div id="dialog-modal"></div>');
 

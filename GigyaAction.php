@@ -140,16 +140,19 @@ class GigyaAction
 			'enabledProviders'            => _gigParam( $this->global_options, 'enabledProviders', '*' ),
 			'lang'                        => _gigParam( $this->global_options, 'lang', 'en' ),
 			'sessionExpiration'           => gigyaSyncLoginSession(
-				( isset( $this->login_options['mode'] ) ? $this->login_options['mode'] : '' ), $this->session_options
+				( isset( $this->login_options['mode'] ) ? $this->login_options['mode'] : '' ), 'normal', $this->session_options
+			),
+			'rememberSessionExpiration'   => gigyaSyncLoginSession(
+				( isset( $this->login_options['mode'] ) ? $this->login_options['mode'] : '' ), 'remember', $this->session_options
 			),
 		);
 
 		/* Add advanced parameters if exist */
-		if ( ! empty( $this->global_options['advanced'] ) )
-		{
+		if ( ! empty( $this->global_options['advanced'] ) ) {
 			$advanced = gigyaCMS::parseJSON( _gigParam( $this->global_options, 'advanced', '' ) );
-			if ( is_array( $advanced ) )
+			if ( is_array( $advanced ) ) {
 				$params = array_merge( $params, $advanced );
+			}
 		}
 
 		/* Let others plugins to modify the global parameters */
@@ -325,9 +328,8 @@ class GigyaAction
 		);
 
 		$expiration = intval( $_POST['expiration'] / 1000 ) - time();
-		if ( $this->login_options['mode'] == 'raas' and $this->session_options['session_type_numeric'] > 0 ) /* Fixed session in RaaS */
-		{
-			$return[] = gigyaSyncLoginSession( 'raas', $this->session_options, $expiration );
+		if ( $this->login_options['mode'] == 'raas' and $this->session_options['session_type_numeric'] > 0 ) /* Fixed session in RaaS */ {
+			$return[] = gigyaSyncLoginSession( 'raas', 'normal', $this->session_options, $expiration );
 		}
 
 		echo json_encode( $return );
@@ -511,7 +513,7 @@ class GigyaAction
 	}
 
 	/**
-	 * Hook user register.
+	 * Hook user register
 	 *
 	 * @param $uid
 	 *
@@ -563,7 +565,7 @@ class GigyaAction
 	}
 
 	/**
-	 * Hook delete user.
+	 * Hook delete user
 	 *
 	 * @param $user_id
 	 *
@@ -584,7 +586,7 @@ class GigyaAction
 	}
 
 	/**
-	 * Shortcode for UserInfo.
+	 * Shortcode for UserInfo
 	 *
 	 * @param    array $atts
 	 * @param          $info
@@ -610,7 +612,7 @@ class GigyaAction
 	}
 
 	/**
-	 * Register widgets.
+	 * Register widgets
 	 */
 	public function widgetsInit() {
 		if ( empty( $this->login_options ) ) /* Only happens on initial activation, before configuring Gigya */
@@ -676,7 +678,7 @@ class GigyaAction
 	}
 
 	/**
-	 * Hook content alter.
+	 * Hook content alter
 	 *
 	 * @param    $content
 	 *
@@ -718,7 +720,7 @@ class GigyaAction
 	}
 
 	/**
-	 * Hook comments_template.
+	 * Hook comments_template
 	 *
 	 * @param $comment_template
 	 *
@@ -739,7 +741,7 @@ class GigyaAction
 	}
 
 	/**
-	 * Hook AJAX Clean DB.
+	 * Hook AJAX Clean DB
 	 */
 	public function ajaxCleanDB() {
 		if ( current_user_can( 'manage_options' ) )
