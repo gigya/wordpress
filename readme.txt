@@ -182,3 +182,8 @@ Is the Gigya service free?
 The Gigya service is free for evaluation purposes.
 
 Please contact Gigya via <a href="http://www.gigya.com/contact/" title="Contact Us">Contact Us</a> for information about pricing, services and technical support.
+
+== License ==
+
+Copyright (c) 2016– SAP SE or an SAP affiliate company. All rights reserved.
+This file is licensed under the Apache Software License, v. 2 except as noted otherwise in the license.txt file.
