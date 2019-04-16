@@ -185,5 +185,5 @@ Please contact Gigya via <a href="http://www.gigya.com/contact/" title="Contact 
 
 == License ==
 
-Copyright (c) 2016– SAP SE or an SAP affiliate company. All rights reserved.
+Copyright (c) 2009– SAP SE or an SAP affiliate company. All rights reserved.
 This file is licensed under the Apache Software License, v. 2 except as noted otherwise in the license.txt file.
