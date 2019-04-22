@@ -4,7 +4,7 @@ Contributors: gigya.com, konforti, luciodiri
 Tags: CIAM, CIM, Registration, Social Login, Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, Gigya, Social Infrastructure, feed
 Requires at least: 4.2
 Tested up to: 4.9
-Stable tag: 5.8.0
+Stable tag: 5.8.1
 License: Apache v2.0
 
 Integrate your WordPress site with Gigya
@@ -167,6 +167,9 @@ For question about installations or configuration, please contact your account m
 * It is now possible to load custom screen-sets from Gigya and place them anywhere on the website as widgets
 * Changed license from GPL v2 to Apache 2.0
 
+= 5.8.1 =
+* Added license file and reference (minor)
+
 == FAQ ==
 
 Can I configure the design of the Gigya component?
@@ -182,3 +185,8 @@ Is the Gigya service free?
 The Gigya service is free for evaluation purposes.
 
 Please contact Gigya via <a href="http://www.gigya.com/contact/" title="Contact Us">Contact Us</a> for information about pricing, services and technical support.
+
+== License ==
+
+Copyright (c) 2009– SAP SE or an SAP affiliate company. All rights reserved.
+This file is licensed under the Apache Software License, v. 2 except as noted otherwise in the license.txt file.
