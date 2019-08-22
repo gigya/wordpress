@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name: Gigya - Make Your Site Social
- * Plugin URI: http://gigya.com
- * Description: Allows sites to utilize the Gigya API for authentication and social network updates.
+ * Plugin Name: SAP Customer Data Cloud
+ * Plugin URI: https://www.sap.com/products/crm/customer-data-management.html
+ * Description: Allows sites to utilize the SAP Customer Data Cloud API for authentication and social network updates.
  * Version: 5.8.1
- * Author: Gigya
- * Author URI: http://gigya.com
+ * Author: SAP SE
+ * Author URI: https://www.sap.com/products/crm/customer-data-management.html
  * License: Apache v2.0
  */
 //

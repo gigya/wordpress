@@ -103,7 +103,7 @@
 		 * @param eventObj.errorMessage
 		 */
 		var onScreenSetErrorHandler = function (eventObj) {
-			console.log('Error when loading Gigya screenset: ');
+			console.log('Error when loading SAP Customer Data Cloud screenset: ');
 			console.log(eventObj.errorCode + " – " + eventObj.errorMessage);
 		};
 

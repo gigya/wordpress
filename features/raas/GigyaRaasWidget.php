@@ -10,9 +10,9 @@ class GigyaRaas_Widget extends WP_Widget {
 	 */
 	function __construct() {
 		$args = array(
-				'description' => __( 'RaaS Login by Gigya' )
+				'description' => __( 'RaaS Login by SAP Customer Data Cloud' )
 		);
-		parent::__construct( 'gigya_raas', __( 'Gigya RaaS' ), $args );
+		parent::__construct( 'gigya_raas', __( 'SAP CDC RaaS' ), $args );
 	}
 
 	/**

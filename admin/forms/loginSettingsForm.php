@@ -12,7 +12,7 @@ function loginSettingsForm() {
 			'options' => array(
 					'wp_only' => __( 'WordPress only' ),
 					'wp_sl'   => __( 'WordPress + Social Login <small class="gigya-raas-warn hidden">Warning: this site is configured on Gigya server to use Registration-as-a-Service. Please contact your Gigya account manager for migration instruction.</small>' ),
-					'raas'    => __( 'Registration-as-a-Service <small>Selecting this option overrides the WordPress user management system. This requires additional administration steps. Learn more <a href="https://developers.gigya.com/display/GD/WordPress+Plugin#WordPressPlugin-RaaS">here</a></small>' )
+					'raas'    => __( 'Registration-as-a-Service <small>Selecting this option overrides the WordPress user management system. This requires additional administration steps. Learn more <a href="https://developers.gigya.com/display/GD/WordPress#WordPress-UserManagementSettings">here</a></small>' )
 			),
 			'value'   => _gigParam( $values, 'mode', 'wp_only' ),
 			'class'   => 'raas_disabled'
@@ -44,7 +44,7 @@ function loginSettingsForm() {
 			'type'  => 'text',
 			'label' => __( 'Post Login Redirect' ),
 			'value' => _gigParam( $values, 'redirect', '' ),
-			'desc'  => __( 'Provide a URL to which users are redirected after they log-in via Gigya. External URLs must include the protocol prefix ( usually: http:// or https:// ).' )
+			'desc'  => __( 'Provide a URL to which users are redirected after they log-in via SAP Customer Data Cloud. External URLs must include the protocol prefix ( usually: http:// or https:// ).' )
 	);
 
 	$form['gl_end'] = array(
@@ -117,7 +117,7 @@ function loginSettingsForm() {
 	);
 
 	$form['map_social_title'] = array(
-		'markup' => __('<h4>Mapping Gigya User Fields to WordPress Fields</h4><p>Define which fields to map from Gigya to WordPress. The WordPress mapped target fields will be populated with data copied from the corresponding source fields. Learn more <a href="https://developers.gigya.com/display/GD/WordPress+Plugin#WordPressPlugin-UserManagementSettings" target="_blank" rel="noopener noreferrer" />here</a></p>')
+		'markup' => __('<h4>Mapping SAP CDC User Fields to WordPress Fields</h4><p>Define which fields to map from SAP Customer Data Cloud to WordPress. The WordPress mapped target fields will be populated with data copied from the corresponding source fields. Learn more <a href="https://developers.gigya.com/display/GD/WordPress+Plugin#WordPressPlugin-UserManagementSettings" target="_blank" rel="noopener noreferrer" />here</a></p>')
 	);
 
 	$form['map_social_first_name'] = array(
@@ -167,7 +167,7 @@ function loginSettingsForm() {
 	);
 
 	$form['map_rass_title'] = array(
-		'markup' => __('<h4>Mapping Gigya User Fields to WordPress Fields</h4><p>Define which fields to map from Gigya to WordPress. The WordPress mapped target fields will be populated with data copied from the corresponding source fields. Learn more <a href="https://developers.gigya.com/display/GD/WordPress+Plugin#WordPressPlugin-UserManagementSettings" target="_blank" rel="noopener noreferrer" />here</a></p>')
+		'markup' => __('<h4>Mapping SAP CDC User Fields to WordPress Fields</h4><p>Define which fields to map from SAP Customer Data Cloud to WordPress. The WordPress mapped target fields will be populated with data copied from the corresponding source fields. Learn more <a href="https://developers.gigya.com/display/GD/WordPress#WordPress-UserManagementSettings" target="_blank" rel="noopener noreferrer" />here</a></p>')
 	);
 
 	$gigya_full_map = _gigParam($values, 'map_raas_full_map', '');
@@ -179,7 +179,7 @@ function loginSettingsForm() {
 	);
 
 	$form['raas_admin_roles_title'] = array(
-		'markup' => __('<h4>Admin Login Roles</h4><p>Select below which <a href="http://codex.wordpress.org/Roles_and_Capabilities#Roles">Roles</a> should be permitted to login via the default WordPress login UI in /wp-login.php <br/>For more information, please refer to <a href="https://developers.gigya.com/display/GD/WordPress+Plugin#WordPressPlugin-RolesandPermissions" target="_blank" rel="noopener noreferrer">Users, Roles & Permissions</a> section in Gigya documentation.</p>')
+		'markup' => __('<h4>Admin Login Roles</h4><p>Select below which <a href="https://wordpress.org/support/article/roles-and-capabilities/">Roles</a> should be permitted to login via the default WordPress login UI in /wp-login.php <br/>For more information, please refer to <a href="https://developers.gigya.com/display/GD/Using+RaaS+with+WordPress" target="_blank" rel="noopener noreferrer">Admin Users, Roles and Permissions</a> section in SAP Customer Data Cloud documentation.</p>')
 	);
 
 	// create checkbox for each role in site (except admin & super admin)

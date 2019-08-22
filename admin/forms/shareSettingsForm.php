@@ -22,7 +22,7 @@ function shareSettingsForm() {
 			),
 			'label'   => __( 'Set the position of the Share Bar in a post page' ),
 			'value'   => _gigParam( $values, 'position', 'none' ),
-			'desc'    => sprintf( __( 'You can also add and position Gigya Share Bar using the %s settings page.' ), '<a href="' . admin_url( 'widgets.php' ) . '">' . __( 'Widgets' ) . '</a>' )
+			'desc'    => sprintf( __( 'You can also add and position SAP Customer Data Cloud Share Bar using the %s settings page.' ), '<a href="' . admin_url( 'widgets.php' ) . '">' . __( 'Widgets' ) . '</a>' )
 	);
 
 	$form['shareButtons'] = array(

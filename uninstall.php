@@ -5,7 +5,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) || ! WP_UNINSTALL_PLUGIN || dirname( WP_
 	exit;
 }
 
-// Delete Gigya admin settings options.
+// Delete SAP CDC admin settings options.
 delete_option( GIGYA__SETTINGS_GLOBAL );
 delete_option( GIGYA__SETTINGS_LOGIN );
 delete_option( GIGYA__SETTINGS_SCREENSETS );
@@ -15,7 +15,7 @@ delete_option( GIGYA__SETTINGS_COMMENTS );
 delete_option( GIGYA__SETTINGS_REACTIONS );
 delete_option( GIGYA__SETTINGS_GM );
 
-// Delete Gigya widgets options.
+// Delete SAP CDC widgets options.
 delete_option( 'widget_gigya_share' );
 delete_option( 'widget_gigya_comments' );
 delete_option( 'widget_gigya_reactions' );
@@ -23,7 +23,7 @@ delete_option( 'widget_gigya_gamification' );
 delete_option( 'widget_gigya_feed' ); /* Deprecated/Removed */
 delete_option( 'widget_gigya_follow' ); /* Deprecated/Removed */
 
-// Remove custom Gigya capabilities
+// Remove custom SAP CDC capabilities
 $role = get_role('administrator');
 $role->remove_cap('edit_gigya');
 $role->remove_cap('edit_gigya_secret');
