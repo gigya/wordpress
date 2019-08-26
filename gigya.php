@@ -3,7 +3,7 @@
  * Plugin Name: SAP Customer Data Cloud
  * Plugin URI: https://www.sap.com/products/crm/customer-data-management.html
  * Description: Allows sites to utilize the SAP Customer Data Cloud API for authentication and social network updates.
- * Version: 5.8.1
+ * Version: 5.8.2
  * Author: SAP SE
  * Author URI: https://www.sap.com/products/crm/customer-data-management.html
  * License: Apache v2.0

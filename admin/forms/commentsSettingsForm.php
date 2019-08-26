@@ -39,9 +39,9 @@ function commentsSettingsForm() {
 					'under' => __( 'Under Post' ),
 					'none'  => __( 'None' )
 			),
-			'label'   => __( 'Set the position of the comments in a post page' ),
+			'label'   => __( 'Set the position of the Comments in a post page' ),
 			'value'   => _gigParam( $values, 'position', 'under' ),
-			'desc'    => sprintf( __( 'You can also add and position comments using the %s settings page.' ), '<a href="' . admin_url( 'widgets.php' ) . '">' . __( 'Widgets' ) . '</a>' )
+			'desc'    => sprintf( __( 'You can also add and position Comments using the %s settings page.' ), '<a href="' . admin_url( 'widgets.php' ) . '">' . __( 'Widgets' ) . '</a>' )
 	);
 
 	$form['advanced'] = array(
