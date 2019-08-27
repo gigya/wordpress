@@ -43,7 +43,7 @@ You can read more about the installation steps and other advanced configuration 
 2.	Go to the Plug-in tab in the WordPress administration panel, find the SAP Customer Data Cloud plug-in on the list and click Activate.
 3.	Proceed to the plug-in settings page ("SAP CDC" item on the left sidebar) to configure your plug-in. The plug-in needs your API information in the SAP Customer Data Cloud settings menu, so please grab your API key, and secret code from the[SAP CDC console website](https://console.gigya.com/).
 
-For question about installations or configuration, please contact your account manager or contact our support via the support page on the Gigya site.
+For question about installations or configuration, please contact your account manager or contact our support via the support page on the SAP CDC [site](https://support.sap.com/en/contact-us.html).
 
 == Screenshots ==
 
