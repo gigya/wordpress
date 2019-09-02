@@ -152,7 +152,7 @@ class GSResponse
 	 * @param $errorMessage
 	 * @param $traceLog
 	 *
-	 * @throws Exception
+	 * @throws GSException
 	 */
 	public function __construct($method, $responseText = null, $params = null, $errorCode = null, $errorMessage = null, $traceLog = null) {
 		$this->data = new GSObject();

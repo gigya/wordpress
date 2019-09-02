@@ -59,15 +59,16 @@ class GigyaAction
 		add_action( 'widgets_init', array( $this, 'widgetsInit' ) );
 		add_action( 'set_logged_in_cookie', 'updateCookie', 10, 2 );
 		add_action( 'rest_api_init', array( $this, 'appendUserMetaToRestAPI' ) );
+		add_action( 'gigya_offline_sync_cron', array( $this, 'executeOfflineSyncCron' ) );
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 		add_filter( 'the_content', array( $this, 'theContent' ) );
 		add_filter( 'get_avatar', array( $this, 'getGigyaAvatar' ), 10, 5 );
 		add_filter( 'login_message', array( $this, 'raas_wp_login_custom_message' ) );
+		add_filter( 'cron_schedules', array( $this, 'getOfflineSyncSchedules' ) );
 
 		$comments_on = $this->gigya_comments_on();
-		if ( $comments_on )
-		{
-			add_filter( 'comments_template', array( $this, 'commentsTemplate' ) );
+		if ( $comments_on ) {
+			add_filter( 'comments_template', [ $this, 'commentsTemplate' ] );
 		}
 
 		/* Plugins shortcode activation switches */
@@ -254,7 +255,7 @@ class GigyaAction
 			$gigya_uid = get_user_meta( $wp_uid, 'gigya_uid', true );
 
 			if ( ! empty( $gigya_uid ) ) {
-				$gigya_cms     = new GigyaCMS();
+				$gigya_cms = new GigyaCMS();
 
 				try {
 					$gigya_account = $gigya_cms->getAccount( $gigya_uid );
@@ -265,13 +266,13 @@ class GigyaAction
 				} catch ( Exception $e ) {
 					error_log( 'Unable to process field mapping for Gigya user ' . $gigya_uid );
 
-					wp_send_json_error( array( 'msg' => $generic_msg ) );
+					wp_send_json_error( [ 'msg' => $generic_msg ] );
 				}
 			} else {
-				wp_send_json_error( array( 'msg' => $generic_msg ) );
+				wp_send_json_error( [ 'msg' => $generic_msg ] );
 			}
 		} else {
-			wp_send_json_error( array( 'msg' => $generic_msg ) );
+			wp_send_json_error( [ 'msg' => $generic_msg ] );
 		}
 	}
 
@@ -338,39 +339,36 @@ class GigyaAction
 	public function appendUserMetaToRestAPI() {
 		register_rest_field( 'user',
 			'gigya_fields',
-			array(
+			[
 				'get_callback' => function ( $user_data ) {
-					if ( apply_filters( 'rest_show_user_meta', $user_data['id'] ) )
-					{
+					if ( apply_filters( 'rest_show_user_meta', $user_data['id'] ) ) {
 						$nonce = ( isset( $_REQUEST['_wpnonce'] ) ) ? $_REQUEST['_wpnonce'] : '';
-						if ( wp_verify_nonce( $nonce, 'wp_rest' ) )
-						{
+						if ( wp_verify_nonce( $nonce, 'wp_rest' ) ) {
 							$login_opts = get_option( GIGYA__SETTINGS_LOGIN );
-							$meta = get_user_meta( $user_data['id'] );
+							$meta       = get_user_meta( $user_data['id'] );
 
-							if ( ! empty( $login_opts['map_raas_full_map'] ) ) /* Fully customized field mapping options */
-							{
-								foreach ( json_decode( $login_opts['map_raas_full_map'] ) as $meta_key )
-								{
-									$meta_key = ((array) $meta_key);
-									$key = $meta_key['cmsName'];
+							if ( ! empty( $login_opts['map_raas_full_map'] ) ) /* Fully customized field mapping options */ {
+								foreach ( json_decode( $login_opts['map_raas_full_map'] ) as $meta_key ) {
+									$meta_key = ( (array) $meta_key );
+									$key      = $meta_key['cmsName'];
 
-									if (isset($meta[$key]))
-										$meta_trimmed[$key] = $meta[$key];
+									if ( isset( $meta[ $key ] ) ) {
+										$meta_trimmed[ $key ] = $meta[ $key ];
+									}
 								}
 
-								return (!empty($meta_trimmed)) ? $meta_trimmed : array(); /* array() for fallback compatibility */
+								return ( ! empty( $meta_trimmed ) ) ? $meta_trimmed : []; /* array() for fallback compatibility */
+							} else {
+								return [];
 							}
-							else
-								return array();
+						} else {
+							return [];
 						}
-						else
-							return array();
+					} else {
+						return [];
 					}
-					else
-						return array();
 				},
-			)
+			]
 		);
 	}
 
@@ -579,7 +577,7 @@ class GigyaAction
 		elseif ( $this->login_options['mode'] == 'raas' )
 		{
 			$account = get_userdata( $user_id );
-			$gigyaCMS->deleteAccount( $account );
+			$gigyaCMS->deleteAccountByEmail( $account );
 		}
 	}
 
@@ -749,6 +747,28 @@ class GigyaAction
 		}
 	}
 
+	/**
+	 * Get WordPress user object by Gigya UID
+	 *
+	 * @param string $gigya_uid Gigya UID
+	 *
+	 * @return WP_User|false
+	 */
+	public function getWPUserByGigyaUid( $gigya_uid ) {
+		$wp_user = get_users( [
+			'meta_key'   => 'gigya_uid',
+			'meta_value' => $gigya_uid,
+		] );
+
+		if ( ! empty( $wp_user ) ) {
+			$wp_user = $wp_user[0];
+		} else {
+			return false;
+		}
+
+		return $wp_user;
+	}
+
 	public function getGigyaAvatar( $avatar, $id_or_email, $size, $default, $alt ) {
 		if ( empty( $id_or_email ) )
 		{
@@ -777,5 +797,110 @@ class GigyaAction
 		}
 		$alt = empty( $alt ) ? get_user_meta( $id, "first_name", true ) : $alt;
 		return "<img src='{$url}' alt='{$alt}' width='{$size}' height='{$size}'>";
+	}
+
+	public function getOfflineSyncSchedules( $schedules ) {
+		$schedules['every_five_seconds'] = array(
+			'interval' => 5,
+			'display' => __( 'Every five seconds' ),
+		);
+
+		$schedules['every_thirty_seconds'] = array(
+			'interval' => 30,
+			'display' => __( 'Every thirty seconds' ),
+		);
+
+		$schedules['every_minute'] = array(
+			'interval' => 60,
+			'display' => __( 'Every minute' ),
+		);
+
+		$schedules['every_two_hours'] = array(
+			'interval' => 7200,
+			'display' => __( 'Every two hours' ),
+		);
+
+		$settings = get_option( GIGYA__SETTINGS_FIELD_MAPPING );
+		$schedules['custom'] = array(
+			'interval' => ( ! empty( $settings['job_frequency'] ) ) ? $settings['job_frequency'] : 3600,
+			'display' => __( 'Custom' ),
+		);
+
+		return $schedules;
+	}
+
+	public function executeOfflineSyncCron() {
+		/* Retrieve config variables */
+		$config = get_option( 'gigya_field_mapping_settings' );
+		$job_config = get_option( 'gigya_offline_sync_params' );
+		$enable_job = $config['map_offline_sync_enable'];
+		$email_on_success = $config['map_offline_sync_email_on_success'];
+		$email_on_failure = $config['map_offline_sync_email_on_failure'];
+
+		$helper = new GigyaOfflineSync();
+
+		if ($enable_job) {
+			try {
+				$last_customer_update = null;
+				$gigya_query          = "SELECT * FROM accounts";
+				if ( ! empty( $job_config['last_customer_update'] ) ) {
+					$last_customer_update = $job_config['last_customer_update'];
+					$gigya_query          .= ' WHERE lastUpdatedTimestamp > ' . $last_customer_update;
+				}
+				$gigya_query     .= " ORDER BY lastUpdatedTimestamp ASC LIMIT " . GIGYA__OFFLINE_SYNC_MAX_USERS;
+				$gigya_cms       = new GigyaCMS();
+				$gigya_users     = $gigya_cms->searchGigyaUsers( [ 'query' => $gigya_query ] );
+				$processed_users = 0;
+				$users_not_found = 0;
+				$uids_not_found  = [];
+
+				foreach ($gigya_users as $gigya_user) {
+					$gigya_uid = $gigya_user['UID'];
+					$gigya_last_updated_timestamp = $gigya_user['lastUpdatedTimestamp'];
+
+					if (!empty($gigya_uid) and !empty($gigya_last_updated_timestamp)) {
+						$wp_user = $this->getWPUserByGigyaUid($gigya_uid);
+						if (!empty($wp_user)) {
+							_gigya_add_to_wp_user_meta( $gigya_user, $wp_user->ID );
+
+							if ($gigya_last_updated_timestamp) {
+								$job_config['last_customer_update'] = $gigya_last_updated_timestamp - GIGYA__OFFLINE_SYNC_UPDATE_DELAY;
+								update_option('gigya_offline_sync_params', $job_config);
+							}
+
+							$processed_users++;
+						} else {
+							$users_not_found++;
+							$uids_not_found[] = $gigya_user['UID'];
+						}
+					}
+					else {
+						error_log('Gigya offline sync: unable to process user due to a lack of essential data. User data received: ' . json_encode($gigya_user, JSON_PRETTY_PRINT));
+					}
+				}
+
+				$job_config['last_run'] = round( microtime( true ) * 1000 );
+				update_option( 'gigya_offline_sync_params', $job_config );
+
+				error_log( 'Gigya offline sync completed. Users processed: ' . $processed_users . (( $users_not_found )
+					? '. Users not found: ' . $users_not_found . PHP_EOL . implode( ',' . PHP_EOL, $uids_not_found )
+					: '' ));
+
+				$status = ($users_not_found > 0) ? 'completed with errors' : 'succeeded';
+				$helper->sendCronEmail('offline sync', $status, $email_on_success, $processed_users, $users_not_found);
+			} catch (GigyaHookException $e) {
+				error_log('Gigya offline sync: There was a problem adding custom data to field mapping: ' . $e->getMessage());
+				$status = 'failed';
+				$helper->sendCronEmail('offline sync', $status, $email_on_failure);
+			} catch (GSApiException $e) {
+				error_log('Offline sync failed: ' . $e->getErrorCode() . ' – ' . $e->getMessage() . '. Call ID: ' . $e->getCallId());
+				$status = 'failed';
+				$helper->sendCronEmail('offline sync', $status, $email_on_failure);
+			} catch (GSException $e) {
+				error_log('Offline sync failed: ' . $e->getMessage());
+				$status = 'failed';
+				$helper->sendCronEmail('offline sync', $status, $email_on_failure);
+			}
+		}
 	}
 }

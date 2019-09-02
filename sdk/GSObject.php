@@ -16,14 +16,14 @@ class GSObject
      * Construct a GSObject from json string, throws exception.
      *
      * @param string|object the json formatted string
-     * @throws \Exception if unable to parse json
+     * @throws GSException if unable to parse JSON or if process JSON object fails
      */
     public function __construct($json = null)
     {
         $this->map = array();
         if (!empty($json)) {
 
-            //parse json string.
+            /* Parse json string */
             if (gettype($json) == 'string') {
                 $obj = json_decode($json, false);
 

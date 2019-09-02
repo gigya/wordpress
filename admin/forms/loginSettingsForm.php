@@ -20,7 +20,12 @@ function loginSettingsForm() {
 
 	// check if raas is enabled, and add the raas_enabled class to the form mode element
 	$c       = new GigyaCMS();
-	$is_raas = $c->isRaaNotIds();
+	try {
+		$is_raas = $c->isRaaS();
+	} catch ( GSException $e ) {
+		$is_raas = false;
+		wp_send_json_error( 'Error from Gigya while determining RaaS status: ' . $e->getMessage() );
+	}
 
 	if ( $is_raas ) {
 		$form['mode']['class'] = 'raas_enabled';
@@ -164,18 +169,6 @@ function loginSettingsForm() {
 			'label' => __( 'Override WordPress Link' ),
 			'desc'  => __( 'When checked, the WordPress default "Login", "Registration" and "Edit Profile" links pop-up RaaS screens instead of WordPress screens.' ),
 			'value' => _gigParamDefaultOn( $values, 'raasOverrideLinks' )
-	);
-
-	$form['map_rass_title'] = array(
-		'markup' => __('<h4>Mapping Gigya User Fields to WordPress Fields</h4><p>Define which fields to map from Gigya to WordPress. The WordPress mapped target fields will be populated with data copied from the corresponding source fields. Learn more <a href="https://developers.gigya.com/display/GD/WordPress+Plugin#WordPressPlugin-UserManagementSettings" target="_blank" rel="noopener noreferrer" />here</a></p>')
-	);
-
-	$gigya_full_map = _gigParam($values, 'map_raas_full_map', '');
-	$form['map_raas_full_map'] = array(
-		'type'	=> 'textarea',
-		'label'	=> __('Full field mapping'),
-		'value' => ($gigya_full_map) ? $gigya_full_map :
-			_gigParamsBuildLegacyJson(array('first_name', 'last_name', 'nickname', 'profile_image', 'description')),
 	);
 
 	$form['raas_admin_roles_title'] = array(
