@@ -823,8 +823,8 @@ class GigyaAction
 		);
 
 		$settings = get_option( GIGYA__SETTINGS_FIELD_MAPPING );
-		$schedules['custom'] = array(
-			'interval' => ( ! empty( $settings['job_frequency'] ) ) ? $settings['job_frequency'] : 3600,
+		$schedules['gigya_offline_sync_custom'] = array(
+			'interval' => ( ! empty( $settings['map_offline_sync_frequency'] ) ) ? ($settings['map_offline_sync_frequency'] * 60) : 3600,
 			'display' => __( 'Custom' ),
 		);
 

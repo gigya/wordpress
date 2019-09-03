@@ -207,6 +207,17 @@ class GigyaSettings {
 						'error' );
 					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
 				}
+
+				$emails_are_valid = true;
+				foreach ( array_merge( explode( ',', $data['map_offline_sync_email_on_success'] ), explode( ',', $data['map_offline_sync_email_on_failure'] ) ) as $email ) {
+					if ( $email and ! is_email( $email ) ) {
+						$emails_are_valid = false;
+					}
+				}
+				if ( ! $emails_are_valid ) {
+					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Error: Invalid emails entered' ), 'error' );
+					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
+				}
 			}
 
 			/*
@@ -216,7 +227,7 @@ class GigyaSettings {
 			$cron_name = 'gigya_offline_sync_cron';
 			wp_clear_scheduled_hook( $cron_name );
 			if ( $data['map_offline_sync_enable'] ) {
-				wp_schedule_event( time(), 'custom', $cron_name );
+				wp_schedule_event( time(), 'gigya_offline_sync_custom', $cron_name );
 			}
 		}
 	}
