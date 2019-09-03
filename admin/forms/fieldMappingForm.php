@@ -9,7 +9,7 @@
 
 		if ( $login_options['mode'] == 'raas' ) {
 			$form['map_fieldmapping_desc'] = [
-				'markup' => __( '<p>Define which fields to map from Gigya to WordPress. The WordPress mapped target fields will be populated with data copied from the corresponding source fields. Learn more <a href="https://developers.gigya.com/display/GD/WordPress+Plugin#WordPressPlugin-UserManagementSettings" target="_blank" rel="noopener noreferrer" />here</a></p>' ),
+				'markup' => __( '<p>Define which fields to map from SAP Customer Data Cloud to WordPress. The WordPress mapped target fields will be populated with data copied from the corresponding source fields. Learn more <a href="https://developers.gigya.com/display/GD/WordPress+Plugin#WordPressPlugin-UserManagementSettings" target="_blank" rel="noopener noreferrer" />here</a></p>' ),
 			];
 
 			$gigya_full_map            = _gigParam( $values, 'map_raas_full_map', '' );
@@ -52,7 +52,7 @@
 			];
 		} elseif ( $login_options['mode'] == 'wp_sl' ) {
 			$form['map_social_title'] = [
-				'markup' => __( '<h4>Mapping Gigya User Fields to WordPress Fields</h4><p>Define which fields to map from Gigya to WordPress. The WordPress mapped target fields will be populated with data copied from the corresponding source fields. Learn more <a href="https://developers.gigya.com/display/GD/WordPress+Plugin#WordPressPlugin-UserManagementSettings" target="_blank" rel="noopener noreferrer" />here</a></p>' ),
+				'markup' => __( '<h4>Mapping SAP Customer Data Cloud user fields to WordPress fields</h4><p>Define which fields to map from SAP CDC to WordPress. The WordPress mapped target fields will be populated with data copied from the corresponding source fields. Learn more <a href="https://developers.gigya.com/display/GD/WordPress+Plugin#WordPressPlugin-UserManagementSettings" target="_blank" rel="noopener noreferrer" />here</a></p>' ),
 			];
 
 			$form['map_social_first_name']    = [
