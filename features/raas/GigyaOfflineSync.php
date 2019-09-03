@@ -26,6 +26,6 @@
 				$email_body = 'Job failed. No items were processed. Please consult the Drupal log (Administration > Reports > Recent log messages) for more info.';
 			}
 
-			wp_mail( $to, 'Gigya cron job of type ' . $job_type . ' ' . $job_status . ' on website ' . get_bloginfo(), $email_body );
+			wp_mail( $to, 'SAP CDC cron job of type ' . $job_type . ' ' . $job_status . ' on website ' . get_bloginfo(), $email_body );
 		}
 	}
