@@ -21,7 +21,6 @@
 					$('.social-login-wrapper').removeClass('hidden');
 					$('.raas-login-wrapper').addClass('hidden');
 					$('.raas_enabled').find('.gigya-raas-warn').removeClass('hidden');
-					$('#tab-gigya_field_mapping_settings').addClass('hidden');
 				}
 				else if ($el.val() === 'raas') {
 					$('.global-login-wrapper').removeClass('hidden');

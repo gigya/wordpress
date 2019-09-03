@@ -121,41 +121,6 @@ function loginSettingsForm() {
 			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://developers.gigya.com/display/GD/socialize.showAddConnectionsUI+JS" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
 	);
 
-	$form['map_social_title'] = array(
-		'markup' => __('<h4>Mapping Gigya User Fields to WordPress Fields</h4><p>Define which fields to map from Gigya to WordPress. The WordPress mapped target fields will be populated with data copied from the corresponding source fields. Learn more <a href="https://developers.gigya.com/display/GD/WordPress+Plugin#WordPressPlugin-UserManagementSettings" target="_blank" rel="noopener noreferrer" />here</a></p>')
-	);
-
-	$form['map_social_first_name'] = array(
-		'type'  => 'checkbox',
-		'label' => __( 'First Name' ),
-		'value' => _gigParam( $values, 'map_social_first_name', 1 )
-	);
-	$form['map_social_last_name'] = array(
-		'type'  => 'checkbox',
-		'label' => __( 'Last Name' ),
-		'value' => _gigParam( $values, 'map_social_last_name', 1 )
-	);
-	$form['map_social_display_name'] = array(
-		'type'  => 'checkbox',
-		'label' => __( 'Display Name' ),
-		'value' => _gigParam( $values, 'map_social_display_name', 1 )
-	);
-	$form['map_social_nickname'] = array(
-		'type'  => 'checkbox',
-		'label' => __( 'Nickname' ),
-		'value' => _gigParam( $values, 'map_social_nickname', 1 )
-	);
-	$form['map_social_profile_image'] = array(
-		'type'  => 'checkbox',
-		'label' => __( 'Profile Image (avatar)' ),
-		'value' => _gigParam( $values, 'map_social_profile_image', 1 )
-	);
-	$form['map_social_description'] = array(
-		'type'  => 'checkbox',
-		'label' => __( 'Biographical Info' ),
-		'value' => _gigParam( $values, 'map_social_description', 1 )
-	);
-
 	$form['sl_end'] = array(
 		'markup' => '</div>'
 	);

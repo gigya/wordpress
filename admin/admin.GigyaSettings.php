@@ -100,7 +100,7 @@ class GigyaSettings {
 				'title'   => 'Field Mapping',
 				'func'    => 'fieldMappingForm',
 				'slug'    => 'gigya_field_mapping_settings',
-				'display' => (isset($login_options['mode']) and $login_options['mode'] == 'raas') ? 'visible' : 'hidden',
+				'display' => ( isset( $login_options['mode'] ) and in_array( $login_options['mode'], [ 'raas', 'wp_sl' ] ) ) ? 'visible' : 'hidden',
 			),
 			'gigya_screenset_settings' => array(
 				'title' => 'Screen-Sets',
@@ -262,7 +262,7 @@ class GigyaSettings {
 	 *                                    If array then it returns an array of specific settings
 	 * @param null|string       $option   Relevant (and required) only if $settings is an array. Tells which settings to retrieve under this option.
 	 */
-	public static function _keepOldApiValues( $settings = '', $option = null ) { //// @TODO test that it doesn't break
+	public static function _keepOldApiValues( $settings = '', $option = null ) {
 		if ( ! $settings ) {
 			$options                                                   = self::_getSiteOptions();
 			$_POST['gigya_global_settings']['api_key']                 = $options['api_key'];
