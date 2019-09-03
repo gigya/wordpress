@@ -10,9 +10,9 @@ class GigyaLogin_Widget extends WP_Widget {
 	 */
 	function __construct() {
 		$args = array(
-				'description' => __( 'Login by Gigya' )
+				'description' => __( 'Login by SAP Customer Data Cloud' )
 		);
-		parent::__construct( 'gigya_login', __( 'Gigya Login' ), $args );
+		parent::__construct( 'gigya_login', __( 'SAP CDC Login' ), $args );
 	}
 
 	/**

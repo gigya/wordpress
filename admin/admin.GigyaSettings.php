@@ -56,7 +56,7 @@ class GigyaSettings {
 		// Default admin capabilities
 		if (current_user_can('GIGYA__PERMISSION_LEVEL')) {
 			// Register the main Gigya setting route page.
-			add_menu_page( 'Gigya', 'Gigya', GIGYA__PERMISSION_LEVEL, 'gigya_global_settings', array( $this, 'adminPage' ), GIGYA__PLUGIN_URL . 'admin/images/favicon_28px.png', '70.1' );
+			add_menu_page( 'Customer Data Cloud', 'Customer Data Cloud', GIGYA__PERMISSION_LEVEL, 'gigya_global_settings', array( $this, 'adminPage' ), GIGYA__PLUGIN_URL . 'admin/images/SAP_R_grad_scrn.jpg', '70.1' );
 
 			// Register the sub-menus Gigya setting pages.
 			foreach ( $this->getSections() as $section ) {
@@ -67,7 +67,7 @@ class GigyaSettings {
 			}
 		} elseif ( current_user_can( CUSTOM_GIGYA_EDIT )) {
 			// Register the main Gigya setting route page.
-			add_menu_page( 'Gigya', 'Gigya', CUSTOM_GIGYA_EDIT, 'gigya_global_settings', array( $this, 'adminPage' ), GIGYA__PLUGIN_URL . 'admin/images/favicon_28px.png', '70.1' );
+			add_menu_page( 'Customer Data Cloud', 'Customer Data Cloud', CUSTOM_GIGYA_EDIT, 'gigya_global_settings', array( $this, 'adminPage' ), GIGYA__PLUGIN_URL . 'admin/images/SAP_R_grad_scrn.png', '70.1' );
 
 			// Register the sub-menus Gigya setting pages.
 			foreach ( $this->getSections() as $section ) {
@@ -175,9 +175,9 @@ class GigyaSettings {
 					if ( $gigyaErrCode > 0 ) {
 						$gigyaErrMsg = $res->getErrorMessage();
 						$errorsLink  = "<a href='https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST' target='_blank' rel='noopener noreferrer'>Response_Codes_and_Errors</a>";
-						$message     = "Gigya API error: {$gigyaErrCode} - {$gigyaErrMsg}.";
+						$message     = "SAP CDC  API error: {$gigyaErrCode} - {$gigyaErrMsg}.";
 						add_settings_error( 'gigya_global_settings', 'api_validate', __( $message . " For more information please refer to {$errorsLink}", 'error' ) );
-						error_log( 'Error updating Gigya settings: ' . $message . ' Call ID: ' . $res->getString( "callId", "N/A" ) );
+						error_log( 'Error updating SAP CDC settings: ' . $message . ' Call ID: ' . $res->getString( "callId", "N/A" ) );
 
 						/* Prevent updating values */
 						static::_keepOldApiValues();

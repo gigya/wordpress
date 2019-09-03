@@ -10,9 +10,9 @@ class GigyaScreenSet_Widget extends WP_Widget {
 	 */
 	public function __construct() {
 		$args = array(
-			'description' => __( 'Custom Gigya Screen-Set' )
+			'description' => __( 'SAP Customer Data Cloud Screen-Set' )
 		);
-		parent::__construct( 'gigya_screenset', __( 'Gigya ScreenSet' ), $args );
+		parent::__construct( 'gigya_screenset', __( 'SAP CDC ScreenSet' ), $args );
 	}
 
 	protected function setWidgetMachineName( $widget_id ) {

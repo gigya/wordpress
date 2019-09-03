@@ -10,9 +10,9 @@ class GigyaReactions_Widget extends WP_Widget {
 	 */
 	function __construct() {
 		$args = array(
-				'description' => __( 'Reactions buttons bar by Gigya' )
+				'description' => __( 'Reactions buttons bar by SAP Customer Data Cloud' )
 		);
-		parent::__construct( 'gigya_reactions', __( 'Gigya Reactions' ), $args );
+		parent::__construct( 'gigya_reactions', __( 'SAP CDC Reactions' ), $args );
 	}
 
 	/**

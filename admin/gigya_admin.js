@@ -227,7 +227,7 @@
 		};
 
 		$(document).on('click', '.gigya-settings .clean-db', function () {
-			var r = confirm("You're about to run a database cleaner.\n\rOld data from Gigya plugin version 4.0 will be deleted permanently from the database.\n\rIt's highly recommended to backup your database before you run this script.\n\rPlease confirm you want to continue.");
+			var r = confirm("You're about to run a database cleaner.\n\rOld data from SAP Customer Data Cloud plugin version 4.0 will be deleted permanently from the database.\n\rIt's highly recommended to backup your database before you run this script.\n\rPlease confirm you want to continue.");
 			if (r) {
 				cleanDB();
 			}

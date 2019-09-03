@@ -23,7 +23,7 @@ function reactionsSettingsForm() {
 					"both"   => __( "Both" ),
 			),
 			'value'   => _gigParam( $values, 'position', 'none' ),
-			'desc'    => sprintf( __( 'You can also add and position Gigya Reactions using the %s settings page.' ), '<a href="' . admin_url( 'widgets.php' ) . '">' . __( 'Widgets' ) . '</a>' )
+			'desc'    => sprintf( __( 'You can also add and position SAP Customer Data Cloud Reactions using the %s settings page.' ), '<a href="' . admin_url( 'widgets.php' ) . '">' . __( 'Widgets' ) . '</a>' )
 	);
 
 	$form['enabledProviders'] = array(

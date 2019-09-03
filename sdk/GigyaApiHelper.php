@@ -140,7 +140,7 @@ class GigyaApiHelper
 		}
 		catch (GSApiException $e)
 		{
-			error_log( 'Error fetching Gigya account: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
+			error_log( 'Error fetching SAP Customer Data Cloud account: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
 			return false;
 		}
 

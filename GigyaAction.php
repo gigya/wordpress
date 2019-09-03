@@ -266,7 +266,7 @@ class GigyaAction
 
 					wp_send_json_success();
 				} catch ( Exception $e ) {
-					error_log( 'Unable to process field mapping for Gigya user ' . $gigya_uid );
+					error_log( 'Unable to process field mapping for SAP Customer Data Cloud user ' . $gigya_uid );
 
 					wp_send_json_error( [ 'msg' => $generic_msg ] );
 				}
