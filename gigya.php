@@ -29,6 +29,7 @@ define( 'GIGYA__DEFAULT_COOKIE_EXPIRATION', 1800 ); /* WordPress defaults to 172
  */
 define( 'GIGYA__SETTINGS_GLOBAL', 'gigya_global_settings' );
 define( 'GIGYA__SETTINGS_LOGIN', 'gigya_login_settings' );
+define( 'GIGYA__SETTINGS_FIELD_MAPPING', 'gigya_field_mapping_settings' );
 define( 'GIGYA__SETTINGS_SCREENSETS', 'gigya_screenset_settings' );
 define( 'GIGYA__SETTINGS_SESSION', 'gigya_session_management' );
 define( 'GIGYA__SETTINGS_SHARE', 'gigya_share_settings' );
@@ -42,6 +43,11 @@ define( 'GIGYA__SETTINGS_GM', 'gigya_gm_settings' );
 define( 'GIGYA__SESSION_DEFAULT', 0 );
 define( 'GIGYA__SESSION_SLIDING', -1 );
 define( 'GIGYA__SESSION_FOREVER', -2 );
+
+/** Offline sync constants */
+define( 'GIGYA__OFFLINE_SYNC_MIN_FREQ', 5 );
+define( 'GIGYA__OFFLINE_SYNC_MAX_USERS', 1000 );
+define( 'GIGYA__OFFLINE_SYNC_UPDATE_DELAY', 10 );
 
 /**
  * Register activation hook
@@ -532,7 +538,7 @@ function gigyaAfterRaasLogin( $gig_user, $wp_user ) {
  * @param array|GSResponse|GSObject $gigya_object
  * @param string $user_id
  *
- * @throws Exception If there are problems with the hook or data
+ * @throws GigyaHookException If there are problems with the hook or data
  */
 function _gigya_add_to_wp_user_meta( $gigya_object, $user_id ) {
 	if ( $gigya_object instanceof GSResponse ) {
@@ -542,25 +548,25 @@ function _gigya_add_to_wp_user_meta( $gigya_object, $user_id ) {
 	}
 
 	$gigya_object = _gigArrayFlatten( $gigya_object );
-	$login_opts = get_option( GIGYA__SETTINGS_LOGIN );
+	$field_mapping_opts = get_option( GIGYA__SETTINGS_FIELD_MAPPING );
 	$prefix = _gigya_get_mode_prefix();
 	if ( ! $prefix ) {
 		return;
 	}
 
-	if ( ! empty( $login_opts['map_raas_full_map'] ) ) /* Fully customized field mapping options */ {
+	if ( ! empty( $field_mapping_opts['map_raas_full_map'] ) ) /* Fully customized field mapping options */ {
 		/* Hook for modifying the data from Gigya before it is mapped */
 		$gigya_object_orig = $gigya_object;
 		try {
 			$gigya_object = apply_filters( 'gigya_pre_field_mapping', $gigya_object_orig, get_userdata( $user_id ) );
 			if ( array_keys( $gigya_object_orig ) != array_keys( $gigya_object ) ) {
-				throw new Exception( 'Invalid data returned by the hook. Return array must have the same keys as the input array.' );
+				throw new GigyaHookException( 'Invalid data returned by the hook. Return array must have the same keys as the input array.' );
 			}
 		} catch ( Exception $e ) {
-			throw new Exception( 'Exception while running hook. Error message: ' . $e->getMessage() );
+			throw new GigyaHookException( 'Exception while running hook. Error message: ' . $e->getMessage() );
 		}
 
-		foreach ( json_decode( $login_opts['map_raas_full_map'] ) as $meta_key ) {
+		foreach ( json_decode( $field_mapping_opts['map_raas_full_map'] ) as $meta_key ) {
 			$meta_key = (array) $meta_key;
 			if ( ! isset( $gigya_object[ $meta_key['gigyaName'] ] ) ) {
 				$gigya_object[ $meta_key['gigyaName'] ] = '';
@@ -573,7 +579,7 @@ function _gigya_add_to_wp_user_meta( $gigya_object, $user_id ) {
 			update_user_meta( $user_id, $meta_key['cmsName'], sanitize_text_field( $gigya_object[ $meta_key['gigyaName'] ] ) );
 		}
 	} else /* Legacy field mapping options */ {
-		foreach ( $login_opts as $key => $opt ) {
+		foreach ( $field_mapping_opts as $key => $opt ) {
 			if ( strpos( $key, $prefix ) === 0 && $opt == 1 ) {
 				$k         = str_replace( $prefix, "", $key );
 				$gigya_key = 'profile.' . _wp_key_to_gigya_key( $k );

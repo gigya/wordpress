@@ -14,6 +14,7 @@
 					$('.social-login-wrapper').addClass('hidden');
 					$('.raas-login-wrapper').addClass('hidden');
 					$('.raas_enabled').find('.gigya-raas-warn').addClass('hidden');
+					$('#tab-gigya_field_mapping_settings').addClass('hidden');
 				}
 				else if ($el.val() === 'wp_sl') {
 					$('.global-login-wrapper').removeClass('hidden');
@@ -26,6 +27,7 @@
 					$('.social-login-wrapper').addClass('hidden');
 					$('.raas-login-wrapper').removeClass('hidden');
 					$('.raas_enabled').find('.gigya-raas-warn').addClass('hidden');
+					$('#tab-gigya_field_mapping_settings').removeClass('hidden');
 				}
 			}
 		};

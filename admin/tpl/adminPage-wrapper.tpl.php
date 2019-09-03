@@ -12,7 +12,7 @@
 	</div>
 	<div class="nav-tab-wrapper">
 		<?php foreach ( GigyaSettings::getSections() as $section ) : ?>
-			<a href="?page=<?php echo $section['slug'] ?>" class="nav-tab <?php echo (isset($page) and $page == $section['slug']) ? 'nav-tab-active' : ''; ?>" id="tab-<?php echo $section['slug']; ?>"><?php echo $section['title'] ?></a>
+			<a href="?page=<?php echo $section['slug'] ?>" class="nav-tab <?php echo (isset($page) and $page == $section['slug']) ? 'nav-tab-active ' : ''; echo (isset($section['display']) and $section['display'] == 'hidden') ? 'hidden ' : ''; ?>" id="tab-<?php echo $section['slug']; ?>"><?php echo $section['title'] ?></a>
 		<?php endforeach; ?>
 	</div>
 	<?php

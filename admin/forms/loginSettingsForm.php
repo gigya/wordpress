@@ -20,7 +20,12 @@ function loginSettingsForm() {
 
 	// check if raas is enabled, and add the raas_enabled class to the form mode element
 	$c       = new GigyaCMS();
-	$is_raas = $c->isRaaNotIds();
+	try {
+		$is_raas = $c->isRaaS();
+	} catch ( GSException $e ) {
+		$is_raas = false;
+		wp_send_json_error( 'Error from Gigya while determining RaaS status: ' . $e->getMessage() );
+	}
 
 	if ( $is_raas ) {
 		$form['mode']['class'] = 'raas_enabled';
@@ -116,41 +121,6 @@ function loginSettingsForm() {
 			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://developers.gigya.com/display/GD/socialize.showAddConnectionsUI+JS" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
 	);
 
-	$form['map_social_title'] = array(
-		'markup' => __('<h4>Mapping SAP CDC User Fields to WordPress Fields</h4><p>Define which fields to map from SAP Customer Data Cloud to WordPress. The WordPress mapped target fields will be populated with data copied from the corresponding source fields. Learn more <a href="https://developers.gigya.com/display/GD/WordPress+Plugin#WordPressPlugin-UserManagementSettings" target="_blank" rel="noopener noreferrer" />here</a></p>')
-	);
-
-	$form['map_social_first_name'] = array(
-		'type'  => 'checkbox',
-		'label' => __( 'First Name' ),
-		'value' => _gigParam( $values, 'map_social_first_name', 1 )
-	);
-	$form['map_social_last_name'] = array(
-		'type'  => 'checkbox',
-		'label' => __( 'Last Name' ),
-		'value' => _gigParam( $values, 'map_social_last_name', 1 )
-	);
-	$form['map_social_display_name'] = array(
-		'type'  => 'checkbox',
-		'label' => __( 'Display Name' ),
-		'value' => _gigParam( $values, 'map_social_display_name', 1 )
-	);
-	$form['map_social_nickname'] = array(
-		'type'  => 'checkbox',
-		'label' => __( 'Nickname' ),
-		'value' => _gigParam( $values, 'map_social_nickname', 1 )
-	);
-	$form['map_social_profile_image'] = array(
-		'type'  => 'checkbox',
-		'label' => __( 'Profile Image (avatar)' ),
-		'value' => _gigParam( $values, 'map_social_profile_image', 1 )
-	);
-	$form['map_social_description'] = array(
-		'type'  => 'checkbox',
-		'label' => __( 'Biographical Info' ),
-		'value' => _gigParam( $values, 'map_social_description', 1 )
-	);
-
 	$form['sl_end'] = array(
 		'markup' => '</div>'
 	);
@@ -164,18 +134,6 @@ function loginSettingsForm() {
 			'label' => __( 'Override WordPress Link' ),
 			'desc'  => __( 'When checked, the WordPress default "Login", "Registration" and "Edit Profile" links pop-up RaaS screens instead of WordPress screens.' ),
 			'value' => _gigParamDefaultOn( $values, 'raasOverrideLinks' )
-	);
-
-	$form['map_rass_title'] = array(
-		'markup' => __('<h4>Mapping SAP CDC User Fields to WordPress Fields</h4><p>Define which fields to map from SAP Customer Data Cloud to WordPress. The WordPress mapped target fields will be populated with data copied from the corresponding source fields. Learn more <a href="https://developers.gigya.com/display/GD/WordPress#WordPress-UserManagementSettings" target="_blank" rel="noopener noreferrer" />here</a></p>')
-	);
-
-	$gigya_full_map = _gigParam($values, 'map_raas_full_map', '');
-	$form['map_raas_full_map'] = array(
-		'type'	=> 'textarea',
-		'label'	=> __('Full field mapping'),
-		'value' => ($gigya_full_map) ? $gigya_full_map :
-			_gigParamsBuildLegacyJson(array('first_name', 'last_name', 'nickname', 'profile_image', 'description')),
 	);
 
 	$form['raas_admin_roles_title'] = array(

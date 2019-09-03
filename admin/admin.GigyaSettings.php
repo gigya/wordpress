@@ -5,6 +5,7 @@
  */
 define( "GIGYA__PERMISSION_LEVEL", "manage_options" );
 define( "GIGYA__SECRET_PERMISSION_LEVEL", "install_plugins" ); // Network super admin + single site admin
+
 // custom Gigya capabilities are added separately on installation
 define( "CUSTOM_GIGYA_EDIT", 'edit_gigya' );
 define( "CUSTOM_GIGYA_EDIT_SECRET", 'edit_gigya_secret' );
@@ -83,6 +84,7 @@ class GigyaSettings {
 	 * @return array
 	 */
 	public static function getSections() {
+		$login_options = get_option( GIGYA__SETTINGS_LOGIN );
 		return array(
 			'gigya_global_settings'    => array(
 				'title' => 'Global Settings',
@@ -90,12 +92,18 @@ class GigyaSettings {
 				'slug'  => 'gigya_global_settings'
 			),
 			'gigya_login_settings'     => array(
-				'title' => 'User Management Settings',
+				'title' => 'User Management',
 				'func'  => 'loginSettingsForm',
 				'slug'  => 'gigya_login_settings'
 			),
+			'gigya_field_mapping_settings' => array(
+				'title'   => 'Field Mapping',
+				'func'    => 'fieldMappingForm',
+				'slug'    => 'gigya_field_mapping_settings',
+				'display' => ( isset( $login_options['mode'] ) and in_array( $login_options['mode'], [ 'raas', 'wp_sl' ] ) ) ? 'visible' : 'hidden',
+			),
 			'gigya_screenset_settings' => array(
-				'title' => 'Screen-Set Settings',
+				'title' => 'Screen-Sets',
 				'func'  => 'screenSetSettingsForm',
 				'slug'  => 'gigya_screenset_settings'
 			),
@@ -110,17 +118,17 @@ class GigyaSettings {
 				'slug'  => 'gigya_share_settings'
 			),
 			'gigya_comments_settings'  => array(
-				'title' => 'Comments Settings',
+				'title' => 'Comments',
 				'func'  => 'commentsSettingsForm',
 				'slug'  => 'gigya_comments_settings'
 			),
 			'gigya_reactions_settings' => array(
-				'title' => 'Reactions Settings',
+				'title' => 'Reactions',
 				'func'  => 'reactionsSettingsForm',
 				'slug'  => 'gigya_reactions_settings'
 			),
 			'gigya_gm_settings'        => array(
-				'title' => 'Gamification Settings',
+				'title' => 'Gamification',
 				'func'  => 'gmSettingsForm',
 				'slug'  => 'gigya_gm_settings'
 			),
@@ -189,6 +197,38 @@ class GigyaSettings {
 			} elseif ( $_POST['gigya_login_settings']['mode'] == 'raas' ) {
 				update_option( 'users_can_register', 0 );
 			}
+		} elseif ( isset( $_POST['gigya_field_mapping_settings'] ) ) {
+			/* Validate field mapping settings, including offline sync */
+			$data = $_POST['gigya_field_mapping_settings'];
+			if ( $data['map_offline_sync_enable'] ) {
+				if ( $data['map_offline_sync_frequency'] < GIGYA__OFFLINE_SYNC_MIN_FREQ ) {
+					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate',
+						__( 'Error: Offline sync job frequency cannot be lower than ' . GIGYA__OFFLINE_SYNC_MIN_FREQ . ' minutes' ),
+						'error' );
+					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
+				}
+
+				$emails_are_valid = true;
+				foreach ( array_merge( explode( ',', $data['map_offline_sync_email_on_success'] ), explode( ',', $data['map_offline_sync_email_on_failure'] ) ) as $email ) {
+					if ( $email and ! is_email( $email ) ) {
+						$emails_are_valid = false;
+					}
+				}
+				if ( ! $emails_are_valid ) {
+					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Error: Invalid emails entered' ), 'error' );
+					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
+				}
+			}
+
+			/*
+			 * Deletes cron and re-enables it. This way it's possible to change the cron's interval, and prevents from scheduling duplicates
+			 * (WP doesn't overwrite a cron even if it has the same name. Instead, it creates a new one).
+			 */
+			$cron_name = 'gigya_offline_sync_cron';
+			wp_clear_scheduled_hook( $cron_name );
+			if ( $data['map_offline_sync_enable'] ) {
+				wp_schedule_event( time(), 'gigya_offline_sync_custom', $cron_name );
+			}
 		}
 	}
 
@@ -213,28 +253,50 @@ class GigyaSettings {
 		return true;
 	}
 
-    /**
-     * Set the posted api related values to the old (from DB) values
-     */
-    public static function _keepOldApiValues() {
-		$options = static::_getSiteOptions();
-        $_POST['gigya_global_settings']['api_key'] = $options['api_key'];
-        $_POST['gigya_global_settings']['user_key'] = $options['user_key'];
-        $_POST['gigya_global_settings']['api_secret'] = $options['api_secret'];
-        $_POST['gigya_global_settings']['data_center'] = $options['data_center'];
-        $_POST['gigya_global_settings']['sub_site_settings_saved'] = $options['sub_site_settings_saved'];
-    }
+	/**
+	 * Set the posted api related values to the old (from DB) values
+	 *
+	 * @param null|string|array $settings Tells the function which old values to get.
+	 *                                    If null / empty string, it has the old hard-coded values (API key etc.),
+	 *                                    If string then it returns values from a specific wp_options setting,
+	 *                                    If array then it returns an array of specific settings
+	 * @param null|string       $option   Relevant (and required) only if $settings is an array. Tells which settings to retrieve under this option.
+	 */
+	public static function _keepOldApiValues( $settings = '', $option = null ) {
+		if ( ! $settings ) {
+			$options                                                   = self::_getSiteOptions();
+			$_POST['gigya_global_settings']['api_key']                 = $options['api_key'];
+			$_POST['gigya_global_settings']['user_key']                = $options['user_key'];
+			$_POST['gigya_global_settings']['api_secret']              = $options['api_secret'];
+			$_POST['gigya_global_settings']['data_center']             = $options['data_center'];
+			$_POST['gigya_global_settings']['sub_site_settings_saved'] = $options['sub_site_settings_saved'];
+		} elseif ( ! is_array( $settings ) ) {
+			$_POST[ $settings ] = self::_getSiteOptions( $settings );
+		} else { /* $settings is an array--retrieve specific options */
+			if ( $option ) {
+				$options = self::_getSiteOptions( $settings );
+				foreach ( $settings as $setting ) {
+					$_POST[ $option ][ $setting ] = $options[ $setting ];
+				}
+			}
+		}
+	}
 
-    /**
-     * If multisite, get options from main site, else from current site
-     */
-    public static function _getSiteOptions() {
-        if ( is_multisite() ) {
-			$options = get_blog_option( get_current_blog_id(), GIGYA__SETTINGS_GLOBAL );
-        } else {
-            $options = get_option( GIGYA__SETTINGS_GLOBAL );
-        }
-        return $options;
-    }
+	/**
+	 * If multisite, get options from main site, else from current site
+	 *
+	 * @param string $option
+	 *
+	 * @return mixed
+	 */
+	public static function _getSiteOptions( $option = GIGYA__SETTINGS_GLOBAL ) {
+		if ( is_multisite() ) {
+			$options = get_blog_option( get_current_blog_id(), $option );
+		} else {
+			$options = get_option( $option );
+		}
+
+		return $options;
+	}
 
 }
