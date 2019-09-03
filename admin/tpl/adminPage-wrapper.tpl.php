@@ -8,7 +8,7 @@
 	<div class="header">
 		<span class="icon32" id="icon-options-general"></span>
 
-		<h1>Gigya GConnector version <?php echo GIGYA__VERSION; ?></h1>
+		<h1>SAP Customer Data Cloud GConnector version <?php echo GIGYA__VERSION; ?></h1>
 	</div>
 	<div class="nav-tab-wrapper">
 		<?php foreach ( GigyaSettings::getSections() as $section ) : ?>
@@ -16,7 +16,7 @@
 		<?php endforeach; ?>
 	</div>
 	<?php
-		$helpUrl = 'https://developers.gigya.com/display/GD/WordPress+Plugin';
-		printf( __( 'To learn more about Gigya & how to setup an account, please visit our developer documentation <a target="_blank" rel="noopener noreferrer" href="%1$s">here</a>.' ), $helpUrl );
+		$helpUrl = 'https://developers.gigya.com/display/GD/WordPress';
+		printf( __( 'To learn more about SAP Customer Data Cloud & how to setup an account, please visit our developer documentation <a target="_blank" rel="noopener noreferrer" href="%1$s">here</a>.' ), $helpUrl );
 	?>
 </div>

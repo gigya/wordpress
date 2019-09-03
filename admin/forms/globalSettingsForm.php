@@ -9,7 +9,7 @@ function globalSettingsForm() {
 
 	$form['api_key'] = array(
 			'type'  => 'text',
-			'label' => __( 'Gigya API Key' ),
+			'label' => __( 'API Key' ),
 			'size' => 64,
 			'style' => 'font-family: monospace',
 			'value' => _gigParam( $values, 'api_key', '' )
@@ -17,21 +17,21 @@ function globalSettingsForm() {
 
 	$form['user_key'] = array(
 		'type'  => 'text',
-		'label' => __( 'Gigya User Key' ),
+		'label' => __( 'User Key' ),
 		'value' => trim(_gigParam( $values, 'user_key', '' ))
 	);
 
  	if ( current_user_can( GIGYA__SECRET_PERMISSION_LEVEL ) || current_user_can( CUSTOM_GIGYA_EDIT_SECRET ) ) {
 		$form['api_secret'] = array(
 			'type'  => 'password',
-			'label' => __( 'Gigya User Secret' ),
+			'label' => __( 'User Secret' ),
 			'value' => '',
 			'desc' => 'Secret key: '. _gigParam( $values, 'api_secret', '', true ),
 		);
 	} else {
 		$form['api_secret'] = array(
 			'type'  => 'customText',
-			'label' => __( 'Gigya Secret Key' ),
+			'label' => __( 'Secret Key' ),
 			'class' => 'secret_key_placeholder',
 			'size' => 100,
 			'id' => 'secret_key_placeholder'
@@ -57,7 +57,7 @@ function globalSettingsForm() {
 			'label'   => __( 'Data Center' ),
 			'class'   => 'data_center',
 			'value'   => $dataCenter,
-			'markup' => "<span class='other_dataCenter'><input type='text' size='15' class='input-xlarge' id='other_ds' name='other_ds' value='" . $val . "' /> <p>Please specify the Gigya data center in which your site is defined. For example: 'eu1.gigya.com'. To verify your site location contact your Gigya implementation manager.</p></span>"
+			'markup' => "<span class='other_dataCenter'><input type='text' size='15' class='input-xlarge' id='other_ds' name='other_ds' value='" . $val . "' /> <p>Please specify the SAP CDC data center in which your site is defined. For example: 'eu1.gigya.com'. To verify your site location contact your SAP Customer Data Cloud implementation manager.</p></span>"
 	);
 
 	$form['enabledProviders'] = array(
@@ -122,9 +122,9 @@ function globalSettingsForm() {
 
 	$form['debug'] = array(
 			'type'  => 'checkbox',
-			'label' => __( 'Enable Gigya debug log' ),
+			'label' => __( 'Enable SAP CDC debug log' ),
 			'value' => _gigParam( $values, 'debug', 0 ),
-			'desc'  => __( 'Log all Gigya\'s requests and responses. You can then find the log' ) . ' <a href="javascript:void(0)" class="gigya-debug-log">' . __( 'here' ) . '</a>'
+			'desc'  => __( 'Log all SAP Customer Data Cloud\'s requests and responses. You can then find the log' ) . ' <a href="javascript:void(0)" class="gigya-debug-log">' . __( 'here' ) . '</a>'
 	);
 
     /* Use this field in multisite to flag when sub site settings are saved locally for site */

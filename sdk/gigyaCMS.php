@@ -291,7 +291,7 @@ class GigyaCMS
 		try {
 			setcookie( $response["cookieName"], $response["cookieValue"], 0, $response["cookiePath"], $response["cookieDomain"] );
 		} catch ( Exception $e ) {
-			error_log( sprintf( 'error string gigya cookie' ) );
+			error_log( sprintf( 'error string SAP CDC cookie' ) );
 			error_log( sprintf( 'error message : @error', array( '@error' => $e->getMessage() ) ) );
 		}
 
