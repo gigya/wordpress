@@ -579,7 +579,7 @@ class GigyaAction
 		elseif ( $this->login_options['mode'] == 'raas' )
 		{
 			$account = get_userdata( $user_id );
-			$gigyaCMS->deleteAccountByEmail( $account );
+			$gigyaCMS->deleteAccountByEmail( $account->data->user_email );
 		}
 	}
 
@@ -833,15 +833,15 @@ class GigyaAction
 
 	public function executeOfflineSyncCron() {
 		/* Retrieve config variables */
-		$config = get_option( 'gigya_field_mapping_settings' );
-		$job_config = get_option( 'gigya_offline_sync_params' );
-		$enable_job = $config['map_offline_sync_enable'];
+		$config           = get_option( 'gigya_field_mapping_settings' );
+		$job_config       = get_option( 'gigya_offline_sync_params' );
+		$enable_job       = $config['map_offline_sync_enable'];
 		$email_on_success = $config['map_offline_sync_email_on_success'];
 		$email_on_failure = $config['map_offline_sync_email_on_failure'];
 
 		$helper = new GigyaOfflineSync();
 
-		if ($enable_job) {
+		if ( $enable_job ) {
 			try {
 				$last_customer_update = null;
 				$gigya_query          = "SELECT * FROM accounts";
@@ -854,54 +854,52 @@ class GigyaAction
 				$gigya_users     = $gigya_cms->searchGigyaUsers( [ 'query' => $gigya_query ] );
 				$processed_users = 0;
 				$users_not_found = 0;
-				$uids_not_found  = [];
+				$uids_not_found = [];
 
-				foreach ($gigya_users as $gigya_user) {
-					$gigya_uid = $gigya_user['UID'];
+				foreach ( $gigya_users as $gigya_user ) {
+					$gigya_uid                    = $gigya_user['UID'];
 					$gigya_last_updated_timestamp = $gigya_user['lastUpdatedTimestamp'];
 
-					if (!empty($gigya_uid) and !empty($gigya_last_updated_timestamp)) {
-						$wp_user = $this->getWPUserByGigyaUid($gigya_uid);
-						if (!empty($wp_user)) {
+					if ( ! empty( $gigya_uid ) and ! empty( $gigya_last_updated_timestamp ) ) {
+						$wp_user = $this->getWPUserByGigyaUid( $gigya_uid );
+						if ( ! empty( $wp_user ) ) {
 							_gigya_add_to_wp_user_meta( $gigya_user, $wp_user->ID );
 
-							if ($gigya_last_updated_timestamp) {
-								$job_config['last_customer_update'] = $gigya_last_updated_timestamp - GIGYA__OFFLINE_SYNC_UPDATE_DELAY;
-								update_option('gigya_offline_sync_params', $job_config);
-							}
+							$job_config['last_customer_update'] = $gigya_last_updated_timestamp - GIGYA__OFFLINE_SYNC_UPDATE_DELAY;
+							update_option( 'gigya_offline_sync_params', $job_config );
 
-							$processed_users++;
+							$processed_users ++;
 						} else {
-							$users_not_found++;
+							$users_not_found ++;
 							$uids_not_found[] = $gigya_user['UID'];
 						}
-					}
-					else {
-						error_log('Gigya offline sync: unable to process user due to a lack of essential data. User data received: ' . json_encode($gigya_user, JSON_PRETTY_PRINT));
+					} else {
+						error_log( 'Gigya offline sync: unable to process user due to a lack of essential data. User data received: ' . json_encode( $gigya_user,
+								JSON_PRETTY_PRINT ) );
 					}
 				}
 
 				$job_config['last_run'] = round( microtime( true ) * 1000 );
 				update_option( 'gigya_offline_sync_params', $job_config );
 
-				error_log( 'Gigya offline sync completed. Users processed: ' . $processed_users . (( $users_not_found )
-					? '. Users not found: ' . $users_not_found . PHP_EOL . implode( ',' . PHP_EOL, $uids_not_found )
-					: '' ));
+				error_log( 'Gigya offline sync completed. Users processed: ' . $processed_users . ( ( $users_not_found )
+						? '. Users not found: ' . $users_not_found . PHP_EOL . implode( ',' . PHP_EOL, $uids_not_found )
+						: '' ) );
 
-				$status = ($users_not_found > 0) ? 'completed with errors' : 'succeeded';
-				$helper->sendCronEmail('offline sync', $status, $email_on_success, $processed_users, $users_not_found);
-			} catch (GigyaHookException $e) {
-				error_log('Gigya offline sync: There was a problem adding custom data to field mapping: ' . $e->getMessage());
+				$status = ( $users_not_found > 0 ) ? 'completed with errors' : 'succeeded';
+				$helper->sendCronEmail( 'offline sync', $status, $email_on_success, $processed_users, $users_not_found );
+			} catch ( GigyaHookException $e ) {
+				error_log( 'Gigya offline sync: There was a problem adding custom data to field mapping: ' . $e->getMessage() );
 				$status = 'failed';
-				$helper->sendCronEmail('offline sync', $status, $email_on_failure);
-			} catch (GSApiException $e) {
-				error_log('Offline sync failed: ' . $e->getErrorCode() . ' – ' . $e->getMessage() . '. Call ID: ' . $e->getCallId());
+				$helper->sendCronEmail( 'offline sync', $status, $email_on_failure );
+			} catch ( GSApiException $e ) {
+				error_log( 'Offline sync failed: ' . $e->getErrorCode() . ' – ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
 				$status = 'failed';
-				$helper->sendCronEmail('offline sync', $status, $email_on_failure);
-			} catch (GSException $e) {
-				error_log('Offline sync failed: ' . $e->getMessage());
+				$helper->sendCronEmail( 'offline sync', $status, $email_on_failure );
+			} catch ( GSException | Exception $e ) {
+				error_log( 'Offline sync failed: ' . $e->getMessage() );
 				$status = 'failed';
-				$helper->sendCronEmail('offline sync', $status, $email_on_failure);
+				$helper->sendCronEmail( 'offline sync', $status, $email_on_failure );
 			}
 		}
 	}

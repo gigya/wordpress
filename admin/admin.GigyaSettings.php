@@ -175,7 +175,7 @@ class GigyaSettings {
 					if ( $gigyaErrCode > 0 ) {
 						$gigyaErrMsg = $res->getErrorMessage();
 						$errorsLink  = "<a href='https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST' target='_blank' rel='noopener noreferrer'>Response_Codes_and_Errors</a>";
-						$message     = "SAP CDC  API error: {$gigyaErrCode} - {$gigyaErrMsg}.";
+						$message     = "SAP CDC API error: {$gigyaErrCode} - {$gigyaErrMsg}.";
 						add_settings_error( 'gigya_global_settings', 'api_validate', __( $message . " For more information please refer to {$errorsLink}", 'error' ) );
 						error_log( 'Error updating SAP CDC settings: ' . $message . ' Call ID: ' . $res->getString( "callId", "N/A" ) );
 
@@ -256,29 +256,26 @@ class GigyaSettings {
 	/**
 	 * Set the posted api related values to the old (from DB) values
 	 *
-	 * @param null|string|array $settings Tells the function which old values to get.
-	 *                                    If null / empty string, it has the old hard-coded values (API key etc.),
-	 *                                    If string then it returns values from a specific wp_options setting,
-	 *                                    If array then it returns an array of specific settings
-	 * @param null|string       $option   Relevant (and required) only if $settings is an array. Tells which settings to retrieve under this option.
+	 * @param string            $option   The option under which to keep the settings
+	 * @param null|string|array $settings Tells the function which specific old values to get, if we don't want all of them.
 	 */
-	public static function _keepOldApiValues( $settings = '', $option = null ) {
-		if ( ! $settings ) {
+	public static function _keepOldApiValues( $option = '', $settings = [] ) {
+		if ( ! $option ) {
 			$options                                                   = self::_getSiteOptions();
 			$_POST['gigya_global_settings']['api_key']                 = $options['api_key'];
 			$_POST['gigya_global_settings']['user_key']                = $options['user_key'];
 			$_POST['gigya_global_settings']['api_secret']              = $options['api_secret'];
 			$_POST['gigya_global_settings']['data_center']             = $options['data_center'];
 			$_POST['gigya_global_settings']['sub_site_settings_saved'] = $options['sub_site_settings_saved'];
-		} elseif ( ! is_array( $settings ) ) {
-			$_POST[ $settings ] = self::_getSiteOptions( $settings );
-		} else { /* $settings is an array--retrieve specific options */
+		} elseif ( ! empty( $settings ) ) { /* $settings is an array--retrieve specific options */
 			if ( $option ) {
-				$options = self::_getSiteOptions( $settings );
+				$options = self::_getSiteOptions( $option );
 				foreach ( $settings as $setting ) {
 					$_POST[ $option ][ $setting ] = $options[ $setting ];
 				}
 			}
+		} else {
+			$_POST[ $option ] = self::_getSiteOptions( $option );
 		}
 	}
 

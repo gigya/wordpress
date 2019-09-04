@@ -9,7 +9,7 @@
 
 		if ( $login_options['mode'] == 'raas' ) {
 			$form['map_fieldmapping_desc'] = [
-				'markup' => __( '<p>Define which fields to map from SAP Customer Data Cloud to WordPress. The WordPress mapped target fields will be populated with data copied from the corresponding source fields. Learn more <a href="https://developers.gigya.com/display/GD/WordPress+Plugin#WordPressPlugin-UserManagementSettings" target="_blank" rel="noopener noreferrer" />here</a></p>' ),
+				'markup' => __( '<p>Define which fields to map from SAP Customer Data Cloud to WordPress. The WordPress mapped target fields will be populated with data copied from the corresponding source fields. Learn more <a href="https://developers.gigya.com/display/GD/WordPress+Plugin#WordPressPlugin-UserManagementSettings" target="_blank" rel="noopener noreferrer" />here</a>.</p>' ),
 			];
 
 			$gigya_full_map            = _gigParam( $values, 'map_raas_full_map', '' );
@@ -21,7 +21,7 @@
 			];
 
 			$form['map_offline_sync_title'] = [
-				'markup' => __( '<h4>Offline Sync</h4><p>Define whether to perform field mapping operations periodically even without a specific user action</p>' ),
+				'markup' => __( '<h4>User Sync</h4><p>Schedule a recurring user sync. In addition to the recurring sync, users are synced when they perform an action (such as updating their profiles).</p>' ),
 			];
 
 			$form['map_offline_sync_enable'] = [
@@ -33,7 +33,7 @@
 			$form['map_offline_sync_frequency'] = [
 				'type'   => 'text',
 				'size'   => 10,
-				'label'  => __( 'Job frequency' ),
+				'label'  => __( 'Job Frequency' ),
 				'value'  => _gigParam( $values, 'map_offline_sync_frequency', 10 ),
 				'markup' => __( 'minutes' ),
 				'desc'   => 'This setting relies on the WordPress cron mechanism. Minimum value: ' . GIGYA__OFFLINE_SYNC_MIN_FREQ,

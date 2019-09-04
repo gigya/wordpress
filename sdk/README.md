@@ -2,7 +2,7 @@ gigyaCMS class
 ==============
 
 Is a class with extra API functions and other utils,
-which build especially for working with PHP CMS like Drupal and Wordpress.
+which build especially for working with PHP CMS such as Wordpress.
 
 The class contains 4 calls for constant variables which is
 NOT defined in the file, and you MUST define in your code.

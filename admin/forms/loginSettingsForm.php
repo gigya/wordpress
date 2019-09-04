@@ -22,9 +22,19 @@ function loginSettingsForm() {
 	$c       = new GigyaCMS();
 	try {
 		$is_raas = $c->isRaaS();
-	} catch ( GSException $e ) {
-		$is_raas = false;
-		wp_send_json_error( 'Error from Gigya while determining RaaS status: ' . $e->getMessage() );
+	}
+	catch ( GSException $e ) {
+		$is_raas = true;
+		$form['raas_error'] = [
+			'markup' => '<div id="setting-error-api_validate" class="error settings-error notice is-dismissible"> 
+							<p>
+							<strong>' . __( 'Error determining RaaS status. There could be an issue with your machine or SAP CDC account. Please contact support if the problem persists. Message from SAP CDC') . ': ' . $e->getMessage() . '.
+							For more information please refer to <a href="https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST" target="_blank" rel="noopener noreferrer">Response_Codes_and_Errors</a>.
+							</strong>
+							</p>
+							<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
+						</div>',
+		];
 	}
 
 	if ( $is_raas ) {

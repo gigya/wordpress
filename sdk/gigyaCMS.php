@@ -357,9 +357,11 @@ class GigyaCMS
 	public function isRaaS() {
 		$res = $this->call( 'accounts.getSchema', array() );
 		if ( is_wp_error( $res )) {
-			if ( $res->get_error_code() === 403036) {
+			if ( $res->get_error_code() === GIGYA__ERROR_UNAUTHORIZED_PARTNER) {
 				return false;
 			}
+
+			throw new GSException( $res->get_error_code() . ': ' . $res->get_error_message() );
 		}
 
 		return true;
@@ -420,13 +422,13 @@ class GigyaCMS
 	}
 	
 	/**
-	 * @param $account
+	 * @param $email
 	 *
 	 * @throws Exception
 	 */
-	public function deleteAccountByEmail( $account ) {
+	public function deleteAccountByEmail( $email ) {
 		/* Get info about the primary account */
-		$email = $this->cleanEmail( $account->data->user_email );
+		$email = $this->cleanEmail( $email );
 		$query = "select UID from accounts where loginIDs.emails = '{$email}'";
 
 		/* Get the UID from Email */
