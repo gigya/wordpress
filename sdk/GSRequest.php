@@ -49,7 +49,8 @@ class GSRequest
 	 * @param string $userKey userKey A key of an admin user with extra permissions.
 	 * If this parameter is provided, then the secretKey parameter is assumed to be the admin user's secret key and not the site's secret key.
 	 *
-	 * @throws Exception
+	 * @throws GSException
+	 * @throws GSKeyNotFoundException
 	 */
     public function __construct($apiKey, $secret, $apiMethod, $params = null, $useHTTPS = false, $userKey = null)
     {
@@ -139,7 +140,8 @@ class GSRequest
 	 *
 	 * @return GSResponse
 	 *
-	 * @throws Exception
+	 * @throws GSException
+	 * @throws GSKeyNotFoundException
 	 */
     public function send($timeout = null)
     {

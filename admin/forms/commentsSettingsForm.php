@@ -8,7 +8,7 @@ function commentsSettingsForm() {
 
 	$form['on'] = array(
 			'type'  => 'checkbox',
-			'label' => __( 'Enable Gigya Comments' ),
+			'label' => __( 'Enable SAP CDC Comments' ),
 			'value' => _gigParamDefaultOn( $values, 'on' )
 	);
 
@@ -16,14 +16,14 @@ function commentsSettingsForm() {
 			'type'  => 'checkbox',
 			'label' => __( 'Rating & Reviews mode' ),
 			'value' => _gigParam( $values, 'rating', 0 ),
-			'desc'  => sprintf( __( 'Checking this button will change the mode of the Comment plugin to Rating & Reviews. Please make sure that the Category ID defined below is set to Rating & Reviews mode in the %s.' ), '<a href="https://console.gigya.com/Site/partners/Settings.aspx#cmd%3DSettings.CommentsSetup">' . __( 'Gigya platform' ) . '</a>' )
+			'desc'  => sprintf( __( 'Checking this button will change the mode of the Comment plugin to Rating & Reviews. Please make sure that the Category ID defined below is set to Rating & Reviews mode in the %s.' ), '<a href="https://console.gigya.com/Site/partners/Settings.aspx#cmd%3DSettings.CommentsSetup">' . __( 'SAP Customer Data Cloud platform' ) . '</a>' )
 	);
 
 	$form['categoryID'] = array(
 			'type'  => 'text',
 			'label' => __( 'Category ID' ),
 			'value' => _gigParam( $values, 'categoryID', '' ),
-			'desc'  => sprintf( __( "Copy the ID under 'Comments category name' from %s." ), '<a href="https://console.gigya.com/Site/partners/Settings.aspx#cmd%3DSettings.CommentsSetup">' . __( 'Gigya platform' ) . '</a>' )
+			'desc'  => sprintf( __( "Copy the ID under 'Comments category name' from %s." ), '<a href="https://console.gigya.com/Site/partners/Settings.aspx#cmd%3DSettings.CommentsSetup">' . __( 'SAP Customer Data Cloud platform' ) . '</a>' )
 	);
 
 	$form['enabledShareProviders'] = array(
@@ -41,7 +41,7 @@ function commentsSettingsForm() {
 			),
 			'label'   => __( 'Set the position of the Comments in a post page' ),
 			'value'   => _gigParam( $values, 'position', 'under' ),
-			'desc'    => sprintf( __( 'You can also add and position Gigya Comments using the %s settings page.' ), '<a href="' . admin_url( 'widgets.php' ) . '">' . __( 'Widgets' ) . '</a>' )
+			'desc'    => sprintf( __( 'You can also add and position Comments using the %s settings page.' ), '<a href="' . admin_url( 'widgets.php' ) . '">' . __( 'Widgets' ) . '</a>' )
 	);
 
 	$form['advanced'] = array(

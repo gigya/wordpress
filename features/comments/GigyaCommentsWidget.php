@@ -10,9 +10,9 @@ class GigyaComments_Widget extends WP_Widget {
 	 */
 	function __construct() {
 		$args = array(
-				'description' => __( 'Gigya\'s Comments' )
+				'description' => __( 'SAP Customer Data Cloud\'s Comments' )
 		);
-		parent::__construct( 'gigya_comments', __( 'Gigya Comments' ), $args );
+		parent::__construct( 'gigya_comments', __( 'SAP CDC Comments' ), $args );
 	}
 
 	/**
@@ -103,7 +103,7 @@ class GigyaComments_Widget extends WP_Widget {
 				'type'  => 'text',
 				'label' => __( 'Category ID' ),
 				'value' => esc_attr( _gigParam( $instance, 'categoryID', '' ) ),
-				'desc'  => __( "The category ID on 'Comments category name' at Gigya's settings" ) . ' ' . '<a href=https://console.gigya.com/Site/partners/Settings.aspx#cmd=Settings.CommentsSetup>' . __( 'here' ) . '</a>',
+				'desc'  => __( "The category ID on 'Comments category name' at SAP CDC's settings" ) . ' ' . '<a href=https://console.gigya.com/Site/partners/Settings.aspx#cmd=Settings.CommentsSetup>' . __( 'here' ) . '</a>',
 				'class' => 'size',
 				'name'  => $this->get_field_name( 'categoryID' )
 

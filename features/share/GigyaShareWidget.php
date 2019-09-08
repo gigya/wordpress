@@ -10,9 +10,9 @@ class GigyaShare_Widget extends WP_Widget {
 	 */
 	function __construct() {
 		$args = array(
-				'description' => __( 'Multiple providers Share buttons bar by Gigya' )
+				'description' => __( 'Multiple providers Share buttons bar by SAP Customer Data Cloud' )
 		);
-		parent::__construct( 'gigya_share', __( 'Gigya Share' ), $args );
+		parent::__construct( 'gigya_share', __( 'SAP CDC Share' ), $args );
 	}
 
 	/**

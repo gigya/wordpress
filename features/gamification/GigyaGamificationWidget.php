@@ -10,9 +10,9 @@ class GigyaGamification_Widget extends WP_Widget {
 	 */
 	function __construct() {
 		$args = array(
-				'description' => __( 'Gamification by Gigya' )
+				'description' => __( 'Gamification by SAP Customer Data Cloud' )
 		);
-		parent::__construct( 'gigya_gamification', __( 'Gigya Gamification' ), $args );
+		parent::__construct( 'gigya_gamification', __( 'SAP CDC Gamification' ), $args );
 	}
 
 	/**

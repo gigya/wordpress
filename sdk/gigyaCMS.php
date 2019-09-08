@@ -29,7 +29,7 @@ class GigyaCMS
 	 * @return array | WP_Error | integer
 	 *   The Gigya response.
 	 *
-	 * @throws Exception
+	 * @throws GSException
 	 */
 	public function call( $method, $params ) {
 		// Initialize new request.
@@ -291,7 +291,7 @@ class GigyaCMS
 		try {
 			setcookie( $response["cookieName"], $response["cookieValue"], 0, $response["cookiePath"], $response["cookieDomain"] );
 		} catch ( Exception $e ) {
-			error_log( sprintf( 'error string gigya cookie' ) );
+			error_log( sprintf( 'error string SAP CDC cookie' ) );
 			error_log( sprintf( 'error message : @error', array( '@error' => $e->getMessage() ) ) );
 		}
 
@@ -352,30 +352,16 @@ class GigyaCMS
 	/**
 	 * @return bool
 	 *
-	 * @throws Exception
+	 * @throws GSException
 	 */
 	public function isRaaS() {
 		$res = $this->call( 'accounts.getSchema', array() );
 		if ( is_wp_error( $res )) {
-			if ( $res->get_error_code() === 403036) {
+			if ( $res->get_error_code() === GIGYA__ERROR_UNAUTHORIZED_PARTNER) {
 				return false;
 			}
-		}
 
-		return true;
-	}
-
-	/**
-	 * @return bool
-	 *
-	 * @throws Exception
-	 */
-	public function isRaaNotIds() {
-		$res = $this->call( 'accounts.getScreenSets', array() );
-		if ( is_wp_error( $res )) {
-			if ( $res->get_error_code() === 403036) {
-				return false;
-			}
+			throw new GSException( $res->get_error_code() . ': ' . $res->get_error_message() );
 		}
 
 		return true;
@@ -405,19 +391,50 @@ class GigyaCMS
 	}
 
 	/**
-	 * @param $account
+	 * Queries Gigya with the accounts.search call
+	 *
+	 * @param array $params Full parameters of the call. Usually in the form of [ 'query' => 'SELECT ...', 'openCursor' => true ], but can be [ 'cursorId' => ... ]
+	 *
+	 * @return array
+	 *
+	 * @throws GSApiException
+	 * @throws GSException
+	 */
+	public function searchGigyaUsers( $params ) {
+		$gigya_users = [];
+
+		$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__API_SECRET, GIGYA__API_DOMAIN );
+		$gigya_data       = $gigya_api_helper->sendApiCall( 'accounts.search', $params )->getData()->serialize();
+
+		foreach ( $gigya_data['results'] as $user_data ) {
+			if ( isset( $user_data['profile'] ) ) {
+				$gigya_users[] = $user_data;
+			}
+		}
+
+		if ( ! empty( $gigya_data['nextCursorId'] ) ) {
+			$cursorId = $gigya_data['nextCursorId'];
+
+			return array_merge( $gigya_users, $this->searchGigyaUsers( [ 'cursorId' => $cursorId ] ) );
+		}
+
+		return $gigya_users;
+	}
+	
+	/**
+	 * @param $email
 	 *
 	 * @throws Exception
 	 */
-	public function deleteAccount( $account ) {
-		// Get info about the primary account.
-		$email = $this->cleanEmail( $account->data->user_email );
+	public function deleteAccountByEmail( $email ) {
+		/* Get info about the primary account */
+		$email = $this->cleanEmail( $email );
 		$query = "select UID from accounts where loginIDs.emails = '{$email}'";
 
-		// Get the UID from Email.
+		/* Get the UID from Email */
 		$res = $this->call( 'accounts.search', array( 'query' => $query ) );
 
-		// Delete the user.
+		/* Delete the user */
 		if ( ! is_wp_error( $res ) )
 			$this->call( 'accounts.deleteAccount', array( 'UID' => $res['results'][0]['UID'] ) );
 	}

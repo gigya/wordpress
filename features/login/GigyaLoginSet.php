@@ -6,6 +6,8 @@
  * Adds Gigya login option to WP login/register form.
  */
 class GigyaLoginSet {
+	private $login_options;
+	private $global_options;
 
 	public function __construct() {
 
@@ -106,8 +108,9 @@ class GigyaLoginSet {
 		);
 
 		// Get the widget.
-		$widget = GigyaLogin_Widget::getContent( $args, $instance );
+		$widget = new GigyaLogin_Widget();
+		$widget_content = $widget->getContent( $args, $instance );
 
-		return $widget;
+		return $widget_content;
 	}
 }
