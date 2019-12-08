@@ -34,19 +34,19 @@ class GigyaSettings {
 
 		// Add settings sections.
 		foreach ( $this->getSections() as $id => $section ) {
-            $option_group = $section['slug'] . '-group';
+			$option_group = $section['slug'] . '-group';
 			add_settings_section( $id, $section['title'], $section['func'], $section['slug'] );
 			register_setting( $option_group, $section['slug'], array( $this, 'validate' ) );
-            add_filter("option_page_capability_{$option_group}", array( $this, 'addGigyaCapabilities') );
+			add_filter( "option_page_capability_{$option_group}", array( $this, 'addGigyaCapabilities' ) );
 		}
 	}
 
-    /**
-     * Add gigya edit capability to allow custom roles to edit Gigya
-     */
-    public function addGigyaCapabilities() {
-        return CUSTOM_GIGYA_EDIT;
-    }
+	/**
+	 * Add gigya edit capability to allow custom roles to edit Gigya
+	 */
+	public function addGigyaCapabilities() {
+		return CUSTOM_GIGYA_EDIT;
+	}
 
 	/**
 	 * Hook admin_menu callback.
@@ -54,26 +54,38 @@ class GigyaSettings {
 	 */
 	public function adminMenu() {
 		// Default admin capabilities
-		if (current_user_can('GIGYA__PERMISSION_LEVEL')) {
+		if ( current_user_can( 'GIGYA__PERMISSION_LEVEL' ) ) {
 			// Register the main Gigya setting route page.
-			add_menu_page( 'Customer Data Cloud', 'Customer Data Cloud', GIGYA__PERMISSION_LEVEL, 'gigya_global_settings', array( $this, 'adminPage' ), GIGYA__PLUGIN_URL . 'admin/images/SAP_R_grad_scrn.jpg', '70.1' );
+			add_menu_page( 'Customer Data Cloud', 'Customer Data Cloud', GIGYA__PERMISSION_LEVEL, 'gigya_global_settings', array(
+				$this,
+				'adminPage'
+			), GIGYA__PLUGIN_URL . 'admin/images/SAP_R_grad_scrn.jpg', '70.1' );
 
 			// Register the sub-menus Gigya setting pages.
 			foreach ( $this->getSections() as $section ) {
 
 				require_once GIGYA__PLUGIN_DIR . 'admin/forms/' . $section['func'] . '.php';
-				add_submenu_page( 'gigya_global_settings', __( $section['title'], $section['title'] ), __( $section['title'], $section['title'] ), GIGYA__PERMISSION_LEVEL, $section['slug'], array( $this, 'adminPage' ) );
+				add_submenu_page( 'gigya_global_settings', __( $section['title'], $section['title'] ), __( $section['title'], $section['title'] ), GIGYA__PERMISSION_LEVEL, $section['slug'], array(
+					$this,
+					'adminPage'
+				) );
 
 			}
-		} elseif ( current_user_can( CUSTOM_GIGYA_EDIT )) {
+		} elseif ( current_user_can( CUSTOM_GIGYA_EDIT ) ) {
 			// Register the main Gigya setting route page.
-			add_menu_page( 'Customer Data Cloud', 'Customer Data Cloud', CUSTOM_GIGYA_EDIT, 'gigya_global_settings', array( $this, 'adminPage' ), GIGYA__PLUGIN_URL . 'admin/images/SAP_R_grad_scrn.png', '70.1' );
+			add_menu_page( 'Customer Data Cloud', 'Customer Data Cloud', CUSTOM_GIGYA_EDIT, 'gigya_global_settings', array(
+				$this,
+				'adminPage'
+			), GIGYA__PLUGIN_URL . 'admin/images/SAP_R_grad_scrn.png', '70.1' );
 
 			// Register the sub-menus Gigya setting pages.
 			foreach ( $this->getSections() as $section ) {
 
 				require_once GIGYA__PLUGIN_DIR . 'admin/forms/' . $section['func'] . '.php';
-				add_submenu_page( 'gigya_global_settings', __( $section['title'], $section['title'] ), __( $section['title'], $section['title'] ), CUSTOM_GIGYA_EDIT, $section['slug'], array( $this, 'adminPage' ) );
+				add_submenu_page( 'gigya_global_settings', __( $section['title'], $section['title'] ), __( $section['title'], $section['title'] ), CUSTOM_GIGYA_EDIT, $section['slug'], array(
+					$this,
+					'adminPage'
+				) );
 
 			}
 		}
@@ -85,13 +97,14 @@ class GigyaSettings {
 	 */
 	public static function getSections() {
 		$login_options = get_option( GIGYA__SETTINGS_LOGIN );
+
 		return array(
-			'gigya_global_settings'    => array(
+			'gigya_global_settings'        => array(
 				'title' => 'Global Settings',
 				'func'  => 'globalSettingsForm',
 				'slug'  => 'gigya_global_settings'
 			),
-			'gigya_login_settings'     => array(
+			'gigya_login_settings'         => array(
 				'title' => 'User Management',
 				'func'  => 'loginSettingsForm',
 				'slug'  => 'gigya_login_settings'
@@ -100,34 +113,37 @@ class GigyaSettings {
 				'title'   => 'Field Mapping',
 				'func'    => 'fieldMappingForm',
 				'slug'    => 'gigya_field_mapping_settings',
-				'display' => ( isset( $login_options['mode'] ) and in_array( $login_options['mode'], [ 'raas', 'wp_sl' ] ) ) ? 'visible' : 'hidden',
+				'display' => ( isset( $login_options['mode'] ) and in_array( $login_options['mode'], [
+						'raas',
+						'wp_sl'
+					] ) ) ? 'visible' : 'hidden',
 			),
-			'gigya_screenset_settings' => array(
+			'gigya_screenset_settings'     => array(
 				'title' => 'Screen-Sets',
 				'func'  => 'screenSetSettingsForm',
 				'slug'  => 'gigya_screenset_settings'
 			),
-			'gigya_session_management' => array(
+			'gigya_session_management'     => array(
 				'title' => 'Session Management',
 				'func'  => 'sessionManagementForm',
 				'slug'  => 'gigya_session_management'
 			),
-			'gigya_share_settings'     => array(
+			'gigya_share_settings'         => array(
 				'title' => 'Share Settings',
 				'func'  => 'shareSettingsForm',
 				'slug'  => 'gigya_share_settings'
 			),
-			'gigya_comments_settings'  => array(
+			'gigya_comments_settings'      => array(
 				'title' => 'Comments',
 				'func'  => 'commentsSettingsForm',
 				'slug'  => 'gigya_comments_settings'
 			),
-			'gigya_reactions_settings' => array(
+			'gigya_reactions_settings'     => array(
 				'title' => 'Reactions',
 				'func'  => 'reactionsSettingsForm',
 				'slug'  => 'gigya_reactions_settings'
 			),
-			'gigya_gm_settings'        => array(
+			'gigya_gm_settings'            => array(
 				'title' => 'Gamification',
 				'func'  => 'gmSettingsForm',
 				'slug'  => 'gigya_gm_settings'
@@ -145,8 +161,8 @@ class GigyaSettings {
 		echo _gigya_render_tpl( 'admin/tpl/adminPage-wrapper.tpl.php', array( 'page' => $page ) );
 		settings_errors();
 
-		echo '<form class="gigya-settings" action="options.php" method="post">'.PHP_EOL;
-		echo '<input type="hidden" name="action" value="gigya_settings_submit">'.PHP_EOL;
+		echo '<form class="gigya-settings" action="options.php" method="post">' . PHP_EOL;
+		echo '<input type="hidden" name="action" value="gigya_settings_submit">' . PHP_EOL;
 
 		wp_nonce_field( 'update-options', 'update_options_nonce' );
 		wp_nonce_field( 'wp_rest', 'wp_rest_nonce' );
@@ -229,7 +245,38 @@ class GigyaSettings {
 			if ( $data['map_offline_sync_enable'] ) {
 				wp_schedule_event( time(), 'gigya_offline_sync_custom', $cron_name );
 			}
+		} elseif ( isset( $_POST['gigya_screenset_settings'] ) ) {
+			foreach ( $_POST['gigya_screenset_settings']['custom_screen_sets'] as $key => $screen_set ) {
+				if ( in_array( $screen_set['desktop'], array_column( $_POST['gigya_screenset_settings']['custom_screen_sets'], 'id' ) ) ) {
+					$_POST['gigya_screenset_settings']['custom_screen_sets'][ $key ]['id'] = self::generateMachineName( $screen_set['desktop'], $key );
+				} else {
+					$_POST['gigya_screenset_settings']['custom_screen_sets'][ $key ]['id'] = $screen_set['desktop'];
+				}
+				$_POST['gigya_screenset_settings']['custom_screen_sets'][ $key ]['value'] = $screen_set['desktop'];
+
+				if ( ! isset( $screen_set['mobile'] ) ) {
+					$_POST['gigya_screenset_settings']['custom_screen_sets'][ $key ]['mobile'] = 'Use Desktop Screen-Set';
+				} else {
+					if ( ! isset( $screen_set['desktop'] ) ) {
+						$gigyaErrMsg = 'Custom Scree-Set without Desktop value will not be saved';
+						$message     = "SAP CDC  error: {$gigyaErrMsg}.";
+						add_settings_error( 'gigya_screenset_settings', 'empty_desktop_screen_set', __( $message ));
+						error_log( 'Error updating SAP CDC settings: ' . $message ) ;
+						unset($_POST['gigya_screenset_settings']['custom_screen_sets'][ $key ]);
+					}
+				}
+			}
 		}
+	}
+
+	public static function generateMachineName( $desktop_screen_set_id, $serial ) {
+		$machine_name = $desktop_screen_set_id;
+		if ( $serial !== 0 ) {
+			$machine_name .= '_' . $serial;
+		}
+
+
+		return $machine_name;
 	}
 
 	/**
@@ -237,17 +284,15 @@ class GigyaSettings {
 	 * If it's not submitted, take it from DB.
 	 */
 	public static function _setSecret() {
-		if ( empty($_POST['gigya_global_settings']['api_secret']) )
-		{
+		if ( empty( $_POST['gigya_global_settings']['api_secret'] ) ) {
 			$options = static::_getSiteOptions();
-			if ($options === false)
+			if ( $options === false ) {
 				return false;
+			}
 
 			$_POST['gigya_global_settings']['api_secret'] = $options['api_secret'];
-		}
-		else
-		{
-			$_POST['gigya_global_settings']['api_secret'] = GigyaApiHelper::encrypt($_POST['gigya_global_settings']['api_secret'], SECURE_AUTH_KEY);
+		} else {
+			$_POST['gigya_global_settings']['api_secret'] = GigyaApiHelper::encrypt( $_POST['gigya_global_settings']['api_secret'], SECURE_AUTH_KEY );
 		}
 
 		return true;
@@ -256,7 +301,7 @@ class GigyaSettings {
 	/**
 	 * Set the posted api related values to the old (from DB) values
 	 *
-	 * @param string            $option   The option under which to keep the settings
+	 * @param string $option The option under which to keep the settings
 	 * @param null|string|array $settings Tells the function which specific old values to get, if we don't want all of them.
 	 */
 	public static function _keepOldApiValues( $option = '', $settings = [] ) {
