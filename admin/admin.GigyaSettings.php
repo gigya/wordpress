@@ -260,9 +260,9 @@ class GigyaSettings {
 					if ( ! isset( $screen_set['desktop'] ) ) {
 						$gigyaErrMsg = 'Custom Scree-Set without Desktop value will not be saved';
 						$message     = "SAP CDC  error: {$gigyaErrMsg}.";
-						add_settings_error( 'gigya_screenset_settings', 'empty_desktop_screen_set', __( $message ));
-						error_log( 'Error updating SAP CDC settings: ' . $message ) ;
-						unset($_POST['gigya_screenset_settings']['custom_screen_sets'][ $key ]);
+						add_settings_error( 'gigya_screenset_settings', 'empty_desktop_screen_set', __( $message ) );
+						error_log( 'Error updating SAP CDC settings: ' . $message );
+						unset( $_POST['gigya_screenset_settings']['custom_screen_sets'][ $key ] );
 					}
 				}
 			}
