@@ -189,7 +189,7 @@ class GigyaRaasAjax {
 	 */
 	public function updateProfile( $data ) {
 		if ( is_user_logged_in() ) {
-			$is_sig_validate = c::validateUserSignature(
+			$is_sig_validate = SigUtils::validateUserSignature(
 				$data['UID'],
 				$data['signatureTimestamp'],
 				GIGYA__API_SECRET,

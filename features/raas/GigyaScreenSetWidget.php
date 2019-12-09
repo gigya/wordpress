@@ -26,6 +26,9 @@ class GigyaScreenSet_Widget extends WP_Widget {
 	 *
 	 * @param array $args Widget arguments.
 	 * @param array $instance Saved values from database.
+	 *
+	 * @see WP_Widget::widget()
+	 *
 	 */
 	public function widget( $args, $instance ) {
 		if ( ! empty( $instance['container_id'] ) and ! empty( $instance['title'] ) ) {
@@ -70,7 +73,7 @@ class GigyaScreenSet_Widget extends WP_Widget {
 		$form                          = array();
 		$select_attrs                  = array();
 		$select_attrs['data-required'] = 'empty-selection';
-		$select_markup                 = null;
+		$select_markup                 = '';
 		$custom_screen_sets            = get_option( GIGYA__SETTINGS_SCREENSETS )['custom_screen_sets'];
 		$screen_sets_list              = array();
 
@@ -83,15 +86,13 @@ class GigyaScreenSet_Widget extends WP_Widget {
 		}
 
 		if ( empty( esc_attr( _gigParam( $instance, 'screenset_id', '' ) ) ) ) {
-			$screen_sets_list = array_merge( array(
-				array(
-					'value' => '',
-					'attrs' => array(
-						'disabled' => 'disabled',
-						'style'    => 'display: none;',
-					)
+			array_unshift( $screen_sets_list, array(
+				'value' => '',
+				'attrs' => array(
+					'disabled' => 'disabled',
+					'style'    => 'display: none;',
 				)
-			), $screen_sets_list );
+			) );
 		} else {
 			if ( ! array_key_exists( esc_attr( _gigParam( $instance, 'screenset_id', '' ) ), $screen_sets_list ) ) {
 				$select_attrs['class'] = 'gigya-wp-field-error';
@@ -106,16 +107,14 @@ class GigyaScreenSet_Widget extends WP_Widget {
 							</p>
 							<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
 						</h6>';
-				$screen_sets_list      = array_merge( array(
+				array_unshift( $screen_sets_list, array(
 					array(
 						'value' => esc_attr( _gigParam( $instance, 'screenset_id', '' ) ),
-						'attrs' => array(
-							'class' => 'invalid_gigya_Screen-Set_option',
-						)
+						'attrs' => array( 'class' => 'invalid-gigya-Screen-Set-option', )
 					)
-				), $screen_sets_list );
+				) );
 			}
-		}
+		};
 
 		$form[ $this->get_field_id( 'title' ) ] = array(
 			'type'     => 'text',

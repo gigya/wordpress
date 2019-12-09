@@ -1,54 +1,38 @@
 <?php
 function buildCustomScreenSetRow( $screenSetList, $values = array(), $more_options = array(), $more_field_options = array() ) {
-	$more_field_options      = array_values( $more_field_options );
-	$desktop_list            = $screenSetList;
-	$desktop_markup          = null;
-	$mobile_markup           = null;
+	$more_field_options = array_values( $more_field_options );
+	$desktop_list       = $screenSetList;
+	$mobile_list        = $screenSetList;
+	array_unshift( $mobile_list, array( 'label' => 'Use Desktop Screen-Set' ), array(
+		'label' => '____________________________________',
+		'attrs' => array( 'disabled' => 'disabled' )
+	) );
+	$screen_set_exists_desktop = in_array( $values['desktop'], array_column( $desktop_list, 'label' ) ) || empty( $values['desktop'] );
+	$screen_set_exists_mobile  = in_array( $values['mobile'], array_column( $mobile_list, 'label' ) ) || empty( $values['mobile'] );
+	$desktop_markup     = '';
+	$mobile_markup      = '';
 	$screen_set_error_markup = '<h6 id="setting-error-api_validate" class="error notice settings-error notice is-dismissible style" style = "border-left-color : #dc3232 "> 
 							<p>
-							<strong>' . __( 'Screen-Set not exists' ) . ' </strong>
+							<strong>' . __( 'Screen-Set does not exist' ) . ' </strong>
 							</p>
 							<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
 						</h6>';
 
 
-	$mobile_list = array_merge( [
-		[
-			'label' => '____________________________________',
-			'attrs' => array( 'disabled' => "disabled" ),
-		]
-	], $desktop_list );
-
-	$mobile_list = array_merge( [
-		[
-			'label' => 'Use Desktop Screen-Set',
-		]
-	], $mobile_list );
-
-	$specific_row_desktop_list = $desktop_list;
-	$specific_row_mobile_list  = $mobile_list;
-
-	$screen_set_exists_desktop = in_array( $values['desktop'], array_column( $desktop_list, 'label' ) ) || empty( $values['desktop'] );
-	$screen_set_exists_mobile  = in_array( $values['mobile'], array_column( $mobile_list, 'label' ) ) || empty( $values['mobile'] );
-
 	if ( ! $screen_set_exists_desktop ) {
-		$desktop_markup            = $screen_set_error_markup;
-		$specific_row_desktop_list = array_merge( [
-			[
-				'label' => $values['desktop'],
-				'attrs' => array( 'style' => "color: red !important" ),
-			]
-		], $desktop_list );
-	};
+		$desktop_markup = $screen_set_error_markup;
+		array_unshift( $desktop_list, array(
+			'label' => $values['desktop'],
+			'attrs' => array( 'style' => "color: red !important" )
+		) );
+	}
 
 	if ( ! $screen_set_exists_mobile ) {
-		$mobile_markup            = $screen_set_error_markup;
-		$specific_row_mobile_list = array_merge( [
-			[
-				'label' => $values['mobile'],
-				'attrs' => array( 'style' => "color: red !important" ),
-			]
-		], $mobile_list );
+		$mobile_markup = $screen_set_error_markup;
+		array_unshift( $mobile_list, array(
+			'label' => $values['mobile'],
+			'attrs' => array( 'style' => "color: red !important" )
+		) );
 	};
 
 	$row = [
@@ -59,19 +43,17 @@ function buildCustomScreenSetRow( $screenSetList, $values = array(), $more_optio
 				'name'     => 'desktop',
 				'label'    => __( 'Desktop Screen-Set' ),
 				'value'    => ( ( ! empty( $values['desktop'] ) ) ? $values['desktop'] : '' ),
-				'options'  => $specific_row_desktop_list,
+				'options'  => $desktop_list,
 				'required' => 'empty-selection',
 				'markup'   => $desktop_markup,
-				'attrs'    => array(
-					'class' => 'custom-screen-set-select-width ' . ( ( $screen_set_exists_desktop ) ? null : ' gigya-wp-field-error' )
-				)
+				'attrs'    => array( 'class' => 'custom-screen-set-select-width ' . ( ( $screen_set_exists_desktop ) ? null : ' gigya-wp-field-error' ) ),
 			],
 			[ /* Mobile screen-set */
 				'type'    => 'select',
 				'name'    => 'mobile',
 				'label'   => __( 'Mobile Screen-Set' ),
 				'value'   => ( ( ! empty( $values['mobile'] ) ) ? $values['mobile'] : '' ),
-				'options' => $specific_row_mobile_list,
+				'options' => $mobile_list,
 				'markup'  => $mobile_markup,
 				'attrs'   => array( 'class' => 'custom-screen-set-select-width ' . ( ( $screen_set_exists_mobile ) ? null : ' gigya-wp-field-error' ) ),
 
@@ -94,17 +76,17 @@ function buildCustomScreenSetRow( $screenSetList, $values = array(), $more_optio
 	return $row;
 }
 
-function buildExistingCustomScreenSetArray( $table_name, $screenSetList ) {
+function buildExistingCustomScreenSetArray( $table_name, $screen_set_list ) {
 	$values = get_option( GIGYA__SETTINGS_SCREENSETS );
 
 	if ( empty( $values[ $table_name ] ) ) {
-		return array( buildCustomScreenSetRow( $screenSetList, array(), array( 'disabled' => true ) ) );
+		return array( buildCustomScreenSetRow( $screen_set_list, array(), array( 'disabled' => true ) ) );
 	} else {
 		$rows       = array();
 		$total_rows = count( $values[ $table_name ] );
 
 		foreach ( $values[ $table_name ] as $key => $values ) {
-			$rows[ $key ] = buildCustomScreenSetRow( $screenSetList, $values, ( $total_rows <= 1 ) ? array( 'disabled' => true ) : array() );
+			$rows[ $key ] = buildCustomScreenSetRow( $screen_set_list, $values, ( $total_rows <= 1 ) ? array( 'disabled' => true ) : array() );
 
 		}
 

@@ -76,11 +76,13 @@ input[type=checkbox] {
 .other_dataCenter input {
     padding-top: 2px;
 }
+
 label[for=gigya_raasOverrideLinks] {
     font-size: 109%;
     font-weight: bold;
     margin-top: 2em;
 }
+
 .raas_allowed_admin_checkall label {
     display: inline-block;
     padding: 5px 10px 5px 5px;
@@ -94,19 +96,13 @@ label[for=gigya_raasOverrideLinks] {
     width: 400px;
 }
 
-.gigya-no-selected-option-error-message {
+.gigya-empty-line-error-message .gigya-no-selected-option-error-message {
     margin: 0;
     margin-left: 5px;
     color: red;
 }
 
-.gigya-empty-line-error-message {
-    margin: 0;
-    margin-left: 5px;
-    color: red;
-}
-
-.invalid_gigya_Screen-Set_option {
+.invalid-gigya-Screen-Set-option {
     color: red !important;
 
 }
