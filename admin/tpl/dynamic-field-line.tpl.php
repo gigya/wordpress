@@ -16,7 +16,10 @@
 			$required = 'data-required="' . strval( $field['required'] ) . '"';
 		}
 		?>
-		<td style="vertical-align: top;">
+		<td style="vertical-align: top;"
+			<?php if ( $field['type'] == 'select' ) {
+				echo 'class = custom-screen-set-td-selection';
+			}; ?>>
 			<?php if ( $field['type'] == 'text' ): ?>
 				<label for="gigya_<?php echo $id; ?>"><?php echo ( isset( $field['label'] ) ) ? $field['label'] : ''; ?><?php if ( ! empty( $field['required'] ) ) {
 						echo '&nbsp;<span class="required">*</span>';
@@ -49,25 +52,35 @@
 					};
 					?>
 				>
-
 					<?php foreach ( $field['options'] as $key => $option ) : ?>
-						<option value="<?php echo $field['options'][ $key ]['label']; ?>"
-							<?php if ( $field['value'] == $option['label'] ) {
-								echo 'selected = true';
-							} ?>
-							<?php if ( isset( $field['options'][ $key ]['attrs'] ) ) {
+						<option
+							<?php
+							$value_exist = false;
+							if ( isset( $field['options'][ $key ]['attrs'] ) ) {
 								foreach ( $field['options'][ $key ]['attrs'] as $attr => $option_attr_value ) {
 									echo $attr . ' ="' . $option_attr_value . '"' . PHP_EOL;
-								}
-							} ?>
-
-						><?php echo $option['label']; ?></option>
+									if ( $attr == 'value' ) {
+										$value_exist = true;
+										if ( $field['value'] == $option_attr_value ) {
+											echo 'selected = true' . PHP_EOL;
+										}
+									}
+								};
+							} else if ( $field['value'] == $option['label'] ) {
+								echo 'selected = true' . PHP_EOL;
+							};
+							if ( ! $value_exist ) {
+								echo 'value =' . $option['label'] . PHP_EOL;
+							}
+							?>
+						>
+							<?php echo $option['label']; ?></option>
 					<?php endforeach ?>
 
 				</select>
 
-				<?php if ( isset( $field['markup'] ) ) {
-					echo $field['markup'];
+				<?php if ( isset( $field['error'] ) ) {
+					echo $field['error'];
 				}
 				?>
 

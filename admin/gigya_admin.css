@@ -93,16 +93,42 @@ label[for=gigya_raasOverrideLinks] {
 }
 
 .custom-screen-set-select-width {
-    width: 400px;
+    width: 100%;
+    max-width: 420px;
 }
 
-.gigya-empty-line-error-message .gigya-no-selected-option-error-message {
-    margin: 0;
-    margin-left: 5px;
-    color: red;
-}
 
 .invalid-gigya-Screen-Set-option {
     color: red !important;
 
 }
+
+.custom-screen-set-td-selection {
+    width: 40%;
+}
+
+.gigya-error-message-notice-div {
+    height: auto;
+    min-height: 100%;
+    -webkit-font-smoothing: subpixel-antialiased;
+    display: block;
+    outline-color: initial;
+    outline-style: initial;
+    outline-width: 0px;
+    background: #fff;
+    border-left: 4px solid #fff;
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
+    padding: 1px 12px;
+    border-left-color: #dc3232;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    padding-right: 38px;
+    position: relative;
+
+}
+
+.gigya-hide-notice-error-message {
+    height: 100%;
+}
+
+

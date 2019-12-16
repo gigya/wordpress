@@ -115,12 +115,19 @@ function _gigya_render_tpl( $template_file, $variables = array() ) {
 
 //--------------------------------------------------------------------
 
+/**
+ * @param $el
+ *  the element inside the form
+ * @param $id
+ *  the index of the element inside the form
+ * @param string $name_prefix
+ *
+ * @return string
+ */
 function _gigya_element_render( $el, $id, $name_prefix = '' ) {
 	$allowed_form_elements = array('checkbox', 'customText', 'hidden', 'password', 'radio', 'select', 'text', 'textarea');
-
 	$render = '';
-
-	if ( empty( $el['type'] ) || $el['type'] == 'markup' ) {
+		if ( empty( $el['type'] ) || $el['type'] == 'markup' ) {
 		$render .= $el['markup'];
 	} elseif ( $el['type'] == 'table' ) {
 		$el['name_prefix'] = $name_prefix;
@@ -158,6 +165,9 @@ function _gigya_element_render( $el, $id, $name_prefix = '' ) {
 	}
 
 	return $render;
+
+//	if (there is an error)
+//		wp_send_json_error('blah blah');
 }
 
 /**
@@ -171,6 +181,7 @@ function _gigya_element_render( $el, $id, $name_prefix = '' ) {
  */
 function _gigya_form_render( $form, $name_prefix = '' ) {
 	$render = '';
+//	if()
 
 	/* Inject display dependencies */
 	foreach ( $form as $id => $el ) {

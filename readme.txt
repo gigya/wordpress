@@ -176,8 +176,8 @@ For question about installations or configuration, please contact your account m
 * Added the ability to sync data from Gigya to WordPress independent of any individual user action
 
 = 5.10 =
-* Replacing the html element from 'input', to 'select' in the 'Screen-set setting' page and Execution of Screen-Sets validation.
-* Deleting case of GSexception (includeing in Exeption class, the problem : "or" not supported in php 5.4 ).
+* Custom screen-sets: added validation with SAP CDC
+* Fixed an incompatibility with PHP 5.x
 
 == FAQ ==
 

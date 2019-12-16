@@ -3,35 +3,39 @@ function buildCustomScreenSetRow( $screenSetList, $values = array(), $more_optio
 	$more_field_options = array_values( $more_field_options );
 	$desktop_list       = $screenSetList;
 	$mobile_list        = $screenSetList;
-	array_unshift( $mobile_list, array( 'label' => 'Use Desktop Screen-Set' ), array(
-		'label' => '____________________________________',
+	$desktop_error      = array();
+	$mobile_error       = array();
+	array_unshift( $mobile_list, array(
+		'label' => 'Use Desktop Screen-Set',
+		'attrs' => array( 'value' => 'desktop' )
+	), array(
+		'label' => str_repeat( '_', 3 + max( array_map( 'strlen', array_column( $mobile_list, 'label' ) ) ) ),
 		'attrs' => array( 'disabled' => 'disabled' )
 	) );
+	$specific_desktop_list     = $desktop_list;
+	$specific_mobile_list      = $mobile_list;
 	$screen_set_exists_desktop = in_array( $values['desktop'], array_column( $desktop_list, 'label' ) ) || empty( $values['desktop'] );
-	$screen_set_exists_mobile  = in_array( $values['mobile'], array_column( $mobile_list, 'label' ) ) || empty( $values['mobile'] );
-	$desktop_markup     = '';
-	$mobile_markup      = '';
-	$screen_set_error_markup = '<h6 id="setting-error-api_validate" class="error notice settings-error notice is-dismissible style" style = "border-left-color : #dc3232 "> 
-							<p>
-							<strong>' . __( 'Screen-Set does not exist' ) . ' </strong>
-							</p>
-							<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
-						</h6>';
+	$screen_set_exists_mobile  = in_array( $values['mobile'], array_column( $mobile_list, 'label' ) ) || empty( $values['mobile'] ) || $values['mobile'] == 'desktop';
+
+	$screen_set_error = array(
+		'error_message' => 'Screen-Set does not exist',
+		'attrs'         => array( 'class' => 'gigya-error-message-notice-div' )
+	);
 
 
 	if ( ! $screen_set_exists_desktop ) {
-		$desktop_markup = $screen_set_error_markup;
-		array_unshift( $desktop_list, array(
+		$desktop_error = $screen_set_error;
+		array_unshift( $specific_desktop_list, array(
 			'label' => $values['desktop'],
-			'attrs' => array( 'style' => "color: red !important" )
+			'attrs' => array( 'class' => 'invalid-gigya-Screen-Set-option', 'data-exists' => 'false' )
 		) );
 	}
 
 	if ( ! $screen_set_exists_mobile ) {
-		$mobile_markup = $screen_set_error_markup;
-		array_unshift( $mobile_list, array(
+		$mobile_error = $screen_set_error;
+		array_unshift( $specific_mobile_list, array(
 			'label' => $values['mobile'],
-			'attrs' => array( 'style' => "color: red !important" )
+			'attrs' => array( 'class' => "invalid-gigya-Screen-Set-option", 'data-exists' => 'false' )
 		) );
 	};
 
@@ -43,18 +47,18 @@ function buildCustomScreenSetRow( $screenSetList, $values = array(), $more_optio
 				'name'     => 'desktop',
 				'label'    => __( 'Desktop Screen-Set' ),
 				'value'    => ( ( ! empty( $values['desktop'] ) ) ? $values['desktop'] : '' ),
-				'options'  => $desktop_list,
+				'options'  => $specific_desktop_list,
 				'required' => 'empty-selection',
-				'markup'   => $desktop_markup,
+				'error'    => ( ( empty( $desktop_error ) ) ? '' : _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $desktop_error ) ),
 				'attrs'    => array( 'class' => 'custom-screen-set-select-width ' . ( ( $screen_set_exists_desktop ) ? null : ' gigya-wp-field-error' ) ),
 			],
 			[ /* Mobile screen-set */
 				'type'    => 'select',
 				'name'    => 'mobile',
 				'label'   => __( 'Mobile Screen-Set' ),
-				'value'   => ( ( ! empty( $values['mobile'] ) ) ? $values['mobile'] : '' ),
-				'options' => $mobile_list,
-				'markup'  => $mobile_markup,
+				'value'   => ( ( ! empty( $values['mobile'] ) ) ? $values['mobile'] : 'desktop' ),
+				'options' => $specific_mobile_list,
+				'error'   => ( ( empty( $mobile_error ) ) ? '' : _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $mobile_error ) ),
 				'attrs'   => array( 'class' => 'custom-screen-set-select-width ' . ( ( $screen_set_exists_mobile ) ? null : ' gigya-wp-field-error' ) ),
 
 			],
@@ -68,7 +72,6 @@ function buildCustomScreenSetRow( $screenSetList, $values = array(), $more_optio
 	];
 
 	$row = array_merge( $row, $more_options );
-
 	foreach ( $row['fields'] as $key => $field ) {
 		$row['fields'][ $key ] = array_merge( $row['fields'][ $key ], $more_field_options );
 	}
@@ -181,28 +184,23 @@ function screenSetSettingsForm() {
 	];
 
 	$gigya_cms      = new GigyaCMS();
-	$screenset_list = $gigya_cms->getScreenSetsIDList();
+	$screenset_list = $gigya_cms->getScreenSetsIdList();
 
 	if ( $screenset_list ) {
-		$valid_screen_sets = true;
 		foreach ( $values['custom_screen_sets'] as $key => $value ) {
 			$desktop_screen_exist = in_array( $value['desktop'], array_column( $screenset_list, 'label' ) );
-			$mobile_screen_exist  = in_array( $value['mobile'], array_column( $screenset_list, 'label' ) ) || $value['mobile'] === "Use Desktop Screen-Set" || empty( $value['mobile'] );
-			$valid_screen_sets    = ( $desktop_screen_exist && $mobile_screen_exist );
-			if ( ! $valid_screen_sets ) {
+			$mobile_screen_exist  = in_array( $value['mobile'], array_column( $screenset_list, 'label' ) ) || $value['mobile'] === 'desktop' || empty( $value['mobile'] );
+			if ( ( ! $desktop_screen_exist ) || ( ! $mobile_screen_exist ) ) {
+				$compare_error = array(
+					'error_message' => 'One or more Screen-Set not existing in SAP CDC Database',
+					'attrs'         => array( 'class' => 'notice notice-error is-dismissible' )
+				);
+				echo _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $compare_error );
+
 				break;
 			}
 		};
 
-
-		$form['screens_sets_error'] = [
-			'markup' => ( $valid_screen_sets ) ? null : '<div id="setting-error-api_validate" class="error notice settings-error notice is-dismissible style" style = "border-left-color : #dc3232 "> 
-							<p>
-							<strong>' . __( 'One or more Screen-Set not existing in SAP CDC Database' ) . ' </strong>
-							</p>
-							<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
-						</div>',
-		];
 
 		$table_name                   = 'custom_screen_sets';
 		$form['customScreenSetTable'] = [
@@ -212,27 +210,22 @@ function screenSetSettingsForm() {
 		];
 
 	} else {
-		if ( WP_DEBUG ) {
-			$form['screens_sets_error'] = [
-				'markup' => '<div id="setting-error-api_validate" class="error settings-error notice is-dismissible"> 
-							<p>
-							<strong>' . __( 'Error retrieving custom screen-set list from SAP Customer Data Cloud. It will not be possible to embed CDC screen-sets on your website. Please contact support if the problem persists.' ) . ' </strong>
-							<br> ' . __( 'Check the error log for more details.' ) . '
-							</p>
-							<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
-						</div>',
-			];
+		$connection_error = array(
+			'error_message' => array(),
+			'attrs'         => array( 'class' => 'notice notice-error is-dismissible' )
+		);
+
+		if ( get_option( GIGYA__SETTINGS_GLOBAL )['debug'] ) {
+
+			$first_line                        = 'Error retrieving custom screen-set list from SAP Customer Data Cloud. It will not be possible to embed CDC screen-sets on your website. Please contact support if the problem persists';
+			$second_line                       = 'Check the error log for more details';
+			$connection_error['error_message'] = array( $first_line, $second_line );
 
 		} else {
-			$form['screens_sets_error'] = [
-				'markup' => '<div id="setting-error-api_validate" class="error settings-error notice is-dismissible"> 
-							<p>
-							<strong>' . __( 'Error retrieving custom screen-set list from SAP Customer Data Cloud. It will not be possible to embed CDC screen-sets on your website. Please contact support if the problem persists.' ) . ' </strong>
-							</p>
-							<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
-						</div>',
-			];
+			$message                           = 'Error retrieving custom screen-set list from SAP Customer Data Cloud. It will not be possible to embed CDC screen-sets on your website. Please contact support if the problem persists.';
+			$connection_error['error_message'] = array( $message );
 		};
+		echo _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $connection_error );
 	}
 
 

@@ -89,7 +89,7 @@ class GigyaCMS
 	 *
 	 * @return array|false
 	 */
-	public function getScreenSetsIDList() {
+	public function getScreenSetsIdList() {
 		$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__API_SECRET, GIGYA__API_DOMAIN );
 
 		try {

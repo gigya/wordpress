@@ -255,7 +255,7 @@ class GigyaSettings {
 				$_POST['gigya_screenset_settings']['custom_screen_sets'][ $key ]['value'] = $screen_set['desktop'];
 
 				if ( ! isset( $screen_set['mobile'] ) ) {
-					$_POST['gigya_screenset_settings']['custom_screen_sets'][ $key ]['mobile'] = 'Use Desktop Screen-Set';
+					$_POST['gigya_screenset_settings']['custom_screen_sets'][ $key ]['mobile'] = 'desktop';
 				} else {
 					if ( ! isset( $screen_set['desktop'] ) ) {
 						$gigyaErrMsg = 'Custom Scree-Set without Desktop value will not be saved';
