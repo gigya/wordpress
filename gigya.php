@@ -165,9 +165,6 @@ function _gigya_element_render( $el, $id, $name_prefix = '' ) {
 	}
 
 	return $render;
-
-//	if (there is an error)
-//		wp_send_json_error('blah blah');
 }
 
 /**
@@ -181,7 +178,6 @@ function _gigya_element_render( $el, $id, $name_prefix = '' ) {
  */
 function _gigya_form_render( $form, $name_prefix = '' ) {
 	$render = '';
-//	if()
 
 	/* Inject display dependencies */
 	foreach ( $form as $id => $el ) {

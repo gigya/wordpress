@@ -6,39 +6,34 @@ function buildCustomScreenSetRow( $screenSetList, $values = array(), $more_optio
 	$desktop_error      = array();
 	$mobile_error       = array();
 	array_unshift( $mobile_list, array(
-		'label' => 'Use Desktop Screen-Set',
+		'label' => __( 'Use Desktop Screen-Set' ),
 		'attrs' => array( 'value' => 'desktop' )
 	), array(
 		'label' => str_repeat( '_', 3 + max( array_map( 'strlen', array_column( $mobile_list, 'label' ) ) ) ),
 		'attrs' => array( 'disabled' => 'disabled' )
 	) );
-	$specific_desktop_list     = $desktop_list;
-	$specific_mobile_list      = $mobile_list;
+
 	$screen_set_exists_desktop = in_array( $values['desktop'], array_column( $desktop_list, 'label' ) ) || empty( $values['desktop'] );
 	$screen_set_exists_mobile  = in_array( $values['mobile'], array_column( $mobile_list, 'label' ) ) || empty( $values['mobile'] ) || $values['mobile'] == 'desktop';
 
 	$screen_set_error = array(
-		'error_message' => 'Screen-Set does not exist',
+		'error_message' => __( 'Screen-Set does not exist' ),
 		'attrs'         => array( 'class' => 'gigya-error-message-notice-div' )
 	);
-
-
 	if ( ! $screen_set_exists_desktop ) {
 		$desktop_error = $screen_set_error;
-		array_unshift( $specific_desktop_list, array(
+		array_unshift( $desktop_error, array(
 			'label' => $values['desktop'],
-			'attrs' => array( 'class' => 'invalid-gigya-Screen-Set-option', 'data-exists' => 'false' )
+			'attrs' => array( 'class' => 'invalid-gigya-screen-set-option', 'data-exists' => 'false' )
 		) );
 	}
-
 	if ( ! $screen_set_exists_mobile ) {
 		$mobile_error = $screen_set_error;
-		array_unshift( $specific_mobile_list, array(
+		array_unshift( $mobile_list, array(
 			'label' => $values['mobile'],
-			'attrs' => array( 'class' => "invalid-gigya-Screen-Set-option", 'data-exists' => 'false' )
+			'attrs' => array( 'class' => "invalid-gigya-screen-set-option", 'data-exists' => 'false' )
 		) );
 	};
-
 	$row = [
 		'type'   => 'dynamic_field_line',
 		'fields' => [
@@ -47,7 +42,7 @@ function buildCustomScreenSetRow( $screenSetList, $values = array(), $more_optio
 				'name'     => 'desktop',
 				'label'    => __( 'Desktop Screen-Set' ),
 				'value'    => ( ( ! empty( $values['desktop'] ) ) ? $values['desktop'] : '' ),
-				'options'  => $specific_desktop_list,
+				'options'  => $desktop_list,
 				'required' => 'empty-selection',
 				'error'    => ( ( empty( $desktop_error ) ) ? '' : _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $desktop_error ) ),
 				'attrs'    => array( 'class' => 'custom-screen-set-select-width ' . ( ( $screen_set_exists_desktop ) ? null : ' gigya-wp-field-error' ) ),
@@ -57,7 +52,7 @@ function buildCustomScreenSetRow( $screenSetList, $values = array(), $more_optio
 				'name'    => 'mobile',
 				'label'   => __( 'Mobile Screen-Set' ),
 				'value'   => ( ( ! empty( $values['mobile'] ) ) ? $values['mobile'] : 'desktop' ),
-				'options' => $specific_mobile_list,
+				'options' => $mobile_list,
 				'error'   => ( ( empty( $mobile_error ) ) ? '' : _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $mobile_error ) ),
 				'attrs'   => array( 'class' => 'custom-screen-set-select-width ' . ( ( $screen_set_exists_mobile ) ? null : ' gigya-wp-field-error' ) ),
 
@@ -192,7 +187,7 @@ function screenSetSettingsForm() {
 			$mobile_screen_exist  = in_array( $value['mobile'], array_column( $screenset_list, 'label' ) ) || $value['mobile'] === 'desktop' || empty( $value['mobile'] );
 			if ( ( ! $desktop_screen_exist ) || ( ! $mobile_screen_exist ) ) {
 				$compare_error = array(
-					'error_message' => 'One or more Screen-Set not existing in SAP CDC Database',
+					'error_message' => __( 'One or more Screen-Set not existing in SAP CDC Database' ),
 					'attrs'         => array( 'class' => 'notice notice-error is-dismissible' )
 				);
 				echo _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $compare_error );
@@ -214,20 +209,19 @@ function screenSetSettingsForm() {
 			'error_message' => array(),
 			'attrs'         => array( 'class' => 'notice notice-error is-dismissible' )
 		);
+		/* PHP 5.4+ */
+		if ( ! empty( get_option( GIGYA__SETTINGS_GLOBAL )['debug'] ) ) {
 
-		if ( get_option( GIGYA__SETTINGS_GLOBAL )['debug'] ) {
-
-			$first_line                        = 'Error retrieving custom screen-set list from SAP Customer Data Cloud. It will not be possible to embed CDC screen-sets on your website. Please contact support if the problem persists';
-			$second_line                       = 'Check the error log for more details';
+			$first_line                        = __( 'Error retrieving custom screen-set list from SAP Customer Data Cloud. It will not be possible to embed CDC screen-sets on your website. Please contact support if the problem persists' );
+			$second_line                       = __( 'Check the error log for more details' );
 			$connection_error['error_message'] = array( $first_line, $second_line );
 
 		} else {
-			$message                           = 'Error retrieving custom screen-set list from SAP Customer Data Cloud. It will not be possible to embed CDC screen-sets on your website. Please contact support if the problem persists.';
+			$message                           = __( 'Error retrieving custom screen-set list from SAP Customer Data Cloud. It will not be possible to embed CDC screen-sets on your website. Please contact support if the problem persists.' );
 			$connection_error['error_message'] = array( $message );
 		};
 		echo _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $connection_error );
 	}
-
 
 	echo _gigya_form_render( $form, GIGYA__SETTINGS_SCREENSETS );
 }

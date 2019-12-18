@@ -17,9 +17,7 @@
 		}
 		?>
 		<td style="vertical-align: top;"
-			<?php if ( $field['type'] == 'select' ) {
-				echo 'class = custom-screen-set-td-selection';
-			}; ?>>
+			<?php if ( $field['type'] == 'select' ) :echo 'class="custom-screen-set-td-selection"';endif; ?>>
 			<?php if ( $field['type'] == 'text' ): ?>
 				<label for="gigya_<?php echo $id; ?>"><?php echo ( isset( $field['label'] ) ) ? $field['label'] : ''; ?><?php if ( ! empty( $field['required'] ) ) {
 						echo '&nbsp;<span class="required">*</span>';
@@ -45,54 +43,43 @@
 						name="<?php echo $field['name'] ?>"
 					<?php
 					echo $required;
-					if ( isset( $field['attrs'] ) ) {
-						foreach ( $field['attrs'] as $attr => $select_attr_value ) {
-							echo $attr . ' ="' . $select_attr_value . '"' . PHP_EOL;
-						}
-					};
-					?>
-				>
+					if ( isset( $field['attrs'] ) ) :
+						foreach ( $field['attrs'] as $attr => $select_attr_value ) :
+							echo $attr . '="' . $select_attr_value . '"' . PHP_EOL;
+						endforeach; endif; ?>>
+
 					<?php foreach ( $field['options'] as $key => $option ) : ?>
 						<option
 							<?php
 							$value_exist = false;
 							if ( isset( $field['options'][ $key ]['attrs'] ) ) {
 								foreach ( $field['options'][ $key ]['attrs'] as $attr => $option_attr_value ) {
-									echo $attr . ' ="' . $option_attr_value . '"' . PHP_EOL;
+									echo $attr . '="' . $option_attr_value . '"' . PHP_EOL;
 									if ( $attr == 'value' ) {
-										$value_exist = true;
+										$value_exists = true;
 										if ( $field['value'] == $option_attr_value ) {
-											echo 'selected = true' . PHP_EOL;
+											echo 'selected' . PHP_EOL;
 										}
 									}
 								};
-							} else if ( $field['value'] == $option['label'] ) {
-								echo 'selected = true' . PHP_EOL;
+							} elseif ( $field['value'] == $option['label'] ) {
+								echo 'selected' . PHP_EOL;
 							};
 							if ( ! $value_exist ) {
-								echo 'value =' . $option['label'] . PHP_EOL;
+								echo 'value=' . $option['label'] . PHP_EOL;
 							}
 							?>
 						>
 							<?php echo $option['label']; ?></option>
 					<?php endforeach ?>
-
 				</select>
-
-				<?php if ( isset( $field['error'] ) ) {
-					echo $field['error'];
-				}
-				?>
-
+				<?php if ( isset( $field['error'] ) ) :echo $field['error'];endif ?>
 				<?php if ( isset( $desc ) ): ?>
 					<small><?php echo $desc; ?></small>
 				<?php endif; ?>
 			<?php endif; ?>
 			<?php
-			if ( isset( $markup ) ):
-				echo $markup;
-			endif;
-			?>
+			if ( isset( $markup ) ):echo $markup;endif; ?>
 		</td>
 	<?php
 	endforeach;

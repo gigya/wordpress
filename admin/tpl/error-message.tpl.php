@@ -18,17 +18,13 @@
 		}
 	}; ?>>
 		<?php if ( is_array( $error_message ) ): ?>
-			<?php foreach ( $error_message as $key => $str_line ): ?>
-				<?php if ( $key === 0 ) {
-					echo '<strong> ' . __( $str_line ) . '  </strong>';
-				} else {
-					echo '<br>' . __( $str_line );
-				}
-				?>
+			<?php foreach ( $error_message as $key => $error_line ): ?>
+				<?php if ( $key !== 0 ): echo '<br>'; endif ?>
+				<strong><?php echo $error_line ?> </strong>
 			<?php endforeach ?>
 		<?php else: ?>
 			<?php
-			echo '<strong>' . __( $error_message ) . '</strong>'; ?>
+			echo '<strong>' . $error_message . '</strong>'; ?>
 		<?php endif ?>
 	</p>
 	<button type="button" class="notice-dismiss gigya-hide-notice-error-message"><span class="screen-reader-text">Dismiss this notice.</span>

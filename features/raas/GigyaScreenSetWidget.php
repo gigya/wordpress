@@ -50,19 +50,15 @@ class GigyaScreenSet_Widget extends WP_Widget {
 
 			$custom_screen_sets = get_option( GIGYA__SETTINGS_SCREENSETS )['custom_screen_sets'];
 			foreach ( $custom_screen_sets as $screen_set ) {
-				if ( ! empty( $screen_set['id'] ) ) {
-					if ( $screen_set['id'] == $instance['screenset_id'] ) {
-						$instance['screenset_id']        = $screen_set['desktop'];
-						$instance['mobile_screenset_id'] = ( $instance['screenset_id'] !== 'desktop' ) ? $screen_set['mobile'] : $screen_set['desktop'];
-						$instance['is_sync_data']        = ( ! empty( $screen_set['is_sync'] ) );
-					}
-				} else {
-					if ( $screen_set['desktop'] == $instance['screenset_id'] ) {
-						$instance['mobile_screenset_id'] = ( ! empty( $instance['screenset_id'] ) ) ? $screen_set['mobile'] : $screen_set['desktop'];
-						$instance['is_sync_data']        = ( ! empty( $screen_set['is_sync'] ) );
-					}
+				if ( ( ! empty( $screen_set['id'] ) ) && ( $screen_set['id'] == $instance['screenset_id'] ) ) {
+					$instance['screenset_id']        = $screen_set['desktop'];
+					$instance['mobile_screenset_id'] = ( $instance['screenset_id'] !== 'desktop' ) ? $screen_set['mobile'] : $screen_set['desktop'];
+					$instance['is_sync_data']        = ( ! empty( $screen_set['is_sync'] ) );
+				} else if ( $screen_set['desktop'] == $instance['screenset_id'] ) {
+					$instance['mobile_screenset_id'] = ( ! empty( $instance['screenset_id'] ) ) ? $screen_set['mobile'] : $screen_set['desktop'];
+					$instance['is_sync_data']        = ( ! empty( $screen_set['is_sync'] ) );
 				}
-			}
+			};
 
 			wp_localize_script( $args['widget_id'], '_gig_' . $widget_machine_name, $instance );
 			wp_enqueue_script( $args['widget_id'] );
@@ -70,14 +66,13 @@ class GigyaScreenSet_Widget extends WP_Widget {
 	}
 
 	public function form( $instance ) {
-		$form             = array();
-		$select_attrs     = array();
-		$select_error     = array();
-		$screen_sets_list = array();
-		$chosen_screen_set_id = esc_attr( _gigParam( $instance, 'screenset_id', '' ));
+		$form                          = array();
+		$select_attrs                  = array();
+		$select_error                  = array();
+		$screen_sets_list              = array();
+		$selected_screen_set_id        = esc_attr( _gigParam( $instance, 'screenset_id', '' ) );
 		$custom_screen_sets            = get_option( GIGYA__SETTINGS_SCREENSETS )['custom_screen_sets'];
 		$select_attrs['data-required'] = 'empty-selection';
-
 
 		foreach ( $custom_screen_sets as $screen_set ) {
 			if ( empty( $screen_set['id'] ) ) {
@@ -86,8 +81,7 @@ class GigyaScreenSet_Widget extends WP_Widget {
 				$screen_sets_list[ $screen_set['id'] ] = $screen_set['desktop'];
 			}
 		}
-
-		if ( empty( $chosen_screen_set_id ) ) {
+		if ( empty( $selected_screen_set_id ) ) {
 			array_unshift( $screen_sets_list, array(
 				'value' => '',
 				'attrs' => array(
@@ -95,28 +89,27 @@ class GigyaScreenSet_Widget extends WP_Widget {
 					'style'    => 'display: none;',
 				)
 			) );
-		} else if ( ! array_key_exists( $chosen_screen_set_id, $screen_sets_list ) ) {
+		} else if ( ! array_key_exists( $selected_screen_set_id, $screen_sets_list ) ) {
 			$form_error                  = array();
-			$form_error['error_message'] = $chosen_screen_set_id . '  Screen-Set found in the widgets below has been removed by your administrator, and might not work on your website. Please check your configuration or contact your administrator.';
+			$form_error['error_message'] = $selected_screen_set_id . __( '  Screen-Set found in the widgets below has been removed by your administrator, and might not work on your website. Please check your configuration or contact your administrator.' );
 			$form_error['attrs']         = array(
-				'id'    => $chosen_screen_set_id . '_error_message',
+				'id'    => $selected_screen_set_id . '_error_message',
 				'class' => 'gigya-error-message-notice-div notice notice-error is-dismissible'
 			);
 
-			$select_error['error_message'] = 'Screen-Set has been removed';
+			$select_error['error_message'] = __( 'Screen-Set has been removed' );
 			$select_error['attrs']         = array( 'class' => 'gigya-error-message-notice-div' );
 
 			$select_attrs['class'] = 'gigya-wp-field-error';
 			array_unshift( $screen_sets_list, array(
-					'value' => $chosen_screen_set_id,
-					'attrs' => array( 'class' => 'invalid-gigya-Screen-Set-option', 'selected' => 'true' )
+					'value' => $selected_screen_set_id,
+					'attrs' => array( 'class' => 'invalid-gigya-screen-set-option', 'selected' => 'true' )
 				)
 			);
 			echo _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $form_error );
 
 		};
-
-		$form[ $this->get_field_id( 'title' ) ] = array(
+		$form[ $this->get_field_id( 'title' ) ]        = array(
 			'type'     => 'text',
 			'name'     => $this->get_field_name( 'title' ),
 			'value'    => ( empty( esc_attr( _gigParam( $instance, 'title', '' ) ) ) ) ? '' : esc_attr( _gigParam( $instance, 'title', '' ) ),
@@ -124,8 +117,6 @@ class GigyaScreenSet_Widget extends WP_Widget {
 			'class'    => 'size',
 			'required' => true,
 		);
-
-
 		$form[ $this->get_field_id( 'screenset_id' ) ] = array(
 			'type'     => 'select',
 			'name'     => $this->get_field_name( 'screenset_id' ),
@@ -137,8 +128,6 @@ class GigyaScreenSet_Widget extends WP_Widget {
 			'attrs'    => $select_attrs,
 			'markup'   => ( ( empty( $select_error ) ) ? '' : _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $select_error ) ),
 		);
-
-
 		$form[ $this->get_field_id( 'container_id' ) ] = array(
 			'type'     => 'text',
 			'name'     => $this->get_field_name( 'container_id' ),
@@ -147,8 +136,7 @@ class GigyaScreenSet_Widget extends WP_Widget {
 			'required' => true,
 			'class'    => 'size',
 		);
-
-		$form[ $this->get_field_id( 'type' ) ] = array(
+		$form[ $this->get_field_id( 'type' ) ]         = array(
 			'type'     => 'select',
 			'name'     => $this->get_field_name( 'type' ),
 			'label'    => __( 'Type' ),

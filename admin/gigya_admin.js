@@ -87,8 +87,8 @@
 			e.stopPropagation();
 			element.addClass('gigya-wp-field-error');
 			if (element.next('div.gigya-error-message-notice-div').length === 0) {
-				element.after("<div class=\"gigya-error-message-notice-div\"><p><strong>" + text + "</strond></p>" +
-					"<button type=\"button\" class=\"notice-dismiss gigya-hide-notice-error-message\"><span class=\"screen-reader-text\">Dismiss this notice.</span></button></div>");
+				element.after('<div class="gigya-error-message-notice-div"><p><strong>' + text + '</strond></p>' +
+					'<button type="button" class="notice-dismiss gigya-hide-notice-error-message"><span class="screen-reader-text">Dismiss this notice.</span></button></div>');
 			}
 		};
 		var removeError = function (element) {
@@ -216,7 +216,7 @@
 			el.is(":checked") ? elementsToToggle.show() : elementsToToggle.hide();
 		};
 
-// Conditional admin settings fields.
+		// Conditional admin settings fields.
 		$(document).on('change', '.conditional input[type="checkbox"]', function () {
 			overrideToggle($(this), 'conditional');
 		});
@@ -224,7 +224,7 @@
 			overrideToggle($(this), 'conditional');
 		});
 
-// Conditional widget overrides fields.
+		// Conditional widget overrides fields.
 		$(document).on('change', '.gigya-widget-override input[type="checkbox"]', function () {
 			overrideToggle($(this), 'gigya-widget-override', true);
 		});
@@ -305,12 +305,12 @@
 
 // --------------------------------------------------------------------
 
-// Disable the RaaS option when not available.
+		// Disable the RaaS option when not available.
 		$('.raas_disabled').find('input[value="raas"]').attr('disabled', 'disabled').parent('label').css('color', '#ccc');
 
 // --------------------------------------------------------------------
 
-// JSON example for Additional Parameters (advanced) sections.
+		// JSON example for Additional Parameters (advanced) sections.
 		$(document).on('click', '.gigya-json-example', function (e) {
 			e.preventDefault();
 			var w = window.open("about:blank", "jsonExample", "width=440,height=330");
@@ -329,12 +329,12 @@
 		 * update data center value according to input selction
 		 */
 
-// Hide the other data center field by default if other is not selected
+		// Hide the other data center field by default if other is not selected
 		if ($("#gigya_data_center").find("option:selected").val() !== 'other') {
 			$('.other_dataCenter').hide();
 		}
 
-// Show other data center input field on 'other' selection
+		// Show other data center input field on 'other' selection
 		$('.data_center select').on('change', function () {
 			if ($("#gigya_data_center").find("option:selected").text() === 'Other') {
 				$('.other_dataCenter').show();
@@ -343,7 +343,7 @@
 			}
 		});
 
-// on filling other data center set the selected value to the input
+		// on filling other data center set the selected value to the input
 		$('#other_ds').on('focusout', function () {
 			$("#gigya_data_center").find("option:selected").val($('#other_ds').val());
 		});
@@ -353,11 +353,11 @@
 		/*
 		 * User management page : Toggle raas admin login roles check all
 		 */
-// on page load check if checkall is checked, if yes check all roles.
-//if ( $('#gigya_raas_allowed_admin_checkall').is(':checked') ) {
-//  $('.gigya_raas_allowed_admin_roles input').attr('checked', true);
-//}
-// capture checkall checking event to toggle roles checkboxes.
+		// on page load check if checkall is checked, if yes check all roles.
+		//if ( $('#gigya_raas_allowed_admin_checkall').is(':checked') ) {
+		//  $('.gigya_raas_allowed_admin_roles input').attr('checked', true);
+		//}
+		// capture checkall checking event to toggle roles checkboxes.
 		$('#gigya_raas_allowed_admin_checkall').on('change', function () {
 			if ($(this).is(':checked')) {
 				$('.gigya_raas_allowed_admin_roles input').prop('checked', true);
@@ -380,7 +380,7 @@
 				dynamic_line_row.attr('id', 'row-table-number ' + count);
 				dynamic_line_row.find('select, input').each(function () {
 					if ($(this).prop('tagName').toLowerCase() === "select") {
-						$(this).find('option.invalid-gigya-Screen-Set-option').each(function () {
+						$(this).find('option.invalid-gigya-screen-set-option').each(function () {
 							$(this).remove();
 						});
 						$(this).removeClass('gigya-wp-field-error');
