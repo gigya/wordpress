@@ -22,7 +22,7 @@ function buildCustomScreenSetRow( $screenSetList, $values = array(), $more_optio
 	);
 	if ( ! $screen_set_exists_desktop ) {
 		$desktop_error = $screen_set_error;
-		array_unshift( $desktop_error, array(
+		array_unshift( $desktop_list, array(
 			'label' => $values['desktop'],
 			'attrs' => array( 'class' => 'invalid-gigya-screen-set-option', 'data-exists' => 'false' )
 		) );
