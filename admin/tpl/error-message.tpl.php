@@ -19,8 +19,7 @@
 	}; ?>>
 		<?php if ( is_array( $error_message ) ): ?>
 			<?php foreach ( $error_message as $key => $error_line ): ?>
-				<?php if ( $key !== 0 ): echo '<br>'; endif ?>
-				<strong><?php echo $error_line ?> </strong>
+				<strong><?php echo $error_line ?> </strong><br>
 			<?php endforeach ?>
 		<?php else: ?>
 			<?php

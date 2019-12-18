@@ -17,7 +17,9 @@
 		}
 		?>
 		<td style="vertical-align: top;"
-			<?php if ( $field['type'] == 'select' ) :echo 'class="custom-screen-set-td-selection"';endif; ?>>
+			<?php if ( $field['type'] == 'select' ) :
+				echo 'class="dynamic-field-line-td-selection"';
+			endif; ?>>
 			<?php if ( $field['type'] == 'text' ): ?>
 				<label for="gigya_<?php echo $id; ?>"><?php echo ( isset( $field['label'] ) ) ? $field['label'] : ''; ?><?php if ( ! empty( $field['required'] ) ) {
 						echo '&nbsp;<span class="required">*</span>';
@@ -46,7 +48,8 @@
 					if ( isset( $field['attrs'] ) ) :
 						foreach ( $field['attrs'] as $attr => $select_attr_value ) :
 							echo $attr . '="' . $select_attr_value . '"' . PHP_EOL;
-						endforeach; endif; ?>>
+						endforeach;
+					endif; ?>>
 
 					<?php foreach ( $field['options'] as $key => $option ) : ?>
 						<option
@@ -73,7 +76,9 @@
 							<?php echo $option['label']; ?></option>
 					<?php endforeach ?>
 				</select>
-				<?php if ( isset( $field['error'] ) ) :echo $field['error'];endif ?>
+				<?php if ( isset( $field['error'] ) ) :
+					echo $field['error'];
+				endif ?>
 				<?php if ( isset( $desc ) ): ?>
 					<small><?php echo $desc; ?></small>
 				<?php endif; ?>
