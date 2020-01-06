@@ -3,8 +3,6 @@ function buildCustomScreenSetRow( $screenSetList, $values = array(), $more_optio
 	$more_field_options = array_values( $more_field_options );
 	$desktop_list       = $screenSetList;
 	$mobile_list        = $screenSetList;
-	$desktop_error      = array();
-	$mobile_error       = array();
 	array_unshift( $mobile_list, array(
 		'label' => __( 'Use Desktop Screen-Set' ),
 		'attrs' => array( 'value' => 'desktop' )
@@ -16,22 +14,16 @@ function buildCustomScreenSetRow( $screenSetList, $values = array(), $more_optio
 	$screen_set_exists_desktop = in_array( $values['desktop'], array_column( $desktop_list, 'label' ) ) || empty( $values['desktop'] );
 	$screen_set_exists_mobile  = in_array( $values['mobile'], array_column( $mobile_list, 'label' ) ) || empty( $values['mobile'] ) || $values['mobile'] == 'desktop';
 
-	$screen_set_error = array(
-		'error_message' => __( 'Screen-Set does not exist' ),
-		'attrs'         => array( 'class' => 'gigya-error-message-notice-div' )
-	);
 	if ( ! $screen_set_exists_desktop ) {
-		$desktop_error = $screen_set_error;
 		array_unshift( $desktop_list, array(
 			'label' => $values['desktop'],
-			'attrs' => array( 'class' => 'invalid-gigya-screen-set-option', 'data-exists' => 'false' )
+			'attrs' => array( 'class' => 'invalid-gigya-screen-set-option' )
 		) );
 	}
 	if ( ! $screen_set_exists_mobile ) {
-		$mobile_error = $screen_set_error;
 		array_unshift( $mobile_list, array(
 			'label' => $values['mobile'],
-			'attrs' => array( 'class' => "invalid-gigya-screen-set-option", 'data-exists' => 'false' )
+			'attrs' => array( 'class' => "invalid-gigya-screen-set-option" )
 		) );
 	};
 	$row = [
@@ -44,8 +36,7 @@ function buildCustomScreenSetRow( $screenSetList, $values = array(), $more_optio
 				'value'    => ( ( ! empty( $values['desktop'] ) ) ? $values['desktop'] : '' ),
 				'options'  => $desktop_list,
 				'required' => 'empty-selection',
-				'error'    => ( ( empty( $desktop_error ) ) ? '' : _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $desktop_error ) ),
-				'attrs'    => array( 'class' => 'custom-screen-set-select-width ' . ( ( $screen_set_exists_desktop ) ? null : ' gigya-wp-field-error' ) ),
+				'attrs'    => array( 'class' => 'custom-screen-set-select-width '  , 'data-exists' => ((!$screen_set_exists_desktop)? 'false' : 'true'))
 			],
 			[ /* Mobile screen-set */
 				'type'    => 'select',
@@ -53,9 +44,7 @@ function buildCustomScreenSetRow( $screenSetList, $values = array(), $more_optio
 				'label'   => __( 'Mobile Screen-Set' ),
 				'value'   => ( ( ! empty( $values['mobile'] ) ) ? $values['mobile'] : 'desktop' ),
 				'options' => $mobile_list,
-				'error'   => ( ( empty( $mobile_error ) ) ? '' : _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $mobile_error ) ),
-				'attrs'   => array( 'class' => 'custom-screen-set-select-width ' . ( ( $screen_set_exists_mobile ) ? null : ' gigya-wp-field-error' ) ),
-
+				'attrs'   => array( 'class' => 'custom-screen-set-select-width ' , 'data-exists' => ((!$screen_set_exists_mobile)? 'false' : 'true' ))
 			],
 			[
 				'type'  => 'checkbox',

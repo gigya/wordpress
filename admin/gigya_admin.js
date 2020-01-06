@@ -83,8 +83,10 @@
 		 *adding and removing UI error message function
 		 **/
 		var enableError = function (element, text, e) {
-			e.preventDefault();
-			e.stopPropagation();
+			if(typeof e !== 'undefined') {
+				e.preventDefault();
+				e.stopPropagation();
+			}
 			element.addClass('gigya-wp-field-error');
 			if (element.next('div.gigya-error-message-notice-div').length === 0) {
 				element.after('<div class="gigya-error-message-notice-div"><p><strong>' + text + '</strond></p>' +
@@ -415,62 +417,72 @@
 			}
 		});
 
-// --------------------------------------------------------------------
+		$('.gigya-wp-settings-table').find("select[data-exists ='false']").each(function() {
+			enableError($(this), 'Screen-Set does not exist');
 
-		/* Form manipulation functions */
-
-		var gigya_depends_on = $('.gigya-depends-on');
-		var handleGigyaFormElementDependency = function (depender_obj, dependee_obj, values) {
-			if (values.indexOf(dependee_obj.val()) !== -1) {
-				depender_obj.show();
-			} else {
-				depender_obj.hide();
-			}
-		};
-		var handleGigyaFormDependency = function () {
-			gigya_depends_on.each(function () {
-				var gigya_depends_on_json = JSON.parse($(this).attr('data-depends-on').replace('&quot;', '"'));
-				var dependee_obj = $('[name*="[' + gigya_depends_on_json[0] + ']"]');
-				var depender_obj = $(this);
-
-				if (dependee_obj.length > 0) {
-					dependee_obj.on('change', function () {
-						handleGigyaFormElementDependency(depender_obj, dependee_obj, gigya_depends_on_json.slice(1));
-					});
-				}
-
+			$(this).bind('change', function () {
+				removeError($(this));
 			});
-		};
-		handleGigyaFormDependency();
+		});
+
+
 
 // --------------------------------------------------------------------
 
-		/* Form validation */
+			/* Form manipulation functions */
+
+			var gigya_depends_on = $('.gigya-depends-on');
+			var handleGigyaFormElementDependency = function (depender_obj, dependee_obj, values) {
+				if (values.indexOf(dependee_obj.val()) !== -1) {
+					depender_obj.show();
+				} else {
+					depender_obj.hide();
+				}
+			};
+			var handleGigyaFormDependency = function () {
+				gigya_depends_on.each(function () {
+					var gigya_depends_on_json = JSON.parse($(this).attr('data-depends-on').replace('&quot;', '"'));
+					var dependee_obj = $('[name*="[' + gigya_depends_on_json[0] + ']"]');
+					var depender_obj = $(this);
+
+					if (dependee_obj.length > 0) {
+						dependee_obj.on('change', function () {
+							handleGigyaFormElementDependency(depender_obj, dependee_obj, gigya_depends_on_json.slice(1));
+						});
+					}
+
+				});
+			};
+			handleGigyaFormDependency();
+
+// --------------------------------------------------------------------
+
+			/* Form validation */
 
 // Validate form before submit
-		$('form.gigya-settings').on('submit', function (e) {
-			var sessionDurationObj = $('#gigya_session_duration');
-			if (sessionDurationObj.length > 0)
-				emptyNumericValidate(sessionDurationObj, e);
-			$('form.gigya-settings textarea').each(function () {
-				jsonValidate($(this), e);
-			})
-		});
+			$('form.gigya-settings').on('submit', function (e) {
+				var sessionDurationObj = $('#gigya_session_duration');
+				if (sessionDurationObj.length > 0)
+					emptyNumericValidate(sessionDurationObj, e);
+				$('form.gigya-settings textarea').each(function () {
+					jsonValidate($(this), e);
+				})
+			});
 
 // Validate JSON before submit on admin forms.
-		var submitEl = $('.textarea.json').parents('form').find('input[type="submit"]');
-		submitEl.on('click', function (e) {
-			$('.textarea.json textarea').each(function () {
-				jsonValidate($(this), e);
-			})
-		});
+			var submitEl = $('.textarea.json').parents('form').find('input[type="submit"]');
+			submitEl.on('click', function (e) {
+				$('.textarea.json textarea').each(function () {
+					jsonValidate($(this), e);
+				})
+			});
 
 // Validate required fields
-		var formEl = $('.gigya-form-field').closest('form');
-		formEl.find('input[type="submit"]').on('click', function (e) {
-			formValidateRequired($(this).closest('form'), e);
-		});
+			var formEl = $('.gigya-form-field').closest('form');
+			formEl.find('input[type="submit"]').on('click', function (e) {
+				formValidateRequired($(this).closest('form'), e);
+			});
+		})
+		;
 	})
-	;
-})
-(jQuery);
+	(jQuery);
