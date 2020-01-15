@@ -7,9 +7,14 @@
 ?>
 
 <div
-	<?php if ( isset( $attrs ) ) {
+	<?php $button_exists = false;
+	if ( isset( $attrs ) ) {
 		foreach ( $attrs as $attr => $parent_attr_value ) {
 			echo $attr . '="' . $parent_attr_value . '"' . PHP_EOL;
+			if ( $attr == 'class' and strpos($parent_attr_value,'is-dismissible' ) )
+			{
+				$button_exists = true;
+			}
 		}
 	}; ?>>
 	<p <?php if ( isset( $p_attrs ) ) {
@@ -26,6 +31,9 @@
 			echo '<strong>' . $error_message . '</strong>'; ?>
 		<?php endif ?>
 	</p>
-	<button type="button" class="notice-dismiss gigya-hide-notice-error-message"><span class="screen-reader-text">Dismiss this notice.</span>
-	</button>
+	<?php
+	if (!$button_exists): ?>
+		<button type="button" class="notice-dismiss gigya-hide-notice-error-message"><span class="screen-reader-text">Dismiss this notice.</span>
+		</button>
+		<?php endif ?>
 </div>

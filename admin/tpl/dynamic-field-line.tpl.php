@@ -54,7 +54,7 @@
 					<?php foreach ( $field['options'] as $key => $option ) : ?>
 						<option
 							<?php
-							$value_exist = false;
+							$value_exists = false;
 							if ( isset( $field['options'][ $key ]['attrs'] ) ) {
 								foreach ( $field['options'][ $key ]['attrs'] as $attr => $option_attr_value ) {
 									echo $attr . '="' . $option_attr_value . '"' . PHP_EOL;
@@ -68,7 +68,7 @@
 							} elseif ( $field['value'] == $option['label'] ) {
 								echo 'selected' . PHP_EOL;
 							};
-							if ( ! $value_exist ) {
+							if ( ! $value_exists ) {
 								echo 'value=' . $option['label'] . PHP_EOL;
 							}
 							?>
