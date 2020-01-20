@@ -586,7 +586,7 @@ function _gigya_add_to_wp_user_meta( $gigya_object, $user_id ) {
 			}
 			update_user_meta( $user_id, $meta_key['cmsName'], sanitize_text_field( $gigya_object[ $meta_key['gigyaName'] ] ) );
 		}
-	} else /* Legacy field mapping options */ {
+	} elseif ( is_array( $field_mapping_opts ) ) /* Legacy field mapping options */ {
 		foreach ( $field_mapping_opts as $key => $opt ) {
 			if ( strpos( $key, $prefix ) === 0 && $opt == 1 ) {
 				$k         = str_replace( $prefix, "", $key );
