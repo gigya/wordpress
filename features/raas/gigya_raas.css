@@ -40,3 +40,9 @@ div#login {
 .gigya-wp-settings-table .gigya-remove-dynamic-field-line {
 	padding: 3px;
 }
+
+.gigya-remove-dynamic-field-line.dashicons-before.dashicons-trash
+{
+	line-height:0px;
+
+}

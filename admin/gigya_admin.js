@@ -1,7 +1,7 @@
 (function ($) {
 	$(function () {
 
-// --------------------------------------------------------------------
+		// --------------------------------------------------------------------
 
 		/**
 		 * Expose the relevant form element for the login mode selected.
@@ -41,7 +41,7 @@
 			userManagementPage($(this));
 		});
 
-// --------------------------------------------------------------------
+		// --------------------------------------------------------------------
 
 		/* Session settings page */
 
@@ -77,13 +77,13 @@
 			sessionManagementPage($(this));
 		});
 
-// --------------------------------------------------------------------
+		// --------------------------------------------------------------------
 
 		/**
 		 *adding and removing UI error message function
 		 **/
 		var enableError = function (element, text, e) {
-			if(typeof e !== 'undefined') {
+			if (typeof e !== 'undefined') {
 				e.preventDefault();
 				e.stopPropagation();
 			}
@@ -104,7 +104,7 @@
 		});
 
 
-// --------------------------------------------------------------------
+		// --------------------------------------------------------------------
 
 		/* Validation functions */
 
@@ -143,7 +143,7 @@
 			if (typeof validationType === 'undefined' || validationType === 'required' || validationType === 'true') /* Simple required validation */
 				return (textField.val() !== "");
 			else if (validationType === 'empty-selection') { /* Validation for requiring either the entire line to be empty, or this textField to be non-empty */
-				return (textField.val() !== null);
+				return (!(textField.val() === '' || textField.val() === null));
 
 			}
 		};
@@ -163,9 +163,9 @@
 						isValid = false;
 
 						if ($(this).prop('tagName').toLowerCase() === "select")
-							enableError($(this), 'Please select option', e);
+							enableError($(this), 'Please select an option.', e);
 						else
-							enableError($(this), 'Please fill-in the line', e);
+							enableError($(this), 'Please fill in the field.', e);
 					}
 					if ($(this).prop('tagName').toLowerCase() === "select")
 						$(this).bind("change", function () {
@@ -185,7 +185,7 @@
 				$(this).find('tr').each(function () {
 					var desktopSelection = $(this).find("select[data-type = 'Desktop Screen-Set']");
 					var mobileSelection = $(this).find("select[data-type = 'Mobile Screen-Set']");
-					if ((mobileSelection.val() !== null) && !validateRequired(desktopSelection, desktopSelection.attr('data-required'))) {
+					if ((mobileSelection.val() !== null && mobileSelection.val() !== '') && !validateRequired(desktopSelection, desktopSelection.attr('data-required'))) {
 						enableError(desktopSelection, 'Please select option', e);
 						isValid = false;
 					}
@@ -196,11 +196,10 @@
 					});
 				});
 			});
-
 			return isValid;
 		};
 
-// --------------------------------------------------------------------
+		// --------------------------------------------------------------------
 
 		/**
 		 * Conditional checkbox for next elements.
@@ -305,12 +304,12 @@
 			debugLog();
 		});
 
-// --------------------------------------------------------------------
+		// --------------------------------------------------------------------
 
 		// Disable the RaaS option when not available.
 		$('.raas_disabled').find('input[value="raas"]').attr('disabled', 'disabled').parent('label').css('color', '#ccc');
 
-// --------------------------------------------------------------------
+		// --------------------------------------------------------------------
 
 		// JSON example for Additional Parameters (advanced) sections.
 		$(document).on('click', '.gigya-json-example', function (e) {
@@ -323,13 +322,13 @@
 				});
 		});
 
-// --------------------------------------------------------------------
+		// --------------------------------------------------------------------
 
 		/*
-		 * General settings page - data centers select
-		 * show/hide 'other' data center text field
-		 * update data center value according to input selction
-		 */
+		* General settings page - data centers select
+		* show/hide 'other' data center text field
+		* update data center value according to input selction
+		*/
 
 		// Hide the other data center field by default if other is not selected
 		if ($("#gigya_data_center").find("option:selected").val() !== 'other') {
@@ -350,11 +349,11 @@
 			$("#gigya_data_center").find("option:selected").val($('#other_ds').val());
 		});
 
-// --------------------------------------------------------------------
+		// --------------------------------------------------------------------
 
 		/*
-		 * User management page : Toggle raas admin login roles check all
-		 */
+		* User management page : Toggle raas admin login roles check all
+		*/
 		// on page load check if checkall is checked, if yes check all roles.
 		//if ( $('#gigya_raas_allowed_admin_checkall').is(':checked') ) {
 		//  $('.gigya_raas_allowed_admin_roles input').attr('checked', true);
@@ -369,11 +368,11 @@
 		});
 
 
-// --------------------------------------------------------------------
+		// --------------------------------------------------------------------
 
 		/*
-		 * Screen-Set Settings page
-		 */
+		* Screen-Set Settings page
+		*/
 		$('.gigya-add-dynamic-field-line').on('click', function (e) {
 			if (formValidateRequired($(this), e)) {
 				var count = $(this).find('.gigya-wp-settings-table ').find('tr').length + 1;
@@ -387,7 +386,6 @@
 						});
 						$(this).removeClass('gigya-wp-field-error');
 						$(this).next('div.gigya-error-message-notice-div').remove();
-
 						$(this).val('');
 					} else if ($(this).prop('tagName').toLowerCase() === "input") {
 						$(this).prop('checked', 0);
@@ -417,8 +415,8 @@
 			}
 		});
 
-		$('.gigya-wp-settings-table').find("select[data-exists ='false']").each(function() {
-			enableError($(this), 'Screen-Set does not exist');
+		$('.gigya-wp-settings-table').find("select[data-exists ='false']").each(function () {
+			enableError($(this), 'Screen-Set does not exist.');
 
 			$(this).bind('change', function () {
 				removeError($(this));
@@ -426,63 +424,61 @@
 		});
 
 
+		// --------------------------------------------------------------------
 
-// --------------------------------------------------------------------
+		/* Form manipulation functions */
 
-			/* Form manipulation functions */
+		var gigya_depends_on = $('.gigya-depends-on');
+		var handleGigyaFormElementDependency = function (depender_obj, dependee_obj, values) {
+			if (values.indexOf(dependee_obj.val()) !== -1) {
+				depender_obj.show();
+			} else {
+				depender_obj.hide();
+			}
+		};
+		var handleGigyaFormDependency = function () {
+			gigya_depends_on.each(function () {
+				var gigya_depends_on_json = JSON.parse($(this).attr('data-depends-on').replace('&quot;', '"'));
+				var dependee_obj = $('[name*="[' + gigya_depends_on_json[0] + ']"]');
+				var depender_obj = $(this);
 
-			var gigya_depends_on = $('.gigya-depends-on');
-			var handleGigyaFormElementDependency = function (depender_obj, dependee_obj, values) {
-				if (values.indexOf(dependee_obj.val()) !== -1) {
-					depender_obj.show();
-				} else {
-					depender_obj.hide();
+				if (dependee_obj.length > 0) {
+					dependee_obj.on('change', function () {
+						handleGigyaFormElementDependency(depender_obj, dependee_obj, gigya_depends_on_json.slice(1));
+					});
 				}
-			};
-			var handleGigyaFormDependency = function () {
-				gigya_depends_on.each(function () {
-					var gigya_depends_on_json = JSON.parse($(this).attr('data-depends-on').replace('&quot;', '"'));
-					var dependee_obj = $('[name*="[' + gigya_depends_on_json[0] + ']"]');
-					var depender_obj = $(this);
 
-					if (dependee_obj.length > 0) {
-						dependee_obj.on('change', function () {
-							handleGigyaFormElementDependency(depender_obj, dependee_obj, gigya_depends_on_json.slice(1));
-						});
-					}
-
-				});
-			};
-			handleGigyaFormDependency();
-
-// --------------------------------------------------------------------
-
-			/* Form validation */
-
-// Validate form before submit
-			$('form.gigya-settings').on('submit', function (e) {
-				var sessionDurationObj = $('#gigya_session_duration');
-				if (sessionDurationObj.length > 0)
-					emptyNumericValidate(sessionDurationObj, e);
-				$('form.gigya-settings textarea').each(function () {
-					jsonValidate($(this), e);
-				})
 			});
+		};
+		handleGigyaFormDependency();
 
-// Validate JSON before submit on admin forms.
-			var submitEl = $('.textarea.json').parents('form').find('input[type="submit"]');
-			submitEl.on('click', function (e) {
-				$('.textarea.json textarea').each(function () {
-					jsonValidate($(this), e);
-				})
-			});
+		// --------------------------------------------------------------------
 
-// Validate required fields
-			var formEl = $('.gigya-form-field').closest('form');
-			formEl.find('input[type="submit"]').on('click', function (e) {
-				formValidateRequired($(this).closest('form'), e);
-			});
-		})
-		;
-	})
-	(jQuery);
+		/* Form validation */
+
+		// Validate form before submit
+		$('form.gigya-settings').on('submit', function (e) {
+			var sessionDurationObj = $('#gigya_session_duration');
+			if (sessionDurationObj.length > 0)
+				emptyNumericValidate(sessionDurationObj, e);
+			$('form.gigya-settings textarea').each(function () {
+				jsonValidate($(this), e);
+			})
+		});
+
+		// Validate JSON before submit on admin forms.
+		var submitEl = $('.textarea.json').parents('form').find('input[type="submit"]');
+		submitEl.on('click', function (e) {
+			$('.textarea.json textarea').each(function () {
+				jsonValidate($(this), e);
+			})
+		});
+
+		// Validate required fields
+		var formEl = $('.gigya-form-field').closest('form');
+		formEl.find('input[type="submit"]').on('click', function (e) {
+			formValidateRequired($(this).closest('form'), e);
+		});
+	});
+})
+(jQuery);

@@ -74,41 +74,51 @@ class GigyaScreenSet_Widget extends WP_Widget {
 		$custom_screen_sets            = get_option( GIGYA__SETTINGS_SCREENSETS )['custom_screen_sets'];
 		$select_attrs['data-required'] = 'empty-selection';
 
-		foreach ( $custom_screen_sets as $screen_set ) {
-			if ( empty( $screen_set['id'] ) ) {
-				$screen_sets_list[ $screen_set['desktop'] ] = $screen_set['desktop'];
-			} else {
-				$screen_sets_list[ $screen_set['id'] ] = $screen_set['desktop'];
+		if ( ! empty( $custom_screen_sets ) ) {
+			foreach ( $custom_screen_sets as $screen_set ) {
+				if ( empty( $screen_set['desktop'] ) ) {
+					continue;
+				}
+				if ( empty( $screen_set['id'] ) ) {
+					$screen_sets_list[ $screen_set['desktop'] ] = $screen_set['desktop'];
+				} else {
+					$screen_sets_list[ $screen_set['id'] ] = $screen_set['desktop'];
+				}
 			}
-		}
-		if ( empty( $selected_screen_set_id ) ) {
-			array_unshift( $screen_sets_list, array(
-				'value' => '',
-				'attrs' => array(
-					'disabled' => 'disabled',
-					'style'    => 'display: none;',
-				)
-			) );
-		} else if ( ! array_key_exists( $selected_screen_set_id, $screen_sets_list ) ) {
-			$form_error                  = array();
-			$form_error['error_message'] = $selected_screen_set_id . __( '  Screen-Set found in the widgets below has been removed by your administrator, and might not work on your website. Please check your configuration or contact your administrator.' );
-			$form_error['attrs']         = array(
-				'id'    => $selected_screen_set_id . '_error_message',
-				'class' => 'gigya-error-message-notice-div notice notice-error is-dismissible'
-			);
+			if ( empty( $selected_screen_set_id ) ) {
+				array_unshift( $screen_sets_list, array(
+					'value' => '',
+					'attrs' => array(
+						'disabled' => 'disabled',
+						'style'    => 'display: none;',
+					)
+				) );
+			} else if ( ! array_key_exists( $selected_screen_set_id, $screen_sets_list ) ) {
+				$form_error                  = array();
+				$form_error['error_message'] = $selected_screen_set_id . __( '  Screen-Set found in the widgets below has been removed by your administrator, and might not work on your website. Please check your configuration or contact your administrator.' );
+				$form_error['attrs']         = array(
+					'id'    => $selected_screen_set_id . '_error_message',
+					'class' => 'gigya-error-message-notice-div notice notice-error is-dismissible'
+				);
 
-			$select_error['error_message'] = __( 'Screen-Set has been removed' );
+				$select_error['error_message'] = __( 'Screen-set removed by administrator.' );
+				$select_error['attrs']         = array( 'class' => 'gigya-error-message-notice-div' );
+
+				$select_attrs['class'] = 'gigya-wp-field-error';
+				array_unshift( $screen_sets_list, array(
+						'value' => $selected_screen_set_id,
+						'attrs' => array( 'class' => 'invalid-gigya-screen-set-option', 'selected' => 'true' )
+					)
+				);
+				echo _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $form_error );
+			}
+		} else {
+			$select_error['error_message'] = __( 'Custom Screen-Set not defined.' );
 			$select_error['attrs']         = array( 'class' => 'gigya-error-message-notice-div' );
 
 			$select_attrs['class'] = 'gigya-wp-field-error';
-			array_unshift( $screen_sets_list, array(
-					'value' => $selected_screen_set_id,
-					'attrs' => array( 'class' => 'invalid-gigya-screen-set-option', 'selected' => 'true' )
-				)
-			);
-			echo _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $form_error );
+		}
 
-		};
 		$form[ $this->get_field_id( 'title' ) ]        = array(
 			'type'     => 'text',
 			'name'     => $this->get_field_name( 'title' ),
