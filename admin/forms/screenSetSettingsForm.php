@@ -6,7 +6,6 @@ function buildCustomScreenSetRow( $screenSetList, $values = array(), $more_optio
 	$desktop_value_exists = ! empty( $values['desktop'] );
 	$mobile_value_exists  = ! empty( $values['mobile'] );
 
-
 	array_unshift( $mobile_list, array(
 		'label' => __( 'Use Desktop Screen-Set' ),
 		'attrs' => array( 'value' => 'desktop' )
@@ -14,7 +13,6 @@ function buildCustomScreenSetRow( $screenSetList, $values = array(), $more_optio
 		'label' => str_repeat( '_', 3 + max( array_map( 'strlen', array_column( $mobile_list, 'label' ) ) ) ),
 		'attrs' => array( 'disabled' => 'disabled' )
 	) );
-
 
 	if ( ! $desktop_value_exists and ! $mobile_value_exists ) {
 		$screen_set_exists_desktop = true;
@@ -31,7 +29,6 @@ function buildCustomScreenSetRow( $screenSetList, $values = array(), $more_optio
 	} else {
 		$screen_set_exists_desktop = in_array( $values['desktop'], array_column( $desktop_list, 'label' ) ) || empty( $values['desktop'] );
 		$screen_set_exists_mobile  = in_array( $values['mobile'], array_column( $mobile_list, 'label' ) ) || empty( $values['mobile'] ) || $values['mobile'] == 'desktop';
-
 
 		if ( ! $screen_set_exists_desktop ) {
 			array_unshift( $desktop_list, array(
@@ -66,7 +63,7 @@ function buildCustomScreenSetRow( $screenSetList, $values = array(), $more_optio
 				'type'    => 'select',
 				'name'    => 'mobile',
 				'label'   => __( 'Mobile Screen-Set' ),
-				'value'   => ( ( $mobile_value_exists ) ? $values['mobile'] : ( $desktop_value_exists ) ? 'desktop' : '' ),
+				'value'   => ( ( $mobile_value_exists ) ? $values['mobile'] : ( ( $desktop_value_exists ) ? 'desktop' : '' ) ),
 				'options' => $mobile_list,
 				'attrs'   => array(
 					'class'       => 'custom-screen-set-select-width ',

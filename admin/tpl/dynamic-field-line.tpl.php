@@ -68,6 +68,7 @@
 							} elseif ( $field['value'] == $option['label'] ) {
 								echo 'selected' . PHP_EOL;
 							};
+
 							if ( ! $value_exists ) {
 								echo 'value=' . $option['label'] . PHP_EOL;
 							}
