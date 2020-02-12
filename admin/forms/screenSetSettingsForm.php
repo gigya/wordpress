@@ -84,7 +84,6 @@ function buildCustomScreenSetRow( $screenSetList, $values = array(), $more_optio
 		$row['fields'][ $key ] = array_merge( $row['fields'][ $key ], $more_field_options );
 	}
 
-
 	return $row;
 }
 

@@ -246,16 +246,21 @@ class GigyaSettings {
 				wp_schedule_event( time(), 'gigya_offline_sync_custom', $cron_name );
 			}
 		} elseif ( isset( $_POST['gigya_screenset_settings'] ) ) {
+			/* Screen-set page validation */
 			foreach ( $_POST['gigya_screenset_settings']['custom_screen_sets'] as $key => $screen_set ) {
-				if ( in_array( $screen_set['desktop'], array_column( $_POST['gigya_screenset_settings']['custom_screen_sets'], 'id' ) ) ) {
-					$_POST['gigya_screenset_settings']['custom_screen_sets'][ $key ]['id'] = self::generateMachineName( $screen_set['desktop'], $key );
-				} else {
-					$_POST['gigya_screenset_settings']['custom_screen_sets'][ $key ]['id'] = $screen_set['desktop'];
-				}
-				$_POST['gigya_screenset_settings']['custom_screen_sets'][ $key ]['value'] = $screen_set['desktop'];
+				if ( ! empty( $screen_set['desktop'] ) ) {
+					if ( in_array( $screen_set['desktop'], array_column( $_POST['gigya_screenset_settings']['custom_screen_sets'], 'id' ) ) ) {
+						$_POST['gigya_screenset_settings']['custom_screen_sets'][ $key ]['id'] = self::generateMachineName( $screen_set['desktop'], $key );
+					} else {
+						$_POST['gigya_screenset_settings']['custom_screen_sets'][ $key ]['id'] = $screen_set['desktop'];
+					}
+					$_POST['gigya_screenset_settings']['custom_screen_sets'][ $key ]['value'] = $screen_set['desktop'];
 
-				if ( empty( $screen_set['mobile'] ) && ! empty( $screen_set['desktop'] ) ) {
-					$_POST['gigya_screenset_settings']['custom_screen_sets'][ $key ]['mobile'] = 'desktop';
+					if ( empty( $screen_set['mobile'] ) && ! empty( $screen_set['desktop'] ) ) {
+						$_POST['gigya_screenset_settings']['custom_screen_sets'][ $key ]['mobile'] = 'desktop';
+					}
+				} else {
+					unset( $_POST['gigya_screenset_settings']['custom_screen_sets'][ $key ] );
 				}
 			}
 		}
@@ -266,7 +271,6 @@ class GigyaSettings {
 		if ( $serial !== 0 ) {
 			$machine_name .= '_' . $serial;
 		}
-
 
 		return $machine_name;
 	}
