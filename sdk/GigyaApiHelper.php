@@ -47,7 +47,6 @@ class GigyaApiHelper
 	 *
 	 * @return GSResponse
 	 *
-	 * @throws Exception
 	 * @throws GSApiException
 	 * @throws GSException
 	 */
@@ -58,6 +57,19 @@ class GigyaApiHelper
 		                                         GSFactory::createGSObjectFromArray( $params ), $this->dataCenter );
 
 		return $req->send();
+	}
+
+	/**
+	 * @throws GSApiException
+	 * @throws GSException
+	 */
+	public function sendGetScreenSetsCall() {
+		$req_params       = array( 'include' => 'screenSetID' );
+		$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__API_SECRET, GIGYA__API_DOMAIN );
+
+		$res = $gigya_api_helper->sendApiCall( 'accounts.getScreenSets', $req_params )->getData()->serialize();
+
+		return $res;
 	}
 
 	/**

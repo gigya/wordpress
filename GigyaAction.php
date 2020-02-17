@@ -896,7 +896,7 @@ class GigyaAction
 				error_log( 'Offline sync failed: ' . $e->getErrorCode() . ' – ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
 				$status = 'failed';
 				$helper->sendCronEmail( 'offline sync', $status, $email_on_failure );
-			} catch ( GSException | Exception $e ) {
+			} catch ( Exception $e ) {
 				error_log( 'Offline sync failed: ' . $e->getMessage() );
 				$status = 'failed';
 				$helper->sendCronEmail( 'offline sync', $status, $email_on_failure );

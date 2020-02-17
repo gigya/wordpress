@@ -85,6 +85,34 @@ class GigyaCMS
 	}
 
 	/**
+	 *  get gigya Screen-Sets id's
+	 *
+	 * @return array|false
+	 */
+	public function getScreenSetsIdList() {
+		$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__API_SECRET, GIGYA__API_DOMAIN );
+
+		try {
+			$res = $gigya_api_helper->sendGetScreenSetsCall();
+		} catch ( GSApiException $e ) {
+			error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
+
+			return false;
+		} catch ( GSException $e ) {
+			error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getMessage() );
+
+			return false;
+		}
+
+		array_walk( $res['screenSets'], function ( &$el ) {
+			$el['label'] = $el['screenSetID'];
+			unset( $el['screenSetID'] );
+		} );
+
+		return $res['screenSets'];
+	}
+
+	/**
 	 * Convert JSON response to a PHP array.
 	 *
 	 * @param $data

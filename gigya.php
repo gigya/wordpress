@@ -3,7 +3,7 @@
  * Plugin Name: SAP Customer Data Cloud
  * Plugin URI: https://www.sap.com/products/crm/customer-data-management.html
  * Description: Allows sites to utilize the SAP Customer Data Cloud API for authentication and social network updates.
- * Version: 5.9
+ * Version: 5.10
  * Author: SAP SE
  * Author URI: https://www.sap.com/products/crm/customer-data-management.html
  * License: Apache v2.0
@@ -16,7 +16,7 @@
  */
 define( 'GIGYA__MINIMUM_WP_VERSION', '4.7' );
 define( 'GIGYA__MINIMUM_PHP_VERSION', '5.6' );
-define( 'GIGYA__VERSION', '5.9' );
+define( 'GIGYA__VERSION', '5.10' );
 define( 'GIGYA__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GIGYA__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'GIGYA__CDN_PROTOCOL', ! empty( $_SERVER['HTTPS'] ) ? 'https://cdns' : 'http://cdn' );
@@ -115,12 +115,19 @@ function _gigya_render_tpl( $template_file, $variables = array() ) {
 
 //--------------------------------------------------------------------
 
+/**
+ * @param $el
+ *  the element inside the form
+ * @param $id
+ *  the index of the element inside the form
+ * @param string $name_prefix
+ *
+ * @return string
+ */
 function _gigya_element_render( $el, $id, $name_prefix = '' ) {
 	$allowed_form_elements = array('checkbox', 'customText', 'hidden', 'password', 'radio', 'select', 'text', 'textarea');
-
 	$render = '';
-
-	if ( empty( $el['type'] ) || $el['type'] == 'markup' ) {
+		if ( empty( $el['type'] ) || $el['type'] == 'markup' ) {
 		$render .= $el['markup'];
 	} elseif ( $el['type'] == 'table' ) {
 		$el['name_prefix'] = $name_prefix;
@@ -129,6 +136,7 @@ function _gigya_element_render( $el, $id, $name_prefix = '' ) {
 		}
 		$render .= _gigya_render_tpl( 'admin/tpl/table.tpl.php', $el ) . PHP_EOL;
 	} elseif ( $el['type'] == 'dynamic_field_line' ) {
+		/* give a name for each field */
 		foreach ( $el['fields'] as $key => $field ) {
 			$el['fields'][ $key ]['name'] = $name_prefix . '[' . $id . ']' . '[' . $field['name'] . ']';
 		}
@@ -189,7 +197,6 @@ function _gigya_form_render( $form, $name_prefix = '' ) {
 	foreach ( $form as $id => $el ) {
 		$render .= _gigya_element_render( $el, $id, $name_prefix );
 	}
-
 	return $render;
 }
 
@@ -579,7 +586,7 @@ function _gigya_add_to_wp_user_meta( $gigya_object, $user_id ) {
 			}
 			update_user_meta( $user_id, $meta_key['cmsName'], sanitize_text_field( $gigya_object[ $meta_key['gigyaName'] ] ) );
 		}
-	} else /* Legacy field mapping options */ {
+	} elseif ( is_array( $field_mapping_opts ) ) /* Legacy field mapping options */ {
 		foreach ( $field_mapping_opts as $key => $opt ) {
 			if ( strpos( $key, $prefix ) === 0 && $opt == 1 ) {
 				$k         = str_replace( $prefix, "", $key );
