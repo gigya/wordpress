@@ -24,10 +24,11 @@ class GigyaScreenSet_Widget extends WP_Widget {
 	/**
 	 * Front-end display of widget.
 	 *
-	 * @see WP_Widget::widget()
-	 *
 	 * @param array $args Widget arguments.
 	 * @param array $instance Saved values from database.
+	 *
+	 * @see WP_Widget::widget()
+	 *
 	 */
 	public function widget( $args, $instance ) {
 		if ( ! empty( $instance['container_id'] ) and ! empty( $instance['title'] ) ) {
@@ -49,11 +50,15 @@ class GigyaScreenSet_Widget extends WP_Widget {
 
 			$custom_screen_sets = get_option( GIGYA__SETTINGS_SCREENSETS )['custom_screen_sets'];
 			foreach ( $custom_screen_sets as $screen_set ) {
-				if ( $screen_set['desktop'] == $instance['screenset_id'] ) {
+				if ( ( ! empty( $screen_set['id'] ) ) && ( $screen_set['id'] == $instance['screenset_id'] ) ) {
+					$instance['screenset_id']        = $screen_set['desktop'];
+					$instance['mobile_screenset_id'] = ( $instance['screenset_id'] !== 'desktop' ) ? $screen_set['mobile'] : $screen_set['desktop'];
+					$instance['is_sync_data']        = ( ! empty( $screen_set['is_sync'] ) );
+				} else if ( $screen_set['desktop'] == $instance['screenset_id'] ) {
 					$instance['mobile_screenset_id'] = ( ! empty( $instance['screenset_id'] ) ) ? $screen_set['mobile'] : $screen_set['desktop'];
 					$instance['is_sync_data']        = ( ! empty( $screen_set['is_sync'] ) );
 				}
-			}
+			};
 
 			wp_localize_script( $args['widget_id'], '_gig_' . $widget_machine_name, $instance );
 			wp_enqueue_script( $args['widget_id'] );
@@ -61,47 +66,97 @@ class GigyaScreenSet_Widget extends WP_Widget {
 	}
 
 	public function form( $instance ) {
-		$form = array();
+		$form                          = array();
+		$select_attrs                  = array();
+		$select_error                  = array();
+		$screen_sets_list              = array();
+		$selected_screen_set_id        = esc_attr( _gigParam( $instance, 'screenset_id', '' ) );
+		$custom_screen_sets            = get_option( GIGYA__SETTINGS_SCREENSETS )['custom_screen_sets'];
+		$select_attrs['data-required'] = 'empty-selection';
 
-		$form[ $this->get_field_id( 'title' ) ] = array(
+		if ( ! empty( $custom_screen_sets ) ) {
+			foreach ( $custom_screen_sets as $screen_set ) {
+				if ( empty( $screen_set['desktop'] ) ) {
+					continue;
+				}
+				if ( empty( $screen_set['id'] ) ) {
+					$screen_sets_list[ $screen_set['desktop'] ] = $screen_set['desktop'];
+				} else {
+					$screen_sets_list[ $screen_set['id'] ] = $screen_set['desktop'];
+				}
+			}
+			if ( empty( $selected_screen_set_id ) ) {
+				array_unshift( $screen_sets_list, array(
+					'value' => '',
+					'attrs' => array(
+						'disabled' => 'disabled',
+						'style'    => 'display: none;',
+					)
+				) );
+			} else if ( ! array_key_exists( $selected_screen_set_id, $screen_sets_list ) ) {
+				$form_error                  = array();
+				$form_error['error_message'] = $selected_screen_set_id . __( '  Screen-Set found in the widgets below has been removed by your administrator, and might not work on your website. Please check your configuration or contact your administrator.' );
+				$form_error['attrs']         = array(
+					'id'    => $selected_screen_set_id . '_error_message',
+					'class' => 'gigya-error-message-notice-div notice notice-error is-dismissible'
+				);
+
+				$select_error['error_message'] = __( 'Screen-set removed by administrator.' );
+				$select_error['attrs']         = array( 'class' => 'gigya-error-message-notice-div' );
+
+				$select_attrs['class'] = 'gigya-wp-field-error';
+				array_unshift( $screen_sets_list, array(
+						'value' => $selected_screen_set_id,
+						'attrs' => array( 'class' => 'invalid-gigya-screen-set-option', 'selected' => 'true' )
+					)
+				);
+				echo _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $form_error );
+			}
+		} else {
+			$select_error['error_message'] = __( 'Custom Screen-Set not defined.' );
+			$select_error['attrs']         = array( 'class' => 'gigya-error-message-notice-div' );
+
+			$select_attrs['class'] = 'gigya-wp-field-error';
+		}
+
+		$form[ $this->get_field_id( 'title' ) ]        = array(
 			'type'     => 'text',
 			'name'     => $this->get_field_name( 'title' ),
-			'value'    => esc_attr( _gigParam( $instance, 'title', '' ) ),
+			'value'    => ( empty( esc_attr( _gigParam( $instance, 'title', '' ) ) ) ) ? '' : esc_attr( _gigParam( $instance, 'title', '' ) ),
 			'label'    => __( 'Title' ),
 			'class'    => 'size',
 			'required' => true,
 		);
-
-		$custom_screen_sets = get_option( GIGYA__SETTINGS_SCREENSETS )['custom_screen_sets'];
-		$desktop_screen_sets = array_column($custom_screen_sets, 'desktop');
 		$form[ $this->get_field_id( 'screenset_id' ) ] = array(
-			'type'    => 'select',
-			'name'    => $this->get_field_name( 'screenset_id' ),
-			'label'   => __( 'Screen-Set ID' ),
-			'options' => array_combine( $desktop_screen_sets, $desktop_screen_sets ),
-			'class'   => 'size',
-			'value'   => esc_attr( _gigParam( $instance, 'screenset_id', '' ) ),
+			'type'     => 'select',
+			'name'     => $this->get_field_name( 'screenset_id' ),
+			'label'    => __( 'Screen-Set ID' ),
+			'options'  => $screen_sets_list,
+			'value'    => esc_attr( _gigParam( $instance, 'screenset_id', '' ) ),
+			'required' => 'empty-selection',
+			'class'    => 'size',
+			'attrs'    => $select_attrs,
+			'markup'   => ( ( empty( $select_error ) ) ? '' : _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $select_error ) ),
 		);
-
 		$form[ $this->get_field_id( 'container_id' ) ] = array(
 			'type'     => 'text',
 			'name'     => $this->get_field_name( 'container_id' ),
-			'value'    => esc_attr( _gigParam( $instance, 'container_id', '' ) ),
+			'value'    => ( empty( esc_attr( _gigParam( $instance, 'container_id', '' ) ) ) ) ? '' : esc_attr( _gigParam( $instance, 'container_id', '' ) ),
 			'label'    => __( 'Container ID' ),
 			'required' => true,
 			'class'    => 'size',
 		);
-
-		$form[ $this->get_field_id( 'type' ) ] = array(
-			'type'    => 'select',
-			'name'    => $this->get_field_name( 'type' ),
-			'label'   => __( 'Type' ),
-			'options' => array(
+		$form[ $this->get_field_id( 'type' ) ]         = array(
+			'type'     => 'select',
+			'name'     => $this->get_field_name( 'type' ),
+			'label'    => __( 'Type' ),
+			'options'  => array(
 				'embed' => __( 'Embed' ),
 				'popup' => __( 'Popup' ),
 			),
-			'class'   => 'size',
-			'value'   => esc_attr( _gigParam( $instance, 'type', '' ) ),
+			'class'    => 'size',
+			'value'    => empty( esc_attr( _gigParam( $instance, 'type', '' ) ) ) ? '0' : esc_attr( _gigParam( $instance, 'type', '' ) ),
+			'required' => true,
 		);
 
 		echo _gigya_form_render( $form );
