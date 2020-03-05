@@ -7,6 +7,10 @@ function sessionManagementForm() {
 	$values = _getGigyaSettingsValues( GIGYA__SETTINGS_SESSION );
 	$form = array();
 
+	$form['session_title'] = [
+		'markup' => '<h4>Regular Session</h4>',
+	];
+
 	$form['session_type'] = array(
 		'type' => 'select',
 		'label' => __( 'Type' ),
@@ -32,6 +36,36 @@ function sessionManagementForm() {
 		'markup' => 'seconds',
 		'size' => 10,
 		'class' => 'hidden',
+	);
+
+	$form['remember_session_title'] = [
+		'markup' => '<h4>Remember Me Session</h4>',
+	];
+
+	$form['remember_session_type'] = array(
+		'type' => 'select',
+		'label' => __( 'Type' ),
+		'options' => array(
+			'sliding' => __( 'Sliding' ),
+			'fixed' => __( 'Fixed' ),
+			'forever' => __( 'Valid forever' ),
+			'browser_close' => __( 'Until browser closes' ),
+		),
+		'value' => _gigParam( $values, 'remember_session_type', 'fixed' ),
+	);
+
+	$form['remember_session_type_numeric'] = array(
+		'type' => 'hidden',
+		'label' => __( 'Type Numeric' ),
+		'value' => _gigParam( $values, 'remember_session_type_numeric', '2' ),
+	);
+
+	$form['remember_session_duration'] = array(
+		'type' => 'text',
+		'label' => __( 'Duration' ),
+		'value' => _gigParam( $values, 'remember_session_duration', GIGYA__DEFAULT_REMEMBER_COOKIE_EXPIRATION ),
+		'markup' => 'seconds',
+		'size' => 10,
 	);
 
 	/* Use this field in multisite to flag when sub site settings are saved locally for site */
