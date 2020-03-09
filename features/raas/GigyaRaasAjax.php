@@ -20,7 +20,7 @@ class GigyaRaasAjax {
 	}
 
 	/**
-	 * This is Gigya login AJAX callback
+	 * This is SAP CDC login AJAX callback
 	 *
 	 * @throws Exception In cases where getAccountInfo returns an error
 	 */
@@ -51,13 +51,12 @@ class GigyaRaasAjax {
 		/* Initialize Gigya account */
 		$gigyaCMS            = new GigyaCMS();
 		$this->gigya_account = $gigyaCMS->getAccount( $data['UID'] );
-		if ( is_wp_error( $this->gigya_account ) )
-		{
+		if ( is_wp_error( $this->gigya_account ) ) {
 			$prm = array( 'msg' => __( 'Oops! Something went wrong during your login process. Please try to login again.' ) );
 			wp_send_json_error( $prm );
-		}
-		else
+		} else {
 			$this->gigya_account = $this->gigya_account->getData()->serialize();
+		}
 
 		/* Initialize cookie */
 		$this->updateGltExpCookie();
@@ -110,10 +109,16 @@ class GigyaRaasAjax {
 	 * @throws Exception
 	 */
 	public function login( $wp_user ) {
+		/* Initialize Remember Me mode */
+		$is_remember_me = ( ! empty( $_POST['data']['remember'] ) and filter_var( $_POST['data']['remember'], FILTER_VALIDATE_BOOLEAN ) );
+		if ( $is_remember_me ) {
+			_gigya_set_session_remember( filter_var( $_POST['data']['remember'], FILTER_VALIDATE_BOOLEAN ) );
+		}
+
 		/* Login procedure */
 		wp_clear_auth_cookie();
 		wp_set_current_user( $wp_user->ID );
-		wp_set_auth_cookie( $wp_user->ID );
+		wp_set_auth_cookie( $wp_user->ID, $is_remember_me );
 		_gigya_add_to_wp_user_meta( $this->gigya_account, $wp_user->ID );
 
 		/* Hook for changing WP user metadata from Gigya's user */
@@ -205,58 +210,71 @@ class GigyaRaasAjax {
 		}
 	}
 
+	public function getGltExpCookieExpiration( $session_type, $session_duration ) {
+		switch ( $session_type ) {
+			case GIGYA__SESSION_FOREVER: /* Keep session indefinitely */
+				$expiration = strval( time() + ( 10 * YEAR_IN_SECONDS ) );
+				break;
+			case GIGYA__SESSION_DEFAULT: /* Remove GltExp */
+				$expiration = 1;
+				break;
+			default: /* Session fixed or defined with expiration time */
+				$expiration = strval( $_SERVER['REQUEST_TIME'] + intval( $session_duration ) );
+				break;
+		}
+
+		return $expiration;
+	}
+
 	public function updateGltExpCookie() {
-		if (isset($_COOKIE['glt_'.GIGYA__API_KEY]))
-		{
-			$session_type = isset($this->session_options['session_type_numeric']) ? intval($this->session_options['session_type_numeric']) : GIGYA__SESSION_SLIDING;
-			$session_duration = isset($this->session_options['session_duration']) ? $this->session_options['session_duration'] : GIGYA__DEFAULT_COOKIE_EXPIRATION;
-
-			$glt_cookie = $_COOKIE['glt_'.GIGYA__API_KEY];
-			$token = (!empty(explode('|', $glt_cookie)[0])) ? explode('|', $glt_cookie)[0] : null; /* PHP 5.4+ */
-
-			$cookie_expiration = time() + (10 * YEAR_IN_SECONDS);
-			switch ($session_type)
-			{
-				case GIGYA__SESSION_FOREVER: /* Keep session indefinitely */
-					$expiration = strval(time() + (10 * YEAR_IN_SECONDS));
-					break;
-				case GIGYA__SESSION_DEFAULT: /* Remove GltExp */
-					$expiration = 1;
-					$cookie_expiration = 1;
-					break;
-				default: /* Session fixed or defined with expiration time */
-					$expiration = strval($_SERVER['REQUEST_TIME'] + intval($session_duration));
-					break;
+		if ( isset( $_COOKIE[ 'glt_' . GIGYA__API_KEY ] ) ) {
+			if ( isset( $this->session_options['session_type_numeric'] ) ) {
+				$session_type = ( _gigya_get_session_remember() ) ? intval( $this->session_options['remember_session_type_numeric'] ) : intval( $this->session_options['session_type_numeric'] );
+			} else {
+				$session_type = GIGYA__SESSION_SLIDING;
+			}
+			if ( isset( $this->session_options['session_duration'] ) ) {
+				$session_duration = ( _gigya_get_session_remember() ) ? intval( $this->session_options['remember_session_duration'] ) : intval( $this->session_options['session_duration'] );
+			} else {
+				$session_duration = GIGYA__DEFAULT_COOKIE_EXPIRATION;
 			}
 
-			$gltexp_cookie = isset($_COOKIE['gltexp_' . GIGYA__API_KEY]) ? $_COOKIE['gltexp_' . GIGYA__API_KEY] : '';
-			$gltexp_cookie_timestamp = explode('_', $gltexp_cookie)[0]; /* PHP 5.4+ */
+			$glt_cookie = $_COOKIE[ 'glt_' . GIGYA__API_KEY ];
+			$token      = ( ! empty( explode( '|', $glt_cookie )[0] ) ) ? explode( '|', $glt_cookie )[0] : null;
 
-			if (!$host = $_SERVER['SERVER_NAME']) {
+			$cookie_expiration = time() + ( 10 * YEAR_IN_SECONDS );
+			if ( $session_type == GIGYA__SESSION_DEFAULT ) {
+				$cookie_expiration = 1;
+			}
+			$expiration = $this->getGltExpCookieExpiration( $session_type, $session_duration );
+
+			$gltexp_cookie           = isset( $_COOKIE[ 'gltexp_' . GIGYA__API_KEY ] ) ? $_COOKIE[ 'gltexp_' . GIGYA__API_KEY ] : '';
+			$gltexp_cookie_timestamp = explode( '_', $gltexp_cookie )[0]; /* PHP 5.4+ */
+
+			if ( ! $host = $_SERVER['SERVER_NAME'] ) {
 				$host = $_SERVER['SERVER_ADDR'];
 			}
 
-			if ((empty($gltexp_cookie_timestamp) and $session_type === GIGYA__SESSION_SLIDING) or (time() < $gltexp_cookie_timestamp and $session_type < 0))
-			{
-				if (!empty($token))
-				{
+			if ( ( empty( $gltexp_cookie_timestamp ) and $session_type === GIGYA__SESSION_SLIDING ) or ( time() < $gltexp_cookie_timestamp and $session_type < 0 ) ) {
+				if ( ! empty( $token ) ) {
 					$session_sig = $this->calcDynamicSessionSig(
 						$token, $expiration, GIGYA__USER_KEY,
 						GigyaApiHelper::decrypt( GIGYA__API_SECRET, SECURE_AUTH_KEY )
 					);
 
-					setrawcookie('gltexp_' . GIGYA__API_KEY, rawurlencode($session_sig), $cookie_expiration, '/', $host);
+					setrawcookie( 'gltexp_' . GIGYA__API_KEY, rawurlencode( $session_sig ), $cookie_expiration, '/', $host );
 				}
-			}
-			elseif ($session_type === GIGYA__SESSION_DEFAULT)
-				setrawcookie('gltexp_' . GIGYA__API_KEY, '', $cookie_expiration, '/', $host); /* Unset cookie */
+			} elseif ( $session_type === GIGYA__SESSION_DEFAULT ) {
+				setrawcookie( 'gltexp_' . GIGYA__API_KEY, '', $cookie_expiration, '/', $host );
+			} /* Unset cookie */
 		}
 	}
 
-	private function calcDynamicSessionSig($token, $expiration, $user_key, $secret) {
-		$unsigned_exp_string = utf8_encode($token . "_" . $expiration . "_" . $user_key);
-		$rawHmac = hash_hmac("sha1", utf8_encode($unsigned_exp_string), base64_decode($secret), true);
-		$sig = base64_encode($rawHmac);
+	private function calcDynamicSessionSig( $token, $expiration, $user_key, $secret ) {
+		$unsigned_exp_string = utf8_encode( $token . "_" . $expiration . "_" . $user_key );
+		$rawHmac             = hash_hmac( "sha1", utf8_encode( $unsigned_exp_string ), base64_decode( $secret ), true );
+		$sig                 = base64_encode( $rawHmac );
+
 		return $expiration . '_' . $user_key . '_' . $sig;
 	}
 }

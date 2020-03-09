@@ -66,8 +66,7 @@ class GigyaCMS
 			}
 		} else {
 			if ( ! empty( $user_info ) ) {
-
-				// Check validation in the response.
+				/* Check validation in the response */
 				$valid = SigUtils::validateUserSignature(
 					$response->getString( "UID", "" ),
 					$response->getString( "signatureTimestamp", "" ),

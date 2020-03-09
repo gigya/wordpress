@@ -17,7 +17,7 @@ class GigyaAction
 		$this->global_options = get_option( GIGYA__SETTINGS_GLOBAL );
 		$this->session_options = get_option( GIGYA__SETTINGS_SESSION );
 
-		// Gigya CMS
+		/* Retrieve basic SAP CDC authentication parameters */
 		if ( ! empty( $this->global_options ) )
 		{
 			define( 'GIGYA__API_KEY', $this->global_options['api_key'] );
@@ -51,6 +51,7 @@ class GigyaAction
 		add_action( 'wp_ajax_debug_log', array( $this, 'ajaxDebugLog' ) );
 		add_action( 'wp_ajax_clean_db', array( $this, 'ajaxCleanDB' ) );
 		add_action( 'wp_ajax_gigya_logout', array( $this, 'ajaxLogout' ) );
+		add_action( 'wp_ajax_nopriv_gigya_logout', array( $this, 'ajaxLogout' ) );
 		add_action( 'wp_ajax_raas_update_profile', array( $this, 'ajaxUpdateProfile' ) );
 		add_action( 'wp_login', array( $this, 'wpLogin' ), 10, 2 );
 		add_action( 'user_register', array( $this, 'userRegister' ), 10, 1 );
@@ -132,7 +133,9 @@ class GigyaAction
 		wp_enqueue_script( 'gigya_js', GIGYA__PLUGIN_URL . 'gigya.js' );
 		wp_enqueue_style( 'gigya_css', GIGYA__PLUGIN_URL . 'gigya.css' );
 
-		/* Parameters to be sent to the DOM */
+		/* Parameters to be sent to the DOM, and later to Gigya (showScreenSet) */
+		$session_expiration          = $this->getSessionExpiration( false );
+		$remember_session_expiration = $this->getSessionExpiration( true );
 		$params = array(
 			'ajaxurl'                     => admin_url( 'admin-ajax.php' ),
 			'logoutUrl'                   => wp_logout_url(),
@@ -140,9 +143,14 @@ class GigyaAction
 			'jsonExampleURL'              => GIGYA__PLUGIN_URL . 'admin/forms/json/advance_example.json',
 			'enabledProviders'            => _gigParam( $this->global_options, 'enabledProviders', '*' ),
 			'lang'                        => _gigParam( $this->global_options, 'lang', 'en' ),
-			'sessionExpiration'           => gigyaSyncLoginSession(
-				( isset( $this->login_options['mode'] ) ? $this->login_options['mode'] : '' ), $this->session_options
-			),
+			'sessionExpiration'           => $session_expiration,
+			'rememberSessionExpiration'   => $remember_session_expiration,
+		);
+
+		/* Sync Gigya and WordPress sessions */
+		$this->gigyaSyncLoginSession(
+			( isset( $this->login_options['mode'] ) ? $this->login_options['mode'] : '' ),
+			$this->session_options
 		);
 
 		/* Add advanced parameters if exist */
@@ -163,13 +171,13 @@ class GigyaAction
 		$api_key = GIGYA__API_KEY;
 		if ( ! empty( $api_key ) )
 		{
-			// Loads requirements for any Gigya's login.
-			// Load Gigya's socialize.js from CDN.
+			/*	* Loads requirements for any Gigya's login
+				* Load Gigya's socialize.js from CDN */
 			wp_enqueue_script( 'gigya_cdn', GIGYA__JS_CDN . GIGYA__API_KEY . '&lang=' . $params['lang'] );
 
 			if ( ! empty( $this->login_options ) ) /* Empty only happens on initial plugin enable, before configuring it */
 			{
-				// Loads requirements for any Gigya's social login.
+				/* Social Login – load requirements  */
 				if ( $this->login_options['mode'] == 'wp_sl' )
 				{
 					require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginSet.php';
@@ -177,24 +185,24 @@ class GigyaAction
 					$gigyaLoginSet->init();
 				}
 
-				// Loads requirements for any Gigya's RaaS login.
+				/* RaaS Login – load requirements */
 				if ( $this->login_options['mode'] == 'raas' and defined( 'GIGYA__USER_KEY' ) and ( ! empty( GIGYA__USER_KEY ) ) )
 				{
 					require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaOfflineSync.php';
 
-					// Loads RaaS links class.
+					/* Loads RaaS links class */
 					require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasSet.php';
 					$gigyaRaasSet = new GigyaRaasSet;
 					$gigyaRaasSet->init();
 
-					// Updates GltExp cookie
+					/* Updates GltExp cookie */
 					require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasAjax.php';
 					$raasAjaxObject = new GigyaRaasAjax();
 					$raasAjaxObject->updateGltExpCookie();
 				}
 			}
 
-			// Loads requirements for any Gigya's Google-Analytics integration.
+			/* Loads requirements for any Gigya's Google-Analytics integration. */
 			if ( ! empty( $this->global_options['google_analytics'] ) )
 			{
 				wp_enqueue_script( 'gigya_ga', GIGYA__CDN_PROTOCOL . '.gigya.com/js/gigyaGAIntegration.js' );
@@ -203,7 +211,7 @@ class GigyaAction
 
 		if ( is_admin() )
 		{
-			// Loads requirements for the admin settings section.
+			/* Loads requirements for the admin settings section. */
 			require_once GIGYA__PLUGIN_DIR . 'admin/admin.GigyaSettings.php';
 			new GigyaSettings;
 		}
@@ -313,29 +321,130 @@ class GigyaAction
 
 	public function ajaxLogout() {
 		wp_logout();
-		if ( isset( $_COOKIE['gltexp_' . GIGYA__API_KEY] ) )
-		{
-			unset( $_COOKIE['gltexp_' . GIGYA__API_KEY] );
-			setrawcookie( 'gltexp_' . GIGYA__API_KEY, null, -1, '/' );
-		}
+		$this->gigyaSyncLogout();
 		wp_send_json_success();
 	}
 
 	public function ajaxSetFixedSessionCookie() {
+		$session_options = $this->getSessionOptions();
+
 		$return = array(
 			$_POST['expiration'],
-			time() + $this->session_options['session_duration'],
+			time() + $session_options['session_duration'],
 		);
 
 		$expiration = intval( $_POST['expiration'] / 1000 ) - time();
-		if ( $this->login_options['mode'] == 'raas' and $this->session_options['session_type_numeric'] > 0 ) /* Fixed session in RaaS */
+		if ( $this->login_options['mode'] == 'raas' and $session_options['session_type_numeric'] > 0 ) /* Fixed session in RaaS */
 		{
-			$return[] = gigyaSyncLoginSession( 'raas', $this->session_options, $expiration );
+			$return[] = $this->gigyaSyncLoginSession( 'raas', $session_options, $expiration );
 		}
 
 		echo json_encode( $return );
 
 		wp_die();
+	}
+
+	/**
+	 * Gets the de facto numeric session expiration, based on the config (e.g. -2 is converted to 1 year in seconds, etc.)
+	 *
+	 * @param bool $remember
+	 *
+	 * @return int
+	 */
+	function getSessionExpiration( $remember = false ) {
+		$default_expiration = GIGYA__DEFAULT_COOKIE_EXPIRATION;
+		$expiration         = $default_expiration;
+		$session_type       = $expiration;
+
+		$session_options = $this->getSessionOptions( $remember );
+
+		if ( isset( $session_options['session_type_numeric'] ) ) {
+			switch ( $session_type ) {
+				case GIGYA__SESSION_DEFAULT: /* Until browser closes */
+				case GIGYA__SESSION_FOREVER: /* Forever */
+					$expiration = YEAR_IN_SECONDS;
+					break;
+				default: /* Fixed or dynamic session */
+					$expiration = $session_options['session_duration'];
+					break;
+			}
+		}
+
+		return $expiration;
+	}
+
+	/**
+	 * Necessary for hooking into the auth_cookie_expiration hook. The apply_filters function uses $expiration, $user_id and $remember
+	 *
+	 * @param int $expiration
+	 * @param int $user_id
+	 * @param boolean $remember
+	 * @param int $forced_expiration
+	 *
+	 * @return int
+	 */
+	function getHookSessionExpiration( $expiration = null, $user_id = null, $remember = null, $forced_expiration = null ) {
+		if ( $forced_expiration ) {
+			return $forced_expiration;
+		}
+
+		return $this->getSessionExpiration( $remember );
+	}
+
+	/**
+	 * Get Login session time from Gigya's plugin, as configured by the user, and syncs it with WordPress using the auth_cookie_expiration hook
+	 *
+	 * @param string $mode Whether RaaS (raas) or Social Login (wp_sl)
+	 * @param array $session_opts Login options for RaaS (session duration etc.)
+	 * @param int $forced_expiration
+	 *
+	 * @return    integer
+	 */
+	function gigyaSyncLoginSession( $mode, $session_opts, $forced_expiration = null ) {
+		$session_type   = GIGYA__DEFAULT_COOKIE_EXPIRATION;
+		$is_remember_me = ( _gigya_get_session_remember() );
+
+		if ( $mode == 'raas' )
+		{
+			if ( isset( $session_opts['session_type_numeric'] ) )
+			{
+				$session_type = intval( $session_opts['session_type_numeric'] );
+				$expiration = $this->getHookSessionExpiration( null, null, null, $forced_expiration );
+
+				if ( $forced_expiration ) {
+					$expiration = $forced_expiration;
+				}
+
+				if ( $session_type > 0 ) {
+					$session_type = $expiration;
+				}
+
+				/* Updates WP cookie expiration--WP runs apply_filters on this */
+				add_filter( 'auth_cookie_expiration', array( $this, 'getHookSessionExpiration' ), 10, 3 );
+
+				$gltexp_cookie = isset( $_COOKIE['gltexp_' . GIGYA__API_KEY] ) ? $_COOKIE['gltexp_' . GIGYA__API_KEY] : '';
+				$gltexp_cookie_timestamp = explode( '_', $gltexp_cookie )[0];
+				if ( ( ( $session_type === GIGYA__SESSION_SLIDING ) and ( time() < $gltexp_cookie_timestamp ) )
+					 or ( $session_type > 0 and $forced_expiration ) )
+				{
+					$wp_user = wp_get_current_user();
+					wp_set_auth_cookie( $wp_user->ID, $is_remember_me );
+
+					do_action( 'set_logged_in_cookie', null, $expiration );
+				}
+			}
+		}
+
+		return (int) $session_type;
+	}
+
+	public function gigyaSyncLogout() {
+		if ( isset( $_COOKIE['gltexp_' . GIGYA__API_KEY] ) )
+		{
+			unset( $_COOKIE['gltexp_' . GIGYA__API_KEY] );
+			setrawcookie( 'gltexp_' . GIGYA__API_KEY, null, -1, '/' );
+		}
+		_gigya_remove_session_remember();
 	}
 
 	public function appendUserMetaToRestAPI() {
@@ -394,6 +503,7 @@ class GigyaAction
 			if ( $this->login_options['mode'] == 'raas' and ( ! $_is_allowed_user ) )
 			{
 				wp_logout();
+				$this->gigyaSyncLogout();
 				wp_safe_redirect( $_SERVER['REQUEST_URI'] . '?rperm=1' ); // rperm used to create custom error message in wp login screen
 				exit;
 			}
@@ -405,36 +515,35 @@ class GigyaAction
 
 		if ( empty( $_POST['action'] ) and ! empty( $_POST['data']['action'] ) ) {
 			$_POST['action'] = $_POST['data']['action'];
-		} elseif ( empty( $_POST['action'] ) ) {
+		}
+
+		if ( empty( $_POST['action'] ) ) {
 			error_log( 'Login: No POST action specified' );
-		}
-
-		/* RaaS Login */
-		if ( $_POST['action'] === 'gigya_raas' )
-		{
-			/* Update Gigya UID in WordPress user meta if it isn't set already */
-			if ( isset( $_POST['data']['UID'] ) )
-			{
-				$wp_gigya_uid = get_user_meta( $account->ID, 'gigya_uid', true );
-				if ( empty( $wp_gigya_uid ) )
-					add_user_meta( $account->ID, 'gigya_uid', $_POST['data']['UID'] );
-				elseif ( $wp_gigya_uid !== $_POST['data']['UID'] )
-					wp_send_json_error( array( 'msg' => __( 'Oops! Someone is already registered with the email' ) ) );
+		} else {
+			/* RaaS Login */
+			if ( $_POST['action'] === 'gigya_raas' ) {
+				/* Update Gigya UID in WordPress user meta if it isn't set already */
+				if ( isset( $_POST['data']['UID'] ) ) {
+					$wp_gigya_uid = get_user_meta( $account->ID, 'gigya_uid', true );
+					if ( empty( $wp_gigya_uid ) ) {
+						add_user_meta( $account->ID, 'gigya_uid', $_POST['data']['UID'] );
+					} elseif ( $wp_gigya_uid !== $_POST['data']['UID'] ) {
+						wp_send_json_error( array( 'msg' => __( 'Oops! Someone is already registered with the email' ) ) );
+					}
+				}
 			}
-		}
 
-		/*
-		 * These post vars are available when there is the same email on the site,
-		 * with the one who try to register and we want to link-accounts
-		 * after the user is logged in with password. Or login after email verify.
-		 */
-		if ( ( $_POST['action'] == 'link_accounts' or $_POST['action'] == 'custom_login' ) and ! empty ( $_POST['data'] ) )
-		{
-			parse_str( $_POST['data'], $data );
-			if ( ! empty( $data['gigyaUID'] ) )
-			{
-				$gigyaCMS = new GigyaCMS();
-				$gigyaCMS->notifyRegistration( $data['gigyaUID'], $account->ID );
+			/*
+			 * These post vars are available when there is the same email on the site,
+			 * with the one who try to register and we want to link-accounts
+			 * after the user is logged in with password. Or login after email verify.
+			 */
+			if ( ( $_POST['action'] === 'link_accounts' or $_POST['action'] === 'custom_login' ) and ! empty ( $_POST['data'] ) ) {
+				parse_str( $_POST['data'], $data );
+				if ( ! empty( $data['gigyaUID'] ) ) {
+					$gigyaCMS = new GigyaCMS();
+					$gigyaCMS->notifyRegistration( $data['gigyaUID'], $account->ID );
+				}
 			}
 		}
 	}
@@ -581,32 +690,6 @@ class GigyaAction
 			$account = get_userdata( $user_id );
 			$gigyaCMS->deleteAccountByEmail( $account->data->user_email );
 		}
-	}
-
-	/**
-	 * Shortcode for UserInfo.
-	 *
-	 * @param    array $atts
-	 * @param          $info
-	 *
-	 * @return string
-	 *
-	 * @throws Exception
-	 */
-	private function shortcodeUserInfo( $atts, $info = null ) {
-		/**
-		 * @var    WP_User
-		 */
-		$wp_user = wp_get_current_user();
-		$user_info = array();
-
-		if ( $info == null )
-		{
-			$gigyaCMS = new GigyaCMS();
-			$user_info = $gigyaCMS->getUserInfo( $wp_user->UID );
-		}
-
-		return json_encode( $user_info );
 	}
 
 	/**
@@ -902,5 +985,59 @@ class GigyaAction
 				$helper->sendCronEmail( 'offline sync', $status, $email_on_failure );
 			}
 		}
+	}
+
+	/**
+	 * Shortcode for UserInfo.
+	 *
+	 * @param    array $atts
+	 * @param          $info
+	 *
+	 * @return string
+	 *
+	 * @throws Exception
+	 */
+	private function shortcodeUserInfo( $atts, $info = null ) {
+		/**
+		 * @var    WP_User
+		 */
+		$wp_user = wp_get_current_user();
+		$user_info = array();
+
+		if ( $info == null )
+		{
+			$gigyaCMS = new GigyaCMS();
+			$user_info = $gigyaCMS->getUserInfo( $wp_user->UID );
+		}
+
+		return json_encode( $user_info );
+	}
+
+	/**
+	 * Retrieves the session_type, session_type_numeric, session_duration from the WP session options, taking Remember Me status into account.
+	 * If Remember Me status isn't specified, it still checks
+	 *
+	 * @param boolean|null $is_remember_me
+	 *
+	 * @return array
+	 */
+	private function getSessionOptions( $is_remember_me = null ) {
+		$options = $this->session_options;
+
+		if ( $is_remember_me === null ) {
+			$is_remember_me = ( _gigya_get_session_remember() );
+		}
+
+		if ( $is_remember_me ) {
+			$options['session_type']         = $options['remember_session_type'];
+			$options['session_type_numeric'] = $options['remember_session_type_numeric'];
+			$options['session_duration']     = $options['remember_session_duration'];
+		}
+
+		return array_intersect_key( $options, array_flip( [
+			'session_type',
+			'session_type_numeric',
+			'session_duration'
+		] ) );
 	}
 }

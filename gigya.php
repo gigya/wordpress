@@ -23,6 +23,7 @@ define( 'GIGYA__CDN_PROTOCOL', ! empty( $_SERVER['HTTPS'] ) ? 'https://cdns' : '
 define( 'GIGYA__JS_CDN', GIGYA__CDN_PROTOCOL . '.gigya.com/js/socialize.js?apiKey=' );
 define( 'GIGYA__LOG_LIMIT', 50 );
 define( 'GIGYA__DEFAULT_COOKIE_EXPIRATION', 1800 ); /* WordPress defaults to 172800 (48 hours) */
+define( 'GIGYA__DEFAULT_REMEMBER_COOKIE_EXPIRATION', 20000000 ); /* For Remember Me sessions */
 define( 'GIGYA__ERROR_UNAUTHORIZED_PARTNER', 403036 );
 
 /**
@@ -437,8 +438,29 @@ function _gigya_error_log( $new_log ) {
  *
  * @return integer
  */
-function _gigya_get_session_expiration($length, $user_id, $remember) {
+function _gigya_get_session_expiration( $length, $user_id, $remember ) {
 	return $length;
+}
+
+function _gigya_get_session_remember() {
+	return ( ! empty( $_COOKIE[ 'gigya_remember_' . GIGYA__API_KEY ] ) );
+}
+
+function _gigya_set_session_remember( $remember ) {
+	if ( ! $host = $_SERVER['SERVER_NAME'] ) {
+		$host = $_SERVER['SERVER_ADDR'];
+	}
+	setcookie( 'gigya_remember_' . GIGYA__API_KEY, $remember, time() + YEAR_IN_SECONDS, '/', $host );
+}
+
+function _gigya_remove_session_remember() {
+	if ( isset( $_COOKIE[ 'gigya_remember_' . GIGYA__API_KEY ] ) ) {
+		if ( ! $host = $_SERVER['SERVER_NAME'] ) {
+			$host = $_SERVER['SERVER_ADDR'];
+		}
+		unset( $_COOKIE[ 'gigya_remember_' . GIGYA__API_KEY ] );
+		setcookie( 'gigya_remember_' . GIGYA__API_KEY, null, -1, '/', $host );
+	}
 }
 
 /**
@@ -446,68 +468,9 @@ function _gigya_get_session_expiration($length, $user_id, $remember) {
  * @param $expiration
  */
 function updateCookie( $cookie, $expiration ) {
-	if (isset($_COOKIE[LOGGED_IN_COOKIE]))
-		$_COOKIE[LOGGED_IN_COOKIE] = $cookie;
-}
-
-/**
- * Get Login session time from Gigya's plugin, as configured by the user, and syncs it with WordPress using the auth_cookie_expiration hook
- *
- * @param	string	$mode			Whether RaaS (raas) or Social Login (wp_sl)
- * @param	array	$session_opts	Login options for RaaS (session duration etc.)
- * @param	int		$forced_expiration	If set, will override the WP cookie expiration time defined in the configuration
- *
- * @return	integer
- */
-function gigyaSyncLoginSession( $mode, $session_opts, $forced_expiration = null ) {
-	$default_expiration = GIGYA__DEFAULT_COOKIE_EXPIRATION;
-	$expiration = $default_expiration;
-	$session_type = $expiration;
-
-	if ( $mode == 'raas' )
-	{
-		if ( isset( $session_opts['session_type_numeric'] ) )
-		{
-			$session_type = intval( $session_opts['session_type_numeric'] );
-
-			switch ( $session_type )
-			{
-				case GIGYA__SESSION_DEFAULT: /* Until browser closes */
-				case GIGYA__SESSION_FOREVER: /* Forever */
-					$expiration = YEAR_IN_SECONDS;
-					break;
-				case GIGYA__SESSION_SLIDING:
-					$expiration = $session_opts['session_duration'];
-					break;
-				default:
-					$session_type = $session_opts['session_duration'];
-					$expiration = $session_opts['session_duration'];
-					break;
-			}
-
-			/* Overrides expiration time set in plugin's config--used for SSO */
-			if ( $forced_expiration )
-				$expiration = $forced_expiration;
-
-			/* Updates WP cookie expiration--doing apply_filters only does not perform this action */
-			add_filter( 'auth_cookie_expiration', function( $length, $user_id = null, $remember = null ) use ( $expiration ) {
-							return _gigya_get_session_expiration( $expiration, $user_id, $remember );
-						}, 10, 3 );
-
-			$gltexp_cookie = isset( $_COOKIE['gltexp_' . GIGYA__API_KEY] ) ? $_COOKIE['gltexp_' . GIGYA__API_KEY] : '';
-			$gltexp_cookie_timestamp = explode( '_', $gltexp_cookie )[0]; /* PHP 5.4+ */
-			if ( ( ( $session_type === GIGYA__SESSION_SLIDING ) and ( time() < $gltexp_cookie_timestamp ) )
-				or ( $session_type > 0 and $forced_expiration ) )
-			{
-				$wp_user = wp_get_current_user();
-				wp_set_auth_cookie( $wp_user->ID );
-
-				do_action( 'set_logged_in_cookie', null, $expiration );
-			}
-		}
+	if ( isset( $_COOKIE[ LOGGED_IN_COOKIE ] ) ) {
+		$_COOKIE[ LOGGED_IN_COOKIE ] = $cookie;
 	}
-
-	return (int) $session_type;
 }
 
 // --------------------------------------------------------------------
@@ -520,8 +483,9 @@ function gigyaSyncLoginSession( $mode, $session_opts, $forced_expiration = null 
 function _gigya_get_mode_prefix()
 {
 	$login_opts = get_option( GIGYA__SETTINGS_LOGIN );
-	if (empty($login_opts))
+	if ( empty( $login_opts ) ) {
 		return '';
+	}
 
 	if ($login_opts['mode'] == "wp_sl") {
 		$prefix = "map_social_";
