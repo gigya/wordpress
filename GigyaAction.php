@@ -346,7 +346,7 @@ class GigyaAction
 					if ( apply_filters( 'rest_show_user_meta', $user_data['id'] ) ) {
 						$nonce = ( isset( $_REQUEST['_wpnonce'] ) ) ? $_REQUEST['_wpnonce'] : '';
 						if ( wp_verify_nonce( $nonce, 'wp_rest' ) ) {
-							$login_opts = get_option( GIGYA__SETTINGS_LOGIN );
+							$login_opts = get_option( GIGYA__SETTINGS_FIELD_MAPPING );
 							$meta       = get_user_meta( $user_data['id'] );
 
 							if ( ! empty( $login_opts['map_raas_full_map'] ) ) /* Fully customized field mapping options */ {
