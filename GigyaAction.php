@@ -134,8 +134,7 @@ class GigyaAction
 		wp_enqueue_style( 'gigya_css', GIGYA__PLUGIN_URL . 'gigya.css' );
 
 		/* Parameters to be sent to the DOM, and later to Gigya (showScreenSet) */
-		$session_expiration          = $this->getSessionExpiration( false );
-		$remember_session_expiration = $this->getSessionExpiration( true );
+		$session_expirations = _gigya_get_session_expiration( $this->session_options );
 		$params = array(
 			'ajaxurl'                     => admin_url( 'admin-ajax.php' ),
 			'logoutUrl'                   => wp_logout_url(),
@@ -143,8 +142,8 @@ class GigyaAction
 			'jsonExampleURL'              => GIGYA__PLUGIN_URL . 'admin/forms/json/advance_example.json',
 			'enabledProviders'            => _gigParam( $this->global_options, 'enabledProviders', '*' ),
 			'lang'                        => _gigParam( $this->global_options, 'lang', 'en' ),
-			'sessionExpiration'           => $session_expiration,
-			'rememberSessionExpiration'   => $remember_session_expiration,
+			'sessionExpiration'           => $session_expirations['sessionExpiration'],
+			'rememberSessionExpiration'   => $session_expirations['rememberSessionExpiration']
 		);
 
 		/* Sync Gigya and WordPress sessions */

@@ -432,14 +432,15 @@ function _gigya_error_log( $new_log ) {
 // --------------------------------------------------------------------
 
 /**
- * @param $length
- * @param $user_id
- * @param $remember
+ * @param $options
  *
- * @return integer
+ * @return array
  */
-function _gigya_get_session_expiration( $length, $user_id, $remember ) {
-	return $length;
+function _gigya_get_session_expiration( $options ) {
+	return [
+		'sessionExpiration'         => ( $options['session_type_numeric'] > 0 ) ? $options['session_duration'] : $options['session_type_numeric'],
+		'rememberSessionExpiration' => ( $options['remember_session_type_numeric'] > 0 ) ? $options['remember_session_duration'] : $options['remember_session_type_numeric'],
+	];
 }
 
 function _gigya_get_session_remember() {

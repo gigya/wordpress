@@ -1,6 +1,8 @@
 <?php
 /**
  * Form builder for 'Global Settings' configuration page.
+ *
+ * Note: gigya_admin.js has some client-side controls for this form. Any change in the form might affect those, so check them!
  */
 function sessionManagementForm() {
 
@@ -57,7 +59,7 @@ function sessionManagementForm() {
 	$form['remember_session_type_numeric'] = array(
 		'type' => 'hidden',
 		'label' => __( 'Type Numeric' ),
-		'value' => _gigParam( $values, 'remember_session_type_numeric', '2' ),
+		'value' => _gigParam( $values, 'remember_session_type_numeric', '1' ),
 	);
 
 	$form['remember_session_duration'] = array(
@@ -66,6 +68,7 @@ function sessionManagementForm() {
 		'value' => _gigParam( $values, 'remember_session_duration', GIGYA__DEFAULT_REMEMBER_COOKIE_EXPIRATION ),
 		'markup' => 'seconds',
 		'size' => 10,
+		'class' => 'hidden',
 	);
 
 	/* Use this field in multisite to flag when sub site settings are saved locally for site */
