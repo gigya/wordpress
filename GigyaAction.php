@@ -149,7 +149,7 @@ class GigyaAction
 		/* Sync Gigya and WordPress sessions */
 		$this->gigyaSyncLoginSession(
 			( isset( $this->login_options['mode'] ) ? $this->login_options['mode'] : '' ),
-			$this->session_options
+			$this->getSessionOptions()
 		);
 
 		/* Add advanced parameters if exist */
@@ -344,35 +344,6 @@ class GigyaAction
 	}
 
 	/**
-	 * Gets the de facto numeric session expiration, based on the config (e.g. -2 is converted to 1 year in seconds, etc.)
-	 *
-	 * @param bool $remember
-	 *
-	 * @return int
-	 */
-	function getSessionExpiration( $remember = false ) {
-		$default_expiration = GIGYA__DEFAULT_COOKIE_EXPIRATION;
-		$expiration         = $default_expiration;
-		$session_type       = $expiration;
-
-		$session_options = $this->getSessionOptions( $remember );
-
-		if ( isset( $session_options['session_type_numeric'] ) ) {
-			switch ( $session_type ) {
-				case GIGYA__SESSION_DEFAULT: /* Until browser closes */
-				case GIGYA__SESSION_FOREVER: /* Forever */
-					$expiration = YEAR_IN_SECONDS;
-					break;
-				default: /* Fixed or dynamic session */
-					$expiration = $session_options['session_duration'];
-					break;
-			}
-		}
-
-		return $expiration;
-	}
-
-	/**
 	 * Necessary for hooking into the auth_cookie_expiration hook. The apply_filters function uses $expiration, $user_id and $remember
 	 *
 	 * @param int $expiration
@@ -387,7 +358,24 @@ class GigyaAction
 			return $forced_expiration;
 		}
 
-		return $this->getSessionExpiration( $remember );
+		$default_expiration = GIGYA__DEFAULT_COOKIE_EXPIRATION;
+		$expiration         = $default_expiration;
+
+		$session_options = $this->getSessionOptions( $remember );
+
+		if ( isset( $session_options['session_type_numeric'] ) ) {
+			switch ( $session_options['session_type'] ) {
+				case GIGYA__SESSION_DEFAULT: /* Until browser closes */
+				case GIGYA__SESSION_FOREVER: /* Forever */
+					$expiration = YEAR_IN_SECONDS;
+					break;
+				default: /* Fixed or dynamic session */
+					$expiration = $session_options['session_duration'];
+					break;
+			}
+		}
+
+		return $expiration;
 	}
 
 	/**
