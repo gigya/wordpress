@@ -364,7 +364,7 @@ class GigyaAction
 		$session_options = $this->getSessionOptions( $remember );
 
 		if ( isset( $session_options['session_type_numeric'] ) ) {
-			switch ( $session_options['session_type'] ) {
+			switch ( $session_options['session_type_numeric'] ) {
 				case GIGYA__SESSION_DEFAULT: /* Until browser closes */
 				case GIGYA__SESSION_FOREVER: /* Forever */
 					$expiration = YEAR_IN_SECONDS;
