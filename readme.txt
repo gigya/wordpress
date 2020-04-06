@@ -4,7 +4,7 @@ Contributors: SAP SE/gigya.com konforti, luciodiri,ynhockey, shaharzillber.
 Tags: CIAM, CIM, Registration, Social Login, Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, SAP Customer Data Cloud, Social Infrastructure, feed
 Requires at least: 4.2
 Tested up to: 4.9
-Stable tag: 5.10
+Stable tag: 5.11
 License: Apache v2.0
 
 Integrate your WordPress site with SAP Customer Data Cloud.
@@ -121,7 +121,7 @@ For question about installations or configuration, please contact your account m
 = 5.5 =
 * The GConnector authentication is now done using an application key and secret, rather than a partner secret, for security reasons. Note that in order for the new version to work, you must change the existing credentials (partner secret) to new ones (application key and secret).
 * Custom field mapping: You can now flexibly map any Gigya field to a Wordpress field
-* Users are now synced between Gigya and Wordpress based on their Gigya UID, and not on their email addresses.
+* Users are now synced between Gigya and Wordpress based on their Gigya UID, and not on their email addresses
 * If a duplicate user is detected, they are no longer deleted. Instead, an error is displayed.
 
 = 5.6 =
@@ -178,6 +178,10 @@ For question about installations or configuration, please contact your account m
 = 5.10 =
 * Custom screen-sets: added validation with SAP CDC
 * Fixed an incompatibility with PHP 5.x
+
+= 5.11 =
+* It is now possible to separately configure the session settings for Remember Me
+* Fixed an issue in the REST API extension
 
 == FAQ ==
 
