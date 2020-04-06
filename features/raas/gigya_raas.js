@@ -201,12 +201,37 @@
 // --------------------------------------------------------------------
 
 		/**
+		 * @param response
+		 *
+		 * @property res.groupContext
+		 * @property res.remember
+		 */
+		var getRememberMeStatus = function(response) {
+			var remember = false;
+			/* Pull remember me status from the group context */
+			if (typeof response.groupContext !== 'undefined') {
+				var groupRemember = JSON.parse(response.groupContext).remember;
+				if (typeof groupRemember !== 'undefined') {
+					remember = groupRemember;
+				}
+			}
+			/* "Remember Me" clicked on the current site always overrides the group context remember */
+			if (typeof response.remember !== 'undefined') {
+				remember = response.remember;
+			}
+
+			return remember;
+		};
+
+		/**
 		 * On RaaS login with Gigya behavior.
 		 * @param    response                 object    SDK response object
 		 * @param    response.provider        string    Login service provider, such as "googleplus" etc., or native RaaS ("")
 		 * @param    response.UID             string    User's UID
 		 * @param    response.UIDSignature    string    User's API signature which is calculated using the secret key and other parameters
 		 * @param    response.expires_in      int       When the fixed session in an SSO group expires (only works on Site 2 and further in an SSO group with fixed session)
+		 *
+		 * @property gigya.setGroupContext
 		 */
 		var raasLogin = function (response) {
 			var exp_timestamp = 0;
@@ -222,6 +247,12 @@
 			if (typeof response.UID === 'undefined' || response.UID.indexOf('_temp_') === 0) {
 				return false;
 			}
+
+			var remember = getRememberMeStatus(response);
+			/* Propagate Remember Me status to the SSO group */
+			gigya.setGroupContext({
+				"remember": remember
+			});
 
 			var options = {
 				url: gigyaParams.ajaxurl,

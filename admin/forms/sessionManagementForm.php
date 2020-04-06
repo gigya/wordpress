@@ -1,11 +1,17 @@
 <?php
 /**
  * Form builder for 'Global Settings' configuration page.
+ *
+ * Note: gigya_admin.js has some client-side controls for this form. Any change in the form might affect those, so check them!
  */
 function sessionManagementForm() {
 
 	$values = _getGigyaSettingsValues( GIGYA__SETTINGS_SESSION );
 	$form = array();
+
+	$form['session_title'] = [
+		'markup' => '<h4>Regular Session</h4>',
+	];
 
 	$form['session_type'] = array(
 		'type' => 'select',
@@ -29,6 +35,37 @@ function sessionManagementForm() {
 		'type' => 'text',
 		'label' => __( 'Duration' ),
 		'value' => _gigParam( $values, 'session_duration', GIGYA__DEFAULT_COOKIE_EXPIRATION ),
+		'markup' => 'seconds',
+		'size' => 10,
+		'class' => 'hidden',
+	);
+
+	$form['remember_session_title'] = [
+		'markup' => '<h4>Remember Me Session</h4>',
+	];
+
+	$form['remember_session_type'] = array(
+		'type' => 'select',
+		'label' => __( 'Type' ),
+		'options' => array(
+			'sliding' => __( 'Sliding' ),
+			'fixed' => __( 'Fixed' ),
+			'forever' => __( 'Valid forever' ),
+			'browser_close' => __( 'Until browser closes' ),
+		),
+		'value' => _gigParam( $values, 'remember_session_type', 'fixed' ),
+	);
+
+	$form['remember_session_type_numeric'] = array(
+		'type' => 'hidden',
+		'label' => __( 'Type Numeric' ),
+		'value' => _gigParam( $values, 'remember_session_type_numeric', '1' ),
+	);
+
+	$form['remember_session_duration'] = array(
+		'type' => 'text',
+		'label' => __( 'Duration' ),
+		'value' => _gigParam( $values, 'remember_session_duration', GIGYA__DEFAULT_REMEMBER_COOKIE_EXPIRATION ),
 		'markup' => 'seconds',
 		'size' => 10,
 		'class' => 'hidden',

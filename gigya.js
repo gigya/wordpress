@@ -16,12 +16,12 @@ var GigyaWp = GigyaWp || {};
 
 // --------------------------------------------------------------------
 
-	$(document).ready(function () {
+	jQuery(function () {
 		// jQueryUI dialog element.
 		$('body').append('<div id="dialog-modal"></div>');
 
 		GigyaWp.logout = function (response) {
-			jQuery.post(ajaxurl, {action: 'gigya_logout'}, function (response) {
+			jQuery.post(gigyaParams.ajaxurl, {action: 'gigya_logout'}, function (response) {
 				window.location.reload();
 			});
 		};
