@@ -95,7 +95,7 @@ class GigyaScreenSet_Widget extends WP_Widget {
 				) );
 			} else if ( ! array_key_exists( $selected_screen_set_id, $screen_sets_list ) ) {
 				$form_error                  = array();
-				$form_error['error_message'] = $selected_screen_set_id . __( '  Screen-Set found in the widgets below has been removed by your administrator, and might not work on your website. Please check your configuration or contact your administrator.' );
+				$form_error['error_message'] = $selected_screen_set_id . __( 'Screen-Set found in the widgets below has been removed by your administrator, and might not work on your website. Please check your configuration or contact your administrator.' );
 				$form_error['attrs']         = array(
 					'id'    => $selected_screen_set_id . '_error_message',
 					'class' => 'gigya-error-message-notice-div notice notice-error is-dismissible'

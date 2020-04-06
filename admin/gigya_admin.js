@@ -45,36 +45,41 @@
 
 		/* Session settings page */
 
-		var sessionManagementPage = function ($select) {
-			var sessionDurationElement = $('#gigya_session_duration');
-			var sessionTypeNumericElement = $('#session_type_numeric');
-			switch ($select.val()) {
+		var sessionManagementPage = function ($type, $numeric_type, $duration) {
+			switch ($type.val()) {
 				case 'sliding':
-					sessionDurationElement.parent().removeClass('hidden');
-					sessionTypeNumericElement.val('-1');
-					sessionDurationElement.trigger('focus');
+					$duration.parent().removeClass('hidden');
+					$numeric_type.val('-1');
+					$duration.trigger('focus');
 					break;
 				case 'fixed':
-					sessionDurationElement.parent().removeClass('hidden');
-					sessionTypeNumericElement.val('1');
-					sessionDurationElement.trigger('focus');
+					$duration.parent().removeClass('hidden');
+					$numeric_type.val('1');
+					$duration.trigger('focus');
 					break;
 				case 'forever':
-					sessionTypeNumericElement.val('-2');
-					sessionDurationElement.parent().addClass('hidden');
+					$numeric_type.val('-2');
+					$duration.parent().addClass('hidden');
 					break;
 				case 'browser_close':
-					sessionTypeNumericElement.val('0');
-					sessionDurationElement.parent().addClass('hidden');
+					$numeric_type.val('0');
+					$duration.parent().addClass('hidden');
 					break;
 			}
 		};
 		var sessionTypeElement = $('#gigya_session_type');
+		var rememberSessionTypeElement = $('#gigya_remember_session_type');
 		sessionTypeElement.each(function () {
-			sessionManagementPage($(this));
+			sessionManagementPage($(this), $('#session_type_numeric'), $('#gigya_session_duration'));
 		});
 		sessionTypeElement.on('change', function () {
-			sessionManagementPage($(this));
+			sessionManagementPage($(this), $('#session_type_numeric'), $('#gigya_session_duration'));
+		});
+		rememberSessionTypeElement.each(function () {
+			sessionManagementPage($(this), $('#remember_session_type_numeric'), $('#gigya_remember_session_duration'));
+		});
+		rememberSessionTypeElement.on('change', function () {
+			sessionManagementPage($(this), $('#remember_session_type_numeric'), $('#gigya_remember_session_duration'));
 		});
 
 		// --------------------------------------------------------------------
