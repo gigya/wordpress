@@ -1,8 +1,5 @@
 (function ($) {
 	$(function () {
-
-		// --------------------------------------------------------------------
-
 		/**
 		 * Expose the relevant form element for the login mode selected.
 		 * @param $el
@@ -85,7 +82,7 @@
 		// --------------------------------------------------------------------
 
 		/**
-		 *adding and removing UI error message function
+		 * Adding and removing UI error message function
 		 **/
 		var enableError = function (element, text, e) {
 			if (typeof e !== 'undefined') {
@@ -407,13 +404,13 @@
 						}));
 				});
 				current_tr.before(dynamic_line_row);
-				$('.gigya-remove-dynamic-field-line').attr('disabled', false);
+				$('.gigya-remove-dynamic-field-line').prop('disabled', false); ////
 			}
 		});
 		$('.gigya-wp-settings-table ').on('click', '.gigya-remove-dynamic-field-line', function () {
 			/* At least two lines present, plus Add button table row */
 			if ($(this).closest('table').find('tr').length === 3) {
-				$('.gigya-remove-dynamic-field-line').attr('disabled', true);
+				$('.gigya-remove-dynamic-field-line').prop('disabled', true); ////
 				$(this).closest('tr').remove();
 			} else if ($(this).closest('table').find('tr').length > 3) {
 				$(this).closest('tr').remove();
@@ -434,7 +431,13 @@
 		/* Form manipulation functions */
 
 		var gigya_depends_on = $('.gigya-depends-on');
+		/** Works mostly for texts and radio buttons */
 		var handleGigyaFormElementDependency = function (depender_obj, dependee_obj, values) {
+			if (dependee_obj.attr('type') === 'radio') {
+				var name = dependee_obj.attr('name');
+				dependee_obj = $('input[name="' + name + '"]:checked');
+			}
+
 			if (values.indexOf(dependee_obj.val()) !== -1) {
 				depender_obj.show();
 			} else {

@@ -183,7 +183,6 @@ function _gigya_form_render( $form, $name_prefix = '' ) {
 	/* Inject display dependencies */
 	foreach ( $form as $id => $el ) {
 		if ( isset( $el['depends_on'] ) ) {
-
 			$search = str_replace( '][', '-', $el['depends_on'][0] );
 			$search = preg_replace( '/(^\[)|(\]$)/', '', $search );
 			$search = preg_replace( '/[\[\]]/', '-', $search );
@@ -198,6 +197,7 @@ function _gigya_form_render( $form, $name_prefix = '' ) {
 	foreach ( $form as $id => $el ) {
 		$render .= _gigya_element_render( $el, $id, $name_prefix );
 	}
+
 	return $render;
 }
 
@@ -437,6 +437,11 @@ function _gigya_error_log( $new_log ) {
  * @return array
  */
 function _gigya_get_session_expiration( $options ) {
+	if ( ! isset( $options['remember_session_type_numeric'] ) ) {
+		$options['remember_session_type_numeric'] = 1;
+		$options['remember_session_duration'] = GIGYA__DEFAULT_REMEMBER_COOKIE_EXPIRATION;
+	}
+
 	return [
 		'sessionExpiration'         => ( $options['session_type_numeric'] > 0 ) ? $options['session_duration'] : $options['session_type_numeric'],
 		'rememberSessionExpiration' => ( $options['remember_session_type_numeric'] > 0 ) ? $options['remember_session_duration'] : $options['remember_session_type_numeric'],
