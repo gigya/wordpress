@@ -1,4 +1,8 @@
 <?php
+
+use Gigya\CMSKit\GigyaCMS;
+use Gigya\PHP\GSException;
+
 /**
  * Form builder for 'User Management Settings' configuration page.
  */

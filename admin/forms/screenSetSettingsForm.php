@@ -1,4 +1,7 @@
 <?php
+
+use Gigya\CMSKit\GigyaCMS;
+
 function buildCustomScreenSetRow( $screenSetList, $values = array(), $more_options = array(), $more_field_options = array() ) {
 	$more_field_options   = array_values( $more_field_options );
 	$desktop_list         = $screenSetList;
@@ -109,7 +112,6 @@ function buildExistingCustomScreenSetArray( $table_name, $screen_set_list ) {
  */
 function screenSetSettingsForm() {
 	$values = get_option( GIGYA__SETTINGS_SCREENSETS );
-	$roles  = get_editable_roles();
 	$form   = [];
 
 	$form['raas_txt'] = [
@@ -211,15 +213,12 @@ function screenSetSettingsForm() {
 			};
 		}
 
-
 		$table_name                   = 'custom_screen_sets';
 		$form['customScreenSetTable'] = [
 			'type' => 'table',
 			'name' => $table_name,
 			'rows' => buildExistingCustomScreenSetArray( $table_name, $screenset_list ),
 		];
-
-
 	} else {
 		$first_line       = __( 'Error retrieving custom screen-set list from SAP Customer Data Cloud. It will not be possible to embed CDC screen-sets on your website. If the problem persists, please contact CDC support.' );
 		$second_line      = __( 'Check the error log for more details.' );
@@ -227,15 +226,16 @@ function screenSetSettingsForm() {
 			'error_message' => array(),
 			'attrs'         => array( 'class' => 'notice notice-error is-dismissible' )
 		);
-		/* PHP 5.4+ */
+
 		if ( ! empty( get_option( GIGYA__SETTINGS_GLOBAL )['debug'] ) ) {
-
+			if ( $screenset_list !== false ) {
+				error_log( 'The current site has no screen sets defined. Either the screen-sets are at the parent site level, or they have not been initialized. Check Screen-Set settings in the SAP CDC console.' );
+			}
 			$connection_error['error_message'] = array( $first_line, $second_line );
-
 		} else {
 			$connection_error['error_message'] = array( $first_line );
-
 		};
+
 		echo _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $connection_error );
 	}
 

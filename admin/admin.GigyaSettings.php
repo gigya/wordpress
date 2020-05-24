@@ -1,8 +1,15 @@
 <?php
 
+namespace Gigya\WordPress\Admin;
+
 /*
  * Plugin editing permission levels
  */
+
+use Exception;
+use Gigya\CMSKit\GigyaApiHelper;
+use Gigya\CMSKit\GigyaCMS;
+
 define( "GIGYA__PERMISSION_LEVEL", "manage_options" );
 define( "GIGYA__SECRET_PERMISSION_LEVEL", "install_plugins" ); // Network super admin + single site admin
 
@@ -158,7 +165,10 @@ class GigyaSettings {
 		$page   = $_GET['page'];
 		$render = '';
 
-		echo _gigya_render_tpl( 'admin/tpl/adminPage-wrapper.tpl.php', array( 'page' => $page ) );
+		echo _gigya_render_tpl( 'admin/tpl/adminPage-wrapper.tpl.php', array(
+			'sections' => self::getSections(),
+			'page'     => $page,
+		) );
 		settings_errors();
 
 		echo '<form class="gigya-settings" action="options.php" method="post">' . PHP_EOL;
@@ -184,25 +194,53 @@ class GigyaSettings {
 		/* When a Gigya's setting page is submitted */
 		if ( isset( $_POST['gigya_global_settings'] ) ) {
 			$cms = new gigyaCMS();
-			if ( static::_setSecret() ) {
-				$res = $cms->apiValidate( $_POST['gigya_global_settings']['api_key'], $_POST['gigya_global_settings']['user_key'], GigyaApiHelper::decrypt( $_POST['gigya_global_settings']['api_secret'], SECURE_AUTH_KEY ), $_POST['gigya_global_settings']['data_center'] );
-				if ( ! empty( $res ) ) {
-					$gigyaErrCode = $res->getErrorCode();
-					if ( $gigyaErrCode > 0 ) {
-						$gigyaErrMsg = $res->getErrorMessage();
-						$errorsLink  = "<a href='https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST' target='_blank' rel='noopener noreferrer'>Response_Codes_and_Errors</a>";
-						$message     = "SAP CDC API error: {$gigyaErrCode} - {$gigyaErrMsg}.";
-						add_settings_error( 'gigya_global_settings', 'api_validate', __( $message . " For more information please refer to {$errorsLink}", 'error' ) );
-						error_log( 'Error updating SAP CDC settings: ' . $message . ' Call ID: ' . $res->getString( "callId", "N/A" ) );
 
-						/* Prevent updating values */
-						static::_keepOldApiValues();
+			if ( ! isset( $_POST['gigya_global_settings']['auth_mode'] ) or $_POST['gigya_global_settings']['auth_mode'] === 'user_secret' ) {
+				if ( self::_setObfuscatedField( 'api_secret' ) ) {
+					$res = $cms->apiValidateWithUserSecret( $_POST['gigya_global_settings']['api_key'],
+						$_POST['gigya_global_settings']['user_key'],
+						GigyaApiHelper::decrypt( $_POST['gigya_global_settings']['api_secret'], SECURE_AUTH_KEY ),
+						$_POST['gigya_global_settings']['data_center']
+					);
+					if ( ! empty( $res ) ) {
+						$gigyaErrCode = $res->getErrorCode();
+						if ( $gigyaErrCode > 0 ) {
+							$gigyaErrMsg = $res->getErrorMessage();
+
+							self::setError( $gigyaErrCode, $gigyaErrMsg, $res->getString( "callId", "N/A" ) );
+
+							/* Prevent updating values */
+							static::_keepOldApiValues();
+						}
+					} else {
+						add_settings_error( 'gigya_global_settings', 'api_validate', __( 'Error sending request to SAP CDC' ), 'error' );
 					}
 				} else {
-					add_settings_error( 'gigya_global_settings', 'api_validate', __( 'Error sending request to Gigya' ), 'error' );
+					add_settings_error( 'gigya_global_settings', 'api_validate', __( 'Error retrieving existing secret key from the database. This is normal if you have a multisite setup. Please re-enter the secret key.' ), 'error' );
 				}
-			} else {
-				add_settings_error( 'gigya_global_settings', 'api_validate', __( 'Error retrieving existing secret key from the database. This is normal if you have a multisite setup. Please re-enter the secret key.' ), 'error' );
+			} elseif ($_POST['gigya_global_settings']['auth_mode'] === 'user_rsa') {
+				if ( self::_setObfuscatedField( 'rsa_private_key' ) ) {
+					$res = $cms->apiValidateWithPrivateKey( $_POST['gigya_global_settings']['api_key'],
+						$_POST['gigya_global_settings']['user_key'],
+						GigyaApiHelper::decrypt( $_POST['gigya_global_settings']['rsa_private_key'], SECURE_AUTH_KEY ),
+						$_POST['gigya_global_settings']['data_center']
+					);
+					if ( ! empty( $res ) ) {
+						$gigyaErrCode = $res->getErrorCode();
+						if ( $gigyaErrCode > 0 ) {
+							$gigyaErrMsg = $res->getErrorMessage();
+
+							self::setError( $gigyaErrCode, $gigyaErrMsg, $res->getString( "callId", "N/A" ) );
+
+							/* Prevent updating values */
+							static::_keepOldApiValues();
+						}
+					} else {
+						add_settings_error( 'gigya_global_settings', 'api_validate', __( 'Error sending request to SAP CDC' ), 'error' );
+					}
+				} else {
+					add_settings_error( 'gigya_global_settings', 'api_validate', __( 'Error retrieving existing secret key from the database. This is normal if you have a multisite setup. Please re-enter the secret key.' ), 'error' );
+				}
 			}
 		} elseif ( isset( $_POST['gigya_login_settings'] ) ) {
 			/*
@@ -278,20 +316,31 @@ class GigyaSettings {
 	/**
 	 * Set the POSTed secret key.
 	 * If it's not submitted, take it from DB.
+	 *
+	 * @param string $field	The obfuscated field
+	 *
+	 * @return bool
 	 */
-	public static function _setSecret() {
-		if ( empty( $_POST['gigya_global_settings']['api_secret'] ) ) {
+	private static function _setObfuscatedField( $field ) {
+		if ( empty( $_POST['gigya_global_settings'][$field] ) ) {
 			$options = static::_getSiteOptions();
 			if ( $options === false ) {
 				return false;
 			}
 
-			$_POST['gigya_global_settings']['api_secret'] = $options['api_secret'];
+			$_POST['gigya_global_settings'][$field] = $options[$field];
 		} else {
-			$_POST['gigya_global_settings']['api_secret'] = GigyaApiHelper::encrypt( $_POST['gigya_global_settings']['api_secret'], SECURE_AUTH_KEY );
+			$_POST['gigya_global_settings'][$field] = GigyaApiHelper::encrypt( $_POST['gigya_global_settings'][$field], SECURE_AUTH_KEY );
 		}
 
 		return true;
+	}
+
+	private static function setError( $errorCode, $errorMessage, $callId = null ) {
+		$errorLink  = "<a href='https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST' target='_blank' rel='noopener noreferrer'>Response_Codes_and_Errors</a>";
+		$message     = "SAP CDC API error: {$errorCode} - {$errorMessage}.";
+		add_settings_error( 'gigya_global_settings', 'api_validate', __( $message . " For more information please refer to {$errorLink}", 'error' ) );
+		error_log( 'Error updating SAP CDC settings: ' . $message . ' Call ID: ' . $callId );
 	}
 
 	/**

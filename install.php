@@ -122,6 +122,7 @@ class GigyaInstall {
 		// Update old (v4.0) global options if exist.
 		$this->setVar( $this->global_options, 'api_key', $old['api_key'] );
 		$this->setVar( $this->global_options, 'api_secret', $old['secret_key'] );
+		$this->setVar( $this->global_options, 'rsa_private_key', $old['rsa_private_key'] );
 		$this->setVar( $this->global_options, 'data_center', $old['data_center'] );
 		$this->setVar( $this->global_options, 'providers', $old['providers'] );
 		$this->setVar( $this->global_options, 'lang', $old['lang'] );

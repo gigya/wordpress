@@ -1,5 +1,7 @@
 <?php
 
+namespace Gigya\WordPress;
+
 /**
  * @file
  * GigyaRaasSet.php

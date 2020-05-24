@@ -21,20 +21,48 @@ function globalSettingsForm() {
 		'value' => trim(_gigParam( $values, 'user_key', '' ))
 	);
 
- 	if ( current_user_can( GIGYA__SECRET_PERMISSION_LEVEL ) || current_user_can( CUSTOM_GIGYA_EDIT_SECRET ) ) {
-		$form['api_secret'] = array(
-			'type'  => 'password',
-			'label' => __( 'User Secret' ),
-			'value' => '',
-			'desc' => 'Secret key: '. _gigParam( $values, 'api_secret', '', true ),
+	if ( current_user_can( GIGYA__SECRET_PERMISSION_LEVEL ) || current_user_can( CUSTOM_GIGYA_EDIT_SECRET ) ) {
+		$form['auth_mode'] = array(
+			'type'    => 'radio',
+			'options' => array(
+				'user_secret' => __( 'User key + secret key' ),
+				'user_rsa'    => __( 'User key + RSA private key' ),
+			),
+			'value'   => _gigParam( $values, 'auth_mode', 'user_rsa' ),
 		);
-	} else {
+
+		$form['api_secret']      = array(
+			'type'       => 'password',
+			'label'      => __( 'User Secret' ),
+			'value'      => '',
+			'desc'       => 'Secret key: ' . _gigParam( $values, 'api_secret', '', true ),
+			'depends_on' => [ 'auth_mode', 'user_secret' ],
+		);
+		$form['rsa_private_key'] = array(
+			'type'       => 'textarea',
+			'label'      => __( 'RSA Private Key' ),
+			'value'      => '',
+			'desc'       => 'Private key ' . ( ( empty( _gigParam( $values, 'rsa_private_key', '' ) ) ) ? 'not ' : '' ) . 'entered',
+			'class'      => 'rsa-private-key',
+			'depends_on' => [ 'auth_mode', 'user_rsa' ],
+		);
+	} else { /* No permissions to modify secret key / RSA private key -- read-only mode */
 		$form['api_secret'] = array(
-			'type'  => 'customText',
-			'label' => __( 'Secret Key' ),
-			'class' => 'secret_key_placeholder',
-			'size' => 100,
-			'id' => 'secret_key_placeholder'
+			'type'       => 'customText',
+			'label'      => __( 'Secret Key' ),
+			'class'      => 'secret_key_placeholder',
+			'size'       => 100,
+			'id'         => 'secret_key_placeholder',
+			'depends_on' => [ 'auth_mode', 'user_secret' ],
+		);
+
+		$form['rsa_private_key'] = array(
+			'type'       => 'customText',
+			'label'      => __( 'RSA Private Key' ),
+			'class'      => 'rsa_private_key_placeholder',
+			'size'       => 100,
+			'id'         => 'rsa_private_key_placeholder',
+			'depends_on' => [ 'auth_mode', 'user_rsa' ],
 		);
 	}
 
@@ -109,6 +137,7 @@ function globalSettingsForm() {
 
 	$form['advanced'] = array(
 			'type'  => 'textarea',
+			'class' => 'json',
 			'value' => _gigParam( $values, 'advanced', '' ),
 			'label' => __( 'Additional Parameters (advanced)' ),
 			'desc'  => sprintf( __( 'Enter valid %s. See list of available ' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://developers.gigya.com/display/GD/Global+Configuration#GlobalConfiguration-DataMembers" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'

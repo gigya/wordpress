@@ -10,6 +10,10 @@
  */
 //
 // --------------------------------------------------------------------
+use Gigya\CMSKit\GigyaApiHelper;
+use Gigya\PHP\GSObject;
+use Gigya\PHP\GSResponse;
+use Gigya\WordPress\GigyaAction;
 
 /**
  * Global constants.
@@ -239,9 +243,8 @@ function _gigParam( $array, $key, $default = null, $obfuscate = false ) {
 		$return = $default;
 
 	/* API secret key requires decryption */
-	if ($key === 'api_secret')
-	{
-		$return = GigyaApiHelper::decrypt($return, SECURE_AUTH_KEY);
+	if ( $key === 'api_secret' or $key === 'rsa_private_key' ) {
+		$return = GigyaApiHelper::decrypt( $return, SECURE_AUTH_KEY );
 	}
 
 	if ($obfuscate)
@@ -619,4 +622,85 @@ function _getGigyaSettingsValues( $settings_section ) {
 	}
 
 	return $values;
+}
+
+// --------------------------------------------------------------------
+
+/**
+ * Raas admin login
+ * Check if user role is marked by admin as allowed role for wp login access
+ * For unified comparison transform values to _lowercase_
+ * admin roles are auto allowed, subscriber role is auto denied.
+ *
+ * @param array $user_roles
+ *
+ * @return bool $allowed
+ */
+function check_raas_allowed_user_role( $user_roles ) {
+	$allowed = false;
+	$login_options = array_change_key_case( get_option( GIGYA__SETTINGS_LOGIN ) );
+
+	foreach ( $user_roles as $role )
+	{
+
+		$role = strtolower( $role );
+		$role = str_replace( ' ', '_', $role );
+		// first auto allow Administrator or Super Admin roles
+		if ( $role == "administrator" or $role == "super_admin" )
+		{
+			$allowed = true;
+			continue;
+		}
+		elseif ( $role == "subscriber" )
+		{
+			$allowed = false;
+			continue;
+		}
+		else
+		{
+			// if this is not an Admin or super admin
+			$user_role = "raas_allowed_admin_{$role}";
+
+			// find if user role key exists and positive in options array
+			foreach ( $login_options as $key => $value )
+			{
+				$key = str_replace( ' ', '_', $key );
+				if ( $user_role == $key )
+				{
+					if ( $value == "1" or $value == true )
+					{
+						$allowed = true;
+						continue;
+					}
+				}
+			}
+		}
+	}
+	/* If no role match then the user is not allowed login */
+	return $allowed;
+}
+
+/**
+ * Custom error message in case raas user tries to log in via wordpress wp-login screen.
+ * Used by hook wp_login
+ *
+ * @return string|false
+ */
+function raas_wp_login_custom_message() {
+	if ( isset( $_GET['rperm'] ) ) {
+		return "<div id='login_error'><strong>Access denied: </strong> this login requires administrator permission. <br/>Click <a href='/wp-login.php'>here</a> to login to the site.</div>";
+	}
+
+	return false;
+}
+
+/**
+ * Check if the comments plugin is on
+ *
+ * @return bool plugin on/off
+ */
+function gigya_comments_on() {
+	$comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
+	$comments_on = _gigParamDefaultOn( $comments_options, 'on' );
+	return ! empty( $comments_on );
 }

@@ -142,7 +142,7 @@
 						onError: onScreenSetErrorHandler,
 						include: 'id_token' /* For JWT-based authentication */
 					};
-					gigya.accounts.showScreenSet(loginScreenSetParams); ////
+					gigya.accounts.showScreenSet(loginScreenSetParams);
 				}
 
 				/* Reg screens */

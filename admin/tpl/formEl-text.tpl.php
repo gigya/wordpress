@@ -15,9 +15,9 @@
 	<input type="text" size="<?php echo ( isset( $size ) ) ? (string) $size : '60'; ?>"
 		   class="<?php echo ( isset( $subclass ) ) ? $subclass : 'input-xlarge'; ?>"
 		   style="<?php echo ( isset( $style ) ) ? $style : ''; ?>" value="<?php echo $value; ?>"
-		   id="gigya_<?php echo $id; ?>" name="<?php echo $name ?>" <?php if ( ! empty( $required ) ) {
-		echo 'data-required="true"';
-	} ?>/>
+		   id="gigya_<?php echo $id; ?>" name="<?php echo $name ?>"
+		<?php if ( ! empty( $required ) ) {	echo 'data-required="true"'; } ?>
+	/>
 	<?php
 	if ( isset( $markup ) ):
 		echo $markup;

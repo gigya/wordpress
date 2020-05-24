@@ -100,11 +100,19 @@
 			element.next('div.gigya-error-message-notice-div').remove();
 		};
 
-		/* remove notice div*/
+		/* remove notice div */
 		$('div').on('click', '.gigya-hide-notice-error-message', function () {
 			$(this).parents('div.gigya-error-message-notice-div').hide();
 		});
 
+		var showInlineError = function (element, error, e) {
+			$('.msg').remove();
+			element.after('<div class="msg error">' + error + '</div>');
+			element.addClass('error');
+			element.focus();
+			e.preventDefault();
+			e.stopPropagation();
+		}
 
 		// --------------------------------------------------------------------
 
@@ -124,13 +132,24 @@
 						textField.addClass('valid');
 					}
 				} catch (err) {
-					textField.after('<div class="msg error">Error: the text you have entered is not a valid JSON format. JSON Parser error message: ' + err + '</div>');
-					textField.addClass('error');
-					e.preventDefault();
-					e.stopPropagation();
+					showInlineError(textField, 'Error: the text you have entered is not a valid JSON format. JSON Parser error message: ' + err, e);
 				}
 			}
 		};
+
+		var rsaPrivateKeyValidate = function (textField, e) {
+			var privateKey = textField.val().trim();
+
+			if (privateKey.length > 0) {
+				var rsaTester = new RegExp("^-----BEGIN RSA PRIVATE KEY-----$\r?\n?([A-Za-z0-9+\/=]{64}$\r?\n?){24}([A-Za-z0-9\/]{54}==)$\r?\n?-----END RSA PRIVATE KEY-----$", 'gm');
+
+				$('.msg').remove();
+
+				if (!rsaTester.test(privateKey)) {
+					showInlineError(textField, 'Error: the entered RSA private key is invalid', e);
+				}
+			}
+		}
 
 		var emptyNumericValidate = function (textField, e) {
 			if ($(textField).val().length === 0 || isNaN($(textField).val())) {
@@ -235,7 +254,7 @@
 			overrideToggle($(this), 'gigya-widget-override', true);
 		});
 
-// --------------------------------------------------------------------
+		// --------------------------------------------------------------------
 
 		/**
 		 * Run the clean DB after upgrade script.
@@ -271,7 +290,7 @@
 			}
 		});
 
-// --------------------------------------------------------------------
+		// --------------------------------------------------------------------
 
 		/**
 		 * Run the clean DB after upgrade script.
@@ -369,7 +388,6 @@
 			}
 		});
 
-
 		// --------------------------------------------------------------------
 
 		/*
@@ -404,13 +422,13 @@
 						}));
 				});
 				current_tr.before(dynamic_line_row);
-				$('.gigya-remove-dynamic-field-line').prop('disabled', false); ////
+				$('.gigya-remove-dynamic-field-line').removeAttr('disabled');
 			}
 		});
 		$('.gigya-wp-settings-table ').on('click', '.gigya-remove-dynamic-field-line', function () {
 			/* At least two lines present, plus Add button table row */
 			if ($(this).closest('table').find('tr').length === 3) {
-				$('.gigya-remove-dynamic-field-line').prop('disabled', true); ////
+				$('.gigya-remove-dynamic-field-line').attr('disabled', 'disabled');
 				$(this).closest('tr').remove();
 			} else if ($(this).closest('table').find('tr').length > 3) {
 				$(this).closest('tr').remove();
@@ -424,7 +442,6 @@
 				removeError($(this));
 			});
 		});
-
 
 		// --------------------------------------------------------------------
 
@@ -467,19 +484,19 @@
 		// Validate form before submit
 		$('form.gigya-settings').on('submit', function (e) {
 			var sessionDurationObj = $('#gigya_session_duration');
-			if (sessionDurationObj.length > 0)
+			if (sessionDurationObj.length > 0) {
 				emptyNumericValidate(sessionDurationObj, e);
-			$('form.gigya-settings textarea').each(function () {
-				jsonValidate($(this), e);
-			})
-		});
+			}
 
-		// Validate JSON before submit on admin forms.
-		var submitEl = $('.textarea.json').parents('form').find('input[type="submit"]');
-		submitEl.on('click', function (e) {
-			$('.textarea.json textarea').each(function () {
+			// Validate JSON format
+			$('form.gigya-settings .json textarea').each(function () {
 				jsonValidate($(this), e);
 			})
+
+			// Validate RSA private key format
+			$('form.gigya-settings .rsa-private-key textarea').each(function () {
+				rsaPrivateKeyValidate($(this), e);
+			});
 		});
 
 		// Validate required fields

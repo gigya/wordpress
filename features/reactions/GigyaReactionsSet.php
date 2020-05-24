@@ -1,5 +1,10 @@
 <?php
 
+namespace Gigya\WordPress;
+
+use Gigya\CMSKit\GigyaCMS;
+use GigyaReactions_Widget;
+
 /**
  * @file
  * GigyaReactionsSet.php
@@ -30,7 +35,7 @@ class GigyaReactionsSet {
 		/* Set image path */
 		$image_by = _gigParam( $this->reactions_options, 'image', '0' );
 		if ( ! empty( $image_by ) ) {
-			$img = _gigParam( $this->reactions_options, 'imageURL', get_bloginfo( 'wpurl' ) . '/' . WPINC . '/images/blank.gif' );
+			$img = _gigParam( $this->reactions_options, 'imageURL', get_bloginfo( 'wpurl' ) . DIRECTORY_SEPARATOR . WPINC . '/images/blank.gif' );
 		} else {
 			$img = $this->getImage( $post );
 		}
