@@ -1,16 +1,24 @@
 {
-    "name": "gigya/wordpress",
-    "description": "Integrate your WordPress site with SAP Customer Data Cloud",
-    "type": "project",
-    "license": "Apache 2.0",
-    "authors": [
-        {
-            "name": "Yan Nasonov",
-            "email": "ynhockey@gmail.com"
-        }
-    ],
-    "minimum-stability": "stable",
-    "require": {
-        "gigya/php-sdk": "^3.0"
+  "name": "gigya/wordpress",
+  "description": "Integrate your WordPress site with SAP Customer Data Cloud",
+  "type": "project",
+  "license": "Apache 2.0",
+  "authors": [
+    {
+      "name": "Yan Nasonov",
+      "email": "ynhockey@gmail.com"
     }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "gigya/php-sdk": "^3.0",
+    "ext-json": "*",
+    "ext-openssl": "*"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/SAP/gigya-php-sdk.git"
+    }
+  ]
 }
