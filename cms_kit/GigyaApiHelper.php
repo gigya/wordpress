@@ -28,7 +28,7 @@ class GigyaApiHelper
 	 *
 	 * @param string $apiKey Gigya API key
 	 * @param string $userKey Gigya app/user key
-	 * @param string $authKey Gigya app/user secret
+	 * @param string $authKey Gigya app/user secret or RSA private key
 	 * @param string $dataCenter Gigya data center
 	 * @param string $authMode Authentication method: user_secret or user_rsa
 	 */

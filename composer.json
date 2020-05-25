@@ -7,6 +7,10 @@
     {
       "name": "Yan Nasonov",
       "email": "ynhockey@gmail.com"
+    },
+    {
+      "name": "Shahar Silberstein",
+      "email": "shahar.zeev.silberstein@sap.com"
     }
   ],
   "minimum-stability": "stable",

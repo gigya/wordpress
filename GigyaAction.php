@@ -10,7 +10,6 @@ use Gigya\PHP\GSResponse;
 use Gigya\WordPress\Admin\GigyaSettings;
 use GigyaHookException;
 use GigyaInstall;
-use gigyaPluginsShortcodes;
 use WP_User;
 
 /**
