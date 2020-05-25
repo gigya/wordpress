@@ -358,7 +358,9 @@ class GigyaSettings {
 			$_POST['gigya_global_settings']['api_secret']              = $options['api_secret'];
 			$_POST['gigya_global_settings']['rsa_private_key']         = $options['rsa_private_key'];
 			$_POST['gigya_global_settings']['data_center']             = $options['data_center'];
-			$_POST['gigya_global_settings']['sub_site_settings_saved'] = $options['sub_site_settings_saved'];
+			if (isset($options['sub_site_settings_saved'])) {
+				$_POST['gigya_global_settings']['sub_site_settings_saved'] = $options['sub_site_settings_saved'];
+			}
 		} elseif ( ! empty( $settings ) ) { /* $settings is an array--retrieve specific options */
 			if ( $option ) {
 				$options = self::_getSiteOptions( $option );
