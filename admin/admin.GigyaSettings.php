@@ -354,7 +354,9 @@ class GigyaSettings {
 			$options                                                   = self::_getSiteOptions();
 			$_POST['gigya_global_settings']['api_key']                 = $options['api_key'];
 			$_POST['gigya_global_settings']['user_key']                = $options['user_key'];
+			$_POST['gigya_global_settings']['auth_mode']               = $options['auth_mode'];
 			$_POST['gigya_global_settings']['api_secret']              = $options['api_secret'];
+			$_POST['gigya_global_settings']['rsa_private_key']         = $options['rsa_private_key'];
 			$_POST['gigya_global_settings']['data_center']             = $options['data_center'];
 			$_POST['gigya_global_settings']['sub_site_settings_saved'] = $options['sub_site_settings_saved'];
 		} elseif ( ! empty( $settings ) ) { /* $settings is an array--retrieve specific options */
