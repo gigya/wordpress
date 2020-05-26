@@ -141,7 +141,7 @@
 			var privateKey = textField.val().trim();
 
 			if (privateKey.length > 0) {
-				var rsaTester = new RegExp("^-----BEGIN RSA PRIVATE KEY-----$\r?\n?([A-Za-z0-9+\/=]{64}$\r?\n?){24}([A-Za-z0-9\/]{54}==)$\r?\n?-----END RSA PRIVATE KEY-----$", 'gm');
+				var rsaTester = new RegExp("-{3,}BEGIN RSA PRIVATE KEY-{3,}\\r?\\n?([\\s\\S]*?)\\r?\\n?-{3,}END RSA PRIVATE KEY-{3,}", 'gm');
 
 				$('.msg').remove();
 
