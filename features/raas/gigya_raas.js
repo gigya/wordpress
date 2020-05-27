@@ -51,7 +51,8 @@
 				var screenSetParams = {
 					screenSet: gigyaRaasParams.raasWebScreen,
 					mobileScreenSet: gigyaRaasParams.raasMobileScreen,
-					startScreen: gigyaRaasParams.raasLoginScreen
+					startScreen: gigyaRaasParams.raasLoginScreen,
+					include: 'id_token'
 				};
 
 				if (path.indexOf('wp-login.php') !== -1) {
