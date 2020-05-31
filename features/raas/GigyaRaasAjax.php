@@ -49,7 +49,7 @@ class GigyaRaasAjax {
 		if ( ! empty( $data['id_token'] ) and $this->global_options['auth_mode'] === 'user_rsa' ) {
 			$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, 'user_rsa' );
 			try {
-				$is_sig_valid = $gigya_api_helper->validateJwtAuth( $data['UID'], $data['id_token'] );
+				$is_sig_valid = $gigya_api_helper->validateJwtAuth( $data['id_token'] );
 			} catch ( Exception $e ) {
 				wp_send_json_error( $raas_validate_error );
 			}

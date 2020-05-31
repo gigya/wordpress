@@ -134,13 +134,12 @@ class GigyaApiHelper
 	}
 
 	/**
-	 * @param $uid
 	 * @param $idToken
 	 *
 	 * @return bool|stdClass
 	 * @throws Exception
 	 */
-	public function validateJwtAuth( $uid, $idToken ) {
+	public function validateJwtAuth( $idToken ) {
 		return JWTUtils::validateSignature( $idToken, $this->apiKey, $this->dataCenter );
 	}
 
