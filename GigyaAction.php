@@ -151,6 +151,9 @@ class GigyaAction
 			( isset( $this->login_options['mode'] ) ? $this->login_options['mode'] : '' ),
 			$this->getSessionOptions()
 		);
+		/*getting new logout url after session sync*/
+		$params['logoutUrl'] = wp_logout_url();
+
 
 		/* Add advanced parameters if exist */
 		if ( ! empty( $this->global_options['advanced'] ) )
@@ -417,7 +420,14 @@ class GigyaAction
 					$wp_user = wp_get_current_user();
 					wp_set_auth_cookie( $wp_user->ID, $is_remember_me );
 
-					do_action( 'set_logged_in_cookie', null, $expiration );
+					/*check the case of logout and avoiding deleting the session*/
+					$action=0;
+					if(!empty($_POST))
+						$action = $_POST['action'];
+
+					if  ($action!=='gigya_logout')
+						do_action( 'set_logged_in_cookie', null, $expiration );
+
 				}
 			}
 		}

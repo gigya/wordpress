@@ -437,11 +437,16 @@ function _gigya_error_log( $new_log ) {
  * @return array
  */
 function _gigya_get_session_expiration( $options ) {
+
+	if ( ! isset( $options['remember_session_type_numeric'] ) ) {
+		$options['remember_session_type_numeric'] = 1;
+		$options['remember_session_duration'] = GIGYA__DEFAULT_REMEMBER_COOKIE_EXPIRATION;
+	}
 	return [
 		'sessionExpiration'         => ( $options['session_type_numeric'] > 0 ) ? $options['session_duration'] : $options['session_type_numeric'],
 		'rememberSessionExpiration' => ( $options['remember_session_type_numeric'] > 0 ) ? $options['remember_session_duration'] : $options['remember_session_type_numeric'],
 	];
-}
+};
 
 function _gigya_get_session_remember() {
 	return ( ! empty( $_COOKIE[ 'gigya_remember_' . GIGYA__API_KEY ] ) );
