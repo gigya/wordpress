@@ -446,7 +446,7 @@ function _gigya_get_session_expiration( $options ) {
 		'sessionExpiration'         => ( $options['session_type_numeric'] > 0 ) ? $options['session_duration'] : $options['session_type_numeric'],
 		'rememberSessionExpiration' => ( $options['remember_session_type_numeric'] > 0 ) ? $options['remember_session_duration'] : $options['remember_session_type_numeric'],
 	];
-};
+}
 
 function _gigya_get_session_remember() {
 	return ( ! empty( $_COOKIE[ 'gigya_remember_' . GIGYA__API_KEY ] ) );
