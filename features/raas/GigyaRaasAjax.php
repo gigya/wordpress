@@ -3,6 +3,7 @@
 namespace Gigya\WordPress;
 
 use Exception;
+use Firebase\JWT\JWT;
 use Gigya\CMSKit\GigyaApiHelper;
 use Gigya\CMSKit\GigyaCMS;
 use Gigya\CMSKit\GSApiException;
@@ -282,8 +283,11 @@ class GigyaRaasAjax {
 			if ( ( empty( $gltexp_cookie_timestamp ) and $session_type === GIGYA__SESSION_SLIDING ) or ( time() < $gltexp_cookie_timestamp and $session_type < 0 ) ) {
 				if ( ! empty( $token ) ) {
 					$session_sig = $this->calcDynamicSessionSig(
-						$token, $expiration, GIGYA__USER_KEY,
-						GigyaApiHelper::decrypt( GIGYA__API_SECRET, SECURE_AUTH_KEY )
+						$token,
+						$expiration,
+						GIGYA__AUTH_MODE,
+						GIGYA__USER_KEY,
+						GigyaApiHelper::decrypt( GIGYA__AUTH_KEY, SECURE_AUTH_KEY )
 					);
 
 					setrawcookie( 'gltexp_' . GIGYA__API_KEY, rawurlencode( $session_sig ), $cookie_expiration, '/', $host );
@@ -294,10 +298,20 @@ class GigyaRaasAjax {
 		}
 	}
 
-	private function calcDynamicSessionSig( $token, $expiration, $user_key, $secret ) {
-		$unsigned_exp_string = utf8_encode( $token . "_" . $expiration . "_" . $user_key );
-		$rawHmac             = hash_hmac( "sha1", utf8_encode( $unsigned_exp_string ), base64_decode( $secret ), true );
-		$sig                 = base64_encode( $rawHmac );
+	private function calcDynamicSessionSig( $token, $expiration, $auth_mode, $user_key, $auth_key ) {
+		if ( $auth_mode and $auth_mode == 'user_rsa' ) {
+			$payload = [
+				'sub' => $token,
+				'iat' => time(),
+				'exp' => $expiration
+			];
+
+			$sig = JWT::encode( $payload, $auth_key, 'RS256', $user_key );
+		} else {
+			$unsigned_exp_string = utf8_encode( $token . "_" . $expiration . "_" . $user_key );
+			$rawHmac             = hash_hmac( "sha1", utf8_encode( $unsigned_exp_string ), base64_decode( $auth_key ), true );
+			$sig                 = base64_encode( $rawHmac );
+		}
 
 		return $expiration . '_' . $user_key . '_' . $sig;
 	}
