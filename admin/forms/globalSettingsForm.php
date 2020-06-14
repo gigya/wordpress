@@ -78,14 +78,19 @@ function globalSettingsForm() {
 	if (!array_key_exists($dataCenter, $options)) {
 	     $dataCenter = "other";
 	}
-	$val = $dataCenter == "other" ? current(explode('.', $values['data_center'])) : "";
 	$form['data_center'] = array(
 			'type'    => 'select',
 			'options' => $options,
 			'label'   => __( 'Data Center' ),
 			'class'   => 'data_center',
 			'value'   => $dataCenter,
-			'markup' => "<span class='other_dataCenter'><input type='text' size='15' class='input-xlarge' id='other_ds' name='other_ds' value='" . $val . "' /> <p>Please specify the SAP CDC data center in which your site is defined. For example: 'eu1.gigya.com'. To verify your site location contact your SAP Customer Data Cloud implementation manager.</p></span>"
+	);
+
+	$form['other_ds'] = array(
+		'type'    => 'text',
+		'class'   => 'other-data-center',
+		'value' => _gigParam( $values, 'other_ds', 'us1.gigya.com' ),
+		'depends_on' => ['data_center', 'other'],
 	);
 
 	$form['enabledProviders'] = array(

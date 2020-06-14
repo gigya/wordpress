@@ -346,33 +346,6 @@
 		// --------------------------------------------------------------------
 
 		/*
-		* General settings page - data centers select
-		* show/hide 'other' data center text field
-		* update data center value according to input selction
-		*/
-
-		// Hide the other data center field by default if other is not selected
-		if ($("#gigya_data_center").find("option:selected").val() !== 'other') {
-			$('.other_dataCenter').hide();
-		}
-
-		// Show other data center input field on 'other' selection
-		$('.data_center select').on('change', function () {
-			if ($("#gigya_data_center").find("option:selected").text() === 'Other') {
-				$('.other_dataCenter').show();
-			} else {
-				$('.other_dataCenter').hide();
-			}
-		});
-
-		// on filling other data center set the selected value to the input
-		$('#other_ds').on('focusout', function () {
-			$("#gigya_data_center").find("option:selected").val($('#other_ds').val());
-		});
-
-		// --------------------------------------------------------------------
-
-		/*
 		* User management page : Toggle raas admin login roles check all
 		*/
 		// on page load check if checkall is checked, if yes check all roles.

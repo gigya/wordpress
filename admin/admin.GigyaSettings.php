@@ -195,52 +195,37 @@ class GigyaSettings {
 		if ( isset( $_POST['gigya_global_settings'] ) ) {
 			$cms = new gigyaCMS();
 
-			if ( ! isset( $_POST['gigya_global_settings']['auth_mode'] ) or $_POST['gigya_global_settings']['auth_mode'] === 'user_secret' ) {
-				if ( self::_setObfuscatedField( 'api_secret' ) ) {
-					$res = $cms->apiValidateWithUserSecret( $_POST['gigya_global_settings']['api_key'],
-						$_POST['gigya_global_settings']['user_key'],
-						GigyaApiHelper::decrypt( $_POST['gigya_global_settings']['api_secret'], SECURE_AUTH_KEY ),
-						$_POST['gigya_global_settings']['data_center']
-					);
-					if ( ! empty( $res ) ) {
-						$gigyaErrCode = $res->getErrorCode();
-						if ( $gigyaErrCode > 0 ) {
-							$gigyaErrMsg = $res->getErrorMessage();
+			$auth_field = 'api_secret';
+			if ($_POST['gigya_global_settings']['auth_mode'] === 'user_rsa') {
+				$auth_field = 'rsa_private_key';
+			}
 
-							self::setError( $gigyaErrCode, $gigyaErrMsg, $res->getString( "callId", "N/A" ) );
+			$data_center = ($_POST['gigya_global_settings']['data_center'] == 'other') ? $_POST['gigya_global_settings']['other_ds'] : $_POST['gigya_global_settings']['data_center'];
 
-							/* Prevent updating values */
-							static::_keepOldApiValues();
-						}
-					} else {
-						add_settings_error( 'gigya_global_settings', 'api_validate', __( 'Error sending request to SAP CDC' ), 'error' );
+			if ( self::_setObfuscatedField( $auth_field ) ) {
+				$res = $cms->apiValidate(
+					( empty( $_POST['gigya_global_settings']['auth_mode'] === 'user_rsa' ) ) ? 'user_secret' : $_POST['gigya_global_settings']['auth_mode'],
+					$_POST['gigya_global_settings']['api_key'],
+					$_POST['gigya_global_settings']['user_key'],
+					GigyaApiHelper::decrypt( $_POST['gigya_global_settings'][ $auth_field ], SECURE_AUTH_KEY ),
+					$data_center
+				);
+
+				if ( ! empty( $res ) ) {
+					$gigyaErrCode = $res->getErrorCode();
+					if ( $gigyaErrCode > 0 ) {
+						$gigyaErrMsg = $res->getErrorMessage();
+
+						self::setError( $gigyaErrCode, $gigyaErrMsg, ( ! empty( $res->getData() ) ) ? $res->getString( "callId", "N/A" ) : null );
+
+						/* Prevent updating values */
+						static::_keepOldApiValues();
 					}
 				} else {
-					add_settings_error( 'gigya_global_settings', 'api_validate', __( 'Error retrieving existing secret key from the database. This is normal if you have a multisite setup. Please re-enter the secret key.' ), 'error' );
+					add_settings_error( 'gigya_global_settings', 'api_validate', __( 'Error sending request to SAP CDC' ), 'error' );
 				}
-			} elseif ($_POST['gigya_global_settings']['auth_mode'] === 'user_rsa') {
-				if ( self::_setObfuscatedField( 'rsa_private_key' ) ) {
-					$res = $cms->apiValidateWithPrivateKey( $_POST['gigya_global_settings']['api_key'],
-						$_POST['gigya_global_settings']['user_key'],
-						GigyaApiHelper::decrypt( $_POST['gigya_global_settings']['rsa_private_key'], SECURE_AUTH_KEY ),
-						$_POST['gigya_global_settings']['data_center']
-					);
-					if ( ! empty( $res ) ) {
-						$gigyaErrCode = $res->getErrorCode();
-						if ( $gigyaErrCode > 0 ) {
-							$gigyaErrMsg = $res->getErrorMessage();
-
-							self::setError( $gigyaErrCode, $gigyaErrMsg, $res->getString( "callId", "N/A" ) );
-
-							/* Prevent updating values */
-							static::_keepOldApiValues();
-						}
-					} else {
-						add_settings_error( 'gigya_global_settings', 'api_validate', __( 'Error sending request to SAP CDC' ), 'error' );
-					}
-				} else {
-					add_settings_error( 'gigya_global_settings', 'api_validate', __( 'Error retrieving existing secret key from the database. This is normal if you have a multisite setup. Please re-enter the secret key.' ), 'error' );
-				}
+			} else {
+				add_settings_error( 'gigya_global_settings', 'api_validate', __( 'Error retrieving existing secret key or private key from the database. This is normal if you have a multisite setup. Please re-enter the key.' ), 'error' );
 			}
 		} elseif ( isset( $_POST['gigya_login_settings'] ) ) {
 			/*

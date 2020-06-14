@@ -140,6 +140,24 @@ class GigyaCMS
 	}
 
 	/**
+	 * @param $auth_mode
+	 * @param $api_key
+	 * @param $user_key
+	 * @param $api_secret
+	 * @param $api_domain
+	 *
+	 * @return GSResponse
+	 *
+	 * @throws GSKeyNotFoundException
+	 * @throws Exception
+	 */
+	public function apiValidate( $auth_mode, $api_key, $user_key, $api_secret, $api_domain ) {
+		return ($auth_mode === 'user_rsa')
+			? $this->apiValidateWithPrivateKey( $api_key, $user_key, $api_secret, $api_domain )
+			: $this->apiValidateWithUserSecret( $api_key, $user_key, $api_secret, $api_domain );
+	}
+
+	/**
 	 * Check that the SAP CDC credentials are valid with a call to SAP CDC, using the user key / secret key authentication method
 	 *
 	 * @param string $api_key

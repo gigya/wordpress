@@ -73,10 +73,6 @@ input[type=checkbox] {
     color: #222;
 }
 
-.other_dataCenter input {
-    vertical-align: middle;
-}
-
 label[for=gigya_raasOverrideLinks] {
     font-size: 109%;
     font-weight: bold;
