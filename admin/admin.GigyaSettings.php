@@ -200,15 +200,13 @@ class GigyaSettings {
 				$auth_field = 'rsa_private_key';
 			}
 
-			$data_center = ($_POST['gigya_global_settings']['data_center'] == 'other') ? $_POST['gigya_global_settings']['other_ds'] : $_POST['gigya_global_settings']['data_center'];
-
 			if ( self::_setObfuscatedField( $auth_field ) ) {
 				$res = $cms->apiValidate(
 					( empty( $_POST['gigya_global_settings']['auth_mode'] === 'user_rsa' ) ) ? 'user_secret' : $_POST['gigya_global_settings']['auth_mode'],
 					$_POST['gigya_global_settings']['api_key'],
 					$_POST['gigya_global_settings']['user_key'],
 					GigyaApiHelper::decrypt( $_POST['gigya_global_settings'][ $auth_field ], SECURE_AUTH_KEY ),
-					$data_center
+					_gigya_data_center( $_POST['gigya_global_settings'] )
 				);
 
 				if ( ! empty( $res ) ) {
@@ -336,14 +334,15 @@ class GigyaSettings {
 	 */
 	public static function _keepOldApiValues( $option = '', $settings = [] ) {
 		if ( ! $option ) {
-			$options                                                   = self::_getSiteOptions();
-			$_POST['gigya_global_settings']['api_key']                 = $options['api_key'];
-			$_POST['gigya_global_settings']['user_key']                = $options['user_key'];
-			$_POST['gigya_global_settings']['auth_mode']               = $options['auth_mode'];
-			$_POST['gigya_global_settings']['api_secret']              = $options['api_secret'];
-			$_POST['gigya_global_settings']['rsa_private_key']         = $options['rsa_private_key'];
-			$_POST['gigya_global_settings']['data_center']             = $options['data_center'];
-			if (isset($options['sub_site_settings_saved'])) {
+			$options                                           = self::_getSiteOptions();
+			$_POST['gigya_global_settings']['api_key']         = $options['api_key'];
+			$_POST['gigya_global_settings']['user_key']        = $options['user_key'];
+			$_POST['gigya_global_settings']['auth_mode']       = $options['auth_mode'];
+			$_POST['gigya_global_settings']['api_secret']      = $options['api_secret'];
+			$_POST['gigya_global_settings']['rsa_private_key'] = $options['rsa_private_key'];
+			$_POST['gigya_global_settings']['data_center']     = $options['data_center'];
+			$_POST['gigya_global_settings']['other_ds']        = ( ! empty( $_POST['gigya_global_settings']['other_ds'] ) ) ? $options['other_ds'] : '';
+			if ( isset( $options['sub_site_settings_saved'] ) ) {
 				$_POST['gigya_global_settings']['sub_site_settings_saved'] = $options['sub_site_settings_saved'];
 			}
 		} elseif ( ! empty( $settings ) ) { /* $settings is an array--retrieve specific options */

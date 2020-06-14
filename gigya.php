@@ -260,6 +260,41 @@ function _gigParam( $array, $key, $default = null, $obfuscate = false ) {
 }
 
 /**
+ * Retrieves the Gigya data center from the relevant settings
+ *
+ * @param array $settings
+ *
+ * @return string
+ */
+function _gigya_data_center( $settings ) {
+	$default_data_center = 'us1.gigya.com';
+	if ( $settings['data_center'] == 'other' ) {
+		if ( ! empty( $settings['other_ds'] ) ) {
+			return $settings['other_ds'];
+		} else {
+			return $default_data_center;
+		}
+	} else {
+		return $settings['data_center'];
+	}
+}
+
+/**
+ * Retrieves the Gigya authentication key from the relevant settings
+ *
+ * @param $settings
+ *
+ * @return string
+ */
+function _gigya_auth_key( $settings ) {
+	if ( isset($settings['auth_mode']) and $settings['auth_mode'] === 'user_rsa' ) {
+		return $settings['rsa_private_key'];
+	} else {
+		return $settings['api_secret'];
+	}
+}
+
+/**
  * Helper
  * Returns a JSON string based on the Gigya parameters given.
  *

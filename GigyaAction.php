@@ -38,10 +38,10 @@ class GigyaAction
 				define( 'GIGYA__USER_KEY', $this->global_options['user_key'] );
 			}
 			define( 'GIGYA__AUTH_MODE', $this->global_options['auth_mode'] );
-			define( 'GIGYA__AUTH_KEY', ( $this->global_options['auth_mode'] === 'user_rsa' ) ? $this->global_options['rsa_private_key'] : $this->global_options['api_secret'] );
-			define( 'GIGYA__API_SECRET', $this->global_options['api_secret'] ); /* Deprecated */
-			define( 'GIGYA__PRIVATE_KEY', $this->global_options['rsa_private_key'] ); /* Deprecated */
-			define( 'GIGYA__API_DOMAIN', $this->global_options['data_center'] );
+			define( 'GIGYA__AUTH_KEY', _gigya_auth_key( $this->global_options ) );
+			define( 'GIGYA__API_SECRET', $this->global_options['api_secret'] );
+			define( 'GIGYA__PRIVATE_KEY', $this->global_options['rsa_private_key'] );
+			define( 'GIGYA__API_DOMAIN', _gigya_data_center( $this->global_options ) );
 			define( 'GIGYA__API_DEBUG', $this->global_options['debug'] );
 		}
 		else
