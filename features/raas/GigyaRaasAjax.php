@@ -303,16 +303,17 @@ class GigyaRaasAjax {
 			$payload = [
 				'sub' => $token,
 				'iat' => time(),
-				'exp' => $expiration
+				'exp' => intval( $expiration )
 			];
 
-			$sig = JWT::encode( $payload, $auth_key, 'RS256', $user_key );
+			return JWT::encode( $payload, $auth_key, 'RS256', $user_key );
 		} else {
 			$unsigned_exp_string = utf8_encode( $token . "_" . $expiration . "_" . $user_key );
 			$rawHmac             = hash_hmac( "sha1", utf8_encode( $unsigned_exp_string ), base64_decode( $auth_key ), true );
 			$sig                 = base64_encode( $rawHmac );
+
+			return $expiration . '_' . $user_key . '_' . $sig;
 		}
 
-		return $expiration . '_' . $user_key . '_' . $sig;
 	}
 }
