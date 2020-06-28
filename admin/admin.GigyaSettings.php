@@ -198,6 +198,9 @@ class GigyaSettings {
 			$auth_field = 'api_secret';
 			if ($_POST['gigya_global_settings']['auth_mode'] === 'user_rsa') {
 				$auth_field = 'rsa_private_key';
+				$_POST['gigya_gigya_settings']['rsa_private_key'] = '';
+			} else {
+				$_POST['gigya_gigya_settings']['api_secret'] = '';
 			}
 
 			if ( self::_setObfuscatedField( $auth_field ) ) {

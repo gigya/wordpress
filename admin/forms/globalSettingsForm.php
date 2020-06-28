@@ -38,13 +38,17 @@ function globalSettingsForm() {
 			'desc'       => 'Secret key: ' . _gigParam( $values, 'api_secret', '', true ),
 			'depends_on' => [ 'auth_mode', 'user_secret' ],
 		);
+		$is_private_key_entered = ( ! empty( _gigParam( $values, 'rsa_private_key', '' ) ) );
 		$form['rsa_private_key'] = array(
-			'type'       => 'textarea',
-			'label'      => __( 'RSA Private Key' ),
-			'value'      => '',
-			'desc'       => 'Private key ' . ( ( empty( _gigParam( $values, 'rsa_private_key', '' ) ) ) ? 'not ' : '' ) . 'entered',
-			'class'      => 'rsa-private-key',
-			'depends_on' => [ 'auth_mode', 'user_rsa' ],
+			'type'        => 'textarea',
+			'label'       => __( 'RSA Private Key' ),
+			'value'       => '',
+			'desc'        => 'Private key ' . ( $is_private_key_entered ? '' : 'not ' ) . 'entered',
+			'class'       => 'rsa-private-key',
+			'depends_on'  => [ 'auth_mode', 'user_rsa' ],
+			'placeholder' => ( $is_private_key_entered )
+				? 'SAP Customer Data Cloud RSA private key has been entered'
+				:'Enter your RSA private key, as provided by SAP Customer Data Cloud',
 		);
 	} else { /* No permissions to modify secret key / RSA private key -- read-only mode */
 		$form['api_secret'] = array(
