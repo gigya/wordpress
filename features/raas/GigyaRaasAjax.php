@@ -303,7 +303,8 @@ class GigyaRaasAjax {
 			$payload = [
 				'sub' => $token,
 				'iat' => time(),
-				'exp' => intval( $expiration )
+				'exp' => intval( $expiration ),
+				'aud' => 'gltexp',
 			];
 
 			return JWT::encode( $payload, $auth_key, 'RS256', $user_key );
