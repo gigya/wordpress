@@ -37,10 +37,14 @@ class GigyaAction
 			if ( isset( $this->global_options['user_key'] ) ) { /* Backwards compatibility */
 				define( 'GIGYA__USER_KEY', $this->global_options['user_key'] );
 			}
-			define( 'GIGYA__AUTH_MODE', $this->global_options['auth_mode'] );
+			if ( isset( $this->global_options['auth_mode'] ) ) { /* Backwards compatibility */
+				define( 'GIGYA__AUTH_MODE', $this->global_options['auth_mode'] );
+			}
 			define( 'GIGYA__AUTH_KEY', _gigya_auth_key( $this->global_options ) );
 			define( 'GIGYA__API_SECRET', $this->global_options['api_secret'] );
-			define( 'GIGYA__PRIVATE_KEY', $this->global_options['rsa_private_key'] );
+			if ( isset( $this->global_options['rsa_private_key'] ) ) { /* Backwards compatibility */
+				define( 'GIGYA__PRIVATE_KEY', $this->global_options['rsa_private_key'] );
+			}
 			define( 'GIGYA__API_DOMAIN', _gigya_data_center( $this->global_options ) );
 			define( 'GIGYA__API_DEBUG', $this->global_options['debug'] );
 		}
