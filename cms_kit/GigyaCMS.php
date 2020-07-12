@@ -454,7 +454,7 @@ class GigyaCMS
 	 *
 	 * @return GSResponse
 	 *
-	 * @throws Exception
+	 * @throws GSKeyNotFoundException
 	 * @throws GSApiException
 	 * @throws GSException
 	 */
