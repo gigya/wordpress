@@ -22,6 +22,7 @@ class GigyaCMS
 	protected $rsa_private_key;
 	protected $auth_mode;
 
+
 	/**
 	 * Constructs a GigyaApi object.
 	 */
@@ -31,6 +32,7 @@ class GigyaCMS
 		$this->api_secret      = GigyaApiHelper::decrypt( GIGYA__API_SECRET, SECURE_AUTH_KEY );
 		$this->rsa_private_key = (!empty(GIGYA__PRIVATE_KEY)) ? GigyaApiHelper::decrypt( GIGYA__PRIVATE_KEY, SECURE_AUTH_KEY ) : '';
 		$this->auth_mode       = GIGYA__AUTH_MODE;
+
 	}
 
 	/**
@@ -57,6 +59,7 @@ class GigyaCMS
 
 			$user_info = in_array( 'getUserInfo', $params );
 		}
+		$params['environment'] = '{"cms_name":"WordPress","cms_version":"WordPress_' . get_bloginfo( 'version' ) . '","gigya_version":"Gigya_module_' . GIGYA__VERSION . '","php_version":"' . phpversion() . '"}'; /* WordPress only */
 
 		// To be define on CMS code (or not).
 		$api_domain = GIGYA__API_DOMAIN;
@@ -502,7 +505,7 @@ class GigyaCMS
 
 		return $gigya_users;
 	}
-	
+
 	/**
 	 * @param $email
 	 *
