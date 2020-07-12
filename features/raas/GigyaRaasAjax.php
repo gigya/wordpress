@@ -285,7 +285,7 @@ class GigyaRaasAjax {
 					$session_sig = $this->calcDynamicSessionSig(
 						$token,
 						$expiration,
-						GIGYA__AUTH_MODE,
+						GIGYA__AUTH_MODE ?? 'user_secret',
 						GIGYA__USER_KEY,
 						GigyaApiHelper::decrypt( GIGYA__AUTH_KEY, SECURE_AUTH_KEY )
 					);
