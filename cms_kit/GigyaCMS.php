@@ -29,7 +29,7 @@ class GigyaCMS
 		$this->api_key         = GIGYA__API_KEY;
 		$this->user_key        = GIGYA__USER_KEY ?: ''; /* For backwards compatibility--in the past the user key had not been required */
 		$this->api_secret      = GigyaApiHelper::decrypt( GIGYA__API_SECRET, SECURE_AUTH_KEY );
-		$this->rsa_private_key = GigyaApiHelper::decrypt( GIGYA__PRIVATE_KEY, SECURE_AUTH_KEY );
+		$this->rsa_private_key = (!empty(GIGYA__PRIVATE_KEY)) ? GigyaApiHelper::decrypt( GIGYA__PRIVATE_KEY, SECURE_AUTH_KEY ) : '';
 		$this->auth_mode       = GIGYA__AUTH_MODE;
 	}
 
