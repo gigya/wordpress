@@ -1,5 +1,9 @@
 <?php
 
+namespace Gigya\WordPress;
+
+use Gigya\CMSKit\GigyaCMS;
+
 /**
  * @file
  * GigyaCommentsSet.php

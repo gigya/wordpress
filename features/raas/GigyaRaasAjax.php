@@ -1,5 +1,15 @@
 <?php
 
+namespace Gigya\WordPress;
+
+use Exception;
+use Firebase\JWT\JWT;
+use Gigya\CMSKit\GigyaApiHelper;
+use Gigya\CMSKit\GigyaCMS;
+use Gigya\CMSKit\GSApiException;
+use Gigya\PHP\GSException;
+use Gigya\PHP\SigUtils;
+
 /**
  * @file
  * GigyaRaasAjax.php
@@ -30,30 +40,44 @@ class GigyaRaasAjax {
 
 		/* Trap for login users */
 		if ( is_user_logged_in() and ( ! is_multisite() ) ) {
-			$prm = array( 'msg' => __( 'You are already logged in' ) );
-			wp_send_json_error( $prm );
+			$getAccountInfoError = array( 'msg' => __( 'You are already logged in' ) );
+			wp_send_json_error( $getAccountInfoError );
 		}
 
 		/* Check Gigya's signature validation */
-		$gigya_api_helper    = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__API_SECRET, GIGYA__API_DOMAIN );
 		$raas_validate_error = array( 'msg' => __( 'RaaS: There is a problem validating your user' ) );
-		$is_sig_validate     = false;
-		try {
-			$is_sig_validate = $gigya_api_helper->validateUid( $data['UID'], $data['UIDSignature'], $data['signatureTimestamp'], 'raas' );
-		} catch ( Exception $e ) {
-			wp_send_json_error( $raas_validate_error );
+		$is_sig_valid     = false;
+		if ( ! empty( $data['id_token'] ) and $this->global_options['auth_mode'] === 'user_rsa' ) {
+			$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, 'user_rsa' );
+			try {
+				$is_sig_valid = $gigya_api_helper->validateJwtAuth( $data['id_token'] );
+			} catch ( Exception $e ) {
+				wp_send_json_error( $raas_validate_error );
+			}
+		} else {
+			$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN );
+			try {
+				$is_sig_valid = $gigya_api_helper->validateUid( $data['UID'], $data['UIDSignature'], $data['signatureTimestamp'], 'raas' );
+			} catch ( Exception $e ) {
+				wp_send_json_error( $raas_validate_error );
+			}
 		}
 
 		/* Gigya user validate trap */
-		if ( !( $is_sig_validate ) )
+		if ( !( $is_sig_valid ) ) {
 			wp_send_json_error( $raas_validate_error );
+		}
 
 		/* Initialize Gigya account */
 		$gigyaCMS            = new GigyaCMS();
-		$this->gigya_account = $gigyaCMS->getAccount( $data['UID'] );
+		$getAccountInfoError = array( 'msg' => __( 'Oops! Something went wrong during your login process. Please try to login again.' ) );
+		try {
+			$this->gigya_account = $gigyaCMS->getAccount( $data['UID'] );
+		} catch (Exception $e) {
+			wp_send_json_error( $getAccountInfoError );
+		}
 		if ( is_wp_error( $this->gigya_account ) ) {
-			$prm = array( 'msg' => __( 'Oops! Something went wrong during your login process. Please try to login again.' ) );
-			wp_send_json_error( $prm );
+			wp_send_json_error( $getAccountInfoError );
 		} else {
 			$this->gigya_account = $this->gigya_account->getData()->serialize();
 		}
@@ -80,16 +104,16 @@ class GigyaRaasAjax {
 			if ( ! $is_primary_user ) {
 				$msg = __( 'We found your email in our system.<br />Please use your existing account to login to the site, or create a new account using a different email address.' );
 
-				$prm = array( 'msg' => $msg );
-				wp_send_json_error( $prm );
+				$getAccountInfoError = array( 'msg' => $msg );
+				wp_send_json_error( $getAccountInfoError );
 			}
 
 			/* Log this user in */
 			try {
 				$this->login( $wp_user );
 			} catch ( Exception $e ) {
-				$prm = array( 'msg' => __( 'Unable to log in.' ) );
-				wp_send_json_error( $prm );
+				$getAccountInfoError = array( 'msg' => __( 'Unable to log in.' ) );
+				wp_send_json_error( $getAccountInfoError );
 			}
 		}
 		else
@@ -200,10 +224,11 @@ class GigyaRaasAjax {
 				GIGYA__API_SECRET,
 				$data['UIDSignature']
 			);
-			if ($is_sig_validate) {
-				$gigyaCMS = new GigyaCMS();
-				$gigya_account = $gigyaCMS->getAccount($data['UID']);
-				if (!is_wp_error($gigya_account)) {
+
+			if ( $is_sig_validate ) {
+				$gigyaCMS      = new GigyaCMS();
+				$gigya_account = $gigyaCMS->getAccount( $data['UID'] );
+				if ( ! is_wp_error( $gigya_account ) ) {
 					_gigya_add_to_wp_user_meta( $gigya_account, get_current_user_id() );
 				}
 			}
@@ -258,8 +283,11 @@ class GigyaRaasAjax {
 			if ( ( empty( $gltexp_cookie_timestamp ) and $session_type === GIGYA__SESSION_SLIDING ) or ( time() < $gltexp_cookie_timestamp and $session_type < 0 ) ) {
 				if ( ! empty( $token ) ) {
 					$session_sig = $this->calcDynamicSessionSig(
-						$token, $expiration, GIGYA__USER_KEY,
-						GigyaApiHelper::decrypt( GIGYA__API_SECRET, SECURE_AUTH_KEY )
+						$token,
+						$expiration,
+						GIGYA__AUTH_MODE ?? 'user_secret',
+						GIGYA__USER_KEY,
+						GigyaApiHelper::decrypt( GIGYA__AUTH_KEY, SECURE_AUTH_KEY )
 					);
 
 					setrawcookie( 'gltexp_' . GIGYA__API_KEY, rawurlencode( $session_sig ), $cookie_expiration, '/', $host );
@@ -270,11 +298,23 @@ class GigyaRaasAjax {
 		}
 	}
 
-	private function calcDynamicSessionSig( $token, $expiration, $user_key, $secret ) {
-		$unsigned_exp_string = utf8_encode( $token . "_" . $expiration . "_" . $user_key );
-		$rawHmac             = hash_hmac( "sha1", utf8_encode( $unsigned_exp_string ), base64_decode( $secret ), true );
-		$sig                 = base64_encode( $rawHmac );
+	private function calcDynamicSessionSig( $token, $expiration, $auth_mode, $user_key, $auth_key ) {
+		if ( $auth_mode and $auth_mode == 'user_rsa' ) {
+			$payload = [
+				'sub' => $token,
+				'iat' => time(),
+				'exp' => intval( $expiration ),
+				'aud' => 'gltexp',
+			];
 
-		return $expiration . '_' . $user_key . '_' . $sig;
+			return JWT::encode( $payload, $auth_key, 'RS256', $user_key );
+		} else {
+			$unsigned_exp_string = utf8_encode( $token . "_" . $expiration . "_" . $user_key );
+			$rawHmac             = hash_hmac( "sha1", utf8_encode( $unsigned_exp_string ), base64_decode( $auth_key ), true );
+			$sig                 = base64_encode( $rawHmac );
+
+			return $expiration . '_' . $user_key . '_' . $sig;
+		}
+
 	}
 }

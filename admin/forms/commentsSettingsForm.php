@@ -46,6 +46,7 @@ function commentsSettingsForm() {
 
 	$form['advanced'] = array(
 			'type'  => 'textarea',
+			'class' => 'json',
 			'label' => __( "Additional Parameters (advanced)" ),
 			'value' => _gigParam( $values, 'advanced', '' ),
 			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://developers.gigya.com/display/GD/comments.showCommentsUI+JS" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'

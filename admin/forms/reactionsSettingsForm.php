@@ -85,6 +85,7 @@ function reactionsSettingsForm() {
 
 	$form['buttons'] = array(
 			'type'  => 'textarea',
+			'class' => 'json',
 			'label' => __( 'Reaction Buttons' ),
 			'value' => _gigParam( $values, 'buttons', _gigya_get_json( 'admin/forms/json/default_reaction' ) ),
 			'desc'  => sprintf( __( 'Please enter an array of %s, representing the buttons to display in the Reactions bar.' ), '<a href="https://developers.gigya.com/display/GD/socialize.showReactionsBarUI+JS" target="_blank" rel="noopener noreferrer">' . _( 'Reaction objects' ) . '</a>' )
@@ -92,6 +93,7 @@ function reactionsSettingsForm() {
 
 	$form['advanced'] = array(
 			'type'  => 'textarea',
+			'class' => 'json',
 			'label' => __( "Additional Parameters (advanced)" ),
 			'value' => _gigParam( $values, 'advanced', '' ),
 			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://developers.gigya.com/display/GD/socialize.showReactionsBarUI+JS" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'

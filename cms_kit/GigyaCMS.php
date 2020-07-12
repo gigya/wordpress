@@ -1,21 +1,36 @@
 <?php
 
+namespace Gigya\CMSKit;
+
+use Exception;
+use Gigya\PHP\GSException;
+use Gigya\PHP\GSKeyNotFoundException;
+use Gigya\PHP\GSRequest;
+use Gigya\PHP\GSResponse;
+use Gigya\PHP\SigUtils;
+use stdClass;
+use WP_Error;
+
 /**
  * Class GigyaCMS
  */
 class GigyaCMS
 {
 	protected $api_key;
-	protected $api_secret;
 	protected $user_key;
+	protected $api_secret;
+	protected $rsa_private_key;
+	protected $auth_mode;
 
 	/**
 	 * Constructs a GigyaApi object.
 	 */
 	public function __construct() {
-		$this->api_key    = GIGYA__API_KEY;
-		$this->user_key    = GIGYA__USER_KEY ?: ''; /* For backwards compatibility--in the past the user key had not been required */
-		$this->api_secret = GigyaApiHelper::decrypt( GIGYA__API_SECRET, SECURE_AUTH_KEY );
+		$this->api_key         = GIGYA__API_KEY;
+		$this->user_key        = GIGYA__USER_KEY ?: ''; /* For backwards compatibility--in the past the user key had not been required */
+		$this->api_secret      = GigyaApiHelper::decrypt( GIGYA__API_SECRET, SECURE_AUTH_KEY );
+		$this->rsa_private_key = GigyaApiHelper::decrypt( GIGYA__PRIVATE_KEY, SECURE_AUTH_KEY );
+		$this->auth_mode       = GIGYA__AUTH_MODE;
 	}
 
 	/**
@@ -89,7 +104,7 @@ class GigyaCMS
 	 * @return array|false
 	 */
 	public function getScreenSetsIdList() {
-		$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__API_SECRET, GIGYA__API_DOMAIN );
+		$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
 
 		try {
 			$res = $gigya_api_helper->sendGetScreenSetsCall();
@@ -125,24 +140,64 @@ class GigyaCMS
 	}
 
 	/**
-	 * Check validation of the data center.
+	 * @param $auth_mode
+	 * @param $api_key
+	 * @param $user_key
+	 * @param $api_secret
+	 * @param $api_domain
 	 *
-	 * @param    string $api_key
-	 * @param    string $user_key
-	 * @param    string $api_secret
-	 * @param    string $api_domain
+	 * @return GSResponse
 	 *
-	 * @return    GSResponse    $res
+	 * @throws GSKeyNotFoundException
+	 * @throws Exception
+	 */
+	public function apiValidate( $auth_mode, $api_key, $user_key, $api_secret, $api_domain ) {
+		return ($auth_mode === 'user_rsa')
+			? $this->apiValidateWithPrivateKey( $api_key, $user_key, $api_secret, $api_domain )
+			: $this->apiValidateWithUserSecret( $api_key, $user_key, $api_secret, $api_domain );
+	}
+
+	/**
+	 * Check that the SAP CDC credentials are valid with a call to SAP CDC, using the user key / secret key authentication method
+	 *
+	 * @param string $api_key
+	 * @param string $user_key
+	 * @param string $api_secret
+	 * @param string $api_domain
+	 *
+	 * @return GSResponse
 	 *
 	 * @throws Exception
 	 */
-	public function apiValidate( $api_key, $user_key, $api_secret, $api_domain ) {
+	public function apiValidateWithUserSecret( $api_key, $user_key, $api_secret, $api_domain ) {
 		$request = new GSRequest( $api_key, $api_secret, 'socialize.getProvidersConfig', null, null, $user_key );
 
 		$request->setAPIDomain( $api_domain );
-		ini_set('arg_separator.output', '&');
+		ini_set( 'arg_separator.output', '&' );
 		$res = $request->send();
 		ini_restore ( 'arg_separator.output' );
+
+		return $res;
+	}
+
+	/**
+	 * @param string $api_key
+	 * @param string $user_key
+	 * @param string $rsa_private_key
+	 * @param string $api_domain
+	 *
+	 * @return GSResponse
+	 *
+	 * @throws GSKeyNotFoundException
+	 */
+	public function apiValidateWithPrivateKey( $api_key, $user_key, $rsa_private_key, $api_domain ) {
+		$request = new GSRequest( $api_key, null, 'socialize.getProvidersConfig', null, null, $user_key, $rsa_private_key );
+
+		$request->setAPIDomain( $api_domain );
+		ini_set( 'arg_separator.output', '&' );
+		$res = $request->send();
+		ini_restore ( 'arg_separator.output' );
+
 		return $res;
 	}
 
@@ -294,7 +349,7 @@ class GigyaCMS
 	 *
 	 * @throws Exception
 	 */
-	function notifyLogin( $uid, $is_new_user = false, $user_info = null ) {
+	public function notifyLogin( $uid, $is_new_user = false, $user_info = null ) {
 		$params['siteUID'] = $uid;
 
 		// Set a new user flag if true.
@@ -314,12 +369,12 @@ class GigyaCMS
 			return $response->get_error_message();
 		}
 
-		//Set  Gigya cookie.
+		/* Set SAP CDC cookie */
 		try {
 			setcookie( $response["cookieName"], $response["cookieValue"], 0, $response["cookiePath"], $response["cookieDomain"] );
 		} catch ( Exception $e ) {
 			error_log( sprintf( 'error string SAP CDC cookie' ) );
-			error_log( sprintf( 'error message : @error', array( '@error' => $e->getMessage() ) ) );
+			error_log( sprintf( 'error message : %s', $e->getMessage() ) );
 		}
 
 		return true;
@@ -399,7 +454,7 @@ class GigyaCMS
 	 *
 	 * @return GSResponse
 	 *
-	 * @throws Exception
+	 * @throws GSKeyNotFoundException
 	 * @throws GSApiException
 	 * @throws GSException
 	 */
@@ -412,7 +467,7 @@ class GigyaCMS
 
 		// Because we can only trust the UID parameter from the origin object,
 		// We'll ask Gigya's API for account-info straight from the server.
-		$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__API_SECRET, GIGYA__API_DOMAIN );
+		$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
 
 		return $gigya_api_helper->sendApiCall( 'accounts.getAccountInfo', $req_params );
 	}
@@ -430,7 +485,7 @@ class GigyaCMS
 	public function searchGigyaUsers( $params ) {
 		$gigya_users = [];
 
-		$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__API_SECRET, GIGYA__API_DOMAIN );
+		$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
 		$gigya_data       = $gigya_api_helper->sendApiCall( 'accounts.search', $params )->getData()->serialize();
 
 		foreach ( $gigya_data['results'] as $user_data ) {
