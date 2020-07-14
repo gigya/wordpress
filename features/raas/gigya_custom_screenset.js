@@ -38,7 +38,8 @@
 
 					var screenSetParams = {
 						screenSet: gigyaScreenSetParams.screenset_id,
-						mobileScreenSet: gigyaScreenSetParams.mobile_screenset_id
+						mobileScreenSet: gigyaScreenSetParams.mobile_screenset_id,
+						include: 'id_token'
 					};
 
 					if (gigyaScreenSetParams.is_sync_data) {

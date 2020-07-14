@@ -1,5 +1,10 @@
 <?php
 
+namespace Gigya\WordPress;
+
+use Gigya\CMSKit\GigyaCMS;
+use GigyaLogin_Widget;
+
 /**
  * @file
  * GigyaLoginSet.php
@@ -109,8 +114,6 @@ class GigyaLoginSet {
 
 		// Get the widget.
 		$widget = new GigyaLogin_Widget();
-		$widget_content = $widget->getContent( $args, $instance );
-
-		return $widget_content;
+		return $widget->getContent( $args, $instance );
 	}
 }

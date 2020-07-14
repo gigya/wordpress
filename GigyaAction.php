@@ -1,4 +1,17 @@
 <?php
+
+namespace Gigya\WordPress;
+
+use Exception;
+use Gigya\CMSKit\GigyaCMS;
+use Gigya\CMSKit\GSApiException;
+use Gigya\PHP\GSException;
+use Gigya\PHP\GSResponse;
+use Gigya\WordPress\Admin\GigyaSettings;
+use GigyaHookException;
+use GigyaInstall;
+use WP_User;
+
 /**
  * The main plugin class.
  */
@@ -21,17 +34,22 @@ class GigyaAction
 		if ( ! empty( $this->global_options ) )
 		{
 			define( 'GIGYA__API_KEY', $this->global_options['api_key'] );
-			if ( isset( $this->global_options['user_key'] ) ) /* Backwards compatibility */
-				define( 'GIGYA__USER_KEY', $this->global_options['user_key'] );
+			define( 'GIGYA__USER_KEY', $this->global_options['user_key'] ?? '' );
+			define( 'GIGYA__AUTH_MODE', $this->global_options['auth_mode'] ?? 'user_secret' );
+			define( 'GIGYA__AUTH_KEY', _gigya_auth_key( $this->global_options ) );
 			define( 'GIGYA__API_SECRET', $this->global_options['api_secret'] );
-			define( 'GIGYA__API_DOMAIN', $this->global_options['data_center'] );
+			define( 'GIGYA__PRIVATE_KEY', $this->global_options['rsa_private_key'] ?? '' );
+			define( 'GIGYA__API_DOMAIN', _gigya_data_center( $this->global_options ) );
 			define( 'GIGYA__API_DEBUG', $this->global_options['debug'] );
 		}
 		else
 		{
 			define( 'GIGYA__API_KEY', '' );
 			define( 'GIGYA__USER_KEY', '' );
+			define( 'GIGYA__AUTH_MODE', '' );
+			define( 'GIGYA__AUTH_KEY', '' );
 			define( 'GIGYA__API_SECRET', '' );
+			define( 'GIGYA__PRIVATE_KEY', '' );
 			define( 'GIGYA__API_DOMAIN', '' );
 			define( 'GIGYA__API_DEBUG', '' );
 		}
@@ -64,11 +82,10 @@ class GigyaAction
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
 		add_filter( 'the_content', array( $this, 'theContent' ) );
 		add_filter( 'get_avatar', array( $this, 'getGigyaAvatar' ), 10, 5 );
-		add_filter( 'login_message', array( $this, 'raas_wp_login_custom_message' ) );
+		add_filter( 'login_message', 'raas_wp_login_custom_message' );
 		add_filter( 'cron_schedules', array( $this, 'getOfflineSyncSchedules' ) );
 
-		$comments_on = $this->gigya_comments_on();
-		if ( $comments_on ) {
+		if ( gigya_comments_on() ) {
 			add_filter( 'comments_template', [ $this, 'commentsTemplate' ] );
 		}
 
@@ -105,26 +122,27 @@ class GigyaAction
 	/**
 	 * Initialize hook.
 	 */
-	public function init() {
+	public function init()
+	{
+		if (!file_exists(GIGYA__PLUGIN_DIR . 'vendor/autoload.php')) {
+			return;
+		}
+
 		/* Require SDK libraries */
-		require_once GIGYA__PLUGIN_DIR . 'sdk/GigyaJsonObject.php';
-		require_once GIGYA__PLUGIN_DIR . 'sdk/GigyaUserFactory.php';
-		require_once GIGYA__PLUGIN_DIR . 'sdk/GigyaProfile.php';
-		require_once GIGYA__PLUGIN_DIR . 'sdk/GigyaUser.php';
-		require_once GIGYA__PLUGIN_DIR . 'sdk/GSFactory.php';
-		require_once GIGYA__PLUGIN_DIR . 'sdk/GSException.php';
-		require_once GIGYA__PLUGIN_DIR . 'sdk/GSKeyNotFoundException.php';
-		require_once GIGYA__PLUGIN_DIR . 'sdk/GSApiException.php';
-		require_once GIGYA__PLUGIN_DIR . 'sdk/GSRequest.php';
-		require_once GIGYA__PLUGIN_DIR . 'sdk/GSResponse.php';
-		require_once GIGYA__PLUGIN_DIR . 'sdk/GSObject.php';
-		require_once GIGYA__PLUGIN_DIR . 'sdk/GSArray.php';
-		require_once GIGYA__PLUGIN_DIR . 'sdk/GigyaApiRequest.php';
-		require_once GIGYA__PLUGIN_DIR . 'sdk/SigUtils.php';
+		require_once GIGYA__PLUGIN_DIR . 'vendor/autoload.php';
+		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaJsonObject.php';
+		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaUserFactory.php';
+		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaProfile.php';
+		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaUser.php';
+		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaApiRequest.php';
+		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaAuthRequest.php';
+		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GSApiException.php';
+		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GSFactory.php';
+
 		GSResponse::init();
 
-		require_once GIGYA__PLUGIN_DIR . 'sdk/GigyaApiHelper.php';
-		require_once GIGYA__PLUGIN_DIR . 'sdk/gigyaCMS.php';
+		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaApiHelper.php';
+		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaCMS.php';
 
 		/* Load jQuery and jQueryUI from WP */
 		wp_enqueue_script( 'jquery' );
@@ -133,7 +151,7 @@ class GigyaAction
 		wp_enqueue_script( 'gigya_js', GIGYA__PLUGIN_URL . 'gigya.js' );
 		wp_enqueue_style( 'gigya_css', GIGYA__PLUGIN_URL . 'gigya.css' );
 
-		/* Parameters to be sent to the DOM, and later to Gigya (showScreenSet) */
+		/* Parameters to be sent to the DOM, and later to Gigya */
 		$session_expirations = _gigya_get_session_expiration( $this->session_options );
 		$params = array(
 			'ajaxurl'                     => admin_url( 'admin-ajax.php' ),
@@ -185,8 +203,12 @@ class GigyaAction
 				}
 
 				/* RaaS Login – load requirements */
-				if ( $this->login_options['mode'] == 'raas' and defined( 'GIGYA__USER_KEY' ) and ( ! empty( GIGYA__USER_KEY ) ) )
-				{
+				if (
+					$this->login_options['mode'] == 'raas'
+					and defined( 'GIGYA__USER_KEY' )
+						and ( ! empty( GIGYA__USER_KEY ) )
+							and ( ! empty( GIGYA__AUTH_KEY ) )
+				) {
 					require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaOfflineSync.php';
 
 					/* Loads RaaS links class */
@@ -224,6 +246,7 @@ class GigyaAction
 	 */
 	public function adminActionUpdate() {
 		require_once GIGYA__PLUGIN_DIR . 'admin/admin.GigyaSettings.php';
+
 		GigyaSettings::onSave();
 	}
 
@@ -353,7 +376,7 @@ class GigyaAction
 	 *
 	 * @return int
 	 */
-	function getHookSessionExpiration( $expiration = null, $user_id = null, $remember = null, $forced_expiration = null ) {
+	public function getHookSessionExpiration( $expiration = null, $user_id = null, $remember = null, $forced_expiration = null ) {
 		if ( $forced_expiration ) {
 			return $forced_expiration;
 		}
@@ -387,7 +410,7 @@ class GigyaAction
 	 *
 	 * @return    integer
 	 */
-	function gigyaSyncLoginSession( $mode, $session_opts, $forced_expiration = null ) {
+	public function gigyaSyncLoginSession( $mode, $session_opts, $forced_expiration = null ) {
 		$session_type   = GIGYA__DEFAULT_COOKIE_EXPIRATION;
 		$is_remember_me = ( _gigya_get_session_remember() );
 
@@ -486,7 +509,7 @@ class GigyaAction
 		if ( isset( $_POST['log'] ) and isset( $_POST['pwd'] ) )
 		{
 			/* Trap for non-admin user who tries to login through WP form on RaaS mode. */
-			$_is_allowed_user = $this->check_raas_allowed_user_role( $account->roles );
+			$_is_allowed_user = check_raas_allowed_user_role( $account->roles );
 			if ( $this->login_options['mode'] == 'raas' and ( ! $_is_allowed_user ) )
 			{
 				wp_logout();
@@ -533,77 +556,6 @@ class GigyaAction
 				}
 			}
 		}
-	}
-
-	/**
-	 * Raas admin login
-	 * Check if user role is marked by admin as allowed role for wp login access
-	 * For unified comparison transform values to _lowercase_
-	 * admin roles are auto allowed, subscriber role is auto denied.
-	 *
-	 * @param array $user_roles
-	 *
-	 * @return bool $allowed
-	 */
-	public function check_raas_allowed_user_role( $user_roles ) {
-		$allowed = false;
-		$login_options = array_change_key_case( get_option( GIGYA__SETTINGS_LOGIN ) );
-
-		foreach ( $user_roles as $role )
-		{
-
-			$role = strtolower( $role );
-			$role = str_replace( ' ', '_', $role );
-			// first auto allow Administrator or Super Admin roles
-			if ( $role == "administrator" or $role == "super_admin" )
-			{
-				$allowed = true;
-				continue;
-			}
-			elseif ( $role == "subscriber" )
-			{
-				$allowed = false;
-				continue;
-			}
-			else
-			{
-				// if this is not an Admin or super admin
-				$user_role = "raas_allowed_admin_{$role}";
-
-				// find if user role key exists and positive in options array
-				foreach ( $login_options as $key => $value )
-				{
-					$key = str_replace( ' ', '_', $key );
-					if ( $user_role == $key )
-					{
-						if ( $value == "1" or $value == true )
-						{
-							$allowed = true;
-							continue;
-						}
-					}
-				}
-			}
-		}
-		/* If no role match then the user is not allowed login */
-		return $allowed;
-	}
-
-	/**
-	 * Custom error message in case raas user tries to log in via wordpress wp-login screen.
-	 * Used by hook wp_login
-	 *
-	 * @return string|false
-	 */
-	public function raas_wp_login_custom_message() {
-		if ( isset( $_GET['rperm'] ) )
-		{
-			$message = "<div id='login_error'><strong>Access denied: </strong> this login requires administrator permission. <br/>Click <a href='/wp-login.php'>here</a> to login to the site.</div>";
-
-			return $message;
-		}
-
-		return false;
 	}
 
 	/**
@@ -774,17 +726,6 @@ class GigyaAction
 		}
 
 		return $content;
-	}
-
-	/**
-	 * Check if the comments plugin is on
-	 *
-	 * @return bool plugin on/off
-	 */
-	public function gigya_comments_on() {
-		$comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
-		$comments_on = _gigParamDefaultOn( $comments_options, 'on' );
-		return ! empty( $comments_on ) ? true : false;
 	}
 
 	/**

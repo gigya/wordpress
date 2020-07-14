@@ -1,11 +1,9 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: Yaniv Aran-Shamir
- * Date: 2/17/16
- * Time: 2:29 PM
- */
+namespace Gigya\CMSKit;
+
+use Exception;
+
 class GSApiException extends Exception {
 	private $longMessage;
 	private $callId;
@@ -44,8 +42,4 @@ class GSApiException extends Exception {
 	public function getCallId() {
 		return $this->callId;
 	}
-
-
-
-
 }

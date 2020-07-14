@@ -15,6 +15,7 @@
 			$gigya_full_map            = _gigParam( $values, 'map_raas_full_map', '' );
 			$form['map_raas_full_map'] = [
 				'type'  => 'textarea',
+				'class' => 'json',
 				'label' => __( 'Full field mapping' ),
 				'value' => ( $gigya_full_map ) ? $gigya_full_map :
 					_gigParamsBuildLegacyJson( [ 'first_name', 'last_name', 'nickname', 'profile_image', 'description' ] ),

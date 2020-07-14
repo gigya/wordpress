@@ -1,5 +1,10 @@
 <?php
 
+namespace Gigya\WordPress;
+
+use Exception;
+use Gigya\CMSKit\GigyaApiHelper;
+
 /**
  * @file
  * GigyaLoginAjax.php
@@ -33,7 +38,7 @@ class GigyaLoginAjax {
 
 		/* Check Gigya's signature validation */
 		$login_validate_error = 'Login: There was a problem validating your user';
-		$gigya_api_helper     = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__API_SECRET, GIGYA__API_DOMAIN );
+		$gigya_api_helper     = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN );
 		$is_sig_validate      = false;
 
 		try

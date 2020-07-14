@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Yaniv Aran-Shamir
- * Date: 4/6/16
- * Time: 5:07 PM
- */
+namespace Gigya\CMSKit;
 
 class GigyaProfile extends GigyaJsonObject
 {

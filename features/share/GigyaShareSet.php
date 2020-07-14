@@ -1,5 +1,10 @@
 <?php
 
+namespace Gigya\WordPress;
+
+use Gigya\CMSKit\GigyaCMS;
+use GigyaShare_Widget;
+
 /**
  * @file
  * GigyaShareSet.php
