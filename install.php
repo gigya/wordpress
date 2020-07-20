@@ -13,6 +13,7 @@ class GigyaInstall {
 	private $comments_options;
 	private $reactions_options;
 	private $gm_options;
+	private $parent_data;
 	private $log;
 
 	private $reactions_options_nice;
@@ -29,6 +30,7 @@ class GigyaInstall {
 		$this->comments_options  = get_option( GIGYA__SETTINGS_COMMENTS );
 		$this->reactions_options = get_option( GIGYA__SETTINGS_REACTIONS );
 		$this->gm_options        = get_option( GIGYA__SETTINGS_GM );
+		$this->parent_apikey     = get_option(GIGYA__PARENT_API_KEY);
 		$this->log               = get_option( 'gigya_log' );
 	}
 
@@ -68,12 +70,17 @@ class GigyaInstall {
 		}
 
 		if ( empty ( $this->gm_options ) ) {
-			add_option( GIGYA__SETTINGS_GM, array(), '', 'no' );
+			add_option( GIGYA__SETTINGS_GM,  array(), '', 'no' );
 		}
 
 		if ( empty ( $this->log ) ) {
 			add_option( 'gigya_log', array(), '', 'no' );
 		}
+
+		if ( empty ( $this->parent_options ) ) {
+			add_option( GIGYA_PARENT_DATA, array(), '', 'yes' );
+		}
+
 
 		$this->upgrade();
 	}

@@ -56,6 +56,11 @@ define( 'GIGYA__OFFLINE_SYNC_MAX_USERS', 1000 );
 define( 'GIGYA__OFFLINE_SYNC_UPDATE_DELAY', 10 );
 
 /**
+ * Parent data
+ */
+define('GIGYA_PARENT_DATA', 'gigya_parent_data');
+
+/**
  * Register activation hook
  */
 register_activation_hook( __FILE__, 'gigyaActivationHook' );
