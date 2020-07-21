@@ -58,7 +58,7 @@ define( 'GIGYA__OFFLINE_SYNC_UPDATE_DELAY', 10 );
 /**
  * Parent data
  */
-define('GIGYA_PARENT_DATA', 'gigya_parent_data');
+define('GIGYA__PARENT_SITE_DATA', 'gigya_parent_site_data');
 
 /**
  * Register activation hook

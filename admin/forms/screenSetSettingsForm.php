@@ -194,22 +194,24 @@ function screenSetSettingsForm() {
 
 	$gigya_cms      = new GigyaCMS();
 	$screenset_list = $gigya_cms->getScreenSetsIdList();
-	if(!$screenset_list)
-	{
-		$gigya_parent_data= get_option(GIGYA_PARENT_DATA);
-		if(!isset($gigya_parent_data['api_key']))
-		{
-			$parent_api_key = $gigya_cms->getParentSiteApiKey();
-			$gigya_parent_data['api_key']= $parent_api_key;
-			update_option( GIGYA_PARENT_DATA, $gigya_parent_data );
-		}
-		$parent_api_key= get_option(GIGYA_PARENT_DATA)['api_key'];
 
-		if(!empty($parent_api_key))
-			$screenset_list= $gigya_cms->getScreenSetsIdList($parent_api_key);
+	if (  $screenset_list === false) {
+		$gigya_parent_data = get_option( GIGYA__PARENT_SITE_DATA );
+
+		if ( ! isset( $gigya_parent_data['api_key'] ) ) {
+			$parent_api_key               = $gigya_cms->getParentSiteApiKey();
+			$gigya_parent_data['api_key'] = $parent_api_key;
+			update_option( GIGYA__PARENT_SITE_DATA, $gigya_parent_data );
+		}
+
+		$parent_api_key = $gigya_parent_data['api_key'];
+
+		if (  $parent_api_key !==false) {
+			$screenset_list = $gigya_cms->getScreenSetsIdList( $parent_api_key );
+		}
 	}
 
-	if ( $screenset_list ) {
+	if ( $screenset_list !== false ) {
 		if ( ! empty( $values['custom_screen_sets'] ) ) {
 			foreach ( $values['custom_screen_sets'] as $key => $value ) {
 				$desktop_screen_exist = in_array( $value['desktop'], array_column( $screenset_list, 'label' ) );

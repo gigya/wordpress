@@ -48,7 +48,9 @@ class GigyaCMS
 	 */
 	public function call( $method, $params ) {
 		// Initialize new request.
-		$request   = (isset($this->user_key)) ? new GSRequest( $this->api_key, $this->api_secret, $method, null, true, $this->user_key ) : new GSRequest( $this->api_key, $this->api_secret, $method, null, true );
+		$request   = ( isset( $this->user_key ) )
+			? new GSRequest( $this->api_key, $this->api_secret, $method, null, true, $this->user_key )
+			: new GSRequest( $this->api_key, $this->api_secret, $method );
 		$user_info = null;
 		if ( ! empty( $params ) ) {
 			foreach ( $params as $param => $val ) {
@@ -103,11 +105,12 @@ class GigyaCMS
 	 * @param $api_key
 	 * @return array|false
 	 */
-	public function getScreenSetsIdList($api_key='') {
-		if(empty($api_key))
-		$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
-		else
+	public function getScreenSetsIdList( $api_key = '' ) {
+		if ( empty( $api_key ) ) {
+			$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
+		} else {
 			$gigya_api_helper = new GigyaApiHelper( $api_key, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
+		}
 
 
 		try {
@@ -133,18 +136,19 @@ class GigyaCMS
 	/**
 	 * get the parent api key or false if not exists
 	 * @return false|string
-	 * @throws GSException
-	 *
 	 */
 
 	public function getParentSiteApiKey() {
+		try {
+			$site_config = $this->call( 'admin.getSiteConfig', '' );
+		} catch ( GSException $e ) {
+			error_log( 'Error fetching SAP Customer Data Cloud parent site: ' . $e->getMessage() );
 
+		}
 
-		$site_config= $this->call('admin.getSiteConfig','');
-
-		if(array_key_exists('siteGroupOwner', $site_config))
+		if ( array_key_exists( 'siteGroupOwner', $site_config ) ) {
 			return $site_config['siteGroupOwner'];
-
+		}
 
 		return false;
 	}
