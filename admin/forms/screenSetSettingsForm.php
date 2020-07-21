@@ -195,7 +195,7 @@ function screenSetSettingsForm() {
 	$gigya_cms      = new GigyaCMS();
 	$screenset_list = $gigya_cms->getScreenSetsIdList();
 
-	if (  $screenset_list === false) {
+	if ( $screenset_list === false ) {
 		$gigya_parent_data = get_option( GIGYA__PARENT_SITE_DATA );
 
 		if ( ! isset( $gigya_parent_data['api_key'] ) ) {
@@ -206,7 +206,7 @@ function screenSetSettingsForm() {
 
 		$parent_api_key = $gigya_parent_data['api_key'];
 
-		if (  $parent_api_key !==false) {
+		if ( $parent_api_key !== false ) {
 			$screenset_list = $gigya_cms->getScreenSetsIdList( $parent_api_key );
 		}
 	}
