@@ -102,35 +102,56 @@ class GigyaCMS
 
 	/**
 	 *  get gigya Screen-Sets id's
-	 * @param $api_key
+	 * @param $parent_api_key
+	 *
 	 * @return array|false
 	 */
-	public function getScreenSetsIdList( $api_key = '' ) {
-		if ( empty( $api_key ) ) {
-			$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
+	public function getScreenSetsIdList( $parent_api_key = false ) {
+
+		$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
+		if ( $parent_api_key !== false ) {
+			$gigya_api_helper_parent = new GigyaApiHelper( GIGYA__PARENT_SITE_DATA['api_key'], GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
+			try {
+				$res_parent = $gigya_api_helper_parent->sendGetScreenSetsCall();
+			} catch ( GSApiException $e ) {
+				error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
+
+				$res_parent['screenSets'] = array();
+
+			} catch ( GSException $e ) {
+				error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getMessage() );
+
+				$res_parent['screenSets'] = array();
+			}
+
+			array_walk( $res_parent['screenSets'], function ( &$el ) {
+				$el['label'] = $el['screenSetID'];
+				unset( $el['screenSetID'] );
+			} );
 		} else {
-			$gigya_api_helper = new GigyaApiHelper( $api_key, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
+			$res_parent['screenSets'] = array();
+
 		}
 
-
 		try {
-			$res = $gigya_api_helper->sendGetScreenSetsCall();
+			$res_child = $gigya_api_helper->sendGetScreenSetsCall();
 		} catch ( GSApiException $e ) {
 			error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
 
-			return false;
+			$res_child['screenSets'] = array();
 		} catch ( GSException $e ) {
 			error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getMessage() );
+			$res_child['screenSets'] = array();
 
-			return false;
 		}
 
-		array_walk( $res['screenSets'], function ( &$el ) {
+		array_walk( $res_child['screenSets'], function ( &$el ) {
 			$el['label'] = $el['screenSetID'];
 			unset( $el['screenSetID'] );
 		} );
+		$res = array_merge( $res_parent['screenSets'], $res_child['screenSets'] );
 
-		return $res['screenSets'];
+		return $res;
 	}
 
 	/**

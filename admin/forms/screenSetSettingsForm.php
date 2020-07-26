@@ -193,10 +193,8 @@ function screenSetSettingsForm() {
 	];
 
 	$gigya_cms      = new GigyaCMS();
-	$screenset_list = $gigya_cms->getScreenSetsIdList();
 
-	if ( $screenset_list === false ) {
-		$gigya_parent_data = get_option( GIGYA__PARENT_SITE_DATA );
+	$gigya_parent_data = get_option( GIGYA__PARENT_SITE_DATA );
 
 		if ( ! isset( $gigya_parent_data['api_key'] ) ) {
 			$parent_api_key               = $gigya_cms->getParentSiteApiKey();
@@ -204,18 +202,14 @@ function screenSetSettingsForm() {
 			update_option( GIGYA__PARENT_SITE_DATA, $gigya_parent_data );
 		}
 
-		$parent_api_key = $gigya_parent_data['api_key'];
+		$screen_set_list = $gigya_cms->getScreenSetsIdList($gigya_parent_data['api_key']);
 
-		if ( $parent_api_key !== false ) {
-			$screenset_list = $gigya_cms->getScreenSetsIdList( $parent_api_key );
-		}
-	}
 
-	if ( $screenset_list !== false ) {
+		if ( $screen_set_list !== false ) {
 		if ( ! empty( $values['custom_screen_sets'] ) ) {
 			foreach ( $values['custom_screen_sets'] as $key => $value ) {
-				$desktop_screen_exist = in_array( $value['desktop'], array_column( $screenset_list, 'label' ) );
-				$mobile_screen_exist  = in_array( $value['mobile'], array_column( $screenset_list, 'label' ) ) || $value['mobile'] === 'desktop' || empty( $value['mobile'] );
+				$desktop_screen_exist = in_array( $value['desktop'], array_column( $screen_set_list, 'label' ) );
+				$mobile_screen_exist  = in_array( $value['mobile'], array_column( $screen_set_list, 'label' ) ) || $value['mobile'] === 'desktop' || empty( $value['mobile'] );
 				if ( ( ( ! $desktop_screen_exist ) || ( ! $mobile_screen_exist ) ) && ! empty( ( $value['desktop'] ) && ! empty( $value['mobile'] ) ) ) {
 
 					$compare_error = array(
@@ -233,7 +227,7 @@ function screenSetSettingsForm() {
 		$form['customScreenSetTable'] = [
 			'type' => 'table',
 			'name' => $table_name,
-			'rows' => buildExistingCustomScreenSetArray( $table_name, $screenset_list ),
+			'rows' => buildExistingCustomScreenSetArray( $table_name, $screen_set_list ),
 		];
 	} else {
 		$first_line       = __( 'Error retrieving custom screen-set list from SAP Customer Data Cloud. It will not be possible to embed CDC screen-sets on your website. If the problem persists, please contact CDC support.' );
@@ -244,7 +238,7 @@ function screenSetSettingsForm() {
 		);
 
 		if ( ! empty( get_option( GIGYA__SETTINGS_GLOBAL )['debug'] ) ) {
-			if ( $screenset_list !== false ) {
+			if ( $screen_set_list !== false ) {
 				error_log( 'The current site has no screen sets defined. Either the screen-sets are at the parent site level, or they have not been initialized. Check Screen-Set settings in the SAP CDC console.' );
 			}
 			$connection_error['error_message'] = array( $first_line, $second_line );
