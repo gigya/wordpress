@@ -110,7 +110,7 @@ class GigyaCMS
 
 		$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
 		if ( $parent_api_key !== false ) {
-			$gigya_api_helper_parent = new GigyaApiHelper( GIGYA__PARENT_SITE_DATA['api_key'], GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
+			$gigya_api_helper_parent = new GigyaApiHelper( $parent_api_key, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
 			try {
 				$res_parent = $gigya_api_helper_parent->sendGetScreenSetsCall();
 			} catch ( GSApiException $e ) {
