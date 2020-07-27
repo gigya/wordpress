@@ -192,20 +192,20 @@ function screenSetSettingsForm() {
 		'markup' => '<h4>Custom Screen-Sets</h4><small>' . __( 'Configure custom screen-sets that will be made available as widgets.' ) . '</small>',
 	];
 
-	$gigya_cms      = new GigyaCMS();
+	$gigya_cms = new GigyaCMS();
 
 	$gigya_parent_data = get_option( GIGYA__PARENT_SITE_DATA );
 
-		if ( ! isset( $gigya_parent_data['api_key'] ) ) {
-			$parent_api_key               = $gigya_cms->getParentSiteApiKey();
-			$gigya_parent_data['api_key'] = $parent_api_key;
-			update_option( GIGYA__PARENT_SITE_DATA, $gigya_parent_data );
-		}
+	if ( ! isset( $gigya_parent_data['api_key'] ) ) {
+		$parent_api_key               = $gigya_cms->getParentSiteApiKey();
+		$gigya_parent_data['api_key'] = $parent_api_key;
+		update_option( GIGYA__PARENT_SITE_DATA, $gigya_parent_data );
+	}
 
-		$screen_set_list = $gigya_cms->getScreenSetsIdList($gigya_parent_data['api_key']);
+	$screen_set_list = $gigya_cms->getScreenSetsIdList( $gigya_parent_data['api_key'] );
 
 
-		if ( $screen_set_list !== false ) {
+	if ( $screen_set_list !== false ) {
 		if ( ! empty( $values['custom_screen_sets'] ) ) {
 			foreach ( $values['custom_screen_sets'] as $key => $value ) {
 				$desktop_screen_exist = in_array( $value['desktop'], array_column( $screen_set_list, 'label' ) );

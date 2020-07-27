@@ -14,8 +14,7 @@ use WP_Error;
 /**
  * Class GigyaCMS
  */
-class GigyaCMS
-{
+class GigyaCMS {
 	protected $api_key;
 	protected $user_key;
 	protected $api_secret;
@@ -29,7 +28,7 @@ class GigyaCMS
 		$this->api_key         = GIGYA__API_KEY;
 		$this->user_key        = GIGYA__USER_KEY ?: ''; /* For backwards compatibility--in the past the user key had not been required */
 		$this->api_secret      = GigyaApiHelper::decrypt( GIGYA__API_SECRET, SECURE_AUTH_KEY );
-		$this->rsa_private_key = (!empty(GIGYA__PRIVATE_KEY)) ? GigyaApiHelper::decrypt( GIGYA__PRIVATE_KEY, SECURE_AUTH_KEY ) : '';
+		$this->rsa_private_key = ( ! empty( GIGYA__PRIVATE_KEY ) ) ? GigyaApiHelper::decrypt( GIGYA__PRIVATE_KEY, SECURE_AUTH_KEY ) : '';
 		$this->auth_mode       = GIGYA__AUTH_MODE;
 	}
 
@@ -101,58 +100,53 @@ class GigyaCMS
 	}
 
 	/**
-	 *  get gigya Screen-Sets id's
+	 *  get gigya Screen-Sets id's, include parent and current site.
+	 *
 	 * @param $parent_api_key
 	 *
 	 * @return array|false
 	 */
 	public function getScreenSetsIdList( $parent_api_key = false ) {
 
-		$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
-		if ( $parent_api_key !== false ) {
-			$gigya_api_helper_parent = new GigyaApiHelper( $parent_api_key, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
+		$res_parent  = getScreenSetListByApiKey( $parent_api_key );
+		$res_current = getScreenSetListByApiKey( GIGYA__API_KEY );
+
+		return array_merge( $res_parent, $res_current );
+	}
+
+	/**
+	 *  get gigya Screen-Sets id's by api key
+	 *
+	 * @param $api_key
+	 *
+	 * @return array
+	 */
+
+	public static function getScreenSetListByApiKey( $api_key ) {
+		if ( $api_key !== false ) {
+			$gigya_api_helper = new GigyaApiHelper( $api_key, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
 			try {
-				$res_parent = $gigya_api_helper_parent->sendGetScreenSetsCall();
+				$res = $gigya_api_helper->sendGetScreenSetsCall();
 			} catch ( GSApiException $e ) {
 				error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
 
-				$res_parent['screenSets'] = array();
-
+				return array();
 			} catch ( GSException $e ) {
 				error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getMessage() );
 
-				$res_parent['screenSets'] = array();
+				return array();
 			}
-
-			array_walk( $res_parent['screenSets'], function ( &$el ) {
+			array_walk( $res['screenSets'], function ( &$el ) {
 				$el['label'] = $el['screenSetID'];
 				unset( $el['screenSetID'] );
 			} );
-		} else {
-			$res_parent['screenSets'] = array();
 
+			return $res['screenSets'];
 		}
 
-		try {
-			$res_child = $gigya_api_helper->sendGetScreenSetsCall();
-		} catch ( GSApiException $e ) {
-			error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
-
-			$res_child['screenSets'] = array();
-		} catch ( GSException $e ) {
-			error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getMessage() );
-			$res_child['screenSets'] = array();
-
-		}
-
-		array_walk( $res_child['screenSets'], function ( &$el ) {
-			$el['label'] = $el['screenSetID'];
-			unset( $el['screenSetID'] );
-		} );
-		$res = array_merge( $res_parent['screenSets'], $res_child['screenSets'] );
-
-		return $res;
+		return array();
 	}
+
 
 	/**
 	 * get the parent api key or false if not exists
@@ -163,8 +157,8 @@ class GigyaCMS
 		try {
 			$site_config = $this->call( 'admin.getSiteConfig', '' );
 		} catch ( GSException $e ) {
-			error_log( 'Error fetching SAP Customer Data Cloud parent site: ' . $e->getMessage() );
-
+			error_log( 'Error fetching site configuration from SAP Customer Data Cloud: ' . $e->getMessage() );
+			return false;
 		}
 
 		if ( array_key_exists( 'siteGroupOwner', $site_config ) ) {
@@ -360,6 +354,8 @@ class GigyaCMS
 	private function trimValue( &$value ) {
 		$value = trim( $value );
 	}
+
+
 
 	/**
 	 * Check if the user has a specific capability.
