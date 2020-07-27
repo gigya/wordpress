@@ -13,6 +13,7 @@ class GigyaInstall {
 	private $comments_options;
 	private $reactions_options;
 	private $gm_options;
+	private $gigya_parent_site_data;
 	private $log;
 
 	private $reactions_options_nice;
@@ -21,15 +22,16 @@ class GigyaInstall {
 	 * Constructor.
 	 */
 	public function __construct() {
-		$this->global_options    = get_option( GIGYA__SETTINGS_GLOBAL );
-		$this->login_options     = get_option( GIGYA__SETTINGS_LOGIN );
-		$this->screenset_options = get_option( GIGYA__SETTINGS_SCREENSETS );
-		$this->session_options   = get_option( GIGYA__SETTINGS_SESSION );
-		$this->share_options     = get_option( GIGYA__SETTINGS_SHARE );
-		$this->comments_options  = get_option( GIGYA__SETTINGS_COMMENTS );
-		$this->reactions_options = get_option( GIGYA__SETTINGS_REACTIONS );
-		$this->gm_options        = get_option( GIGYA__SETTINGS_GM );
-		$this->log               = get_option( 'gigya_log' );
+		$this->global_options         = get_option( GIGYA__SETTINGS_GLOBAL );
+		$this->login_options          = get_option( GIGYA__SETTINGS_LOGIN );
+		$this->screenset_options      = get_option( GIGYA__SETTINGS_SCREENSETS );
+		$this->session_options        = get_option( GIGYA__SETTINGS_SESSION );
+		$this->share_options          = get_option( GIGYA__SETTINGS_SHARE );
+		$this->comments_options       = get_option( GIGYA__SETTINGS_COMMENTS );
+		$this->reactions_options      = get_option( GIGYA__SETTINGS_REACTIONS );
+		$this->gm_options             = get_option( GIGYA__SETTINGS_GM );
+		$this->gigya_parent_site_data = get_option( GIGYA__PARENT_SITE_DATA );
+		$this->log                    = get_option( 'gigya_log' );
 	}
 
 	/**
@@ -74,6 +76,11 @@ class GigyaInstall {
 		if ( empty ( $this->log ) ) {
 			add_option( 'gigya_log', array(), '', 'no' );
 		}
+
+		if ( empty ( $this->gigya_parent_site_data ) ) {
+			add_option( GIGYA__PARENT_SITE_DATA, array(), '', 'yes' );
+		}
+
 
 		$this->upgrade();
 	}
