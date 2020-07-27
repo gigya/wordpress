@@ -109,11 +109,14 @@ class GigyaCMS
 	 * @return array|false
 	 */
 	public function getScreenSetsIdList( $parent_api_key = false ) {
-
-		$res_parent  = getScreenSetListByApiKey( $parent_api_key );
 		$res_current = getScreenSetListByApiKey( GIGYA__API_KEY );
+		if ( $parent_api_key !== false ) {
+			$res_parent = getScreenSetListByApiKey( $parent_api_key );
 
-		return array_merge( $res_parent, $res_current );
+			return array_merge( $res_parent, $res_current );
+		} else {
+			return $res_current;
+		}
 	}
 
 	/**
@@ -125,30 +128,26 @@ class GigyaCMS
 	 */
 
 	public static function getScreenSetListByApiKey( $api_key ) {
-		if ( $api_key !== false ) {
-			$gigya_api_helper = new GigyaApiHelper( $api_key, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
-			try {
-				$res = $gigya_api_helper->sendGetScreenSetsCall();
-			} catch ( GSApiException $e ) {
-				error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
 
-				return array();
-			} catch ( GSException $e ) {
-				error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getMessage() );
+		$gigya_api_helper = new GigyaApiHelper( $api_key, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
+		try {
+			$res = $gigya_api_helper->sendGetScreenSetsCall();
+		} catch ( GSApiException $e ) {
+			error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
 
-				return array();
-			}
-			array_walk( $res['screenSets'], function ( &$el ) {
-				$el['label'] = $el['screenSetID'];
-				unset( $el['screenSetID'] );
-			} );
+			return array();
+		} catch ( GSException $e ) {
+			error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getMessage() );
 
-			return $res['screenSets'];
+			return array();
 		}
+		array_walk( $res['screenSets'], function ( &$el ) {
+			$el['label'] = $el['screenSetID'];
+			unset( $el['screenSetID'] );
+		} );
 
-		return array();
+		return $res['screenSets'];
 	}
-
 
 	/**
 	 * get the parent api key or false if not exists
