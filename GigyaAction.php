@@ -15,8 +15,7 @@ use WP_User;
 /**
  * The main plugin class.
  */
-class GigyaAction
-{
+class GigyaAction {
 	protected $login_options;
 	protected $global_options;
 	protected $session_options;
@@ -26,13 +25,12 @@ class GigyaAction
 	 */
 	public function __construct() {
 		// Gigya configuration values.
-		$this->login_options = get_option( GIGYA__SETTINGS_LOGIN );
-		$this->global_options = get_option( GIGYA__SETTINGS_GLOBAL );
+		$this->login_options   = get_option( GIGYA__SETTINGS_LOGIN );
+		$this->global_options  = get_option( GIGYA__SETTINGS_GLOBAL );
 		$this->session_options = get_option( GIGYA__SETTINGS_SESSION );
 
 		/* Retrieve basic SAP CDC authentication parameters */
-		if ( ! empty( $this->global_options ) )
-		{
+		if ( ! empty( $this->global_options ) ) {
 			define( 'GIGYA__API_KEY', $this->global_options['api_key'] );
 			define( 'GIGYA__USER_KEY', $this->global_options['user_key'] ?? '' );
 			define( 'GIGYA__AUTH_MODE', $this->global_options['auth_mode'] ?? 'user_secret' );
@@ -41,9 +39,7 @@ class GigyaAction
 			define( 'GIGYA__PRIVATE_KEY', $this->global_options['rsa_private_key'] ?? '' );
 			define( 'GIGYA__API_DOMAIN', _gigya_data_center( $this->global_options ) );
 			define( 'GIGYA__API_DEBUG', $this->global_options['debug'] );
-		}
-		else
-		{
+		} else {
 			define( 'GIGYA__API_KEY', '' );
 			define( 'GIGYA__USER_KEY', '' );
 			define( 'GIGYA__AUTH_MODE', '' );
@@ -153,7 +149,7 @@ class GigyaAction
 
 		/* Parameters to be sent to the DOM, and later to Gigya */
 		$session_expirations = _gigya_get_session_expiration( $this->session_options );
-		$params = array(
+		$params              = array(
 			'ajaxurl'                     => admin_url( 'admin-ajax.php' ),
 			'logoutUrl'                   => wp_logout_url(),
 			'connectWithoutLoginBehavior' => _gigParam( $this->login_options, 'connectWithoutLoginBehavior', 'loginExistingUser' ),
@@ -169,13 +165,16 @@ class GigyaAction
 			( isset( $this->login_options['mode'] ) ? $this->login_options['mode'] : '' ),
 			$this->getSessionOptions()
 		);
+		/*getting new logout url after session sync*/
+		$params['logoutUrl'] = wp_logout_url();
+
 
 		/* Add advanced parameters if exist */
-		if ( ! empty( $this->global_options['advanced'] ) )
-		{
+		if ( ! empty( $this->global_options['advanced'] ) ) {
 			$advanced = gigyaCMS::parseJSON( _gigParam( $this->global_options, 'advanced', '' ) );
-			if ( is_array( $advanced ) )
+			if ( is_array( $advanced ) ) {
 				$params = array_merge( $params, $advanced );
+			}
 		}
 
 		/* Let others plugins to modify the global parameters */
@@ -186,17 +185,14 @@ class GigyaAction
 
 		/* Checking that we have an API key and Gigya's plugin is turned on */
 		$api_key = GIGYA__API_KEY;
-		if ( ! empty( $api_key ) )
-		{
+		if ( ! empty( $api_key ) ) {
 			/*	* Loads requirements for any Gigya's login
 				* Load Gigya's socialize.js from CDN */
 			wp_enqueue_script( 'gigya_cdn', GIGYA__JS_CDN . GIGYA__API_KEY . '&lang=' . $params['lang'] );
 
-			if ( ! empty( $this->login_options ) ) /* Empty only happens on initial plugin enable, before configuring it */
-			{
+			if ( ! empty( $this->login_options ) ) /* Empty only happens on initial plugin enable, before configuring it */ {
 				/* Social Login – load requirements  */
-				if ( $this->login_options['mode'] == 'wp_sl' )
-				{
+				if ( $this->login_options['mode'] == 'wp_sl' ) {
 					require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginSet.php';
 					$gigyaLoginSet = new GigyaLoginSet;
 					$gigyaLoginSet->init();
@@ -224,14 +220,12 @@ class GigyaAction
 			}
 
 			/* Loads requirements for any Gigya's Google-Analytics integration. */
-			if ( ! empty( $this->global_options['google_analytics'] ) )
-			{
+			if ( ! empty( $this->global_options['google_analytics'] ) ) {
 				wp_enqueue_script( 'gigya_ga', GIGYA__CDN_PROTOCOL . '.gigya.com/js/gigyaGAIntegration.js' );
 			}
 		}
 
-		if ( is_admin() )
-		{
+		if ( is_admin() ) {
 			/* Loads requirements for the admin settings section. */
 			require_once GIGYA__PLUGIN_DIR . 'admin/admin.GigyaSettings.php';
 			new GigyaSettings;
@@ -316,7 +310,7 @@ class GigyaAction
 		// Loads Gigya's RaaS class.
 		require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasAjax.php';
 		$gigyaAjax = new GigyaRaasAjax;
-		$data = $_POST['data'];
+		$data      = $_POST['data'];
 		$gigyaAjax->updateProfile( $data );
 	}
 
@@ -333,8 +327,7 @@ class GigyaAction
 	 * Hook AJAX Debug Log.
 	 */
 	public function ajaxDebugLog() {
-		if ( current_user_can( 'manage_options' ) )
-		{
+		if ( current_user_can( 'manage_options' ) ) {
 			wp_send_json_success( array( 'data' => get_option( 'gigya_log' ) ) );
 		}
 
@@ -356,8 +349,7 @@ class GigyaAction
 		);
 
 		$expiration = intval( $_POST['expiration'] / 1000 ) - time();
-		if ( $this->login_options['mode'] == 'raas' and $session_options['session_type_numeric'] > 0 ) /* Fixed session in RaaS */
-		{
+		if ( $this->login_options['mode'] == 'raas' and $session_options['session_type_numeric'] > 0 ) /* Fixed session in RaaS */ {
 			$return[] = $this->gigyaSyncLoginSession( 'raas', $session_options, $expiration );
 		}
 
@@ -414,12 +406,10 @@ class GigyaAction
 		$session_type   = GIGYA__DEFAULT_COOKIE_EXPIRATION;
 		$is_remember_me = ( _gigya_get_session_remember() );
 
-		if ( $mode == 'raas' )
-		{
-			if ( isset( $session_opts['session_type_numeric'] ) )
-			{
+		if ( $mode == 'raas' ) {
+			if ( isset( $session_opts['session_type_numeric'] ) ) {
 				$session_type = intval( $session_opts['session_type_numeric'] );
-				$expiration = $this->getHookSessionExpiration( null, null, null, $forced_expiration );
+				$expiration   = $this->getHookSessionExpiration( null, null, null, $forced_expiration );
 
 				if ( $forced_expiration ) {
 					$expiration = $forced_expiration;
@@ -432,15 +422,20 @@ class GigyaAction
 				/* Updates WP cookie expiration--WP runs apply_filters on this */
 				add_filter( 'auth_cookie_expiration', array( $this, 'getHookSessionExpiration' ), 10, 3 );
 
-				$gltexp_cookie = isset( $_COOKIE['gltexp_' . GIGYA__API_KEY] ) ? $_COOKIE['gltexp_' . GIGYA__API_KEY] : '';
+				$gltexp_cookie           = isset( $_COOKIE[ 'gltexp_' . GIGYA__API_KEY ] ) ? $_COOKIE[ 'gltexp_' . GIGYA__API_KEY ] : '';
 				$gltexp_cookie_timestamp = explode( '_', $gltexp_cookie )[0];
 				if ( ( ( $session_type === GIGYA__SESSION_SLIDING ) and ( time() < $gltexp_cookie_timestamp ) )
-					 or ( $session_type > 0 and $forced_expiration ) )
-				{
+				     or ( $session_type > 0 and $forced_expiration ) ) {
 					$wp_user = wp_get_current_user();
 					wp_set_auth_cookie( $wp_user->ID, $is_remember_me );
 
-					do_action( 'set_logged_in_cookie', null, $expiration );
+					$data = $_POST;
+
+					/*set the login coockie except while there is logout action*/
+					if ( empty( $data ) or $data['action'] !== 'gigya_logout' ) {
+						do_action( 'set_logged_in_cookie', null, $expiration );
+					}
+
 				}
 			}
 		}
@@ -449,10 +444,9 @@ class GigyaAction
 	}
 
 	public function gigyaSyncLogout() {
-		if ( isset( $_COOKIE['gltexp_' . GIGYA__API_KEY] ) )
-		{
-			unset( $_COOKIE['gltexp_' . GIGYA__API_KEY] );
-			setrawcookie( 'gltexp_' . GIGYA__API_KEY, null, -1, '/' );
+		if ( isset( $_COOKIE[ 'gltexp_' . GIGYA__API_KEY ] ) ) {
+			unset( $_COOKIE[ 'gltexp_' . GIGYA__API_KEY ] );
+			setrawcookie( 'gltexp_' . GIGYA__API_KEY, null, - 1, '/' );
 		}
 		_gigya_remove_session_remember();
 	}
@@ -506,8 +500,7 @@ class GigyaAction
 	 */
 	public function wpLogin( $user_login, $account ) {
 		/* Login through WP form. */
-		if ( isset( $_POST['log'] ) and isset( $_POST['pwd'] ) )
-		{
+		if ( isset( $_POST['log'] ) and isset( $_POST['pwd'] ) ) {
 			/* Trap for non-admin user who tries to login through WP form on RaaS mode. */
 			$_is_allowed_user = check_raas_allowed_user_role( $account->roles );
 			if ( $this->login_options['mode'] == 'raas' and ( ! $_is_allowed_user ) )
@@ -567,30 +560,25 @@ class GigyaAction
 	 */
 	public function userRegister( $uid ) {
 		/* Registered through RaaS */
-		if ( isset( $_POST['data']['UID'] ) )
+		if ( isset( $_POST['data']['UID'] ) ) {
 			add_user_meta( $uid, 'gigya_uid', $_POST['data']['UID'] );
+		}
 		/* New user was registered through our custom extra-details form. */
-		if ( isset( $_POST['form_name'] ) and $_POST['form_name'] == 'registerform-gigya-extra' and ! empty( $_POST['gigyaUID'] ) )
-		{
+		if ( isset( $_POST['form_name'] ) and $_POST['form_name'] == 'registerform-gigya-extra' and ! empty( $_POST['gigyaUID'] ) ) {
 			add_user_meta( $uid, 'gigya_uid', $_POST['gigyaUID'] );
 		}
 
 		// New user was registered through Gigya social login.
 		// $_POST['action'] == 'gigya_login';
-		if ( $this->login_options['mode'] == 'wp_sl' )
-		{
-			if ( ! empty( $_POST['data'] ) and ! empty( $_POST['data']['UID'] ) )
-			{
+		if ( $this->login_options['mode'] == 'wp_sl' ) {
+			if ( ! empty( $_POST['data'] ) and ! empty( $_POST['data']['UID'] ) ) {
 
 				// We check if we can count on the email.
-				if ( $_POST['data']['user']['email_not_verified'] == true )
-				{
+				if ( $_POST['data']['user']['email_not_verified'] == true ) {
 					// The mail is NOT verified, so we save Gigya's UID to DB
 					// and do nothing.
 					add_user_meta( $uid, 'gigya_uid', $_POST['data']['UID'] );
-				}
-				else
-				{
+				} else {
 					// The mail is verified, so we can merge IDs.
 					$gigyaCMS = new GigyaCMS();
 					$gigyaCMS->notifyRegistration( $_POST['data']['UID'], $uid );
@@ -599,8 +587,7 @@ class GigyaAction
 		}
 
 		/* New user was registered through WP form. */
-		if ( isset( $_POST['user_login'] ) and isset( $_POST['user_email'] ) )
-		{
+		if ( isset( $_POST['user_login'] ) and isset( $_POST['user_email'] ) ) {
 			/*
 			 * We notify to Gigya's 'socialize.notifyLogin'
 			 * with a 'is_new_user' flag.
@@ -620,12 +607,9 @@ class GigyaAction
 	public function deleteUser( $user_id ) {
 		$gigyaCMS = new GigyaCMS();
 
-		if ( $this->login_options['mode'] == 'wp_sl' )
-		{
+		if ( $this->login_options['mode'] == 'wp_sl' ) {
 			$gigyaCMS->deleteUser( $user_id );
-		}
-		elseif ( $this->login_options['mode'] == 'raas' )
-		{
+		} elseif ( $this->login_options['mode'] == 'raas' ) {
 			$account = get_userdata( $user_id );
 			$gigyaCMS->deleteAccountByEmail( $account->data->user_email );
 		}
@@ -635,8 +619,9 @@ class GigyaAction
 	 * Register widgets.
 	 */
 	public function widgetsInit() {
-		if ( empty( $this->login_options ) ) /* Only happens on initial activation, before configuring Gigya */
+		if ( empty( $this->login_options ) ) /* Only happens on initial activation, before configuring Gigya */ {
 			return false;
+		}
 
 		/* Screen-set Widget */
 		require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaScreenSetWidget.php';
@@ -644,52 +629,46 @@ class GigyaAction
 
 		/* RaaS Widget */
 		$raas_on = $this->login_options['mode'] == 'raas';
-		if ( ! empty( $raas_on ) )
-		{
+		if ( ! empty( $raas_on ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasWidget.php';
 			register_widget( 'GigyaRaas_Widget' );
 		}
 
 		/* Login Widget */
 		$login_on = $this->login_options['mode'] == 'wp_sl';
-		if ( ! empty( $login_on ) )
-		{
+		if ( ! empty( $login_on ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginWidget.php';
 			register_widget( 'GigyaLogin_Widget' );
 		}
 
 		/* Share Widget */
 		$share_options = get_option( GIGYA__SETTINGS_SHARE );
-		$share_on = _gigParamDefaultOn( $share_options, 'on' );
-		if ( ! empty( $share_on ) )
-		{
+		$share_on      = _gigParamDefaultOn( $share_options, 'on' );
+		if ( ! empty( $share_on ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareWidget.php';
 			register_widget( 'GigyaShare_Widget' );
 		}
 
 		/* Comment Widget */
 		$comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
-		$comments_on = _gigParamDefaultOn( $comments_options, 'on' );
-		if ( ! empty( $comments_on ) )
-		{
+		$comments_on      = _gigParamDefaultOn( $comments_options, 'on' );
+		if ( ! empty( $comments_on ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/comments/GigyaCommentsWidget.php';
 			register_widget( 'GigyaComments_Widget' );
 		}
 
 		/* Reactions Widget */
 		$reactions_options = get_option( GIGYA__SETTINGS_REACTIONS );
-		$reactions_on = _gigParamDefaultOn( $reactions_options, 'on' );
-		if ( ! empty( $reactions_on ) )
-		{
+		$reactions_on      = _gigParamDefaultOn( $reactions_options, 'on' );
+		if ( ! empty( $reactions_on ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/reactions/GigyaReactionsWidget.php';
 			register_widget( 'GigyaReactions_Widget' );
 		}
 
 		/* Gamification Widget */
 		$gm_options = get_option( GIGYA__SETTINGS_GM );
-		$gm_on = _gigParamDefaultOn( $gm_options, 'on' );
-		if ( ! empty( $gm_on ) )
-		{
+		$gm_on      = _gigParamDefaultOn( $gm_options, 'on' );
+		if ( ! empty( $gm_on ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/gamification/GigyaGamificationWidget.php';
 			register_widget( 'GigyaGamification_Widget' );
 		}
@@ -707,22 +686,20 @@ class GigyaAction
 	public function theContent( $content ) {
 		// Share plugin.
 		$share_options = get_option( GIGYA__SETTINGS_SHARE );
-		$share_on = _gigParamDefaultOn( $share_options, 'on' );
-		if ( ! empty( $share_on ) )
-		{
+		$share_on      = _gigParamDefaultOn( $share_options, 'on' );
+		if ( ! empty( $share_on ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareSet.php';
-			$share = new GigyaShareSet();
+			$share   = new GigyaShareSet();
 			$content = $share->setDefaultPosition( $content );
 		}
 
 		// Reactions plugin.
 		$reactions_options = get_option( GIGYA__SETTINGS_REACTIONS );
-		$reactions_on = _gigParamDefaultOn( $reactions_options, 'on' );
-		if ( ! empty( $reactions_on ) )
-		{
+		$reactions_on      = _gigParamDefaultOn( $reactions_options, 'on' );
+		if ( ! empty( $reactions_on ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'features/reactions/GigyaReactionsSet.php';
 			$reactions = new GigyaReactionsSet();
-			$content = $reactions->setDefaultPosition( $content );
+			$content   = $reactions->setDefaultPosition( $content );
 		}
 
 		return $content;
@@ -739,13 +716,13 @@ class GigyaAction
 		/* Spider trap.
 		 * When a spider detect we render the comment in the HTML for SEO */
 		$is_spider = gigyaCMS::isSpider();
-		if ( ! empty( $is_spider ) )
-		{
+		if ( ! empty( $is_spider ) ) {
 			/* Override default WP comments template with comment spider */
 			return GIGYA__PLUGIN_DIR . 'admin/tpl/comments-spider.tpl.php';
 		}
 
 		/* Override default WP comments template */
+
 		return GIGYA__PLUGIN_DIR . 'admin/tpl/comments.tpl.php';
 	}
 
@@ -753,8 +730,7 @@ class GigyaAction
 	 * Hook AJAX Clean DB.
 	 */
 	public function ajaxCleanDB() {
-		if ( current_user_can( 'manage_options' ) )
-		{
+		if ( current_user_can( 'manage_options' ) ) {
 			require_once GIGYA__PLUGIN_DIR . 'install.php';
 			GigyaInstall::cleanDB();
 		}
@@ -783,60 +759,52 @@ class GigyaAction
 	}
 
 	public function getGigyaAvatar( $avatar, $id_or_email, $size, $default, $alt ) {
-		if ( empty( $id_or_email ) )
-		{
+		if ( empty( $id_or_email ) ) {
 			$id = get_current_user_id();
-		}
-		else
-		{
-			if ( is_numeric( $id_or_email ) )
-			{
+		} else {
+			if ( is_numeric( $id_or_email ) ) {
 				$id = $id_or_email;
-			}
-			elseif ( is_string( $id_or_email ) )
-			{
+			} elseif ( is_string( $id_or_email ) ) {
 				$user = get_user_by( 'email', $id_or_email );
-				$id = $user->ID;
-			}
-			else
-			{
+				$id   = $user->ID;
+			} else {
 				return $avatar;
 			}
 		}
 		$url = get_user_meta( $id, "profile_image", true );
-		if ( empty( $url ) )
-		{
+		if ( empty( $url ) ) {
 			return $avatar;
 		}
 		$alt = empty( $alt ) ? get_user_meta( $id, "first_name", true ) : $alt;
+
 		return "<img src='{$url}' alt='{$alt}' width='{$size}' height='{$size}'>";
 	}
 
 	public function getOfflineSyncSchedules( $schedules ) {
 		$schedules['every_five_seconds'] = array(
 			'interval' => 5,
-			'display' => __( 'Every five seconds' ),
+			'display'  => __( 'Every five seconds' ),
 		);
 
 		$schedules['every_thirty_seconds'] = array(
 			'interval' => 30,
-			'display' => __( 'Every thirty seconds' ),
+			'display'  => __( 'Every thirty seconds' ),
 		);
 
 		$schedules['every_minute'] = array(
 			'interval' => 60,
-			'display' => __( 'Every minute' ),
+			'display'  => __( 'Every minute' ),
 		);
 
 		$schedules['every_two_hours'] = array(
 			'interval' => 7200,
-			'display' => __( 'Every two hours' ),
+			'display'  => __( 'Every two hours' ),
 		);
 
-		$settings = get_option( GIGYA__SETTINGS_FIELD_MAPPING );
+		$settings                               = get_option( GIGYA__SETTINGS_FIELD_MAPPING );
 		$schedules['gigya_offline_sync_custom'] = array(
-			'interval' => ( ! empty( $settings['map_offline_sync_frequency'] ) ) ? ($settings['map_offline_sync_frequency'] * 60) : 3600,
-			'display' => __( 'Custom' ),
+			'interval' => ( ! empty( $settings['map_offline_sync_frequency'] ) ) ? ( $settings['map_offline_sync_frequency'] * 60 ) : 3600,
+			'display'  => __( 'Custom' ),
 		);
 
 		return $schedules;
@@ -865,7 +833,7 @@ class GigyaAction
 				$gigya_users     = $gigya_cms->searchGigyaUsers( [ 'query' => $gigya_query ] );
 				$processed_users = 0;
 				$users_not_found = 0;
-				$uids_not_found = [];
+				$uids_not_found  = [];
 
 				foreach ( $gigya_users as $gigya_user ) {
 					$gigya_uid                    = $gigya_user['UID'];
@@ -918,7 +886,7 @@ class GigyaAction
 	/**
 	 * Shortcode for UserInfo.
 	 *
-	 * @param    array $atts
+	 * @param array $atts
 	 * @param          $info
 	 *
 	 * @return string
@@ -929,12 +897,11 @@ class GigyaAction
 		/**
 		 * @var    WP_User
 		 */
-		$wp_user = wp_get_current_user();
+		$wp_user   = wp_get_current_user();
 		$user_info = array();
 
-		if ( $info == null )
-		{
-			$gigyaCMS = new GigyaCMS();
+		if ( $info == null ) {
+			$gigyaCMS  = new GigyaCMS();
 			$user_info = $gigyaCMS->getUserInfo( $wp_user->UID );
 		}
 

@@ -14,13 +14,13 @@ use WP_Error;
 /**
  * Class GigyaCMS
  */
-class GigyaCMS {
+class GigyaCMS
+{
 	protected $api_key;
 	protected $user_key;
 	protected $api_secret;
 	protected $rsa_private_key;
 	protected $auth_mode;
-
 
 	/**
 	 * Constructs a GigyaApi object.
@@ -29,9 +29,8 @@ class GigyaCMS {
 		$this->api_key         = GIGYA__API_KEY;
 		$this->user_key        = GIGYA__USER_KEY ?: ''; /* For backwards compatibility--in the past the user key had not been required */
 		$this->api_secret      = GigyaApiHelper::decrypt( GIGYA__API_SECRET, SECURE_AUTH_KEY );
-		$this->rsa_private_key = ( ! empty( GIGYA__PRIVATE_KEY ) ) ? GigyaApiHelper::decrypt( GIGYA__PRIVATE_KEY, SECURE_AUTH_KEY ) : '';
+		$this->rsa_private_key = (!empty(GIGYA__PRIVATE_KEY)) ? GigyaApiHelper::decrypt( GIGYA__PRIVATE_KEY, SECURE_AUTH_KEY ) : '';
 		$this->auth_mode       = GIGYA__AUTH_MODE;
-
 	}
 
 	/**
@@ -49,7 +48,9 @@ class GigyaCMS {
 	 */
 	public function call( $method, $params ) {
 		// Initialize new request.
-		$request   = ( isset( $this->user_key ) ) ? new GSRequest( $this->api_key, $this->api_secret, $method, null, null, $this->user_key ) : new GSRequest( $this->api_key, $this->api_secret, $method );
+		$request   = ( isset( $this->user_key ) )
+			? new GSRequest( $this->api_key, $this->api_secret, $method, null, true, $this->user_key )
+			: new GSRequest( $this->api_key, $this->api_secret, $method );
 		$user_info = null;
 		if ( ! empty( $params ) ) {
 			foreach ( $params as $param => $val ) {
@@ -101,45 +102,72 @@ class GigyaCMS {
 	}
 
 	/**
-	 *  get gigya Screen-Sets id's
+	 *  get gigya Screen-Sets id's, include parent and current site.
+	 *
+	 * @param $parent_api_key
 	 *
 	 * @return array|false
 	 */
-	public function getScreenSetsIdList( $api_key = '' ) {
-		if ( empty( $api_key ) ) {
-			$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
-		} else {
+	public function getScreenSetsIdList( $parent_api_key = false ) {
+
+		$res_parent  = getScreenSetListByApiKey( $parent_api_key );
+		$res_current = getScreenSetListByApiKey( GIGYA__API_KEY );
+
+		return array_merge( $res_parent, $res_current );
+	}
+
+	/**
+	 *  get gigya Screen-Sets id's by api key
+	 *
+	 * @param $api_key
+	 *
+	 * @return array
+	 */
+
+	public static function getScreenSetListByApiKey( $api_key ) {
+		if ( $api_key !== false ) {
 			$gigya_api_helper = new GigyaApiHelper( $api_key, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
+			try {
+				$res = $gigya_api_helper->sendGetScreenSetsCall();
+			} catch ( GSApiException $e ) {
+				error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
+
+				return array();
+			} catch ( GSException $e ) {
+				error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getMessage() );
+
+				return array();
+			}
+			array_walk( $res['screenSets'], function ( &$el ) {
+				$el['label'] = $el['screenSetID'];
+				unset( $el['screenSetID'] );
+			} );
+
+			return $res['screenSets'];
 		}
 
-		try {
-			$res = $gigya_api_helper->sendGetScreenSetsCall();
-		} catch ( GSApiException $e ) {
-			error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
-
-			return false;
-		} catch ( GSException $e ) {
-			error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getMessage() );
-
-			return false;
-		}
-
-		array_walk( $res['screenSets'], function ( &$el ) {
-			$el['label'] = $el['screenSetID'];
-			unset( $el['screenSetID'] );
-		} );
-
-		return $res['screenSets'];
+		return array();
 	}
 
 
+	/**
+	 * get the parent api key or false if not exists
+	 * @return false|string
+	 */
+
 	public function getParentSiteApiKey() {
-		$site_config = $this->call( 'admin.getSiteConfig', '' );
+		try {
+			$site_config = $this->call( 'admin.getSiteConfig', '' );
+		} catch ( GSException $e ) {
+			error_log( 'Error fetching site configuration from SAP Customer Data Cloud: ' . $e->getMessage() );
+			return false;
+		}
 
 		if ( array_key_exists( 'siteGroupOwner', $site_config ) ) {
 			return $site_config['siteGroupOwner'];
 		}
-		return '';
+
+		return false;
 	}
 
 	/**
@@ -168,7 +196,7 @@ class GigyaCMS {
 	 * @throws Exception
 	 */
 	public function apiValidate( $auth_mode, $api_key, $user_key, $api_secret, $api_domain ) {
-		return ( $auth_mode === 'user_rsa' )
+		return ($auth_mode === 'user_rsa')
 			? $this->apiValidateWithPrivateKey( $api_key, $user_key, $api_secret, $api_domain )
 			: $this->apiValidateWithUserSecret( $api_key, $user_key, $api_secret, $api_domain );
 	}
@@ -191,7 +219,7 @@ class GigyaCMS {
 		$request->setAPIDomain( $api_domain );
 		ini_set( 'arg_separator.output', '&' );
 		$res = $request->send();
-		ini_restore( 'arg_separator.output' );
+		ini_restore ( 'arg_separator.output' );
 
 		return $res;
 	}
@@ -212,7 +240,7 @@ class GigyaCMS {
 		$request->setAPIDomain( $api_domain );
 		ini_set( 'arg_separator.output', '&' );
 		$res = $request->send();
-		ini_restore( 'arg_separator.output' );
+		ini_restore ( 'arg_separator.output' );
 
 		return $res;
 	}
@@ -265,7 +293,7 @@ class GigyaCMS {
 	public function userLogout( $guid ) {
 		if ( ! empty( $guid ) ) {
 			$params = array(
-				'uid' => $guid,
+					'uid' => $guid,
 			);
 
 			return $this->call( 'socialize.logout', $params );
@@ -281,22 +309,22 @@ class GigyaCMS {
 	 * @param array $params .
 	 *                      an associative array of params to pass to Gigya
 	 *
+	 * @see http://developers.gigya.com/020_Client_API/020_Methods/socialize.getFriends
 	 * @return array | false
 	 *      the response from gigya.
 	 *
 	 * @throws Exception
-	 * @see http://developers.gigya.com/020_Client_API/020_Methods/socialize.getFriends
 	 */
 	public function getFriends( $guid, $params = array() ) {
 		if ( ! empty( $guid ) ) {
 			$params += array(
-				'uid' => $guid,
+					'uid' => $guid,
 			);
 
 			return $this->call( 'logout', $params );
 		}
 
-		return false;
+		return FALSE;
 	}
 
 	/**
@@ -315,6 +343,7 @@ class GigyaCMS {
 			array_walk( $capabilities, array( $this, 'trimValue' ) );
 			return $capabilities;
 		}
+
 		return array();
 	}
 
@@ -322,7 +351,7 @@ class GigyaCMS {
 	 * Callback for array_walk.
 	 * Helper function for trimming.
 	 *
-	 * @param    $value
+	 * @param	$value
 	 */
 	private function trimValue( &$value ) {
 		$value = trim( $value );
@@ -344,6 +373,7 @@ class GigyaCMS {
 		if ( array_search( $capability, $capabilities ) === false ) {
 			return false;
 		}
+
 		return true;
 	}
 
@@ -357,11 +387,11 @@ class GigyaCMS {
 	 *
 	 * @param $user_info
 	 *
+	 * @see      gigya_user_login()
+	 *
 	 * @return bool|null|string True if the notify login request succeeded or the error message from Gigya
 	 *
 	 * @throws Exception
-	 * @see      gigya_user_login()
-	 *
 	 */
 	public function notifyLogin( $uid, $is_new_user = false, $user_info = null ) {
 		$params['siteUID'] = $uid;
@@ -379,7 +409,7 @@ class GigyaCMS {
 		// Request.
 		$response = $this->call( 'socialize.notifyLogin', $params );
 		// If error return message
-		if ( is_wp_error( $response ) ) {
+		if ( is_wp_error($response)) {
 			return $response->get_error_message();
 		}
 
@@ -408,8 +438,8 @@ class GigyaCMS {
 	public function notifyRegistration( $guid, $uid ) {
 		if ( ! empty( $guid ) && ! empty( $uid ) ) {
 			$params = array(
-				'uid'     => $guid,
-				'siteUID' => $uid,
+					'uid'     => $guid,
+					'siteUID' => $uid,
 			);
 
 			return $this->call( 'socialize.notifyRegistration', $params );
@@ -431,7 +461,7 @@ class GigyaCMS {
 	public function deleteUser( $uid ) {
 		if ( ! empty( $uid ) ) {
 			$params = array(
-				'uid' => $uid,
+					'uid' => $uid,
 			);
 
 			$this->call( 'socialize.deleteAccount', $params );
@@ -441,9 +471,9 @@ class GigyaCMS {
 		return false;
 	}
 
-	/*******************************/
+/*******************************/
 //            RaaS             //
-	/*******************************/
+/*******************************/
 
 	/**
 	 * @return bool
@@ -452,8 +482,8 @@ class GigyaCMS {
 	 */
 	public function isRaaS() {
 		$res = $this->call( 'accounts.getSchema', array() );
-		if ( is_wp_error( $res ) ) {
-			if ( $res->get_error_code() === GIGYA__ERROR_UNAUTHORIZED_PARTNER ) {
+		if ( is_wp_error( $res )) {
+			if ( $res->get_error_code() === GIGYA__ERROR_UNAUTHORIZED_PARTNER) {
 				return false;
 			}
 
@@ -464,7 +494,7 @@ class GigyaCMS {
 	}
 
 	/**
-	 * @param string $guid Gigya UID
+	 * @param string $guid  Gigya UID
 	 *
 	 * @return GSResponse
 	 *
@@ -516,7 +546,7 @@ class GigyaCMS {
 
 		return $gigya_users;
 	}
-
+	
 	/**
 	 * @param $email
 	 *
@@ -531,9 +561,8 @@ class GigyaCMS {
 		$res = $this->call( 'accounts.search', array( 'query' => $query ) );
 
 		/* Delete the user */
-		if ( ! is_wp_error( $res ) ) {
+		if ( ! is_wp_error( $res ) )
 			$this->call( 'accounts.deleteAccount', array( 'UID' => $res['results'][0]['UID'] ) );
-		}
 	}
 
 	/**
@@ -552,8 +581,8 @@ class GigyaCMS {
 	 * @param array $gigya_emails
 	 * @param string $wp_email email from WP DB.
 	 *
-	 * @return bool
 	 * @internal param \The $userInfo user info from accounts.getUserInfo api call
+	 * @return bool
 	 */
 	public static function isPrimaryUser( $gigya_emails, $wp_email ) {
 		return ( in_array( $wp_email, $gigya_emails ) );
@@ -572,9 +601,11 @@ class GigyaCMS {
 		$result = json_decode( $json, true );
 
 		$err = json_last_error();
-		if ( $err != JSON_ERROR_NONE ) {
+		if ( $err != JSON_ERROR_NONE )
+		{
 			/* switch and check possible JSON errors */
-			switch ( json_last_error() ) {
+			switch ( json_last_error() )
+			{
 				case JSON_ERROR_DEPTH:
 					$msg = 'Maximum stack depth exceeded.';
 					break;
@@ -599,7 +630,6 @@ class GigyaCMS {
 		}
 
 		/* Everything is OK. Return associative array. */
-
 		return $result;
 	}
 
@@ -610,21 +640,7 @@ class GigyaCMS {
 	 */
 	public static function isSpider() {
 		// Add as many spiders you want in this array
-		$spiders = array(
-			'Googlebot',
-			'Yammybot',
-			'Openbot',
-			'Yahoo',
-			'Slurp',
-			'msnbot',
-			'ia_archiver',
-			'Lycos',
-			'Scooter',
-			'AltaVista',
-			'Teoma',
-			'Gigabot',
-			'Googlebot-Mobile'
-		);
+		$spiders = array( 'Googlebot', 'Yammybot', 'Openbot', 'Yahoo', 'Slurp', 'msnbot', 'ia_archiver', 'Lycos', 'Scooter', 'AltaVista', 'Teoma', 'Gigabot', 'Googlebot-Mobile' );
 
 		// Loop through each spider and check if it appears in
 		// the User Agent
@@ -633,7 +649,6 @@ class GigyaCMS {
 				return true;
 			}
 		}
-
 		return false;
 	}
 
@@ -645,9 +660,8 @@ class GigyaCMS {
 	 * @return string
 	 */
 	protected function cleanEmail( $email ) {
-		$email       = str_replace( ' ', '', $email );
-		$clean_email = htmlspecialchars( $email );
-
+		$email = str_replace(' ', '', $email);
+		$clean_email = htmlspecialchars($email);
 		return $clean_email;
 	}
 }
