@@ -37,6 +37,7 @@ function gmSettingsForm() {
 
 	$form['advanced_achievements'] = array(
 		'type'  => 'textarea',
+		'class' => 'json',
 		'value' => _gigParam( $values, 'advanced_achievements', '' ),
 		'label' => __( 'Additional Parameters (advanced) for showAchievementsUI' ),
 		'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://developers.gigya.com/display/GD/gm.showAchievementsUI+JS" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
@@ -44,6 +45,7 @@ function gmSettingsForm() {
 
 	$form['advanced_challenge'] = array(
 		'type'  => 'textarea',
+		'class' => 'json',
 		'value' => _gigParam( $values, 'advanced_challenge', '' ),
 		'label' => __( 'Additional Parameters (advanced) showChallengeStatusUI' ),
 		'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://developers.gigya.com/display/GD/gm.showChallengeStatusUI+JS" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
@@ -51,6 +53,7 @@ function gmSettingsForm() {
 
 	$form['advanced_leaderboard'] = array(
 		'type'  => 'textarea',
+		'class' => 'json',
 		'value' => _gigParam( $values, 'advanced_leaderboard', '' ),
 		'label' => __( 'Additional Parameters (advanced) showLeaderboardUI' ),
 		'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://developers.gigya.com/display/GD/gm.showLeaderboardUI+JS" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
@@ -58,6 +61,7 @@ function gmSettingsForm() {
 
 	$form['advanced_user_status'] = array(
 		'type'  => 'textarea',
+		'class' => 'json',
 		'value' => _gigParam( $values, 'advanced_user_status', '' ),
 		'label' => __( 'Additional Parameters (advanced) showUserStatusUI' ),
 		'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://developers.gigya.com/display/GD/gm.showUserStatusUI+JS" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
@@ -65,6 +69,7 @@ function gmSettingsForm() {
 
 	$form['advanced_notification'] = array(
 		'type'  => 'textarea',
+		'class' => 'json',
 		'value' => _gigParam( $values, 'advanced_notification', '' ),
 		'label' => __( 'Additional Parameters (advanced) showNotifications' ),
 		'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://developers.gigya.com/display/GD/gm.showNotifications+JS" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'

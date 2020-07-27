@@ -46,25 +46,25 @@
 				/** @function    gigya.accounts.showScreenSet */
 				var path = $(this)[0].pathname;
 				var search = $(this)[0].search;
+
+				var screenSetParams = {
+					screenSet: gigyaRaasParams.raasWebScreen,
+					mobileScreenSet: gigyaRaasParams.raasMobileScreen,
+					startScreen: gigyaRaasParams.raasLoginScreen,
+					include: 'id_token'
+				};
+
 				if (path.indexOf('wp-login.php') !== -1) {
 					switch (true) {
 						case (search === ''):
 							// Login page
-							gigya.accounts.showScreenSet({
-								screenSet: gigyaRaasParams.raasWebScreen,
-								mobileScreenSet: gigyaRaasParams.raasMobileScreen,
-								startScreen: gigyaRaasParams.raasLoginScreen
-							});
+							gigya.accounts.showScreenSet(screenSetParams);
 							e.preventDefault();
 							break;
 
 						case (search === '?action=register'):
 							// Register page
-							gigya.accounts.showScreenSet({
-								screenSet: gigyaRaasParams.raasWebScreen,
-								mobileScreenSet: gigyaRaasParams.raasMobileScreen,
-								startScreen: gigyaRaasParams.raasRegisterScreen
-							});
+							gigya.accounts.showScreenSet(screenSetParams);
 							e.preventDefault();
 							break;
 
@@ -139,7 +139,8 @@
 						mobileScreenSet: gigyaRaasParams.raasMobileScreen,
 						startScreen: gigyaRaasParams.raasLoginScreen,
 						containerID: gigyaRaasParams.raasLoginDiv,
-						onError: onScreenSetErrorHandler
+						onError: onScreenSetErrorHandler,
+						include: 'id_token' /* For JWT-based authentication */
 					};
 					gigya.accounts.showScreenSet(loginScreenSetParams);
 				}
@@ -150,7 +151,8 @@
 						screenSet: gigyaRaasParams.raasWebScreen,
 						mobileScreenSet: gigyaRaasParams.raasMobileScreen,
 						startScreen: gigyaRaasParams.raasRegisterScreen,
-						containerID: gigyaRaasParams.raasRegisterDiv
+						containerID: gigyaRaasParams.raasRegisterDiv,
+						include: 'id_token' /* For JWT-based authentication */
 					};
 					gigya.accounts.showScreenSet(regScreenSetParams);
 				}
@@ -309,6 +311,7 @@
 				location.reload();
 			});
 		};
+
 // --------------------------------------------------------------------
 
 		raasInit();

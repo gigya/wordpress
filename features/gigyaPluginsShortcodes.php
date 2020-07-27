@@ -1,10 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Yaniv Aran-Shamir
- * Date: 24/11/14
- * Time: 2:57 PM
- */
+
+namespace Gigya\WordPress;
+
+use Gigya\CMSKit\GigyaCMS;
 
 class gigyaPluginsShortcodes {
 
@@ -13,20 +11,7 @@ class gigyaPluginsShortcodes {
 
 		$comments = new GigyaCommentsSet();
 		$defaults = $comments->getParams();
-		if ( empty( $attrs ) ) {
-			$attrs = $defaults;
-			if ( isset( $attrs['advanced'] )) {
-				$advanced = gigyaCms::jsonToArray( $attrs['advanced'] );
-				if ( is_array( $advanced ) ) {
-					$attrs = array_merge( $attrs, $advanced );
-				} else if ( is_string( $advanced ) ) {
-					_gigya_error_log( "Error in " . __FUNCTION__ . " shortcode advanced parameters message: " . $advanced );
-				}
-			}
-		} else {
-			$attrs = $this->attrs_to_gigya($attrs);
-			$attrs = array_merge($defaults, $attrs);
-		}
+		$attrs    = $this->processAttrs( $attrs, $defaults );
 
 		return _gigya_render_tpl( 'admin/tpl/comments.tpl.php', array( 'data' => $attrs ) );
 	}
@@ -53,7 +38,7 @@ class gigyaPluginsShortcodes {
 		if (empty( $attrs )) {
 			$attrs = $gm->getParams($type);
 			if ( isset( $attrs['advanced'] )) {
-				$advanced = gigyaCms::jsonToArray( $attrs['advanced'] );
+				$advanced = GigyaCms::jsonToArray( $attrs['advanced'] );
 				if ( is_array( $advanced ) ) {
 					$attrs = array_merge( $attrs, $advanced );
 				} else if ( is_string( $advanced ) ) {
@@ -70,52 +55,24 @@ class gigyaPluginsShortcodes {
 		return $output;
 	}
 
-	public function gigyaReactionsScode ( $attrs) {
+	public function gigyaReactionsScode( $attrs ) {
 		require_once GIGYA__PLUGIN_DIR . 'features/reactions/GigyaReactionsSet.php';
 		$recations = new GigyaReactionsSet();
-		$defaults = $recations->getParams();
-		if (empty( $attrs )) {
-			$attrs = $defaults;
-			if ( isset( $attrs['advanced'] )) {
-				$advanced = gigyaCms::jsonToArray( $attrs['advanced'] );
-				if ( is_array( $advanced ) ) {
-					$attrs = array_merge( $attrs, $advanced );
-				} else if ( is_string( $advanced ) ) {
-					_gigya_error_log( "Error in " . __FUNCTION__ . " shortcode advanced parameters message: "
-					                  . $advanced );
-				}
-			}
-		} else {
-			$attrs = $this->attrs_to_gigya($attrs);
-			$attrs = array_merge($defaults, $attrs);
-		}
-		$output = '<div class="gigya-reactions-widget"></div>';
-		$output .= '<script class="data-reactions" type="application/json">' . json_encode( $attrs ) . '</script>';
+		$defaults  = $recations->getParams();
+		$attrs     = $this->processAttrs( $attrs, $defaults );
+		$output    = '<div class="gigya-reactions-widget"></div>';
+		$output    .= '<script class="data-reactions" type="application/json">' . json_encode( $attrs ) . '</script>';
 
 		return $output;
 	}
 
-	public function gigyaShareBarScode ( $attrs) {
+	public function gigyaShareBarScode( $attrs ) {
 		require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareSet.php';
-		$share = new GigyaShareSet();
+		$share    = new GigyaShareSet();
 		$defaults = $share->getParams();
-		if (empty( $attrs )) {
-			$attrs = $defaults;
-			if ( isset( $attrs['advanced'] )) {
-				$advanced = gigyaCms::jsonToArray( $attrs['advanced'] );
-				if ( is_array( $advanced ) ) {
-					$attrs = array_merge( $attrs, $advanced );
-				} else if ( is_string( $advanced ) ) {
-					_gigya_error_log( "Error in " . __FUNCTION__ . " shortcode advanced parameters message: "
-					                  . $advanced );
-				}
-			}
-		} else {
-			$attrs = $this->attrs_to_gigya($attrs);
-			$attrs = array_merge($defaults, $attrs);
-		}
-		$output = '<div class="gigya-share-widget"></div>';
-		$output .= '<script class="data-share" type="application/json">' . json_encode( $attrs ) . '</script>';
+		$attrs    = $this->processAttrs( $attrs, $defaults );
+		$output   = '<div class="gigya-share-widget"></div>';
+		$output   .= '<script class="data-share" type="application/json">' . json_encode( $attrs ) . '</script>';
 
 		return $output;
 	}
@@ -177,6 +134,7 @@ class gigyaPluginsShortcodes {
 			$output .= '<a class="gigya-wp-logout" href="' . wp_logout_url() . '">' . __( 'Log Out' ) . '</a>';
 			$output .= '</div></div>';
 		}
+
 		return $output;
 	}
 
@@ -186,6 +144,25 @@ class gigyaPluginsShortcodes {
 			unset($attrs[$key]);
 			$attrs[$new_key] =  _underscore_to_camelcase($val);
 		}
+		return $attrs;
+	}
+
+	private function processAttrs( $attr, $defaults ) {
+		if ( empty( $attrs ) ) {
+			$attrs = $defaults;
+			if ( isset( $attrs['advanced'] ) ) {
+				$advanced = gigyaCms::jsonToArray( $attrs['advanced'] );
+				if ( is_array( $advanced ) ) {
+					$attrs = array_merge( $attrs, $advanced );
+				} else if ( is_string( $advanced ) ) {
+					_gigya_error_log( "Error in " . __FUNCTION__ . " shortcode advanced parameters message: " . $advanced );
+				}
+			}
+		} else {
+			$attrs = $this->attrs_to_gigya( $attrs );
+			$attrs = array_merge( $defaults, $attrs );
+		}
+
 		return $attrs;
 	}
 } 

@@ -1,8 +1,5 @@
 (function ($) {
 	$(function () {
-
-		// --------------------------------------------------------------------
-
 		/**
 		 * Expose the relevant form element for the login mode selected.
 		 * @param $el
@@ -85,7 +82,7 @@
 		// --------------------------------------------------------------------
 
 		/**
-		 *adding and removing UI error message function
+		 * Adding and removing UI error message function
 		 **/
 		var enableError = function (element, text, e) {
 			if (typeof e !== 'undefined') {
@@ -103,11 +100,19 @@
 			element.next('div.gigya-error-message-notice-div').remove();
 		};
 
-		/* remove notice div*/
+		/* remove notice div */
 		$('div').on('click', '.gigya-hide-notice-error-message', function () {
 			$(this).parents('div.gigya-error-message-notice-div').hide();
 		});
 
+		var showInlineError = function (element, error, e) {
+			$('.msg').remove();
+			element.after('<div class="msg error">' + error + '</div>');
+			element.addClass('error');
+			element.focus();
+			e.preventDefault();
+			e.stopPropagation();
+		}
 
 		// --------------------------------------------------------------------
 
@@ -127,13 +132,24 @@
 						textField.addClass('valid');
 					}
 				} catch (err) {
-					textField.after('<div class="msg error">Error: the text you have entered is not a valid JSON format. JSON Parser error message: ' + err + '</div>');
-					textField.addClass('error');
-					e.preventDefault();
-					e.stopPropagation();
+					showInlineError(textField, 'Error: the text you have entered is not a valid JSON format. JSON Parser error message: ' + err, e);
 				}
 			}
 		};
+
+		var rsaPrivateKeyValidate = function (textField, e) {
+			var privateKey = textField.val().trim();
+
+			if (privateKey.length > 0) {
+				var rsaTester = new RegExp("-{3,}BEGIN RSA PRIVATE KEY-{3,}\\r?\\n?([\\s\\S]*?)\\r?\\n?-{3,}END RSA PRIVATE KEY-{3,}", 'gm');
+
+				$('.msg').remove();
+
+				if (!rsaTester.test(privateKey)) {
+					showInlineError(textField, 'Error: the entered RSA private key is invalid', e);
+				}
+			}
+		}
 
 		var emptyNumericValidate = function (textField, e) {
 			if ($(textField).val().length === 0 || isNaN($(textField).val())) {
@@ -238,7 +254,7 @@
 			overrideToggle($(this), 'gigya-widget-override', true);
 		});
 
-// --------------------------------------------------------------------
+		// --------------------------------------------------------------------
 
 		/**
 		 * Run the clean DB after upgrade script.
@@ -274,7 +290,7 @@
 			}
 		});
 
-// --------------------------------------------------------------------
+		// --------------------------------------------------------------------
 
 		/**
 		 * Run the clean DB after upgrade script.
@@ -330,33 +346,6 @@
 		// --------------------------------------------------------------------
 
 		/*
-		* General settings page - data centers select
-		* show/hide 'other' data center text field
-		* update data center value according to input selction
-		*/
-
-		// Hide the other data center field by default if other is not selected
-		if ($("#gigya_data_center").find("option:selected").val() !== 'other') {
-			$('.other_dataCenter').hide();
-		}
-
-		// Show other data center input field on 'other' selection
-		$('.data_center select').on('change', function () {
-			if ($("#gigya_data_center").find("option:selected").text() === 'Other') {
-				$('.other_dataCenter').show();
-			} else {
-				$('.other_dataCenter').hide();
-			}
-		});
-
-		// on filling other data center set the selected value to the input
-		$('#other_ds').on('focusout', function () {
-			$("#gigya_data_center").find("option:selected").val($('#other_ds').val());
-		});
-
-		// --------------------------------------------------------------------
-
-		/*
 		* User management page : Toggle raas admin login roles check all
 		*/
 		// on page load check if checkall is checked, if yes check all roles.
@@ -371,7 +360,6 @@
 				$('.gigya_raas_allowed_admin_roles input').prop('checked', false);
 			}
 		});
-
 
 		// --------------------------------------------------------------------
 
@@ -407,13 +395,13 @@
 						}));
 				});
 				current_tr.before(dynamic_line_row);
-				$('.gigya-remove-dynamic-field-line').attr('disabled', false);
+				$('.gigya-remove-dynamic-field-line').removeAttr('disabled');
 			}
 		});
 		$('.gigya-wp-settings-table ').on('click', '.gigya-remove-dynamic-field-line', function () {
 			/* At least two lines present, plus Add button table row */
 			if ($(this).closest('table').find('tr').length === 3) {
-				$('.gigya-remove-dynamic-field-line').attr('disabled', true);
+				$('.gigya-remove-dynamic-field-line').attr('disabled', 'disabled');
 				$(this).closest('tr').remove();
 			} else if ($(this).closest('table').find('tr').length > 3) {
 				$(this).closest('tr').remove();
@@ -428,13 +416,18 @@
 			});
 		});
 
-
 		// --------------------------------------------------------------------
 
 		/* Form manipulation functions */
 
 		var gigya_depends_on = $('.gigya-depends-on');
+		/** Works mostly for texts and radio buttons */
 		var handleGigyaFormElementDependency = function (depender_obj, dependee_obj, values) {
+			if (dependee_obj.attr('type') === 'radio') {
+				var name = dependee_obj.attr('name');
+				dependee_obj = $('input[name="' + name + '"]:checked');
+			}
+
 			if (values.indexOf(dependee_obj.val()) !== -1) {
 				depender_obj.show();
 			} else {
@@ -464,19 +457,19 @@
 		// Validate form before submit
 		$('form.gigya-settings').on('submit', function (e) {
 			var sessionDurationObj = $('#gigya_session_duration');
-			if (sessionDurationObj.length > 0)
+			if (sessionDurationObj.length > 0) {
 				emptyNumericValidate(sessionDurationObj, e);
-			$('form.gigya-settings textarea').each(function () {
-				jsonValidate($(this), e);
-			})
-		});
+			}
 
-		// Validate JSON before submit on admin forms.
-		var submitEl = $('.textarea.json').parents('form').find('input[type="submit"]');
-		submitEl.on('click', function (e) {
-			$('.textarea.json textarea').each(function () {
+			// Validate JSON format
+			$('form.gigya-settings .json textarea').each(function () {
 				jsonValidate($(this), e);
 			})
+
+			// Validate RSA private key format
+			$('form.gigya-settings .rsa-private-key textarea').each(function () {
+				rsaPrivateKeyValidate($(this), e);
+			});
 		});
 
 		// Validate required fields

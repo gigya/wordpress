@@ -1,8 +1,15 @@
 <?php
 
+namespace Gigya\WordPress\Admin;
+
 /*
  * Plugin editing permission levels
  */
+
+use Exception;
+use Gigya\CMSKit\GigyaApiHelper;
+use Gigya\CMSKit\GigyaCMS;
+
 define( "GIGYA__PERMISSION_LEVEL", "manage_options" );
 define( "GIGYA__SECRET_PERMISSION_LEVEL", "install_plugins" ); // Network super admin + single site admin
 
@@ -158,7 +165,10 @@ class GigyaSettings {
 		$page   = $_GET['page'];
 		$render = '';
 
-		echo _gigya_render_tpl( 'admin/tpl/adminPage-wrapper.tpl.php', array( 'page' => $page ) );
+		echo _gigya_render_tpl( 'admin/tpl/adminPage-wrapper.tpl.php', array(
+			'sections' => self::getSections(),
+			'page'     => $page,
+		) );
 		settings_errors();
 
 		echo '<form class="gigya-settings" action="options.php" method="post">' . PHP_EOL;
@@ -184,25 +194,39 @@ class GigyaSettings {
 		/* When a Gigya's setting page is submitted */
 		if ( isset( $_POST['gigya_global_settings'] ) ) {
 			$cms = new gigyaCMS();
-			if ( static::_setSecret() ) {
-				$res = $cms->apiValidate( $_POST['gigya_global_settings']['api_key'], $_POST['gigya_global_settings']['user_key'], GigyaApiHelper::decrypt( $_POST['gigya_global_settings']['api_secret'], SECURE_AUTH_KEY ), $_POST['gigya_global_settings']['data_center'] );
+
+			$auth_field = 'api_secret';
+			if ($_POST['gigya_global_settings']['auth_mode'] === 'user_rsa') {
+				$auth_field = 'rsa_private_key';
+				$_POST['gigya_gigya_settings']['rsa_private_key'] = '';
+			} else {
+				$_POST['gigya_gigya_settings']['api_secret'] = '';
+			}
+
+			if ( self::_setObfuscatedField( $auth_field ) ) {
+				$res = $cms->apiValidate(
+					( empty( $_POST['gigya_global_settings']['auth_mode'] === 'user_rsa' ) ) ? 'user_secret' : $_POST['gigya_global_settings']['auth_mode'],
+					$_POST['gigya_global_settings']['api_key'],
+					$_POST['gigya_global_settings']['user_key'],
+					GigyaApiHelper::decrypt( $_POST['gigya_global_settings'][ $auth_field ], SECURE_AUTH_KEY ),
+					_gigya_data_center( $_POST['gigya_global_settings'] )
+				);
+
 				if ( ! empty( $res ) ) {
 					$gigyaErrCode = $res->getErrorCode();
 					if ( $gigyaErrCode > 0 ) {
 						$gigyaErrMsg = $res->getErrorMessage();
-						$errorsLink  = "<a href='https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST' target='_blank' rel='noopener noreferrer'>Response_Codes_and_Errors</a>";
-						$message     = "SAP CDC API error: {$gigyaErrCode} - {$gigyaErrMsg}.";
-						add_settings_error( 'gigya_global_settings', 'api_validate', __( $message . " For more information please refer to {$errorsLink}", 'error' ) );
-						error_log( 'Error updating SAP CDC settings: ' . $message . ' Call ID: ' . $res->getString( "callId", "N/A" ) );
+
+						self::setError( $gigyaErrCode, $gigyaErrMsg, ( ! empty( $res->getData() ) ) ? $res->getString( "callId", "N/A" ) : null );
 
 						/* Prevent updating values */
 						static::_keepOldApiValues();
 					}
 				} else {
-					add_settings_error( 'gigya_global_settings', 'api_validate', __( 'Error sending request to Gigya' ), 'error' );
+					add_settings_error( 'gigya_global_settings', 'api_validate', __( 'Error sending request to SAP CDC' ), 'error' );
 				}
 			} else {
-				add_settings_error( 'gigya_global_settings', 'api_validate', __( 'Error retrieving existing secret key from the database. This is normal if you have a multisite setup. Please re-enter the secret key.' ), 'error' );
+				add_settings_error( 'gigya_global_settings', 'api_validate', __( 'Error retrieving existing secret key or private key from the database. This is normal if you have a multisite setup. Please re-enter the key.' ), 'error' );
 			}
 		} elseif ( isset( $_POST['gigya_login_settings'] ) ) {
 			/*
@@ -278,20 +302,31 @@ class GigyaSettings {
 	/**
 	 * Set the POSTed secret key.
 	 * If it's not submitted, take it from DB.
+	 *
+	 * @param string $field	The obfuscated field
+	 *
+	 * @return bool
 	 */
-	public static function _setSecret() {
-		if ( empty( $_POST['gigya_global_settings']['api_secret'] ) ) {
+	private static function _setObfuscatedField( $field ) {
+		if ( empty( $_POST['gigya_global_settings'][$field] ) ) {
 			$options = static::_getSiteOptions();
 			if ( $options === false ) {
 				return false;
 			}
 
-			$_POST['gigya_global_settings']['api_secret'] = $options['api_secret'];
+			$_POST['gigya_global_settings'][$field] = $options[$field];
 		} else {
-			$_POST['gigya_global_settings']['api_secret'] = GigyaApiHelper::encrypt( $_POST['gigya_global_settings']['api_secret'], SECURE_AUTH_KEY );
+			$_POST['gigya_global_settings'][$field] = GigyaApiHelper::encrypt( $_POST['gigya_global_settings'][$field], SECURE_AUTH_KEY );
 		}
 
 		return true;
+	}
+
+	private static function setError( $errorCode, $errorMessage, $callId = null ) {
+		$errorLink  = "<a href='https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST' target='_blank' rel='noopener noreferrer'>Response_Codes_and_Errors</a>";
+		$message     = "SAP CDC API error: {$errorCode} - {$errorMessage}.";
+		add_settings_error( 'gigya_global_settings', 'api_validate', __( $message . " For more information please refer to {$errorLink}", 'error' ) );
+		error_log( 'Error updating SAP CDC settings: ' . $message . ' Call ID: ' . $callId );
 	}
 
 	/**
@@ -302,12 +337,17 @@ class GigyaSettings {
 	 */
 	public static function _keepOldApiValues( $option = '', $settings = [] ) {
 		if ( ! $option ) {
-			$options                                                   = self::_getSiteOptions();
-			$_POST['gigya_global_settings']['api_key']                 = $options['api_key'];
-			$_POST['gigya_global_settings']['user_key']                = $options['user_key'];
-			$_POST['gigya_global_settings']['api_secret']              = $options['api_secret'];
-			$_POST['gigya_global_settings']['data_center']             = $options['data_center'];
-			$_POST['gigya_global_settings']['sub_site_settings_saved'] = $options['sub_site_settings_saved'];
+			$options                                           = self::_getSiteOptions();
+			$_POST['gigya_global_settings']['api_key']         = $options['api_key'];
+			$_POST['gigya_global_settings']['user_key']        = $options['user_key'];
+			$_POST['gigya_global_settings']['auth_mode']       = $options['auth_mode'];
+			$_POST['gigya_global_settings']['api_secret']      = $options['api_secret'];
+			$_POST['gigya_global_settings']['rsa_private_key'] = $options['rsa_private_key'];
+			$_POST['gigya_global_settings']['data_center']     = $options['data_center'];
+			$_POST['gigya_global_settings']['other_ds']        = ( ! empty( $_POST['gigya_global_settings']['other_ds'] ) ) ? $options['other_ds'] : '';
+			if ( isset( $options['sub_site_settings_saved'] ) ) {
+				$_POST['gigya_global_settings']['sub_site_settings_saved'] = $options['sub_site_settings_saved'];
+			}
 		} elseif ( ! empty( $settings ) ) { /* $settings is an array--retrieve specific options */
 			if ( $option ) {
 				$options = self::_getSiteOptions( $option );

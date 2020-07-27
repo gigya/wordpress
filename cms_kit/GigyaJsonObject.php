@@ -1,10 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Yaniv Aran-Shamir
- * Date: 4/6/16
- * Time: 11:24 AM
- */
+namespace Gigya\CMSKit;
+
+use Exception;
 
 abstract class GigyaJsonObject
 {
@@ -24,6 +21,14 @@ abstract class GigyaJsonObject
 		}
 	}
 
+	/**
+	 * @param $name
+	 * @param $arguments
+	 *
+	 * @return mixed
+	 *
+	 * @throws Exception
+	 */
 	public function __call($name, $arguments) {
 		if (strpos($name, 'get') === 0)
 		{

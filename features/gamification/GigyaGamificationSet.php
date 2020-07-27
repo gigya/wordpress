@@ -1,11 +1,14 @@
 <?php
 
+namespace Gigya\WordPress;
+
 /**
  * @file
  * GigyaGamificationSet.php
  * An AJAX handler for login or register user to WP.
  */
 class GigyaGamificationSet {
+	public $gm_options;
 
 	public function __construct() {
 
@@ -34,6 +37,9 @@ class GigyaGamificationSet {
 
 	/**
 	 * Generate the parameters for the gamification plugin.
+	 *
+	 * @param $type
+	 *
 	 * @return array
 	 */
 	public function getParams( $type ) {
