@@ -109,9 +109,9 @@ class GigyaCMS
 	 * @return array|false
 	 */
 	public function getScreenSetsIdList( $parent_api_key = false ) {
-		$res_current = getScreenSetListByApiKey( GIGYA__API_KEY );
+		$res_current = self:: getScreenSetListByApiKey( GIGYA__API_KEY );
 		if ( $parent_api_key !== false ) {
-			$res_parent = getScreenSetListByApiKey( $parent_api_key );
+			$res_parent =self:: getScreenSetListByApiKey( $parent_api_key );
 
 			return array_merge( $res_parent, $res_current );
 		} else {
