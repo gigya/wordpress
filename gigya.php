@@ -47,6 +47,7 @@ define( 'GIGYA__SETTINGS_GM', 'gigya_gm_settings' );
  * Session constants
  */
 define( 'GIGYA__SESSION_DEFAULT', 0 );
+define( 'GIGYA__SESSION_FIXED', 1 );
 define( 'GIGYA__SESSION_SLIDING', -1 );
 define( 'GIGYA__SESSION_FOREVER', -2 );
 
@@ -475,8 +476,12 @@ function _gigya_error_log( $new_log ) {
  * @return array
  */
 function _gigya_get_session_expiration( $options ) {
+	if ( ! isset( $options['session_type_numeric'] ) ) {
+		$options['session_type_numeric'] = GIGYA__SESSION_SLIDING;
+		$options['session_duration'] = GIGYA__DEFAULT_COOKIE_EXPIRATION;
+	}
 	if ( ! isset( $options['remember_session_type_numeric'] ) ) {
-		$options['remember_session_type_numeric'] = 1;
+		$options['remember_session_type_numeric'] = GIGYA__SESSION_FIXED;
 		$options['remember_session_duration'] = GIGYA__DEFAULT_REMEMBER_COOKIE_EXPIRATION;
 	}
 
