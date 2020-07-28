@@ -110,7 +110,6 @@ class GigyaCMS
 	 */
 	public function getScreenSetsIdList( $parent_api_key = false ) {
 		$res_current = self:: getScreenSetListByApiKey( GIGYA__API_KEY );
-		var_dump($res_current);
 		if ( $parent_api_key !== false ) {
 			$res_parent =self:: getScreenSetListByApiKey( $parent_api_key );
 			return array_merge( $res_parent, $res_current );
