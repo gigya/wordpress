@@ -110,9 +110,9 @@ class GigyaCMS
 	 */
 	public function getScreenSetsIdList( $parent_api_key = false ) {
 		$res_current = self:: getScreenSetListByApiKey( GIGYA__API_KEY );
+		var_dump($res_current);
 		if ( $parent_api_key !== false ) {
 			$res_parent =self:: getScreenSetListByApiKey( $parent_api_key );
-
 			return array_merge( $res_parent, $res_current );
 		} else {
 			return $res_current;
@@ -145,8 +145,8 @@ class GigyaCMS
 			$el['label'] = $el['screenSetID'];
 			unset( $el['screenSetID'] );
 		} );
-
-		return $res['screenSets'];
+		$keys= array_column( $res['screenSets'], 'label' );
+		return array_combine($keys, $res['screenSets']);
 	}
 
 	/**
