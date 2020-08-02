@@ -48,9 +48,7 @@ class GigyaCMS
 	 */
 	public function call( $method, $params ) {
 		// Initialize new request.
-		$request   = ( isset( $this->user_key ) )
-			? new GSRequest( $this->api_key, $this->api_secret, $method, null, true, $this->user_key )
-			: new GSRequest( $this->api_key, $this->api_secret, $method );
+		$request   = (isset($this->user_key)) ? new GSRequest( $this->api_key, $this->api_secret, $method, null, null, $this->user_key ) : new GSRequest( $this->api_key, $this->api_secret, $method );
 		$user_info = null;
 		if ( ! empty( $params ) ) {
 			foreach ( $params as $param => $val ) {
@@ -59,7 +57,6 @@ class GigyaCMS
 
 			$user_info = in_array( 'getUserInfo', $params );
 		}
-		$params['environment'] = '{"cms_name":"WordPress","cms_version":"WordPress_' . get_bloginfo( 'version' ) . '","gigya_version":"Gigya_module_' . GIGYA__VERSION . '","php_version":"' . phpversion() . '"}'; /* WordPress only */
 
 		// To be define on CMS code (or not).
 		$api_domain = GIGYA__API_DOMAIN;
@@ -102,72 +99,31 @@ class GigyaCMS
 	}
 
 	/**
-	 *  get gigya Screen-Sets id's, include parent and current site.
-	 *
-	 * @param $parent_api_key
+	 *  get gigya Screen-Sets id's
 	 *
 	 * @return array|false
 	 */
-	public function getScreenSetsIdList( $parent_api_key = false ) {
+	public function getScreenSetsIdList() {
+		$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
 
-		$res_parent  = getScreenSetListByApiKey( $parent_api_key );
-		$res_current = getScreenSetListByApiKey( GIGYA__API_KEY );
-
-		return array_merge( $res_parent, $res_current );
-	}
-
-	/**
-	 *  get gigya Screen-Sets id's by api key
-	 *
-	 * @param $api_key
-	 *
-	 * @return array
-	 */
-
-	public static function getScreenSetListByApiKey( $api_key ) {
-		if ( $api_key !== false ) {
-			$gigya_api_helper = new GigyaApiHelper( $api_key, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
-			try {
-				$res = $gigya_api_helper->sendGetScreenSetsCall();
-			} catch ( GSApiException $e ) {
-				error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
-
-				return array();
-			} catch ( GSException $e ) {
-				error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getMessage() );
-
-				return array();
-			}
-			array_walk( $res['screenSets'], function ( &$el ) {
-				$el['label'] = $el['screenSetID'];
-				unset( $el['screenSetID'] );
-			} );
-
-			return $res['screenSets'];
-		}
-
-		return array();
-	}
-
-
-	/**
-	 * get the parent api key or false if not exists
-	 * @return false|string
-	 */
-
-	public function getParentSiteApiKey() {
 		try {
-			$site_config = $this->call( 'admin.getSiteConfig', '' );
+			$res = $gigya_api_helper->sendGetScreenSetsCall();
+		} catch ( GSApiException $e ) {
+			error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
+
+			return false;
 		} catch ( GSException $e ) {
-			error_log( 'Error fetching site configuration from SAP Customer Data Cloud: ' . $e->getMessage() );
+			error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getMessage() );
+
 			return false;
 		}
 
-		if ( array_key_exists( 'siteGroupOwner', $site_config ) ) {
-			return $site_config['siteGroupOwner'];
-		}
+		array_walk( $res['screenSets'], function ( &$el ) {
+			$el['label'] = $el['screenSetID'];
+			unset( $el['screenSetID'] );
+		} );
 
-		return false;
+		return $res['screenSets'];
 	}
 
 	/**
