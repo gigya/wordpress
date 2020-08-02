@@ -109,13 +109,20 @@ class GigyaCMS
 	 * @return array|false
 	 */
 	public function getScreenSetsIdList( $parent_api_key = false ) {
-		$res_current = self:: getScreenSetListByApiKey( GIGYA__API_KEY );
-		if ( $parent_api_key !== false ) {
-			$res_parent =self:: getScreenSetListByApiKey( $parent_api_key );
-			return array_merge( $res_parent, $res_current );
-		} else {
-			return $res_current;
+		$res_current = false;
+		if ( ! empty( GIGYA__API_KEY ) ) {
+			$res_current = self:: getScreenSetListByApiKey( GIGYA__API_KEY );
 		}
+		if ( $parent_api_key !== false ) {
+			$res_parent = self:: getScreenSetListByApiKey( $parent_api_key );
+			if ( $res_parent !== false && $res_current !== false ) {
+				return array_merge( $res_parent, $res_current );
+			} else if ( $res_parent !== false ) {
+				return $res_parent;
+			}
+		}
+
+		return $res_current;
 	}
 
 	/**
@@ -123,7 +130,7 @@ class GigyaCMS
 	 *
 	 * @param $api_key
 	 *
-	 * @return array
+	 * @return array|false
 	 */
 
 	public static function getScreenSetListByApiKey( $api_key ) {
@@ -134,18 +141,19 @@ class GigyaCMS
 		} catch ( GSApiException $e ) {
 			error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
 
-			return array();
+			return false;
 		} catch ( GSException $e ) {
 			error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getMessage() );
 
-			return array();
+			return false;
 		}
 		array_walk( $res['screenSets'], function ( &$el ) {
 			$el['label'] = $el['screenSetID'];
 			unset( $el['screenSetID'] );
 		} );
-		$keys= array_column( $res['screenSets'], 'label' );
-		return array_combine($keys, $res['screenSets']);
+		$keys = array_column( $res['screenSets'], 'label' );
+
+		return array_combine( $keys, $res['screenSets'] );
 	}
 
 	/**
