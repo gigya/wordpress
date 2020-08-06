@@ -16,6 +16,8 @@ class GigyaCMS
 		$this->api_key    = GIGYA__API_KEY;
 		$this->user_key    = GIGYA__USER_KEY ?: ''; /* For backwards compatibility--in the past the user key had not been required */
 		$this->api_secret = GigyaApiHelper::decrypt( GIGYA__API_SECRET, SECURE_AUTH_KEY );
+
+		GSRequest::setCAFile(realpath(dirname(__FILE__) . "/cacert.pem"));
 	}
 
 	/**
@@ -33,7 +35,6 @@ class GigyaCMS
 	 */
 	public function call( $method, $params ) {
 		// Initialize new request.
-		GSRequest::setCAFile(realpath(dirname(__FILE__) . "/cacert.pem"));
 		$request   = (isset($this->user_key))
 			? new GSRequest( $this->api_key, $this->api_secret, $method, null, true, $this->user_key )
 			: new GSRequest( $this->api_key, $this->api_secret, $method );
