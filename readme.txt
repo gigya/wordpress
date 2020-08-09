@@ -4,7 +4,7 @@ Contributors: SAP SE/gigya.com konforti, luciodiri,ynhockey, shaharzillber.
 Tags: CIAM, CIM, Registration, Social Login, Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, SAP Customer Data Cloud, Social Infrastructure, feed
 Requires at least: 4.2
 Tested up to: 4.9
-Stable tag: 5.11
+Stable tag: 5.11.1
 License: Apache v2.0
 
 Integrate your WordPress site with SAP Customer Data Cloud.
@@ -182,6 +182,9 @@ For question about installations or configuration, please contact your account m
 = 5.11 =
 * It is now possible to separately configure the session settings for Remember Me
 * Fixed an issue in the REST API extension
+
+= 5.11.1 =
+* Changed all admin calls to use HTTPS by default
 
 == FAQ ==
 
