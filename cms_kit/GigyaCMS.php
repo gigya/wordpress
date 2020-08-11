@@ -48,8 +48,9 @@ class GigyaCMS
 	 */
 	public function call( $method, $params ) {
 		// Initialize new request.
-		$request   = (isset($this->user_key)) ? new GSRequest( $this->api_key, $this->api_secret, $method, null, null, $this->user_key ) : new GSRequest( $this->api_key, $this->api_secret, $method );
+		$request   = ( isset( $this->user_key ) ) ? new GSRequest( $this->api_key, $this->api_secret, $method, null, true, $this->user_key ) : new GSRequest( $this->api_key, $this->api_secret, $method );
 		$user_info = null;
+
 		if ( ! empty( $params ) ) {
 			foreach ( $params as $param => $val ) {
 				$request->setParam( $param, $val );
@@ -57,6 +58,9 @@ class GigyaCMS
 
 			$user_info = in_array( 'getUserInfo', $params );
 		}
+		$request->setParam( 'environment',
+			'{"cms_name":"WordPress","cms_version":"WordPress_' . get_bloginfo( 'version' ) . '","gigya_version":"Gigya_module_' . GIGYA__VERSION . '","php_version":"' . phpversion()
+			. '"}' );
 
 		// To be define on CMS code (or not).
 		$api_domain = GIGYA__API_DOMAIN;
@@ -170,7 +174,7 @@ class GigyaCMS
 	 * @throws Exception
 	 */
 	public function apiValidateWithUserSecret( $api_key, $user_key, $api_secret, $api_domain ) {
-		$request = new GSRequest( $api_key, $api_secret, 'socialize.getProvidersConfig', null, null, $user_key );
+		$request = new GSRequest( $api_key, $api_secret, 'socialize.getProvidersConfig', null, true, $user_key );
 
 		$request->setAPIDomain( $api_domain );
 		ini_set( 'arg_separator.output', '&' );
@@ -191,7 +195,7 @@ class GigyaCMS
 	 * @throws GSKeyNotFoundException
 	 */
 	public function apiValidateWithPrivateKey( $api_key, $user_key, $rsa_private_key, $api_domain ) {
-		$request = new GSRequest( $api_key, null, 'socialize.getProvidersConfig', null, null, $user_key, $rsa_private_key );
+		$request = new GSRequest( $api_key, null, 'socialize.getProvidersConfig', null, true, $user_key, $rsa_private_key );
 
 		$request->setAPIDomain( $api_domain );
 		ini_set( 'arg_separator.output', '&' );

@@ -37,7 +37,6 @@
 		var raasLogout = function () {
 			gigya.accounts.logout({
 				callback: function (e) {
-					location.replace(gigyaParams.logoutUrl)
 				}
 			});
 		};

@@ -28,7 +28,7 @@ function sessionManagementForm() {
 	$form['session_type_numeric'] = array(
 		'type' => 'hidden',
 		'label' => __( 'Type Numeric' ),
-		'value' => _gigParam( $values, 'session_type_numeric', '1' ),
+		'value' => _gigParam( $values, 'session_type_numeric', GIGYA__SESSION_SLIDING ),
 	);
 
 	$form['session_duration'] = array(
@@ -59,7 +59,7 @@ function sessionManagementForm() {
 	$form['remember_session_type_numeric'] = array(
 		'type' => 'hidden',
 		'label' => __( 'Type Numeric' ),
-		'value' => _gigParam( $values, 'remember_session_type_numeric', '1' ),
+		'value' => _gigParam( $values, 'remember_session_type_numeric', GIGYA__SESSION_FIXED ),
 	);
 
 	$form['remember_session_duration'] = array(
