@@ -15,6 +15,7 @@
   ],
   "minimum-stability": "stable",
   "require": {
+    "composer/installers": "^1.9",
     "gigya/php-sdk": "^3.0",
     "ext-json": "*",
     "ext-openssl": "*"
