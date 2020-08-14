@@ -120,12 +120,7 @@ class GigyaAction {
 	 */
 	public function init()
 	{
-		if (!file_exists(GIGYA__PLUGIN_DIR . 'vendor/autoload.php')) {
-			return;
-		}
-
 		/* Require SDK libraries */
-		require_once GIGYA__PLUGIN_DIR . 'vendor/autoload.php';
 		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaJsonObject.php';
 		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaUserFactory.php';
 		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaProfile.php';
