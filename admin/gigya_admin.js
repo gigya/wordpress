@@ -112,7 +112,7 @@
 			element.focus();
 			e.preventDefault();
 			e.stopPropagation();
-		}
+		};
 
 		// --------------------------------------------------------------------
 
@@ -137,19 +137,6 @@
 			}
 		};
 
-		var rsaPrivateKeyValidate = function (textField, e) {
-			var privateKey = textField.val().trim();
-
-			if (privateKey.length > 0) {
-				var rsaTester = new RegExp("-{3,}BEGIN RSA PRIVATE KEY-{3,}\\r?\\n?([\\s\\S]*?)\\r?\\n?-{3,}END RSA PRIVATE KEY-{3,}", 'gm');
-
-				$('.msg').remove();
-
-				if (!rsaTester.test(privateKey)) {
-					showInlineError(textField, 'Error: the entered RSA private key is invalid', e);
-				}
-			}
-		}
 
 		var emptyNumericValidate = function (textField, e) {
 			if ($(textField).val().length === 0 || isNaN($(textField).val())) {
@@ -464,11 +451,6 @@
 			// Validate JSON format
 			$('form.gigya-settings .json textarea').each(function () {
 				jsonValidate($(this), e);
-			})
-
-			// Validate RSA private key format
-			$('form.gigya-settings .rsa-private-key textarea').each(function () {
-				rsaPrivateKeyValidate($(this), e);
 			});
 		});
 
