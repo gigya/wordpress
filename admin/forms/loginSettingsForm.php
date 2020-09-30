@@ -48,6 +48,9 @@ function loginSettingsForm() {
 	$form['gl_start'] = array(
 			'markup' => '<div class="global-login-wrapper">'
 	);
+	$form['get_unsync_users'] = array(
+		'markup' => '<input type="button" id="gigya_get_unsync_users" class="button" value="get unsync users" />'
+		);
 
 	$form['connectWithoutLoginBehavior'] = array(
 			'type'    => 'select',

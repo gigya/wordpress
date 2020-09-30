@@ -360,6 +360,28 @@
 				$('.gigya_raas_allowed_admin_roles input').prop('checked', false);
 			}
 		});
+		$('#gigya_get_unsync_users').on('click', function () {
+			console.log('avasdfads');
+			var options = {
+				type: 'POST',
+				url: gigyaParams.ajaxurl,
+				data: {
+					action: 'get_unsync_users'
+				}
+			};
+			var req = $.ajax(options);
+
+			req.done(function (res) {
+				if (res.success) {
+					alert(res.data.msg);
+
+				} else {
+					console.log('no success')
+
+				}
+			});
+			console.log(req);
+		});
 
 		// --------------------------------------------------------------------
 
