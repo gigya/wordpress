@@ -361,7 +361,6 @@
 			}
 		});
 		$('#gigya_get_unsync_users').on('click', function () {
-			console.log('avasdfads');
 			var options = {
 				type: 'POST',
 				url: gigyaParams.ajaxurl,
@@ -375,12 +374,8 @@
 				if (res.success) {
 					alert(res.data.msg);
 
-				} else {
-					console.log('no success')
-
 				}
 			});
-			console.log(req);
 		});
 
 		// --------------------------------------------------------------------
