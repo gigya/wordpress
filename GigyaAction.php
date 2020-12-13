@@ -794,16 +794,16 @@ class GigyaAction {
 					$count_third ++;
 				}
 				//checking case of both user list is going to end.
-				if ( $wp_index_user + 1 == $max_index_wp and $gigya_index_user + 1 == $max_index_gigya ) {
-					$wp_index_user    = $max_index_wp;
-					$gigya_index_user = $max_index_gigya;
+				if ( ( $wp_index_user + 1 ) === $max_index_wp and ( $gigya_index_user + 1 ) === $max_index_gigya ) {
+					break;
 
 				} else {
 
-					if ( $wp_index_user + 1 < $max_index_wp ) {
+					if ( ( $wp_index_user + 1 ) < $max_index_wp ) {
 						$wp_index_user ++;
 					}
-					if ( $gigya_index_user + 1 < $max_index_gigya ) {
+
+					if ( ( $gigya_index_user + 1 ) < $max_index_gigya ) {
 						$gigya_index_user ++;
 					}
 				}
@@ -816,29 +816,32 @@ class GigyaAction {
 					$gigya_uid_exists_but_there_is_no_user_in_gigya[ $count_second ] = $wp_user;
 					$count_second ++;
 				}
+				if ( $wp_index_user + 1 < $max_index_wp ) {
+					$wp_index_user ++;
+				}
 
-				$wp_index_user ++;
 			} else {
-				$gigya_index_user ++;
+				if ( $gigya_index_user + 1 < $max_index_gigya ) {
+					$gigya_index_user ++;
+				}
+			}
+			if ( ( $wp_index_user + 1 ) === $max_index_wp and ( $gigya_index_user + 1 ) === $max_index_gigya ) {
+				break;
 			}
 		}
-		//printing the atrrays
+		//printing the a arrays
 		if ( ! empty( $with_same_email_but_different_uid ) ) {
-			error_log( '$with_same_email_but_different_uid' );
+			error_log( '1. with same email but different uid :' . "\n" . var_export( $with_same_email_but_different_uid, true ) );
 		}
-		error_log( '1: ' . var_export( $with_same_email_but_different_uid, true ) );
 		if ( ! empty( $gigya_uid_not_exists_but_email_exists_in_gigya ) ) {
-			error_log( '$gigya_uid_not_exists_but_email_exists_in_gigya' );
+			error_log( '2. gigya uid not exists in WP but email exists in gigya: ' . "\n" . var_export( $gigya_uid_not_exists_but_email_exists_in_gigya, true ) );
 		}
-		error_log( '2: ' . var_export( $gigya_uid_not_exists_but_email_exists_in_gigya, true ) );
 		if ( ! empty( $gigya_uid_not_exists_and_email_not_exists_in_gigya ) ) {
-			error_log( '$gigya_uid_not_exists_and_email_not_exists_in_gigya' );
+			error_log( '3. gigya uid not exists in WP and email not exists in gigya: ' . "\n" . var_export( $gigya_uid_not_exists_and_email_not_exists_in_gigya, true ) );
 		}
-		error_log( '3: ' . var_export( $gigya_uid_not_exists_and_email_not_exists_in_gigya, true ) );
 		if ( ! empty( $gigya_uid_exists_but_there_is_no_user_in_gigya ) ) {
-			error_log( '$gigya_uid_exists_but_there_is_no_user_in_gigya' );
+			error_log( '4. gigya uid exists in WP but there is no user in gigya: ' . "\n" . var_export( $gigya_uid_exists_but_there_is_no_user_in_gigya, true ) );
 		}
-		error_log( '4: ' . var_export( $gigya_uid_exists_but_there_is_no_user_in_gigya, true ) );
 
 		return true;
 	}
