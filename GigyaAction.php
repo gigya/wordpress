@@ -752,6 +752,7 @@ class GigyaAction {
 		$with_same_email_but_different_uid = array();
 		$count_fourth                      = 0;
 
+
 		$gigya_query = "SELECT * FROM accounts";
 		$gigya_query .= " ORDER BY registeredTimestamp ASC LIMIT " . GIGYA__OFFLINE_SYNC_MAX_USERS;
 		$gigya_cms   = new GigyaCMS();
@@ -778,11 +779,28 @@ class GigyaAction {
 		$gigya_index_user = 0;
 
 		while ( $wp_index_user < $max_index_wp or $gigya_index_user < $max_index_gigya ) {
-			$wp_user     = $wp_users[ $wp_index_user ];
-			$gigya_user  = $gigya_users[ $gigya_index_user ];
-			$wp_user_uid = get_user_meta( $wp_user->ID, 'gigya_uid', true );
 
-			$res = strcmp( $wp_user->user_email, $gigya_user['loginIDs']['emails'][0] );
+			if($wp_index_user < $max_index_wp and $gigya_index_user < $max_index_gigya ) {
+				$wp_user     = $wp_users[ $wp_index_user ];
+				$gigya_user  = $gigya_users[ $gigya_index_user ];
+				$wp_user_uid = get_user_meta( $wp_user->ID, 'gigya_uid', true );
+				$res = strcmp( $wp_user->user_email, $gigya_user['loginIDs']['emails'][0] );
+
+			}
+
+			else if($wp_index_user < $max_index_wp) {
+				$wp_user     = $wp_users[ $wp_index_user ];
+				$wp_user_uid = get_user_meta( $wp_user->ID, 'gigya_uid', true );
+				$res = -1 ;
+			}
+			else if($gigya_index_user < $max_index_gigya) {
+				$gigya_user  = $gigya_users[ $gigya_index_user ];
+				$res         = 1;
+				$wp_user_uid= false;
+
+			}
+
+
 			if ( $res === 0 ) {
 				if ( $wp_user_uid !== false ) {
 					if ( strcmp( $wp_user_uid, $gigya_user['UID'] ) ) {
@@ -793,20 +811,9 @@ class GigyaAction {
 					$gigya_uid_not_exists_but_email_exists_in_gigya[ $count_third ] = $wp_user;
 					$count_third ++;
 				}
-				//checking case of both user list is going to end.
-				if ( ( $wp_index_user + 1 ) === $max_index_wp and ( $gigya_index_user + 1 ) === $max_index_gigya ) {
-					break;
+				$wp_index_user ++;
+				$gigya_index_user ++;
 
-				} else {
-
-					if ( ( $wp_index_user + 1 ) < $max_index_wp ) {
-						$wp_index_user ++;
-					}
-
-					if ( ( $gigya_index_user + 1 ) < $max_index_gigya ) {
-						$gigya_index_user ++;
-					}
-				}
 			} elseif ( $res < 0 ) {
 
 				if ( $wp_user_uid === false ) {
@@ -816,17 +823,11 @@ class GigyaAction {
 					$gigya_uid_exists_but_there_is_no_user_in_gigya[ $count_second ] = $wp_user;
 					$count_second ++;
 				}
-				if ( $wp_index_user + 1 < $max_index_wp ) {
 					$wp_index_user ++;
-				}
 
+				//res>0
 			} else {
-				if ( $gigya_index_user + 1 < $max_index_gigya ) {
 					$gigya_index_user ++;
-				}
-			}
-			if ( ( $wp_index_user + 1 ) === $max_index_wp and ( $gigya_index_user + 1 ) === $max_index_gigya ) {
-				break;
 			}
 		}
 		//printing the a arrays
@@ -842,6 +843,7 @@ class GigyaAction {
 		if ( ! empty( $gigya_uid_exists_but_there_is_no_user_in_gigya ) ) {
 			error_log( '4. gigya uid exists in WP but there is no user in gigya: ' . "\n" . var_export( $gigya_uid_exists_but_there_is_no_user_in_gigya, true ) );
 		}
+
 
 		return true;
 	}
