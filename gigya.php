@@ -3,7 +3,7 @@
  * Plugin Name: SAP Customer Data Cloud
  * Plugin URI: https://www.sap.com/products/crm/customer-data-management.html
  * Description: Allows sites to utilize the SAP Customer Data Cloud API for authentication and social network updates.
- * Version: 5.11
+ * Version: 6.1.0
  * Author: SAP SE
  * Author URI: https://www.sap.com/products/crm/customer-data-management.html
  * License: Apache v2.0
@@ -19,8 +19,8 @@ use Gigya\WordPress\GigyaAction;
  * Global constants.
  */
 define( 'GIGYA__MINIMUM_WP_VERSION', '4.7' );
-define( 'GIGYA__MINIMUM_PHP_VERSION', '5.6' );
-define( 'GIGYA__VERSION', '6.0.2' );
+define( 'GIGYA__MINIMUM_PHP_VERSION', '7.0' );
+define( 'GIGYA__VERSION', '6.1.0' );
 define( 'GIGYA__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GIGYA__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'GIGYA__CDN_PROTOCOL', ! empty( $_SERVER['HTTPS'] ) ? 'https://cdns' : 'http://cdn' );
@@ -34,14 +34,10 @@ define( 'GIGYA__ERROR_UNAUTHORIZED_PARTNER', 403036 );
  * Gigya constants for admin settings sections.
  */
 define( 'GIGYA__SETTINGS_GLOBAL', 'gigya_global_settings' );
-define( 'GIGYA__SETTINGS_LOGIN', 'gigya_login_settings' );
+define( 'GIGYA__SETTINGS_LOGIN', 'gigya_login_settings' ); /* User Management */
 define( 'GIGYA__SETTINGS_FIELD_MAPPING', 'gigya_field_mapping_settings' );
 define( 'GIGYA__SETTINGS_SCREENSETS', 'gigya_screenset_settings' );
 define( 'GIGYA__SETTINGS_SESSION', 'gigya_session_management' );
-define( 'GIGYA__SETTINGS_SHARE', 'gigya_share_settings' );
-define( 'GIGYA__SETTINGS_COMMENTS', 'gigya_comments_settings' );
-define( 'GIGYA__SETTINGS_REACTIONS', 'gigya_reactions_settings' );
-define( 'GIGYA__SETTINGS_GM', 'gigya_gm_settings' );
 
 /**
  * Session constants
@@ -732,15 +728,4 @@ function raas_wp_login_custom_message() {
 	}
 
 	return false;
-}
-
-/**
- * Check if the comments plugin is on
- *
- * @return bool plugin on/off
- */
-function gigya_comments_on() {
-	$comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
-	$comments_on = _gigParamDefaultOn( $comments_options, 'on' );
-	return ! empty( $comments_on );
 }

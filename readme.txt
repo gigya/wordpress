@@ -4,7 +4,7 @@ Contributors: SAP SE/gigya.com konforti, luciodiri, ynhockey, shaharzillber.
 Tags: CIAM, CIM, Registration, Social Login, Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, SAP Customer Data Cloud, Social Infrastructure, feed
 Requires at least: 4.2
 Tested up to: 4.9
-Stable tag: 6.0.2
+Stable tag: 6.1.0
 License: Apache v2.0
 
 Integrate your WordPress site with SAP Customer Data Cloud.
@@ -195,6 +195,9 @@ For question about installations or configuration, please contact your account m
 
 = 6.0.2 =
 * Allowed any RSA key format in client-side validation
+
+= 6.1.0 =
+* Removed comments, share and gamification features that have been deprecated in SAP CDC
 
 == FAQ ==
 

@@ -135,26 +135,6 @@ class GigyaSettings {
 				'func'  => 'sessionManagementForm',
 				'slug'  => 'gigya_session_management'
 			),
-			'gigya_share_settings'         => array(
-				'title' => 'Share Settings',
-				'func'  => 'shareSettingsForm',
-				'slug'  => 'gigya_share_settings'
-			),
-			'gigya_comments_settings'      => array(
-				'title' => 'Comments',
-				'func'  => 'commentsSettingsForm',
-				'slug'  => 'gigya_comments_settings'
-			),
-			'gigya_reactions_settings'     => array(
-				'title' => 'Reactions',
-				'func'  => 'reactionsSettingsForm',
-				'slug'  => 'gigya_reactions_settings'
-			),
-			'gigya_gm_settings'            => array(
-				'title' => 'Gamification',
-				'func'  => 'gmSettingsForm',
-				'slug'  => 'gigya_gm_settings'
-			),
 		);
 	}
 
