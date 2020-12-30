@@ -752,6 +752,8 @@ class GigyaAction {
 		$with_same_email_but_different_uid = array();
 		$count_fourth                      = 0;
 
+		$user_exist_in_gigya_but_not_in_wp = array();
+		$count_fifth= 0;
 
 		$gigya_query = "SELECT * FROM accounts";
 		$gigya_query .= " ORDER BY registeredTimestamp ASC LIMIT " . GIGYA__OFFLINE_SYNC_MAX_USERS;
@@ -827,6 +829,8 @@ class GigyaAction {
 
 				//res>0
 			} else {
+				$user_exist_in_gigya_but_not_in_wp[$count_fifth] =$gigya_user;
+					$count_fifth++;
 					$gigya_index_user ++;
 			}
 		}
