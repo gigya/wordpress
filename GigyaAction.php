@@ -76,7 +76,6 @@ class GigyaAction {
 		add_action( 'rest_api_init', array( $this, 'appendUserMetaToRestAPI' ) );
 		add_action( 'gigya_offline_sync_cron', array( $this, 'executeOfflineSyncCron' ) );
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
-		add_filter( 'the_content', array( $this, 'theContent' ) );
 		add_filter( 'get_avatar', array( $this, 'getGigyaAvatar' ), 10, 5 );
 		add_filter( 'login_message', 'raas_wp_login_custom_message' );
 		add_filter( 'cron_schedules', array( $this, 'getOfflineSyncSchedules' ) );
