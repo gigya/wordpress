@@ -39,6 +39,7 @@ class GigyaAction {
 			define( 'GIGYA__PRIVATE_KEY', $this->global_options['rsa_private_key'] ?? '' );
 			define( 'GIGYA__API_DOMAIN', _gigya_data_center( $this->global_options ) );
 			define( 'GIGYA__API_DEBUG', $this->global_options['debug'] );
+			define( 'GIGYA__JS_CDN', 'https://cdns.' . GIGYA__API_DOMAIN . '/js/socialize.js' );
 		} else {
 			define( 'GIGYA__API_KEY', '' );
 			define( 'GIGYA__USER_KEY', '' );
@@ -48,6 +49,7 @@ class GigyaAction {
 			define( 'GIGYA__PRIVATE_KEY', '' );
 			define( 'GIGYA__API_DOMAIN', '' );
 			define( 'GIGYA__API_DEBUG', '' );
+			define( 'GIGYA__JS_CDN', GIGYA__DEFAULT_JS_CDN );
 		}
 
 		add_action( 'init', array( $this, 'init' ) );
@@ -120,12 +122,10 @@ class GigyaAction {
 	 */
 	public function init()
 	{
-		if (!file_exists(GIGYA__PLUGIN_DIR . 'vendor/autoload.php')) {
-			return;
-		}
-
 		/* Require SDK libraries */
-		require_once GIGYA__PLUGIN_DIR . 'vendor/autoload.php';
+		if ( file_exists( GIGYA__PLUGIN_DIR . 'vendor/autoload.php' ) ) { /* If the plugin is installed by Composer as a `wordpress-plugin`, this becomes unnecessary, but require_once makes sure it's not included again */
+			require_once GIGYA__PLUGIN_DIR . 'vendor/autoload.php';
+		}
 		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaJsonObject.php';
 		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaUserFactory.php';
 		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaProfile.php';
@@ -188,7 +188,7 @@ class GigyaAction {
 		if ( ! empty( $api_key ) ) {
 			/*	* Loads requirements for any Gigya's login
 				* Load Gigya's socialize.js from CDN */
-			wp_enqueue_script( 'gigya_cdn', GIGYA__JS_CDN . GIGYA__API_KEY . '&lang=' . $params['lang'] );
+			wp_enqueue_script( 'gigya_cdn', GIGYA__JS_CDN . '?apiKey=' . GIGYA__API_KEY . '&lang=' . $params['lang'] );
 
 			if ( ! empty( $this->login_options ) ) /* Empty only happens on initial plugin enable, before configuring it */ {
 				/* Social Login – load requirements  */
