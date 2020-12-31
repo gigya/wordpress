@@ -123,7 +123,7 @@ class GigyaAction {
 	public function init()
 	{
 		/* Require SDK libraries */
-		if ( file_exists( 'vendor/autoload.php' ) ) { /* If the plugin is installed by Composer as a `wordpress-plugin`, this becomes unnecessary, but require_once makes sure it's not included again */
+		if ( file_exists( GIGYA__PLUGIN_DIR . 'vendor/autoload.php' ) ) { /* If the plugin is installed by Composer as a `wordpress-plugin`, this becomes unnecessary, but require_once makes sure it's not included again */
 			require_once GIGYA__PLUGIN_DIR . 'vendor/autoload.php';
 		}
 		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaJsonObject.php';
