@@ -848,7 +848,7 @@ class GigyaAction {
 			error_log( '4. gigya uid exists in WP but there is no user in gigya: ' . "\n" . var_export( $gigya_uid_exists_but_there_is_no_user_in_gigya, true ) );
 		}
 	if ( ! empty( $user_exist_in_gigya_but_not_in_wp ) ) {
-			error_log( '4. user exists in gigya but not in WP: ' . "\n" . var_export( $user_exist_in_gigya_but_not_in_wp, true ) );
+			error_log( '5. user exists in gigya but not in WP: ' . "\n" . var_export( $user_exist_in_gigya_but_not_in_wp, true ) );
 		}
 
 		return true;
