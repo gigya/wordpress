@@ -23,6 +23,7 @@ define( 'GIGYA__MINIMUM_PHP_VERSION', '5.6' );
 define( 'GIGYA__VERSION', '6.0.3' );
 define( 'GIGYA__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GIGYA__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'GIGYA_USER_FILE', GIGYA__PLUGIN_DIR.'user_file/' );
 define( 'GIGYA__DEFAULT_JS_CDN', 'https://cdns.gigya.com/js/socialize.js' );
 define( 'GIGYA__LOG_LIMIT', 50 );
 define( 'GIGYA__DEFAULT_COOKIE_EXPIRATION', 1800 ); /* WordPress defaults to 172800 (48 hours) */

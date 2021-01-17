@@ -360,8 +360,11 @@
 			req.done(function (res) {
 				if (res.success) {
 					alert(res.data.msg);
-
 				}
+				else{
+					alert(res.data.msg);
+				}
+
 			});
 		});
 
