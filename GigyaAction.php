@@ -907,7 +907,7 @@ class GigyaAction {
 			fclose( $f );
 
 		}
-		wp_send_json_success(array('msg' => __( "The unsync users successfully export." )));
+		wp_send_json_success(array('msg' => __( "The unsync users successfully export to the path: ".GIGYA_USER_FILE )));
 
 	}
 	/**
