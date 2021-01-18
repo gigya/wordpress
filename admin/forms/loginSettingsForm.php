@@ -48,8 +48,13 @@ function loginSettingsForm() {
 	$form['gl_start'] = array(
 			'markup' => '<div class="global-login-wrapper">'
 	);
-	$form['get_unsync_users'] = array(
-		'markup' => '<input type="button" id="gigya_get_unsync_users" class="button" value="Get Unsync Users" />'
+	$form['get_out_of_sync_users'] = array(
+		'markup' => ' <div id="generate_report_users_get_out_of_sync"> <small>Generate a report of users that were not synced between SAP Customer Data Cloud and WordPress</small> 
+ 						<input type="button" id="gigya_get_out_of_sync_users" class="button" value="Generate Report" /></div>',
+
+
+		'desc'  => __( 'Generate a report of users that were not synced between SAP Customer Data Cloud and WordPress.' )
+
 		);
 
 	$form['connectWithoutLoginBehavior'] = array(

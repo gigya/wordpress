@@ -347,12 +347,12 @@
 				$('.gigya_raas_allowed_admin_roles input').prop('checked', false);
 			}
 		});
-		$('#gigya_get_unsync_users').on('click', function () {
+		$('#gigya_get_out_of_sync_users').on('click', function () {
 			var options = {
 				type: 'POST',
 				url: gigyaParams.ajaxurl,
 				data: {
-					action: 'get_unsync_users'
+					action: 'get_out_of_sync_users'
 				}
 			};
 			var req = $.ajax(options);

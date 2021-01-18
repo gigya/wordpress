@@ -82,9 +82,9 @@ class GigyaAction {
 		add_filter( 'get_avatar', array( $this, 'getGigyaAvatar' ), 10, 5 );
 		add_filter( 'login_message', 'raas_wp_login_custom_message' );
 		add_filter( 'cron_schedules', array( $this, 'getOfflineSyncSchedules' ) );
-		add_action( 'wp_ajax_get_unsync_users', array( $this, 'getUnsyncUsers' ) );
-		add_action( 'get_unsync_users', array( $this, 'getUnsyncUsers' ) );
-		add_action( 'wp_ajax_nopriv_get_unsync_users', array( $this, 'getUnsyncUsers' ) );
+		add_action( 'wp_ajax_get_out_of_sync_users', array( $this, 'getOutOfSyncUsers' ) );
+		add_action( 'get_out_of_sync_users', array( $this, 'getOutOfSyncUsers' ) );
+		add_action( 'wp_ajax_nopriv_get_out_of_sync_users', array( $this, 'getOutOfSyncUsers' ) );
 
 
 		if ( gigya_comments_on() ) {
@@ -740,7 +740,7 @@ class GigyaAction {
 		}
 	}
 
-	public function getUnsyncUsers() {
+	public function getOutOfSyncUsers() {
 
 		if ( ! is_dir( GIGYA_USER_FILE ) ) {
 			error_log( "can't report about the unsynce users because the path: " . GIGYA_USER_FILE . " not exist" );
@@ -784,7 +784,7 @@ class GigyaAction {
 			return;
 		}
 
-		if($gigya_users)
+		if(!$gigya_users)
 		{
 			error_log( "Something went wrong, there is 0 users in SAP." );
 			wp_send_json_error(array('msg' => __( "Something went wrong, there is 0 users in SAP" ) ));
@@ -826,11 +826,18 @@ class GigyaAction {
 				$wp_user     = array('ID'=> $wp_users[ $wp_index_user ]->ID, 'email'=>$wp_users[ $wp_index_user ]->user_email);
 				$wp_user_uid = get_user_meta( $wp_user['ID'], 'gigya_uid', true );
 				$res         = - 1;
-			} else if ( $gigya_index_user < $max_index_gigya ) {
+
+				//just to avoid warnings there is no meaning to this line
+				$gigya_user=false;
+
+				//case of $gigya_index_user < $max_index_gigya
+			} else  {
 				$gigya_user  = $gigya_users_extended[ $gigya_index_user ];
 				$res         = 1;
 				$wp_user_uid = false;
 
+				//just to avoid warnings there is no meaning to this line
+				$wp_user = false;
 			}
 
 
