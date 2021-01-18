@@ -48,14 +48,7 @@ function loginSettingsForm() {
 	$form['gl_start'] = array(
 			'markup' => '<div class="global-login-wrapper">'
 	);
-	$form['get_out_of_sync_users'] = array(
-		'markup' => ' <div id="generate_report_users_get_out_of_sync"> <small>Generate a report of users that were not synced between SAP Customer Data Cloud and WordPress</small> 
- 						<input type="button" id="gigya_get_out_of_sync_users" class="button" value="Generate Report" /></div>',
 
-
-		'desc'  => __( 'Generate a report of users that were not synced between SAP Customer Data Cloud and WordPress.' )
-
-		);
 
 	$form['connectWithoutLoginBehavior'] = array(
 			'type'    => 'select',
@@ -183,6 +176,14 @@ function loginSettingsForm() {
 			);
 		}
 	}
+
+	$form['get_out_of_sync_users'] = array(
+		'markup' => ' <div id="generate_report_users_get_out_of_sync">  
+			 <h4>Out Of Sync Users Section</h4>
+			<input type="button" id="gigya_get_out_of_sync_users" class="button" value="Generate Report" />
+		<small>Generate a report of users that were not synced between SAP Customer Data Cloud and WordPress, notice limited to 10,000 users.</small></div>',
+		'desc'  => __( 'Generate a report of users that were not synced between SAP Customer Data Cloud and WordPress.' )
+	);
 
 	/* Use this field in multisite to flag when sub site settings are saved locally for site */
 	if ( is_multisite() ) {

@@ -10,6 +10,7 @@ use Gigya\PHP\GSResponse;
 use Gigya\WordPress\Admin\GigyaSettings;
 use GigyaHookException;
 use GigyaInstall;
+use function PHPSTORM_META\type;
 use WP_User;
 
 /**
@@ -742,12 +743,13 @@ class GigyaAction {
 
 	public function getOutOfSyncUsers() {
 
-		if ( ! is_dir( GIGYA_USER_FILE ) ) {
-			error_log( "can't report about the unsynce users because the path: " . GIGYA_USER_FILE . " not exist" );
-			wp_send_json_error(array('msg' => __( "can't export the date because, The path: " ) . GIGYA_USER_FILE . _( ' not exist.' )));
-			return;
-			};
+		if ( ! is_dir( GIGYA__USER_FILES ) ) {
+			$message = "can't report about the unsynce users because the path: " . GIGYA__USER_FILES . " not exist";
+			error_log( $message );
+			wp_send_json_error( $message );
 
+			return;
+		};
 
 		$gigya_uid_not_exists_and_email_not_exists_in_gigya = array();
 		$count_first                                        = 0;
@@ -765,32 +767,34 @@ class GigyaAction {
 		$count_fifth                       = 0;
 
 		$gigya_users_extended = array();
-		$gigya_query = "SELECT * FROM accounts";
-		$gigya_query .= " ORDER BY registeredTimestamp ASC LIMIT " . GIGYA__OFFLINE_SYNC_MAX_USERS;
-		$gigya_cms   = new GigyaCMS();
+		$gigya_query          = "SELECT * FROM accounts";
+		$gigya_query          .= " ORDER BY registeredTimestamp ASC LIMIT " . GIGYA__GET_USERS_MAX;
+		$gigya_cms            = new GigyaCMS();
 
 		try {
-			$gigya_users = $gigya_cms->searchGigyaUsers( [ 'query' => $gigya_query ] );
-		}catch (GSApiException $e)
-		{
-			error_log( "Can't reach SAP server." );
-			wp_send_json_error(array('msg' => __( "Can't reach SAP server." ) ));
+			$gigya_users = $gigya_cms->searchGigyaUsers( [ 'query' => $gigya_query ], GIGYA__ACCOUNT_SEARCH_NUMBER_OF_PAGES );
+		} catch ( GSApiException $e ) {
+
+			$message = "Can't reach SAP server, callID: " . $e->getCallId();
+			error_log( $message );
+			wp_send_json_error( $message );
+
 			return;
-		}
-		catch (GSException $e)
-		{
-			error_log( "Can't reach SAP server." );
-			wp_send_json_error(array('msg' => __( "Can't reach SAP server." ) ));
+		} catch ( GSException $e ) {
+			$message = "Can't reach SAP server: " . $e->errorMessage;
+			error_log( $message );
+			wp_send_json_error( $message );
+
 			return;
 		}
 
-		if(!$gigya_users)
-		{
-			error_log( "Something went wrong, there is 0 users in SAP." );
-			wp_send_json_error(array('msg' => __( "Something went wrong, there is 0 users in SAP" ) ));
+		if ( ! $gigya_users ) {
+			$message = "Something went wrong, there is 0 users in SAP CDC.";
+			error_log( $message );
+			wp_send_json_error( $message );
+
 			return;
 		}
-
 
 		foreach ( $gigya_users as $gigya_user ) {
 			foreach ( $gigya_user['loginIDs']['emails'] as $email ) {
@@ -817,29 +821,30 @@ class GigyaAction {
 		while ( $wp_index_user < $max_index_wp or $gigya_index_user < $max_index_gigya ) {
 
 			if ( $wp_index_user < $max_index_wp and $gigya_index_user < $max_index_gigya ) {
-				$wp_user     = array('ID'=> $wp_users[ $wp_index_user ]->ID, 'email'=>$wp_users[ $wp_index_user ]->user_email);
+				$wp_user     = array(
+					'ID'    => $wp_users[ $wp_index_user ]->ID,
+					'email' => $wp_users[ $wp_index_user ]->user_email
+				);
 				$gigya_user  = $gigya_users_extended[ $gigya_index_user ];
 				$wp_user_uid = get_user_meta( $wp_user['ID'], 'gigya_uid', true );
 				$res         = strcmp( $wp_user['email'], $gigya_user['email'] );
 
 			} else if ( $wp_index_user < $max_index_wp ) {
-				$wp_user     = array('ID'=> $wp_users[ $wp_index_user ]->ID, 'email'=>$wp_users[ $wp_index_user ]->user_email);
+				$wp_user     = array(
+					'ID'    => $wp_users[ $wp_index_user ]->ID,
+					'email' => $wp_users[ $wp_index_user ]->user_email
+				);
 				$wp_user_uid = get_user_meta( $wp_user['ID'], 'gigya_uid', true );
 				$res         = - 1;
+				$gigya_user  = false;
 
-				//just to avoid warnings there is no meaning to this line
-				$gigya_user=false;
-
-				//case of $gigya_index_user < $max_index_gigya
-			} else  {
+				//case : there is Gigya's users that not checked.
+			} else {
 				$gigya_user  = $gigya_users_extended[ $gigya_index_user ];
 				$res         = 1;
 				$wp_user_uid = false;
-
-				//just to avoid warnings there is no meaning to this line
-				$wp_user = false;
+				$wp_user     = false;
 			}
-
 
 			if ( $res === 0 ) {
 				if ( $wp_user_uid !== false ) {
@@ -872,43 +877,44 @@ class GigyaAction {
 				$gigya_index_user ++;
 			}
 		}
-		//merging two similar cases
-		$users_exists_in_WP_but_not_in_SAP = array_merge($gigya_uid_not_exists_and_email_not_exists_in_gigya,
-			$gigya_uid_exists_but_there_is_no_user_in_gigya);
+		//merging two similar cases into one for exporting only
+		$users_exists_in_WP_but_not_in_SAP = array_merge( $gigya_uid_not_exists_and_email_not_exists_in_gigya,
+			$gigya_uid_exists_but_there_is_no_user_in_gigya );
 
-		//printing the a arrays
+		//Generating reports on out of sync users.
 		if ( ! empty( $with_same_email_but_different_uid ) ) {
-			$f = fopen( GIGYA_USER_FILE."WP_users_with_same_email_in_SAP_but_different_uid_" . date("Y-m-d_H-i-s") .".csv", 'w' );
-			foreach ($with_same_email_but_different_uid as $user)
-				fputcsv( $f,$user);
-			fclose( $f );
+			$file = fopen( GIGYA__USER_FILES . "Users_with_same_email_but_different_uid_" . date( "Y-m-d_H-i-s" ) . ".csv", 'w' );
+			fputcsv( $file, array( 'wordpress ID:', 'Email: ' ) );
+			foreach ( $with_same_email_but_different_uid as $user ) {
+				fputcsv( $file, $user );
+			}
+			fclose( $file );
 		}
-
 		if ( ! empty( $gigya_uid_not_exists_but_email_exists_in_gigya ) ) {
-			$f = fopen( GIGYA_USER_FILE."WP_users_without_UID_that_exist_in_SAP_" . date("Y-m-d_H-i-s") .".csv", 'w' );
-			foreach ($gigya_uid_not_exists_but_email_exists_in_gigya as $user)
-				fputcsv( $f,$user);
-			fclose( $f );
+			$file = fopen( GIGYA__USER_FILES . "WP_users_without_UID_that_exist_in_SAP_" . date( "Y-m-d_H-i-s" ) . ".csv", 'w' );
+			fputcsv( $file, array( 'wordpress ID:', 'Email: ' ) );
+			foreach ( $gigya_uid_not_exists_but_email_exists_in_gigya as $user ) {
+				fputcsv( $file, $user );
+			}
+			fclose( $file );
 		}
-
-
 		if ( ! empty( $users_exists_in_WP_but_not_in_SAP ) ) {
-			$f = fopen( GIGYA_USER_FILE."WP_users_not_exists_in_SAP_" . date("Y-m-d_H-i-s") .".csv", 'w' );
-			foreach ($users_exists_in_WP_but_not_in_SAP as $user)
-				fputcsv( $f,$user);
-			fclose( $f );
-
+			$file = fopen( GIGYA__USER_FILES . "WP_users_not_existing_in_SAP_" . date( "Y-m-d_H-i-s" ) . ".csv", 'w' );
+			fputcsv( $file, array( 'wordpress ID:', 'Email: ' ) );
+			foreach ( $users_exists_in_WP_but_not_in_SAP as $user ) {
+				fputcsv( $file, $user );
+			}
+			fclose( $file );
 		}
-
 		if ( ! empty( $user_exist_in_gigya_but_not_in_wp ) ) {
-			$f = fopen( GIGYA_USER_FILE."SAP_users_that_not_exists_in_WP_". date("Y-m-d_H-i-s") .".csv", 'w' );
-			foreach ($user_exist_in_gigya_but_not_in_wp as $user)
-				fputcsv( $f,$user);
-			fclose( $f );
-
+			$file = fopen( GIGYA__USER_FILES . "SAP_users_not_existing_in_WP_" . date( "Y-m-d_H-i-s" ) . ".csv", 'w' );
+			fputcsv( $file, array( 'SAP CDC UID:', 'Email: ' ) );
+			foreach ( $user_exist_in_gigya_but_not_in_wp as $user ) {
+				fputcsv( $file, $user );
+			}
+			fclose( $file );
 		}
-		wp_send_json_success(array('msg' => __( "The unsync users successfully export to the path: ".GIGYA_USER_FILE )));
-
+		wp_send_json_success( 'Generate report succeed, path:' . GIGYA__USER_FILES );
 	}
 	/**
 	 * Get WordPress user object by Gigya UID

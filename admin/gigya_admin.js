@@ -358,13 +358,15 @@
 			var req = $.ajax(options);
 
 			req.done(function (res) {
-				if (res.success) {
-					alert(res.data.msg);
-				}
-				else{
-					alert(res.data.msg);
-				}
+				if ($('#generated_out_of_sync_users_succeed_notice').length)
+					$('#generated_out_of_sync_users_succeed_notice').remove();
+				if ($('#generated_out_of_sync_users_failed_notice').length)
+					$('#generated_out_of_sync_users_failed_notice').remove();
 
+				if (res.success)
+					$('#generate_report_users_get_out_of_sync').append('<div  id="generated_out_of_sync_users_succeed_notice" class="notice notice-success is-dismissible"> <p>' + res.data + '</p> </div>');
+				else
+					$('#generate_report_users_get_out_of_sync').append('<div id="generated_out_of_sync_users_failed_notice" class="notice notice-error is-dismissible"> <p>' + res.data + '</p> </div>');
 			});
 		});
 
