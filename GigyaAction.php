@@ -10,7 +10,6 @@ use Gigya\PHP\GSResponse;
 use Gigya\WordPress\Admin\GigyaSettings;
 use GigyaHookException;
 use GigyaInstall;
-use function PHPSTORM_META\type;
 use WP_User;
 
 /**
@@ -29,7 +28,6 @@ class GigyaAction {
 		$this->login_options   = get_option( GIGYA__SETTINGS_LOGIN );
 		$this->global_options  = get_option( GIGYA__SETTINGS_GLOBAL );
 		$this->session_options = get_option( GIGYA__SETTINGS_SESSION );
-
 		/* Retrieve basic SAP CDC authentication parameters */
 		if ( ! empty( $this->global_options ) ) {
 			define( 'GIGYA__API_KEY', $this->global_options['api_key'] );
