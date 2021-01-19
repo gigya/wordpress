@@ -742,7 +742,7 @@ class GigyaAction {
 	public function getOutOfSyncUsers() {
 
 		if ( ! is_dir( GIGYA__USER_FILES ) ) {
-			$message = "can't report about the unsynce users because the path: " . GIGYA__USER_FILES . " not exist";
+			$message = "can't report about the unsynce users because the right pa path: " . GIGYA__USER_FILES . " not exist";
 			error_log( $message );
 			wp_send_json_error( $message );
 
@@ -780,14 +780,6 @@ class GigyaAction {
 			return;
 		} catch ( GSException $e ) {
 			$message = "Can't reach SAP server: " . $e->errorMessage;
-			error_log( $message );
-			wp_send_json_error( $message );
-
-			return;
-		}
-
-		if ( ! $gigya_users ) {
-			$message = "Something went wrong, there is 0 users in SAP CDC.";
 			error_log( $message );
 			wp_send_json_error( $message );
 
