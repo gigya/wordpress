@@ -28,6 +28,7 @@ class GigyaAction {
 		$this->login_options   = get_option( GIGYA__SETTINGS_LOGIN );
 		$this->global_options  = get_option( GIGYA__SETTINGS_GLOBAL );
 		$this->session_options = get_option( GIGYA__SETTINGS_SESSION );
+
 		/* Retrieve basic SAP CDC authentication parameters */
 		if ( ! empty( $this->global_options ) ) {
 			define( 'GIGYA__API_KEY', $this->global_options['api_key'] );
@@ -742,7 +743,7 @@ class GigyaAction {
 	public function getOutOfSyncUsers() {
 
 		if ( ! is_dir( GIGYA__USER_FILES ) ) {
-			$message = "can't report about the unsynce users because the path: " . GIGYA__USER_FILES . " not exist";
+			$message = "Could not generate report: The path: " . GIGYA__USER_FILES . " does not exist";
 			error_log( $message );
 			wp_send_json_error( $message );
 
@@ -773,13 +774,13 @@ class GigyaAction {
 			$gigya_users = $gigya_cms->searchGigyaUsers( [ 'query' => $gigya_query ], GIGYA__ACCOUNT_SEARCH_NUMBER_OF_PAGES );
 		} catch ( GSApiException $e ) {
 
-			$message = "Can't reach SAP server, callID: " . $e->getCallId();
+			$message = "Could not reach SAP server, callID: " . $e->getCallId();
 			error_log( $message );
 			wp_send_json_error( $message );
 
 			return;
 		} catch ( GSException $e ) {
-			$message = "Can't reach SAP server: " . $e->errorMessage;
+			$message = "Could not reach SAP server: " . $e->errorMessage;
 			error_log( $message );
 			wp_send_json_error( $message );
 
@@ -912,7 +913,8 @@ class GigyaAction {
 			}
 			fclose( $file );
 		}
-		wp_send_json_success( 'Generate report succeed, path:' . GIGYA__USER_FILES );
+
+		wp_send_json_success( 'The report has been generated successfully and saved to: ' . GIGYA__USER_FILES );
 	}
 	/**
 	 * Get WordPress user object by Gigya UID
