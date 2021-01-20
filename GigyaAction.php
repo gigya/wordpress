@@ -875,7 +875,7 @@ class GigyaAction {
 		//Generating reports on out of sync users.
 		if ( ! empty( $with_same_email_but_different_uid ) ) {
 			$file = fopen( GIGYA__USER_FILES . "Users_with_same_email_but_different_uid_" . date( "Y-m-d_H-i-s" ) . ".csv", 'w' );
-			fputcsv( $file, array( 'wordpress ID:', 'Email: ' ) );
+			fputcsv( $file, array( 'id', 'email' ) );
 			foreach ( $with_same_email_but_different_uid as $user ) {
 				fputcsv( $file, $user );
 			}
@@ -883,7 +883,7 @@ class GigyaAction {
 		}
 		if ( ! empty( $gigya_uid_not_exists_but_email_exists_in_gigya ) ) {
 			$file = fopen( GIGYA__USER_FILES . "WP_users_without_UID_that_exist_in_SAP_" . date( "Y-m-d_H-i-s" ) . ".csv", 'w' );
-			fputcsv( $file, array( 'wordpress ID:', 'Email: ' ) );
+			fputcsv( $file, array( 'id', 'email' ) );
 			foreach ( $gigya_uid_not_exists_but_email_exists_in_gigya as $user ) {
 				fputcsv( $file, $user );
 			}
@@ -891,7 +891,7 @@ class GigyaAction {
 		}
 		if ( ! empty( $users_exists_in_WP_but_not_in_SAP ) ) {
 			$file = fopen( GIGYA__USER_FILES . "WP_users_not_existing_in_SAP_" . date( "Y-m-d_H-i-s" ) . ".csv", 'w' );
-			fputcsv( $file, array( 'wordpress ID:', 'Email: ' ) );
+			fputcsv( $file, array( 'id', 'email' ) );
 			foreach ( $users_exists_in_WP_but_not_in_SAP as $user ) {
 				fputcsv( $file, $user );
 			}
@@ -899,7 +899,7 @@ class GigyaAction {
 		}
 		if ( ! empty( $user_exist_in_gigya_but_not_in_wp ) ) {
 			$file = fopen( GIGYA__USER_FILES . "SAP_users_not_existing_in_WP_" . date( "Y-m-d_H-i-s" ) . ".csv", 'w' );
-			fputcsv( $file, array( 'SAP CDC UID:', 'Email: ' ) );
+			fputcsv( $file, array( 'uid', 'email' ) );
 			foreach ( $user_exist_in_gigya_but_not_in_wp as $user ) {
 				fputcsv( $file, $user );
 			}
