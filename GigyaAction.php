@@ -787,14 +787,6 @@ class GigyaAction {
 			return;
 		}
 
-		if ( ! $gigya_users ) {
-			$message = "Something went wrong, there is 0 users in SAP CDC.";
-			error_log( $message );
-			wp_send_json_error( $message );
-
-			return;
-		}
-
 		foreach ( $gigya_users as $gigya_user ) {
 			foreach ( $gigya_user['loginIDs']['emails'] as $email ) {
 				array_push( $gigya_users_extended, array( 'UID' => $gigya_user['UID'], 'email' => $email ) );
