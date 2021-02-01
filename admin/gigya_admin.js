@@ -314,11 +314,6 @@
 
 		// --------------------------------------------------------------------
 
-		// Disable the RaaS option when not available.
-		$('.raas_disabled').find('input[value="raas"]').attr('disabled', 'disabled').parent('label').css('color', '#ccc');
-
-		// --------------------------------------------------------------------
-
 		// JSON example for Additional Parameters (advanced) sections.
 		$(document).on('click', '.gigya-json-example', function (e) {
 			e.preventDefault();

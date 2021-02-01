@@ -8,41 +8,42 @@ use Gigya\PHP\GSException;
  */
 function loginSettingsForm() {
 	$values = get_option( GIGYA__SETTINGS_LOGIN );
+	$global_settings = get_option( GIGYA__SETTINGS_GLOBAL );
 	$roles = get_editable_roles();
 	$form   = array();
 
 	$form['mode'] = array(
-			'type'    => 'radio',
-			'options' => array(
-					'wp_only' => __( 'WordPress only' ),
-					'wp_sl'   => __( 'WordPress + Social Login <small class="gigya-raas-warn hidden">Warning: this site is configured on SAP CDC server to use Registration-as-a-Service. Please contact your SAP CDC account manager for migration instruction.</small>' ),
-					'raas'    => __( 'Registration-as-a-Service <small>Selecting this option overrides the WordPress user management system. This requires additional administration steps. Learn more <a href="https://developers.gigya.com/display/GD/WordPress#WordPress-UserManagementSettings">here</a></small>' )
-			),
-			'value'   => _gigParam( $values, 'mode', 'wp_only' ),
-			'class'   => 'raas_disabled'
+		'type'    => 'radio',
+		'options' => array(
+			'wp_only' => __( 'WordPress only' ),
+			'wp_sl'   => __( 'WordPress + Social Login <small class="gigya-raas-warn hidden">Warning: this site is configured on SAP CDC server to use Registration-as-a-Service. Please contact your SAP CDC account manager for migration instruction.</small>' ),
+			'raas'    => __( 'Registration-as-a-Service <small>Selecting this option overrides the WordPress user management system. This requires additional administration steps. Learn more <a href="https://developers.gigya.com/display/GD/WordPress#WordPress-UserManagementSettings">here</a></small>' )
+		),
+		'value'   => _gigParam( $values, 'mode', 'wp_only' ),
 	);
 
 	// check if raas is enabled, and add the raas_enabled class to the form mode element
-	$c       = new GigyaCMS();
+	$c = new GigyaCMS();
 	try {
 		$is_raas = $c->isRaaS();
-	}
-	catch ( GSException $e ) {
+	} catch ( GSException $e ) {
 		$is_raas = true;
-		$form['raas_error'] = [
-			'markup' => '<div id="setting-error-api_validate" class="error settings-error notice is-dismissible"> 
-							<p>
-							<strong>' . __( 'Error determining RaaS status. There could be an issue with your machine or SAP CDC account. Please contact support if the problem persists. Message from SAP CDC') . ': ' . $e->getMessage() . '.
-							For more information please refer to <a href="https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST" target="_blank" rel="noopener noreferrer">Response_Codes_and_Errors</a>.
-							</strong>
-							</p>
-							<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
-						</div>',
-		];
-	}
 
-	if ( $is_raas ) {
-		$form['mode']['class'] = 'raas_enabled';
+		if ( ! empty( $global_settings ) ) {
+			$form['raas_error'] = [
+				'markup' => '<div id="setting-error-api_validate" class="error settings-error notice is-dismissible"> 
+								<p>
+								<strong>' . __( 'Error determining RaaS status. There could be an issue with your machine or SAP CDC account. Please contact support if the problem persists. Message from SAP CDC' ) . ': ' . $e->getMessage() . '.
+								For more information please refer to <a href="https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST" target="_blank" rel="noopener noreferrer">Response_Codes_and_Errors</a>.
+								</strong>
+								</p>
+								<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
+							</div>',
+			];
+		}
+	}
+	if ( ! $is_raas or empty( $global_settings ) ) {
+		$form['mode']['disabled'] = true;
 	}
 
 	$form['gl_start'] = array(

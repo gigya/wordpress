@@ -7,29 +7,21 @@ class GigyaInstall {
 
 	private $global_options;
 	private $login_options;
+	private $field_mapping_options;
 	private $screenset_options;
 	private $session_options;
-	private $share_options;
-	private $comments_options;
-	private $reactions_options;
-	private $gm_options;
 	private $log;
-
-	private $reactions_options_nice;
 
 	/**
 	 * Constructor.
 	 */
 	public function __construct() {
-		$this->global_options    = get_option( GIGYA__SETTINGS_GLOBAL );
-		$this->login_options     = get_option( GIGYA__SETTINGS_LOGIN );
-		$this->screenset_options = get_option( GIGYA__SETTINGS_SCREENSETS );
-		$this->session_options   = get_option( GIGYA__SETTINGS_SESSION );
-		$this->share_options     = get_option( GIGYA__SETTINGS_SHARE );
-		$this->comments_options  = get_option( GIGYA__SETTINGS_COMMENTS );
-		$this->reactions_options = get_option( GIGYA__SETTINGS_REACTIONS );
-		$this->gm_options        = get_option( GIGYA__SETTINGS_GM );
-		$this->log               = get_option( 'gigya_log' );
+		$this->global_options        = get_option( GIGYA__SETTINGS_GLOBAL );
+		$this->login_options         = get_option( GIGYA__SETTINGS_LOGIN ); /* User Management */
+		$this->field_mapping_options = get_option( GIGYA__SETTINGS_FIELD_MAPPING );
+		$this->screenset_options     = get_option( GIGYA__SETTINGS_SCREENSETS );
+		$this->session_options       = get_option( GIGYA__SETTINGS_SESSION );
+		$this->log                   = get_option( 'gigya_log' );
 	}
 
 	/**
@@ -55,20 +47,8 @@ class GigyaInstall {
 			add_option( GIGYA__SETTINGS_SCREENSETS, array(), '', 'yes' );
 		}
 
-		if ( empty ( $this->share_options ) ) {
-			add_option( GIGYA__SETTINGS_SHARE, array(), '', 'no' );
-		}
-
-		if ( empty ( $this->comments_options ) ) {
-			add_option( GIGYA__SETTINGS_COMMENTS, array(), '', 'no' );
-		}
-
-		if ( empty ( $this->reactions_options ) ) {
-			add_option( GIGYA__SETTINGS_REACTIONS, array(), '', 'no' );
-		}
-
-		if ( empty ( $this->gm_options ) ) {
-			add_option( GIGYA__SETTINGS_GM, array(), '', 'no' );
+		if ( empty ( $this->field_mapping_options ) ) {
+			add_option( GIGYA__SETTINGS_FIELD_MAPPING, array(), '', 'yes' );
 		}
 
 		if ( empty ( $this->log ) ) {
@@ -101,11 +81,6 @@ class GigyaInstall {
 			// old values if exist.
 			$this->upgradeGlobal( $old );
 			$this->upgradeLogin( $old );
-			$this->upgradeShare( $old );
-			$this->upgradeComments( $old );
-			$this->upgradeReactions( $old );
-			$this->upgradeGamification( $old );
-
 		}
 
 		// Upgrade widgets.
@@ -156,81 +131,6 @@ class GigyaInstall {
 		$this->setJson( $this->login_options, 'advancedLoginUI', $old['login_ui'] );
 
 		update_option( GIGYA__SETTINGS_LOGIN, $this->login_options );
-	}
-
-	/**
-	 * Upgrade Share options.
-	 *
-	 * @param $old
-	 */
-	private function upgradeShare( $old ) {
-
-		// Update old (v4.0) share options if exist.
-		if ( ! empty( $old['share_plugin'] ) && $old['share_plugin'] != 'none' ) {
-			$this->share_options['on']       = 1;
-			$this->share_options['position'] = $old['share_plugin'] == 'both' ? 'top' : $old['share_plugin'];
-		}
-		$this->setVar( $this->share_options, 'showCounts', $old['share_show_counts'] );
-		$this->setVar( $this->share_options, 'layout', $old['login_button_style'] );
-		$this->setVar( $this->share_options, 'image', $old['login_button_style'] );
-		$this->setVar( $this->share_options, 'imageURL', $old['login_button_style'] );
-		$this->setVar( $this->share_options, 'shareButtons', $old['share_providers'] );
-		$this->setVar( $this->share_options, 'shortURLs', $old['short_url'] );
-
-		$this->setJson( $this->share_options, 'advanced', $old['share_advanced'] );
-
-		update_option( GIGYA__SETTINGS_SHARE, $this->share_options );
-	}
-
-	/**
-	 * Upgrade Comments options.
-	 *
-	 * @param $old
-	 */
-	private function upgradeComments( $old ) {
-
-		// Update old (v4.0) comments options if exist.
-		$this->setVar( $this->comments_options, 'on', $old['comments_plugin'] );
-		$this->setVar( $this->comments_options, 'categoryID', $old['comments_cat_id'] );
-
-		$this->setJson( $this->comments_options, 'advanced', $old['commets_custom_code'] );
-
-		update_option( GIGYA__SETTINGS_COMMENTS, $this->comments_options );
-	}
-
-	/**
-	 * Upgrade Reactions options.
-	 *
-	 * @param $old
-	 */
-	private function upgradeReactions( $old ) {
-
-		// Update old (v4.0) reactions options if exist.
-		$this->setVar( $this->reactions_options, 'on', $old['reaction_plugin'] );
-		$this->reactions_options['position'] = $old['reaction_position'] == 'both' ? 'top' : $old['reaction_position'];
-		$this->setVar( $this->reactions_options, 'showCounts', $old['reaction_show_counts'] );
-		$this->setVar( $this->reactions_options, 'layout', $old['reaction_layout'] );
-		$this->setVar( $this->reactions_options, 'buttons', $this->toValidJson( '[' . $old['reaction_buttons'] . ']' ) );
-		$this->setVar( $this->reactions_options, 'enabledProviders', $old['reaction_providers'] );
-		$this->setVar( $this->reactions_options, 'countType', $old['reaction_count_type'] );
-		$this->setVar( $this->reactions_options, 'multipleReactions', $old['reaction_multiple'] );
-
-		$this->setJson( $this->reactions_options_nice, 'advanced', $old['reactions_custom_code'] );
-
-		update_option( GIGYA__SETTINGS_REACTIONS, $this->reactions_options );
-	}
-
-	/**
-	 * Upgrade Gamification options.
-	 *
-	 * @param $old
-	 */
-	private function upgradeGamification( $old ) {
-
-		// Update old (v4.0) gamification options if exist.
-		$this->setVar( $this->gm_options, 'notification', $old['gamification_notification'] );
-
-		update_option( GIGYA__SETTINGS_GM, $this->gm_options );
 	}
 
 	/**
