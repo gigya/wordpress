@@ -196,6 +196,11 @@ For question about installations or configuration, please contact your account m
 = 6.0.2 =
 * Allowed any RSA key format in client-side validation
 
+= 6.0.3 =
+* Fixed JavaScript loading from SAP CDN not under gigya.com domains
+* SAP JavaScript is now only retrieved via HTTPS
+* Added a new way to install SAP CDC plugin with Composer
+
 = 6.1.0 =
 * Removed comments, share and gamification features that have been deprecated in SAP CDC
 
