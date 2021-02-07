@@ -215,8 +215,6 @@ function loginSettingsForm() {
 	$form['raas_end'] = array(
 			'markup' => '</div>'
 	);
-	var_dump(get_option(GIGYA__SETTINGS_LOGIN));
-	exit();
 
 	echo _gigya_form_render( $form, GIGYA__SETTINGS_LOGIN );
 }
