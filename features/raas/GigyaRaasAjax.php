@@ -90,11 +90,15 @@ class GigyaRaasAjax {
 			                      'meta_key'   => 'gigya_uid',
 			                      'meta_value' => $data['UID'],
 		                      ) );
-		if ( ! empty( $wp_user ) )
+		if ( ! empty( $wp_user ) ) {
 			$wp_user = $wp_user[0];
-		else if(get_option(GIGYA__SETTINGS_LOGIN)['verification_mode']=='email_as_second')
+		} else {
+			$login_setting   = get_option( GIGYA__SETTINGS_LOGIN );
+			$email_as_second = array_key_exists( 'login_verification_mode', $login_setting ) ? ( $login_setting['login_verification_mode'] == 'email_as_second' ) : true;
+			if ( $email_as_second ) {
 				$wp_user = get_user_by( 'email', $this->gigya_account['profile']['email'] );
-
+			};
+		};
 		if ( ! empty( $wp_user ) )
 		{
 			$is_primary_user = $gigyaCMS->isPrimaryUser( $this->gigya_account['loginIDs']['emails'], strtolower( $wp_user->data->user_email ) );

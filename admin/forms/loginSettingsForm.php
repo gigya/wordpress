@@ -185,14 +185,14 @@ function loginSettingsForm() {
 		<small>Generate a report of the first 10,000 users that were not synced between SAP Customer Data Cloud and WordPress</small></div>',
 		'desc'   => __( 'Generate a report of users that were not synced between SAP Customer Data Cloud and WordPress.' )
 	);
-	$form['verification_mode']     = array(
+	$form['login_verification_mode']     = array(
 		'label'   => '<h4>Login Verification Mode</h4>',
 		'type'    => 'radio',
 		'options' => array(
 			'email_as_second' => __( 'verify with email in case of user without SAP uid ' ),
 			'gigya_uid'       => __( 'verify only by SAP UID (recommended)' ),
 		),
-		'value'   => _gigParam( $values, 'verification_mode', 'email_as_second' ),
+		'value'   => _gigParam( $values, 'login_verification_mode', 'email_as_second' ),
 		'class'   => 'raas_disabled',
 
 	);
