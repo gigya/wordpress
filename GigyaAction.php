@@ -838,7 +838,7 @@ class GigyaAction {
 			}
 
 			if ( $res === 0 ) {
-				if ( !empty($wp_user_uid ) ) {
+				if ( ! empty( $wp_user_uid ) ) {
 					if ( strcmp( $wp_user_uid, $gigya_user['UID'] ) ) {
 						$with_same_email_but_different_uid[ $count_fourth ] = $wp_user;
 						$count_fourth ++;
