@@ -40,7 +40,8 @@ function loginSettingsForm() {
 						</div>',
 		];
 	}
-
+	//var_dump(var_export(get_option( GIGYA__SETTINGS_LOGIN )));////
+	//exit();////
 	if ( $is_raas ) {
 		$form['mode']['class'] = 'raas_enabled';
 	}
