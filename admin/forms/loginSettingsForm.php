@@ -183,7 +183,18 @@ function loginSettingsForm() {
 			 <h4>Out of Sync Users</h4>
 			<input type="button" id="gigya_get_out_of_sync_users" class="button" value="Generate Report" />
 		<small>Generate a report of the first 10,000 users that were not synced between SAP Customer Data Cloud and WordPress</small></div>',
-		'desc'  => __( 'Generate a report of users that were not synced between SAP Customer Data Cloud and WordPress.' )
+		'desc'   => __( 'Generate a report of users that were not synced between SAP Customer Data Cloud and WordPress.' )
+	);
+	$form['verification_mode']     = array(
+		'label'   => '<h4>Login Verification Mode</h4>',
+		'type'    => 'radio',
+		'options' => array(
+			'email_as_second' => __( 'verify with email in case of user without SAP uid ' ),
+			'gigya_uid'       => __( 'verify only by SAP UID (recommended)' ),
+		),
+		'value'   => _gigParam( $values, 'verification_mode', 'email_as_second' ),
+		'class'   => 'raas_disabled',
+
 	);
 
 	/* Use this field in multisite to flag when sub site settings are saved locally for site */
@@ -204,6 +215,8 @@ function loginSettingsForm() {
 	$form['raas_end'] = array(
 			'markup' => '</div>'
 	);
+	var_dump(get_option(GIGYA__SETTINGS_LOGIN));
+	exit();
 
 	echo _gigya_form_render( $form, GIGYA__SETTINGS_LOGIN );
 }

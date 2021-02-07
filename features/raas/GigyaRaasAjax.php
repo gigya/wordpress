@@ -92,8 +92,8 @@ class GigyaRaasAjax {
 		                      ) );
 		if ( ! empty( $wp_user ) )
 			$wp_user = $wp_user[0];
-		else /* Comment this ELSE statement to verify *only* by UID */
-			$wp_user = get_user_by( 'email', $this->gigya_account['profile']['email'] );
+		else if(get_option(GIGYA__SETTINGS_LOGIN)['verification_mode']=='email_as_second')
+				$wp_user = get_user_by( 'email', $this->gigya_account['profile']['email'] );
 
 		if ( ! empty( $wp_user ) )
 		{
