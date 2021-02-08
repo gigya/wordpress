@@ -347,28 +347,6 @@
 				$('.gigya_raas_allowed_admin_roles input').prop('checked', false);
 			}
 		});
-		$('#gigya_get_out_of_sync_users').on('click', function () {
-			var options = {
-				type: 'POST',
-				url: gigyaParams.ajaxurl,
-				data: {
-					action: 'get_out_of_sync_users'
-				}
-			};
-			var req = $.ajax(options);
-
-			req.done(function (res) {
-				if ($('#generated_out_of_sync_users_succeed_notice').length)
-					$('#generated_out_of_sync_users_succeed_notice').remove();
-				if ($('#generated_out_of_sync_users_failed_notice').length)
-					$('#generated_out_of_sync_users_failed_notice').remove();
-
-				if (res.success)
-					$('#generate_report_users_get_out_of_sync').append('<div  id="generated_out_of_sync_users_succeed_notice" class="notice notice-success is-dismissible"> <p>' + res.data + '</p> </div>');
-				else
-					$('#generate_report_users_get_out_of_sync').append('<div id="generated_out_of_sync_users_failed_notice" class="notice notice-error is-dismissible"> <p>' + res.data + '</p> </div>');
-			});
-		});
 
 		// --------------------------------------------------------------------
 

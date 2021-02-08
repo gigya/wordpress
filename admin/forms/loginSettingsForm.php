@@ -40,8 +40,7 @@ function loginSettingsForm() {
 						</div>',
 		];
 	}
-	//var_dump(var_export(get_option( GIGYA__SETTINGS_LOGIN )));////
-	//exit();////
+
 	if ( $is_raas ) {
 		$form['mode']['class'] = 'raas_enabled';
 	}
@@ -49,7 +48,6 @@ function loginSettingsForm() {
 	$form['gl_start'] = array(
 			'markup' => '<div class="global-login-wrapper">'
 	);
-
 
 	$form['connectWithoutLoginBehavior'] = array(
 			'type'    => 'select',
@@ -178,14 +176,7 @@ function loginSettingsForm() {
 		}
 	}
 
-	$form['get_out_of_sync_users'] = array(
-		'markup' => ' <div id="generate_report_users_get_out_of_sync">  
-			 <h4>Out of Sync Users</h4>
-			<input type="button" id="gigya_get_out_of_sync_users" class="button" value="Generate Report" />
-		<small>Generate a report of the first 10,000 users that were not synced between SAP Customer Data Cloud and WordPress</small></div>',
-		'desc'   => __( 'Generate a report of users that were not synced between SAP Customer Data Cloud and WordPress.' )
-	);
-	$form['login_verification_mode']     = array(
+	$form['login_verification_mode'] = array(
 		'label'   => '<h4>Login Verification Mode</h4>',
 		'type'    => 'radio',
 		'options' => array(
