@@ -487,7 +487,7 @@ class GigyaCMS
 	 * @throws GSApiException
 	 * @throws GSException
 	 */
-	public function searchGigyaUsers( $params, $max_page = -1 ) {
+	public function searchGigyaUsers( $params, $max_page = - 1 ) {
 		$gigya_users = [];
 
 		$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
@@ -499,9 +499,10 @@ class GigyaCMS
 			}
 		}
 
-		if ( ! empty( $gigya_data['nextCursorId'] ) and $max_page!=0) {
+		if ( ! empty( $gigya_data['nextCursorId'] ) and $max_page != 0 ) {
 			$cursorId = $gigya_data['nextCursorId'];
-			return array_merge( $gigya_users, $this->searchGigyaUsers( [ 'cursorId' => $cursorId ], --$max_page ) );
+
+			return array_merge( $gigya_users, $this->searchGigyaUsers( [ 'cursorId' => $cursorId ], -- $max_page ) );
 		}
 
 		return $gigya_users;
