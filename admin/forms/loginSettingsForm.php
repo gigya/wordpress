@@ -182,7 +182,7 @@ function loginSettingsForm() {
 			 <h4>Out of Sync Users</h4>
 			<input type="button" id="gigya_get_out_of_sync_users" class="button" value="Generate Report" />
 		<small>Generate a report of the first 10,000 users that were not synced between SAP Customer Data Cloud and WordPress</small></div>',
-		'desc'  => __( 'Generate a report of users that were not synced between SAP Customer Data Cloud and WordPress.' )
+		'desc'   => __( 'Generate a report of users that were not synced between SAP Customer Data Cloud and WordPress.' )
 	);
 
 	/* Use this field in multisite to flag when sub site settings are saved locally for site */
