@@ -113,7 +113,7 @@
 			/* Override default WP links to use Gigya's RaaS behavior */
 			if (gigyaRaasParams.raasOverrideLinks > 0) {
 				overrideLinks();
-			};
+			}
 
 			/* Get admin=true cookie */
 			var admin = false;
