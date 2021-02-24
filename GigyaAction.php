@@ -78,7 +78,6 @@ class GigyaAction {
 		add_action( 'rest_api_init', array( $this, 'appendUserMetaToRestAPI' ) );
 		add_action( 'gigya_offline_sync_cron', array( $this, 'executeOfflineSyncCron' ) );
 		add_shortcode( 'gigya_user_info', array( $this, 'shortcodeUserInfo' ) );
-		add_filter( 'the_content', array( $this, 'theContent' ) );
 		add_filter( 'get_avatar', array( $this, 'getGigyaAvatar' ), 10, 5 );
 		add_filter( 'login_message', 'raas_wp_login_custom_message' );
 		add_filter( 'cron_schedules', array( $this, 'getOfflineSyncSchedules' ) );
@@ -87,10 +86,6 @@ class GigyaAction {
 		add_action( 'wp_ajax_nopriv_get_out_of_sync_users', array( $this, 'getOutOfSyncUsers' ) );
 
 
-		if ( gigya_comments_on() ) {
-			add_filter( 'comments_template', [ $this, 'commentsTemplate' ] );
-		}
-
 		/* Plugins shortcode activation switches */
 		require_once GIGYA__PLUGIN_DIR . 'features/gigyaPluginsShortcodes.php';
 		$shortcodes_class = new gigyaPluginsShortcodes();
@@ -98,26 +93,6 @@ class GigyaAction {
 		add_shortcode( 'gigya-raas-login', array( $shortcodes_class, 'gigyaRaas' ) );
 		add_shortcode( 'gigya-raas-profile', array( $shortcodes_class, 'gigyaRaas' ) );
 		add_shortcode( 'gigya-social-login', array( $shortcodes_class, 'gigyaSocialLoginScode' ) );
-
-		$comments_switch = get_option( GIGYA__SETTINGS_COMMENTS );
-		if ( ! empty( $comments_switch ) and ( count( $comments_switch ) > 0 ) and ( $comments_switch['on'] == true or $comments_switch['on'] == '1' ) ) {
-			add_shortcode( 'gigya-comments', array( $shortcodes_class, 'gigyaCommentsScode' ) );
-		}
-		$reaction_switch = get_option( GIGYA__SETTINGS_REACTIONS );
-		if ( ! empty( $reaction_switch ) and ( count( $reaction_switch ) > 0 ) and ( $reaction_switch['on'] == true or $reaction_switch['on'] == '1' ) ) {
-			add_shortcode( 'gigya-reactions', array( $shortcodes_class, 'gigyaReactionsScode' ) );
-		}
-		$share_switch = get_option( GIGYA__SETTINGS_SHARE );
-		if ( ! empty( $share_switch ) and ( count( $share_switch ) > 0 ) and ( $share_switch['on'] == true or $share_switch['on'] == '1' ) ) {
-			add_shortcode( 'gigya-share-bar', array( $shortcodes_class, 'gigyaShareBarScode' ) );
-		}
-		$gm_switch = get_option( GIGYA__SETTINGS_GM );
-		if ( ! empty( $gm_switch ) and ( count( $gm_switch ) > 0 ) and ( $gm_switch['on'] == true or $gm_switch['on'] == '1' ) ) {
-			add_shortcode( 'gigya-gm-achievements', array( $shortcodes_class, 'gigyaGmScode' ) );
-			add_shortcode( 'gigya-gm-challenge-status', array( $shortcodes_class, 'gigyaGmScode' ) );
-			add_shortcode( 'gigya-gm-leaderboard', array( $shortcodes_class, 'gigyaGmScode' ) );
-			add_shortcode( 'gigya-gm-user-status', array( $shortcodes_class, 'gigyaGmScode' ) );
-		}
 		/* End plugins shortcodes activation switches */
 	}
 
@@ -645,89 +620,7 @@ class GigyaAction {
 			register_widget( 'GigyaLogin_Widget' );
 		}
 
-		/* Share Widget */
-		$share_options = get_option( GIGYA__SETTINGS_SHARE );
-		$share_on      = _gigParamDefaultOn( $share_options, 'on' );
-		if ( ! empty( $share_on ) ) {
-			require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareWidget.php';
-			register_widget( 'GigyaShare_Widget' );
-		}
-
-		/* Comment Widget */
-		$comments_options = get_option( GIGYA__SETTINGS_COMMENTS );
-		$comments_on      = _gigParamDefaultOn( $comments_options, 'on' );
-		if ( ! empty( $comments_on ) ) {
-			require_once GIGYA__PLUGIN_DIR . 'features/comments/GigyaCommentsWidget.php';
-			register_widget( 'GigyaComments_Widget' );
-		}
-
-		/* Reactions Widget */
-		$reactions_options = get_option( GIGYA__SETTINGS_REACTIONS );
-		$reactions_on      = _gigParamDefaultOn( $reactions_options, 'on' );
-		if ( ! empty( $reactions_on ) ) {
-			require_once GIGYA__PLUGIN_DIR . 'features/reactions/GigyaReactionsWidget.php';
-			register_widget( 'GigyaReactions_Widget' );
-		}
-
-		/* Gamification Widget */
-		$gm_options = get_option( GIGYA__SETTINGS_GM );
-		$gm_on      = _gigParamDefaultOn( $gm_options, 'on' );
-		if ( ! empty( $gm_on ) ) {
-			require_once GIGYA__PLUGIN_DIR . 'features/gamification/GigyaGamificationWidget.php';
-			register_widget( 'GigyaGamification_Widget' );
-		}
-
 		return true;
-	}
-
-	/**
-	 * Hook content alter.
-	 *
-	 * @param    $content
-	 *
-	 * @return    string $content
-	 */
-	public function theContent( $content ) {
-		// Share plugin.
-		$share_options = get_option( GIGYA__SETTINGS_SHARE );
-		$share_on      = _gigParamDefaultOn( $share_options, 'on' );
-		if ( ! empty( $share_on ) ) {
-			require_once GIGYA__PLUGIN_DIR . 'features/share/GigyaShareSet.php';
-			$share   = new GigyaShareSet();
-			$content = $share->setDefaultPosition( $content );
-		}
-
-		// Reactions plugin.
-		$reactions_options = get_option( GIGYA__SETTINGS_REACTIONS );
-		$reactions_on      = _gigParamDefaultOn( $reactions_options, 'on' );
-		if ( ! empty( $reactions_on ) ) {
-			require_once GIGYA__PLUGIN_DIR . 'features/reactions/GigyaReactionsSet.php';
-			$reactions = new GigyaReactionsSet();
-			$content   = $reactions->setDefaultPosition( $content );
-		}
-
-		return $content;
-	}
-
-	/**
-	 * Hook comments_template.
-	 *
-	 * @param $comment_template
-	 *
-	 * @return string
-	 */
-	public function commentsTemplate( $comment_template ) {
-		/* Spider trap.
-		 * When a spider detect we render the comment in the HTML for SEO */
-		$is_spider = gigyaCMS::isSpider();
-		if ( ! empty( $is_spider ) ) {
-			/* Override default WP comments template with comment spider */
-			return GIGYA__PLUGIN_DIR . 'admin/tpl/comments-spider.tpl.php';
-		}
-
-		/* Override default WP comments template */
-
-		return GIGYA__PLUGIN_DIR . 'admin/tpl/comments.tpl.php';
 	}
 
 	/**
