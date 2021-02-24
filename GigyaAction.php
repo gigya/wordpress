@@ -664,7 +664,7 @@ class GigyaAction {
 		$gigya_cms            = new GigyaCMS();
 
 		try {
-			$gigya_users = $gigya_cms->searchGigyaUsers( [ 'query' => $gigya_query ], GIGYA__ACCOUNT_SEARCH_NUMBER_OF_PAGES );
+			$gigya_users = $gigya_cms->searchGigyaUsers( [ 'query' => $gigya_query, 'openCursor' =>'true' ], GIGYA__ACCOUNT_SEARCH_NUMBER_OF_PAGES );
 		} catch ( GSApiException $e ) {
 
 			$message = "Could not reach SAP server, callID: " . $e->getCallId();

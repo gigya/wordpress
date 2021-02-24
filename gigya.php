@@ -53,7 +53,7 @@ define( 'GIGYA__OFFLINE_SYNC_MAX_USERS', 1000 );
 define( 'GIGYA__OFFLINE_SYNC_UPDATE_DELAY', 10 );
 
 /**  get out of sync users */
-define( 'GIGYA__ACCOUNT_SEARCH_NUMBER_OF_PAGES', 10 );
+define( 'GIGYA__ACCOUNT_SEARCH_NUMBER_OF_PAGES', 9 );
 define( 'GIGYA__GET_USERS_MAX', 1000 );
 
 

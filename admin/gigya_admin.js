@@ -343,6 +343,12 @@
 			}
 		});
 		$('#gigya_get_out_of_sync_users').on('click', function () {
+			if ($('#generated_out_of_sync_users_succeed_notice').length)
+				$('#generated_out_of_sync_users_succeed_notice').remove();
+			if ($('#generated_out_of_sync_users_failed_notice').length)
+				$('#generated_out_of_sync_users_failed_notice').remove();
+			$('#generate_report_users_get_out_of_sync').append('<div  id="generated_out_of_sync_users_loading_notice" class="notice notice-info is-dismissible"> <p> loading, please be patient</p> </div>');
+
 			var options = {
 				type: 'POST',
 				url: gigyaParams.ajaxurl,
@@ -353,10 +359,8 @@
 			var req = $.ajax(options);
 
 			req.done(function (res) {
-				if ($('#generated_out_of_sync_users_succeed_notice').length)
-					$('#generated_out_of_sync_users_succeed_notice').remove();
-				if ($('#generated_out_of_sync_users_failed_notice').length)
-					$('#generated_out_of_sync_users_failed_notice').remove();
+				if ($('#generated_out_of_sync_users_loading_notice').length)
+					$('#generated_out_of_sync_users_loading_notice').remove();
 
 				if (res.success)
 					$('#generate_report_users_get_out_of_sync').append('<div  id="generated_out_of_sync_users_succeed_notice" class="notice notice-success is-dismissible"> <p>' + res.data + '</p> </div>');
