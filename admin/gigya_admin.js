@@ -343,11 +343,13 @@
 			}
 		});
 		$('#gigya_get_out_of_sync_users').on('click', function () {
+			$('#gigya_get_out_of_sync_users').attr("disabled", "disabled");
 			if ($('#generated_out_of_sync_users_succeed_notice').length)
 				$('#generated_out_of_sync_users_succeed_notice').remove();
 			if ($('#generated_out_of_sync_users_failed_notice').length)
 				$('#generated_out_of_sync_users_failed_notice').remove();
-			$('#generate_report_users_get_out_of_sync').append('<div  id="generated_out_of_sync_users_loading_notice" class="notice notice-info is-dismissible"> <p> loading,it will take a few minutes, please be patient.</p> </div>');
+			if (!$('#generated_out_of_sync_users_loading_notice').length)
+				$('#generate_report_users_get_out_of_sync').append('<div  id="generated_out_of_sync_users_loading_notice" class="notice notice-info is-dismissible"> <p> This process may take a few minutes.</p> </div>');
 
 			var options = {
 				type: 'POST',
@@ -359,12 +361,14 @@
 			var req = $.ajax(options);
 
 			req.done(function (res) {
+				$('#gigya_get_out_of_sync_users').removeAttr("disabled");
 				if ($('#generated_out_of_sync_users_loading_notice').length)
 					$('#generated_out_of_sync_users_loading_notice').remove();
 
-				if (res.success)
-					$('#generate_report_users_get_out_of_sync').append('<div  id="generated_out_of_sync_users_succeed_notice" class="notice notice-success is-dismissible"> <p>' + res.data + '</p> </div>');
-				else
+				if (res.success) {
+					if (!$('#generated_out_of_sync_users_succeed_notice').length)
+						$('#generate_report_users_get_out_of_sync').append('<div  id="generated_out_of_sync_users_succeed_notice" class="notice notice-success is-dismissible"> <p>' + res.data + '</p> </div>');
+				} else
 					$('#generate_report_users_get_out_of_sync').append('<div id="generated_out_of_sync_users_failed_notice" class="notice notice-error is-dismissible"> <p>' + res.data + '</p> </div>');
 			});
 		});
