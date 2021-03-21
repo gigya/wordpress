@@ -349,8 +349,37 @@
 			if ($('#generated_out_of_sync_users_failed_notice').length)
 				$('#generated_out_of_sync_users_failed_notice').remove();
 			if (!$('#generated_out_of_sync_users_loading_notice').length)
-				$('#generate_report_users_get_out_of_sync').append('<div  id="generated_out_of_sync_users_loading_notice" class="notice notice-info is-dismissible"> <p> This process may take a few minutes.</p> </div>');
+				$('#generate_report_users_get_out_of_sync').append('<div  id="generated_out_of_sync_users_loading_notice" class="notice notice-info is-dismissible"> <div class="loader"></div> This process may take a few minutes, plesase don\'t refresh the page. </div>');
 
+			/*getting max run time from the server*/
+			var options = {
+				type: 'POST',
+				url: gigyaParams.ajaxurl,
+				data: {
+					action: 'get_max_execution_time'
+				}
+			};
+			var timeOutId= '';
+			var maxRunTime = 0;
+			var req = $.ajax(options);
+
+			req.done(function (res) {
+
+				maxRunTime = parseInt(res.data)*1000;
+
+				timeOutId = setTimeout(function () {
+					$('#gigya_get_out_of_sync_users').removeAttr("disabled");
+					if ($('#generated_out_of_sync_users_succeed_notice').length)
+						$('#generated_out_of_sync_users_succeed_notice').remove();
+					if ($('#generated_out_of_sync_users_failed_notice').length)
+						$('#generated_out_of_sync_users_failed_notice').remove();
+					if ($('#generated_out_of_sync_users_loading_notice').length)
+						$('#generated_out_of_sync_users_loading_notice').remove();
+					$('#generate_report_users_get_out_of_sync').append('<div id="generated_out_of_sync_users_failed_notice" class="notice notice-error is-dismissible"> <p> timeout exception, please try again later.</p> </div>');
+				}, maxRunTime);
+			});
+
+			/*generating files*/
 			var options = {
 				type: 'POST',
 				url: gigyaParams.ajaxurl,
@@ -361,13 +390,17 @@
 			var req = $.ajax(options);
 
 			req.done(function (res) {
+				clearTimeout(timeOutId);
 				$('#gigya_get_out_of_sync_users').removeAttr("disabled");
+				if ($('#generated_out_of_sync_users_succeed_notice').length)
+					$('#generated_out_of_sync_users_succeed_notice').remove();
+				if ($('#generated_out_of_sync_users_failed_notice').length)
+					$('#generated_out_of_sync_users_failed_notice').remove();
 				if ($('#generated_out_of_sync_users_loading_notice').length)
 					$('#generated_out_of_sync_users_loading_notice').remove();
 
 				if (res.success) {
-					if (!$('#generated_out_of_sync_users_succeed_notice').length)
-						$('#generate_report_users_get_out_of_sync').append('<div  id="generated_out_of_sync_users_succeed_notice" class="notice notice-success is-dismissible"> <p>' + res.data + '</p> </div>');
+					$('#generate_report_users_get_out_of_sync').append('<div  id="generated_out_of_sync_users_succeed_notice" class="notice notice-success is-dismissible"> <p>' + res.data + '</p> </div>');
 				} else
 					$('#generate_report_users_get_out_of_sync').append('<div id="generated_out_of_sync_users_failed_notice" class="notice notice-error is-dismissible"> <p>' + res.data + '</p> </div>');
 			});

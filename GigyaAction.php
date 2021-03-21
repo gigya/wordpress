@@ -85,6 +85,9 @@ class GigyaAction {
 		add_action( 'get_out_of_sync_users', array( $this, 'getOutOfSyncUsers' ) );
 		add_action( 'wp_ajax_nopriv_get_out_of_sync_users', array( $this, 'getOutOfSyncUsers' ) );
 
+		add_action( 'wp_ajax_get_max_execution_time', array( $this, 'getMaxExecutingTime' ) );
+		add_action( 'get_max_execution_time', array( $this, 'getMaxExecutingTime' ) );
+		add_action( 'wp_ajax_nopriv_get_max_execution_time', array( $this, 'getMaxExecutingTime' ) );
 
 		/* Plugins shortcode activation switches */
 		require_once GIGYA__PLUGIN_DIR . 'features/gigyaPluginsShortcodes.php';
@@ -733,17 +736,18 @@ class GigyaAction {
 		$gigya_users_extended                  = array();
 		$gigya_cms                             = new GigyaCMS();
 		$admin_counter                         = count( $wp_user_list );
-		$number_of_laps                        = ceil( $admin_counter / 200 );
+		$user_query                            = 500;
+		$number_of_laps                        = ceil( $admin_counter / $user_query );
 
 		//batch of query
 		while ( $number_of_laps > 0 ) {
 
 			$wp_temp_user_list  = array();
-			$user_query_counter = 200;
+			$user_query_counter = $user_query;
 
 			/*building the query*/
 			array_push( $wp_temp_user_list, $wp_user_list[ $admin_counter - 1 ] );
-			$gigya_query = "select * FROM account WHERE loginIDs.emails = " . "'" . $wp_user_list[ -- $admin_counter ]->user_email . "'";
+			$gigya_query = "SELECT UID, loginIDs.emails FROM account WHERE loginIDs.emails = " . "'" . $wp_user_list[ -- $admin_counter ]->user_email . "'";
 			while ( $user_query_counter > 0 and isset( $wp_user_list[ $admin_counter - 1 ] ) ) {
 				array_push( $wp_temp_user_list, $wp_user_list[ $admin_counter - 1 ] );
 				$gigya_query .= ' OR loginIDs.emails = ' . "'" . $wp_user_list[ -- $admin_counter ]->user_email . "'";
@@ -753,7 +757,7 @@ class GigyaAction {
 			/*gigya call get users by the query*/
 
 			try {
-				$gigya_users = $gigya_cms->searchGigyaUsers( [ 'query' => $gigya_query ] );
+				$gigya_users = $gigya_cms->searchGigyaUsers( [ 'query' => $gigya_query ], false );
 
 			} catch ( GSApiException $e ) {
 
@@ -817,7 +821,8 @@ class GigyaAction {
 					);
 				}
 			}
-			if ( ( microtime( true ) - $start_time ) > ( $max_run_time - 65 ) ) {
+			/*runtime check*/
+			if ( ( microtime( true ) - $start_time ) > ( $max_run_time - 10 ) ) {
 				$message = "please increase the 'max_execution_time' value in your PHP configuration.";
 				error_log( $message );
 				wp_send_json_error( $message );
@@ -845,7 +850,7 @@ class GigyaAction {
 
 		/*runtime check*/
 		$max_run_time = intval( ini_get( 'max_execution_time' ) );
-		if ( ( microtime( true ) - $start_time ) > ( $max_run_time - 65 ) ) {
+		if ( ( microtime( true ) - $start_time ) > ( $max_run_time - 10 ) ) {
 			$message = "please increase the 'max_execution_time' value in your PHP configuration.";
 			error_log( $message );
 			wp_send_json_error( $message );
@@ -854,7 +859,7 @@ class GigyaAction {
 		}
 
 		/*getting 10,000 users from gigya*/
-		$gigya_query = "select * FROM accounts";
+		$gigya_query = "SELECT UID, loginIDs.emails FROM accounts";
 		$gigya_query .= " ORDER BY registeredTimestamp ASC LIMIT " . GIGYA__GET_USERS_MAX;
 		$gigya_cms   = new GigyaCMS();
 
@@ -862,7 +867,7 @@ class GigyaAction {
 			$gigya_users = $gigya_cms->searchGigyaUsers( [
 				'query'      => $gigya_query,
 				'openCursor' => 'true'
-			], GIGYA__ACCOUNT_SEARCH_NUMBER_OF_PAGES );
+			], false, ( GIGYA__ACCOUNT_SEARCH_NUMBER_OF_PAGES - 1 ) );
 
 		} catch ( GSApiException $e ) {
 
@@ -1115,6 +1120,7 @@ class GigyaAction {
 		$enable_job       = $config['map_offline_sync_enable'];
 		$email_on_success = $config['map_offline_sync_email_on_success'];
 		$email_on_failure = $config['map_offline_sync_email_on_failure'];
+		$required_field   = 'profile';
 
 		$helper = new GigyaOfflineSync();
 
@@ -1128,7 +1134,7 @@ class GigyaAction {
 				}
 				$gigya_query     .= " ORDER BY lastUpdatedTimestamp ASC LIMIT " . GIGYA__OFFLINE_SYNC_MAX_USERS;
 				$gigya_cms       = new GigyaCMS();
-				$gigya_users     = $gigya_cms->searchGigyaUsers( [ 'query' => $gigya_query ] );
+				$gigya_users     = $gigya_cms->searchGigyaUsers( [ 'query' => $gigya_query ], $required_field );
 				$processed_users = 0;
 				$users_not_found = 0;
 				$uids_not_found  = [];
@@ -1181,6 +1187,16 @@ class GigyaAction {
 		}
 	}
 
+	/**
+	 * ajax call of getting max runtime of the sever.
+	 *
+	 */
+	public function getMaxExecutingTime()
+
+	{
+		wp_send_json_success(  ini_get( 'max_execution_time' ) );
+		return;
+	}
 	/**
 	 * Shortcode for UserInfo.
 	 *
