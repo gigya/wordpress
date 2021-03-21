@@ -359,13 +359,13 @@
 					action: 'get_max_execution_time'
 				}
 			};
-			var timeOutId= '';
-			var maxRunTime = 0;
+			var timeOutId = '';
+			var maxRunTime = 10000;
 			var req = $.ajax(options);
 
 			req.done(function (res) {
 
-				maxRunTime = parseInt(res.data)*1000;
+				maxRunTime = parseInt(res.data) * 1000;
 
 				timeOutId = setTimeout(function () {
 					$('#gigya_get_out_of_sync_users').removeAttr("disabled");

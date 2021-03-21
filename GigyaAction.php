@@ -641,7 +641,7 @@ class GigyaAction {
 		$max_run_time = intval( ini_get( 'max_execution_time' ) );
 
 
-		if ( $max_run_time <= 75 ) {
+		if ( $max_run_time <= 35 ) {
 			$message = "please increase the 'max_execution_time' value in your PHP configuration.";
 			error_log( $message );
 			wp_send_json_error( $message );
@@ -676,11 +676,8 @@ class GigyaAction {
 			$file = fopen( GIGYA__USER_FILES . $key . '_' . date( "Y-m-d_H-i-s" ) . ".csv", 'w' );
 			fputcsv( $file, array( "'id'", "'email'" ) );
 			if ( ! empty( $merged_array ) ) {
-				if ( empty( $message ) ) {
-					$message .= $key . '_' . date( "Y-m-d_H-i-s" ) . '.csv';
-				} else {
-					$message .= ',<br>' . $key . '_' . date( "Y-m-d_H-i-s" ) . '.csv';
-				}
+
+				$message .= '<br>* ' . $key . '_' . date( "Y-m-d_H-i-s" ) . '.csv';
 				foreach ( $merged_array as $user ) {
 					fputcsv( $file, $user );
 				}
@@ -690,7 +687,7 @@ class GigyaAction {
 		if ( empty( $message ) ) {
 			$message = 'All the 10,000 users that checked are sync.';
 		} else {
-			$message = 'The report has been generated successfully and saved to: ' . GIGYA__USER_FILES . '<br> The files (that are not empty) names are: <br>' . $message;
+			$message = 'The report has been generated successfully and saved to: ' . GIGYA__USER_FILES . '<br> Generated filenames are below. Note, this list does not include empty files. <br>' . $message;
 		}
 		wp_send_json_success( $message );
 	}
@@ -822,7 +819,7 @@ class GigyaAction {
 				}
 			}
 			/*runtime check*/
-			if ( ( microtime( true ) - $start_time ) > ( $max_run_time - 10 ) ) {
+			if ( ( microtime( true ) - $start_time ) > ( $max_run_time - 5 ) ) {
 				$message = "please increase the 'max_execution_time' value in your PHP configuration.";
 				error_log( $message );
 				wp_send_json_error( $message );
@@ -850,7 +847,7 @@ class GigyaAction {
 
 		/*runtime check*/
 		$max_run_time = intval( ini_get( 'max_execution_time' ) );
-		if ( ( microtime( true ) - $start_time ) > ( $max_run_time - 10 ) ) {
+		if ( ( microtime( true ) - $start_time ) > ( $max_run_time - 5 ) ) {
 			$message = "please increase the 'max_execution_time' value in your PHP configuration.";
 			error_log( $message );
 			wp_send_json_error( $message );
@@ -942,7 +939,7 @@ class GigyaAction {
 				}
 			}
 			/*runtime check*/
-			if ( ( microtime( true ) - $start_time ) > ( $max_run_time - 5 ) ) {
+			if ( ( microtime( true ) - $start_time ) > ( $max_run_time - 2 ) ) {
 				$message = "please increase the 'max_execution_time' value in your PHP configuration.";
 				error_log( $message );
 				wp_send_json_error( $message );
@@ -1021,7 +1018,7 @@ class GigyaAction {
 					"'" . $gigya_user['email'] . "'"
 				);
 			}
-			if ( ( microtime( true ) - $start_time ) > ( $max_run_time - 5 ) ) {
+			if ( ( microtime( true ) - $start_time ) > ( $max_run_time - 2 ) ) {
 				$message = "please increase the 'max_execution_time' value in your PHP configuration.";
 				error_log( $message );
 				wp_send_json_error( $message );
