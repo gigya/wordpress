@@ -3,6 +3,11 @@
 		/**
 		 * Expose the relevant form element for the login mode selected.
 		 * @param $el
+		 * /
+		 /**
+		 * @class gigyaAdminParams
+		 * @property max_execution_time
+		 *
 		 */
 		var userManagementPage = function ($el) {
 			if ($el.attr("checked") === 'checked') {
@@ -342,42 +347,30 @@
 				$('.gigya_raas_allowed_admin_roles input').prop('checked', false);
 			}
 		});
+
+		var removeLastMessage = function () {
+			var success_message_element = $('#generated_out_of_sync_users_succeed_notice');
+			var error_message_element =$('#generated_out_of_sync_users_failed_notice');
+			var loading_message_element =$('#generated_out_of_sync_users_loading_notice');
+
+			if (success_message_element.length)
+				success_message_element.remove();
+			if (error_message_element.length)
+				error_message_element.remove();
+			if (loading_message_element.length)
+				loading_message_element.remove();
+		};
+
 		$('#gigya_get_out_of_sync_users').on('click', function () {
 			$('#gigya_get_out_of_sync_users').attr("disabled", "disabled");
-			if ($('#generated_out_of_sync_users_succeed_notice').length)
-				$('#generated_out_of_sync_users_succeed_notice').remove();
-			if ($('#generated_out_of_sync_users_failed_notice').length)
-				$('#generated_out_of_sync_users_failed_notice').remove();
-			if (!$('#generated_out_of_sync_users_loading_notice').length)
-				$('#generate_report_users_get_out_of_sync').append('<div  id="generated_out_of_sync_users_loading_notice" class="notice notice-info is-dismissible"> <div class="loader"></div> This process may take a few minutes, plesase don\'t refresh the page. </div>');
+			removeLastMessage();
+			$('#generate_report_users_get_out_of_sync').append('<div  id="generated_out_of_sync_users_loading_notice" class="notice notice-info is-dismissible"> <div class="loader"></div> This process may take a few minutes, plesase don\'t refresh the page. </div>');
 
-			/*getting max run time from the server*/
-			var options = {
-				type: 'POST',
-				url: gigyaParams.ajaxurl,
-				data: {
-					action: 'get_max_execution_time'
-				}
-			};
-			var timeOutId = '';
-			var maxRunTime = 10000;
-			var req = $.ajax(options);
-
-			req.done(function (res) {
-
-				maxRunTime = parseInt(res.data) * 1000;
-
-				timeOutId = setTimeout(function () {
-					$('#gigya_get_out_of_sync_users').removeAttr("disabled");
-					if ($('#generated_out_of_sync_users_succeed_notice').length)
-						$('#generated_out_of_sync_users_succeed_notice').remove();
-					if ($('#generated_out_of_sync_users_failed_notice').length)
-						$('#generated_out_of_sync_users_failed_notice').remove();
-					if ($('#generated_out_of_sync_users_loading_notice').length)
-						$('#generated_out_of_sync_users_loading_notice').remove();
-					$('#generate_report_users_get_out_of_sync').append('<div id="generated_out_of_sync_users_failed_notice" class="notice notice-error is-dismissible"> <p> timeout exception, please try again later.</p> </div>');
-				}, maxRunTime);
-			});
+			var timeOutId = setTimeout(function () {
+				$('#gigya_get_out_of_sync_users').removeAttr("disabled");
+				removeLastMessage();
+				$('#generate_report_users_get_out_of_sync').append('<div id="generated_out_of_sync_users_failed_notice" class="notice notice-error is-dismissible"> <p> The report generator has timed out.<br> It is likely that the report has not been fully generated.<br> Please increase the \'max_execution_time\' value in your PHP configuration..</p> </div>');
+			}, gigyaAdminParams.max_execution_time);
 
 			/*generating files*/
 			var options = {
@@ -391,13 +384,8 @@
 
 			req.done(function (res) {
 				clearTimeout(timeOutId);
+				removeLastMessage();
 				$('#gigya_get_out_of_sync_users').removeAttr("disabled");
-				if ($('#generated_out_of_sync_users_succeed_notice').length)
-					$('#generated_out_of_sync_users_succeed_notice').remove();
-				if ($('#generated_out_of_sync_users_failed_notice').length)
-					$('#generated_out_of_sync_users_failed_notice').remove();
-				if ($('#generated_out_of_sync_users_loading_notice').length)
-					$('#generated_out_of_sync_users_loading_notice').remove();
 
 				if (res.success) {
 					$('#generate_report_users_get_out_of_sync').append('<div  id="generated_out_of_sync_users_succeed_notice" class="notice notice-success is-dismissible"> <p>' + res.data + '</p> </div>');

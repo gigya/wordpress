@@ -182,7 +182,7 @@ function loginSettingsForm() {
 		'markup' => ' <div id="generate_report_users_get_out_of_sync">  
 			 <h4>Out of Sync Users</h4>
 			<input type="button" id="gigya_get_out_of_sync_users" class="button" value="Generate Report" />
-		<small>SAP Customer Data Cloud is now able to sync users with WordPress based on UID instead of Email.<br>To locate and generate a report for the first 10,000 users (maximum) that were not previously synced between SAP Customer Data Cloud and WordPress, <br> use the Generate Report button above.</small></div>',
+		<small>SAP Customer Data Cloud is now able to sync users with WordPress based on UID instead of Email.<br>To locate and generate a report for the first '. number_format(GIGYA__SYNC_REPORT_MAX_USERS) .' users (maximum) that were not previously synced between SAP Customer Data Cloud and WordPress, <br> use the Generate Report button above.</small></div>',
 		'desc'   => __( 'Generate a report of users that were not synced between SAP Customer Data Cloud and WordPress.' )
 	);
 

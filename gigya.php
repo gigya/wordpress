@@ -54,7 +54,9 @@ define( 'GIGYA__OFFLINE_SYNC_UPDATE_DELAY', 10 );
 
 /**  get out of sync users */
 define( 'GIGYA__ACCOUNT_SEARCH_NUMBER_OF_PAGES', 5 );
-define( 'GIGYA__GET_USERS_MAX', 2000 );
+define( 'GIGYA__SYNC_REPORT_MAX_PAGE_SIZE', 2000 );
+define( 'GIGYA__SEARCH_MAX_QUERY_LENGTH', 30000 );//This number was tested.
+define( 'GIGYA__SYNC_REPORT_MAX_USERS', GIGYA__SYNC_REPORT_MAX_PAGE_SIZE * GIGYA__ACCOUNT_SEARCH_NUMBER_OF_PAGES);
 
 
 /**
@@ -664,7 +666,6 @@ function _getGigyaSettingsValues( $settings_section ) {
 
 	return $values;
 }
-
 // --------------------------------------------------------------------
 
 /**

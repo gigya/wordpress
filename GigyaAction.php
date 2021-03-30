@@ -85,9 +85,6 @@ class GigyaAction {
 		add_action( 'get_out_of_sync_users', array( $this, 'getOutOfSyncUsers' ) );
 		add_action( 'wp_ajax_nopriv_get_out_of_sync_users', array( $this, 'getOutOfSyncUsers' ) );
 
-		add_action( 'wp_ajax_get_max_execution_time', array( $this, 'getMaxExecutingTime' ) );
-		add_action( 'get_max_execution_time', array( $this, 'getMaxExecutingTime' ) );
-		add_action( 'wp_ajax_nopriv_get_max_execution_time', array( $this, 'getMaxExecutingTime' ) );
 
 		/* Plugins shortcode activation switches */
 		require_once GIGYA__PLUGIN_DIR . 'features/gigyaPluginsShortcodes.php';
@@ -210,6 +207,8 @@ class GigyaAction {
 		if ( is_admin() ) {
 			/* Loads requirements for the admin settings section. */
 			require_once GIGYA__PLUGIN_DIR . 'admin/admin.GigyaSettings.php';
+			require_once GIGYA__PLUGIN_DIR . 'features/admin/GigyaReportGenerator.php';
+
 			new GigyaSettings;
 		}
 	}
@@ -636,34 +635,39 @@ class GigyaAction {
 		}
 	}
 
+	/**
+	 * Get 'GIGYA__SYNC_REPORT_MAX_USERS' from Gigya and check if the users exists at WP DB. and each user have the same UID,
+	 * and exactly the same with the same amount of users from WP that have been searching in Gigya.
+	 *
+	 */
 	public function getOutOfSyncUsers() {
-		$start_time   = microtime( true );
-		$max_run_time = intval( ini_get( 'max_execution_time' ) );
 
-
-		if ( $max_run_time <= 35 ) {
-			$message = "please increase the 'max_execution_time' value in your PHP configuration.";
-			error_log( $message );
-			wp_send_json_error( $message );
-
-			return;
-		}
 		if ( ! is_dir( GIGYA__USER_FILES ) ) {
 			$message = "Could not generate report: The path: " . GIGYA__USER_FILES . " does not exist";
 			error_log( $message );
 			wp_send_json_error( $message );
-
 			return;
 		};
 
-		$wp_to_gigya_compare = self::generateWPCompareGigyaReports( $start_time );
-		$gigya_to_wp_compare = self::generateGigyaCompareWPReports( $start_time );
+		$wp_to_gigya_compare = GigyaReportGenerator:: getWPUsersNotInGigya();
+		if ( gettype( $wp_to_gigya_compare ) == 'string' ) {
+			error_log( $wp_to_gigya_compare );
+			wp_send_json_error( $wp_to_gigya_compare );
+			return;
+		}
 
+		$gigya_to_wp_compare = GigyaReportGenerator::getGigyaUsersNotInWP();
+		if ( gettype( $gigya_to_wp_compare ) == 'string' ) {
+			error_log( $gigya_to_wp_compare );
+			wp_send_json_error( $gigya_to_wp_compare );
+			return;
+		}
 		$message = '';
 		$keys    = array_keys( array_merge( $wp_to_gigya_compare, ( $gigya_to_wp_compare ) ) );
 
 		/*generating files for each key*/
 		foreach ( $keys as $key ) {
+
 			if ( isset( $wp_to_gigya_compare[ $key ] ) and isset( $gigya_to_wp_compare[ $key ] ) ) {
 				$merged_array = array_merge( $wp_to_gigya_compare[ $key ], $gigya_to_wp_compare[ $key ] );
 			} else if ( isset( $wp_to_gigya_compare[ $key ] ) ) {
@@ -673,10 +677,14 @@ class GigyaAction {
 			} else {
 				$merged_array = array();
 			}
-			$file = fopen( GIGYA__USER_FILES . $key . '_' . date( "Y-m-d_H-i-s" ) . ".csv", 'w' );
-			fputcsv( $file, array( "'id'", "'email'" ) );
-			if ( ! empty( $merged_array ) ) {
 
+			$file = fopen( GIGYA__USER_FILES . $key . '_' . date( "Y-m-d_H-i-s" ) . ".csv", 'w' );
+			if ( strstr( $key, 'SAP_users' ) != false ) {
+				fputcsv( $file, array( 'UID', 'Email' ) );
+			} else {
+				fputcsv( $file, array( 'ID', 'Email' ) );
+			}
+			if ( ! empty( $merged_array ) ) {
 				$message .= '<br>* ' . $key . '_' . date( "Y-m-d_H-i-s" ) . '.csv';
 				foreach ( $merged_array as $user ) {
 					fputcsv( $file, $user );
@@ -684,356 +692,14 @@ class GigyaAction {
 			}
 			fclose( $file );
 		}
+
 		if ( empty( $message ) ) {
-			$message = 'All the 10,000 users that checked are sync.';
+			$message = 'All the ' . number_format( GIGYA__SYNC_REPORT_MAX_USERS ) . ' users that checked are synchronized.';
 		} else {
 			$message = 'The report has been generated successfully and saved to: ' . GIGYA__USER_FILES . '<br> Generated filenames are below. Note, this list does not include empty files. <br>' . $message;
 		}
+
 		wp_send_json_success( $message );
-	}
-
-	/**
-	 * @param $start_time
-	 *
-	 * @return array|bool
-	 */
-
-	public function generateWPCompareGigyaReports( $start_time ) {
-
-		$args           = array(
-			'role__in' => array( 'administrator', 'super_admin' ),
-			'order_by' => 'user_email',
-			'fields'   => array( 'user_email', 'ID' )
-		);
-		$wp_admin_users = get_users( $args );
-
-		$args     = array(
-			'role__not_in' => array( 'administrator', 'super_admin' ),
-			'order_by'     => 'user_email',
-			'fields'       => array( 'user_email', 'ID' ),
-			'number'       => 10000 - count( $wp_admin_users )
-		);
-		$wp_users = array_merge( $wp_admin_users, get_users( $args ) );
-
-		return self::compareWPUsersToGigya( $wp_users, $start_time );
-	}
-
-	/**
-	 * @param $wp_user_list
-	 * @param $start_time
-	 *
-	 * @return array|bool
-	 */
-	public function compareWPUsersToGigya( $wp_user_list, $start_time ) {
-
-		$max_run_time                          = intval( ini_get( 'max_execution_time' ) );
-		$user_exists_but_different_uid         = array();
-		$user_exists_in_wp_but_not_in_gigya    = array();
-		$user_exists_but_there_is_no_uid_in_wp = array();
-		$gigya_users_extended                  = array();
-		$gigya_cms                             = new GigyaCMS();
-		$admin_counter                         = count( $wp_user_list );
-		$user_query                            = 500;
-		$number_of_laps                        = ceil( $admin_counter / $user_query );
-
-		//batch of query
-		while ( $number_of_laps > 0 ) {
-
-			$wp_temp_user_list  = array();
-			$user_query_counter = $user_query;
-
-			/*building the query*/
-			array_push( $wp_temp_user_list, $wp_user_list[ $admin_counter - 1 ] );
-			$gigya_query = "SELECT UID, loginIDs.emails FROM account WHERE loginIDs.emails = " . "'" . $wp_user_list[ -- $admin_counter ]->user_email . "'";
-			while ( $user_query_counter > 0 and isset( $wp_user_list[ $admin_counter - 1 ] ) ) {
-				array_push( $wp_temp_user_list, $wp_user_list[ $admin_counter - 1 ] );
-				$gigya_query .= ' OR loginIDs.emails = ' . "'" . $wp_user_list[ -- $admin_counter ]->user_email . "'";
-
-				$user_query_counter --;
-			}
-			/*gigya call get users by the query*/
-
-			try {
-				$gigya_users = $gigya_cms->searchGigyaUsers( [ 'query' => $gigya_query ], false );
-
-			} catch ( GSApiException $e ) {
-
-				$message = "Could not reach SAP server, callID: " . $e->getCallId();
-				error_log( $message );
-				wp_send_json_error( $message );
-
-				return false;
-			} catch ( GSException $e ) {
-				$message = "Could not reach SAP server: " . $e->errorMessage;
-				error_log( $message );
-				wp_send_json_error( $message );
-
-				return false;
-			}
-
-			/*getting out all the loginIDS.Emails in the same user*/
-			foreach ( $gigya_users as $gigya_user ) {
-				foreach ( $gigya_user['loginIDs']['emails'] as $email ) {
-					array_push( $gigya_users_extended, array( 'UID' => $gigya_user['UID'], 'email' => $email ) );
-				}
-			}
-			/*sorting the gigya users array by email*/
-			if ( count( $gigya_users_extended ) > 1 ) {
-				usort( $gigya_users_extended, function ( $a, $b ) {
-					return strcmp( $a['email'], $b['email'] );
-				} );
-			}
-			/*compare all the WP in the batch to query*/
-			foreach ( $wp_temp_user_list as $wp_user ) {
-				$wp_user          = array( 'id' => $wp_user->ID, 'email' => $wp_user->user_email );
-				$is_user_exists   = false;
-				$is_uid_equal     = false;
-				$gigya_user_index = 0;
-				while ( ! $is_user_exists and isset( $gigya_users_extended[ $gigya_user_index ] ) ) {
-					$gigya_user = $gigya_users_extended[ $gigya_user_index ++ ];
-					if ( $gigya_user['email'] == $wp_user['email'] ) {
-						$is_user_exists = true;
-						$wp_uid         = get_user_meta( $wp_user['id'], 'gigya_uid', true );
-						if ( ! $wp_uid ) {
-							$user_exists_but_there_is_no_uid_in_wp[ $wp_user['id'] ] = array(
-								"'" . $wp_user['id'] . "'",
-								"'" . $wp_user['email'] . "'"
-							);
-						} else if ( $gigya_user['UID'] == $wp_uid ) {
-							$is_uid_equal = true;
-						} else {
-							$user_exists_but_different_uid[ $wp_user['id'] ] = array(
-								"'" . $wp_user['id'] . "'",
-								"'" . $wp_user['email'] . "'"
-							);
-
-						}
-						unset( $gigya_user );
-					}
-				}
-				if ( ! $is_user_exists ) {
-					$user_exists_in_wp_but_not_in_gigya[ $wp_user['id'] ] = array(
-						"'" . $wp_user['id'] . "'",
-						"'" . $wp_user['email'] . "'"
-					);
-				}
-			}
-			/*runtime check*/
-			if ( ( microtime( true ) - $start_time ) > ( $max_run_time - 5 ) ) {
-				$message = "please increase the 'max_execution_time' value in your PHP configuration.";
-				error_log( $message );
-				wp_send_json_error( $message );
-
-				return false;
-			}
-
-			$number_of_laps --;
-		}
-
-
-		return array(
-			'WP_users_without_UID_that_exist_in_SAP'  => $user_exists_but_there_is_no_uid_in_wp,
-			'Users_with_same_email_but_different_uid' => $user_exists_but_different_uid,
-			'WP_users_not_existing_in_SAP'            => $user_exists_in_wp_but_not_in_gigya,
-		);
-	}
-
-	/**
-	 * @param $start_time
-	 *
-	 * @return array|bool
-	 */
-	public function generateGigyaCompareWPReports( $start_time ) {
-
-		/*runtime check*/
-		$max_run_time = intval( ini_get( 'max_execution_time' ) );
-		if ( ( microtime( true ) - $start_time ) > ( $max_run_time - 5 ) ) {
-			$message = "please increase the 'max_execution_time' value in your PHP configuration.";
-			error_log( $message );
-			wp_send_json_error( $message );
-
-			return false;
-		}
-
-		/*getting 10,000 users from gigya*/
-		$gigya_query = "SELECT UID, loginIDs.emails FROM accounts";
-		$gigya_query .= " ORDER BY registeredTimestamp ASC LIMIT " . GIGYA__GET_USERS_MAX;
-		$gigya_cms   = new GigyaCMS();
-
-		try {
-			$gigya_users = $gigya_cms->searchGigyaUsers( [
-				'query'      => $gigya_query,
-				'openCursor' => 'true'
-			], false, ( GIGYA__ACCOUNT_SEARCH_NUMBER_OF_PAGES - 1 ) );
-
-		} catch ( GSApiException $e ) {
-
-			$message = "Could not reach SAP server, callID: " . $e->getCallId();
-			error_log( $message );
-			wp_send_json_error( $message );
-
-			return false;
-
-		} catch ( GSException $e ) {
-			$message = "Could not reach SAP server: " . $e->errorMessage;
-			error_log( $message );
-			wp_send_json_error( $message );
-
-			return false;
-		}
-		$total_users_in_wp = count_users();
-
-		if ( $total_users_in_wp > 10000 ) {
-
-
-			return self::searchEachUser( $gigya_users, $start_time );
-
-		} else {
-
-			return self::compareToAllWPUsers( $gigya_users, $start_time );
-
-		}
-	}
-
-	/**
-	 * @param $gigya_users_list
-	 * @param $start_time
-	 *
-	 * @return array|bool
-	 */
-	public function searchEachUser( $gigya_users_list, $start_time ) {
-		$max_run_time = intval( ini_get( 'max_execution_time' ) );
-
-		$user_exists_but_different_uid             = array();
-		$user_exists_in_giyga_but_not_in_wordpress = array();
-		$user_exists_but_there_is_no_uid_in_wp     = array();
-
-		/*searching each gigya user in WP data*/
-		foreach ( $gigya_users_list as $gigya_user ) {
-			foreach ( $gigya_user['loginIDs']['emails'] as $gigya_user_email ) {
-				$wp_user = get_user_by( 'email', $gigya_user_email );
-				if ( $wp_user == false ) {
-					$user_exists_in_giyga_but_not_in_wordpress[ $gigya_user['UID'] ] = array(
-						"'" . $gigya_user['UID'] . "'",
-						"'" . $gigya_user_email . "'"
-					);
-
-				} else {
-
-					$wp_meta_uid = get_user_meta( $wp_user->ID, 'gigya_uid', true );
-					if ( $wp_meta_uid == false ) {
-						$user_exists_but_there_is_no_uid_in_wp[ $wp_user->ID ] = array(
-							"'" . $wp_user['id'] . "'",
-							"'" . $wp_user['email'] . "'"
-						);
-					} else {
-						if ( $wp_meta_uid !== $gigya_user['UID'] ) {
-							$user_exists_but_different_uid[ $wp_user->ID ] = array(
-								"'" . $wp_user['id'] . "'",
-								"'" . $wp_user['email'] . "'"
-							);
-						}
-					}
-
-
-				}
-			}
-			/*runtime check*/
-			if ( ( microtime( true ) - $start_time ) > ( $max_run_time - 2 ) ) {
-				$message = "please increase the 'max_execution_time' value in your PHP configuration.";
-				error_log( $message );
-				wp_send_json_error( $message );
-
-				return false;
-			}
-		}
-
-		return array(
-			'WP_users_without_UID_that_exist_in_SAP'  => $user_exists_but_there_is_no_uid_in_wp,
-			'Users_with_same_email_but_different_uid' => $user_exists_but_different_uid,
-			'SAP_users_not_existing_in_WP'            => $user_exists_in_giyga_but_not_in_wordpress
-		);
-
-
-	}
-
-	/**
-	 * @param $gigya_users_list
-	 * @param $start_time
-	 *
-	 * @return array|bool
-	 */
-	public function compareToAllWPUsers( $gigya_users_list, $start_time ) {
-		$max_run_time                              = intval( ini_get( 'max_execution_time' ) );
-		$user_exists_but_different_uid             = array();
-		$user_exists_in_giyga_but_not_in_wordpress = array();
-		$user_exists_but_there_is_no_uid_in_wp     = array();
-		$gigya_users_extended                      = array();
-		$wp_index_user                             = 0;
-
-		$wp_users = get_users( array(
-			'fields'  => array( 'user_email', 'ID' ),
-			'orderby' => 'user_email'
-		) );
-
-		/*in case of few emails in the loginIDs this loops getting them out*/
-		foreach ( $gigya_users_list as $gigya_user ) {
-			foreach ( $gigya_user['loginIDs']['emails'] as $email ) {
-				array_push( $gigya_users_extended, array( 'UID' => $gigya_user['UID'], 'email' => $email ) );
-			}
-		};
-
-		/*sorting the array after getting out all the emails from the loginIDs*/
-		usort( $gigya_users_list, function ( $a, $b ) {
-			return strcmp( $a['email'], $b['email'] );
-		} );
-
-		/*compare between two sorted array algo*/
-		foreach ( $gigya_users_extended as $gigya_user ) {
-			$is_user_exists = false;
-			while ( ! $is_user_exists and isset( $wp_users[ $wp_index_user ] ) and strcmp( $gigya_user['email'], $wp_users[ $wp_index_user ]->email ) >= 0 ) {
-				if ( $gigya_user['email'] === $wp_users[ $wp_index_user ]->email ) {
-					$is_user_exists = true;
-					$wp_meta_uid    = get_user_meta( $wp_users[ $wp_index_user ]->ID, 'gigya_uid', true );
-					if ( $wp_meta_uid == false ) {
-						$user_exists_but_there_is_no_uid_in_wp[ $wp_users[ $wp_index_user ]->ID ] = array(
-							"'" . $wp_users[ $wp_index_user ]->ID . "'",
-							"'" . $gigya_user['email'] . "'"
-						);
-					} else {
-						if ( $wp_meta_uid !== $gigya_user['UID'] ) {
-							$user_exists_but_different_uid[ $wp_users[ $wp_index_user ]->ID ] = array(
-								"'" . $wp_users[ $wp_index_user ]->ID . "'",
-								"'" . $gigya_user['email'] . "'"
-							);
-						}
-					}
-				} else {
-					$wp_index_user ++;
-				}
-			}
-			if ( ! $is_user_exists ) {
-				$user_exists_in_giyga_but_not_in_wordpress[ $gigya_user['UID'] ] = array(
-					"'" . $gigya_user['UID'] . "'",
-					"'" . $gigya_user['email'] . "'"
-				);
-			}
-			if ( ( microtime( true ) - $start_time ) > ( $max_run_time - 2 ) ) {
-				$message = "please increase the 'max_execution_time' value in your PHP configuration.";
-				error_log( $message );
-				wp_send_json_error( $message );
-
-				return false;
-			}
-
-		}
-
-		return array(
-			'WP_users_without_UID_that_exist_in_SAP'  => $user_exists_but_there_is_no_uid_in_wp,
-			'Users_with_same_email_but_different_uid' => $user_exists_but_different_uid,
-			'SAP_users_not_existing_in_WP'            => $user_exists_in_giyga_but_not_in_wordpress
-		);
-
 	}
 
 	/**
@@ -1117,7 +783,7 @@ class GigyaAction {
 		$enable_job       = $config['map_offline_sync_enable'];
 		$email_on_success = $config['map_offline_sync_email_on_success'];
 		$email_on_failure = $config['map_offline_sync_email_on_failure'];
-		$required_field   = 'profile';
+		$required_field   = 'profile'; /* Offline sync might not work on users without a profile */
 
 		$helper = new GigyaOfflineSync();
 
@@ -1184,16 +850,6 @@ class GigyaAction {
 		}
 	}
 
-	/**
-	 * ajax call of getting max runtime of the sever.
-	 *
-	 */
-	public function getMaxExecutingTime()
-
-	{
-		wp_send_json_success(  ini_get( 'max_execution_time' ) );
-		return;
-	}
 	/**
 	 * Shortcode for UserInfo.
 	 *
