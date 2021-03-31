@@ -57,7 +57,7 @@ class GigyaReportGenerator {
 			], null, ( GIGYA__ACCOUNT_SEARCH_NUMBER_OF_PAGES - 1 ) );
 
 		} catch ( GSApiException $e ) {
-			return "Could not reach SAP server, callID: " . $e->getCallId();
+			return "There was an error with the request, callID: " . $e->getCallId() . ' Error Code: ' . $e->getErrorCode();
 
 		} catch ( GSException $e ) {
 			return "Could not reach SAP server: " . $e->errorMessage;
