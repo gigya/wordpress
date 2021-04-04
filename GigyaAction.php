@@ -674,11 +674,11 @@ class GigyaAction {
 		/*generating files for each file_name*/
 		foreach ( $files_names as $file_name ) {
 
-			if ( isset( $wp_to_gigya_compare[ $file_name ] ) and isset( $gigya_to_wp_compare[ $file_name ] ) ) {
+			if ( array_key_exists( $file_name, $wp_to_gigya_compare ) and array_key_exists( $file_name, $gigya_to_wp_compare ) ) {
 				$merged_array = array_merge( $wp_to_gigya_compare[ $file_name ], $gigya_to_wp_compare[ $file_name ] );
-			} else if ( isset( $wp_to_gigya_compare[ $file_name ] ) ) {
+			} else if ( array_key_exists( $file_name, $wp_to_gigya_compare ) ) {
 				$merged_array = $wp_to_gigya_compare[ $file_name ];
-			} else if ( isset( $gigya_to_wp_compare[ $file_name ] ) ) {
+			} else if ( array_key_exists( $file_name, $gigya_to_wp_compare ) ) {
 				$merged_array = $gigya_to_wp_compare[ $file_name ];
 			} else {
 				$merged_array = array();

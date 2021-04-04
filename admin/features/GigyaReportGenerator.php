@@ -103,21 +103,21 @@ class GigyaReportGenerator {
 
 				if ( $wp_user == false ) {
 					$user_exists_in_gigya_but_not_in_wordpress[ $gigya_user['UID'] ] = array(
-						( $gigya_user['UID'] ),
-						( $gigya_user_email )
+						$gigya_user['UID'],
+						$gigya_user_email
 					);
 				} else {
 					$wp_meta_uid = get_user_meta( $wp_user->ID, 'gigya_uid', true );
 					if ( $wp_meta_uid == false ) {
-						$user_exists_but_there_is_no_uid_in_wp[ $wp_user->ID ] = array(
-							( $wp_user['id'] ),
-							( $wp_user['email'] )
+						$user_exists_but_there_is_no_uid_in_wp[ $wp_user->user_email ] = array(
+							'id'    => $wp_user->ID,
+							'email' => $wp_user->user_email
 						);
 					} else {
 						if ( $wp_meta_uid !== $gigya_user['UID'] ) {
-							$user_exists_but_different_uid[ $wp_user->ID ] = array(
-								( $wp_user['id'] ),
-								( $wp_user['email'] )
+							$user_exists_but_different_uid[ $wp_user->user_email ] = array(
+								'id'    => $wp_user->ID,
+								'email' => $wp_user->user_email
 							);
 						}
 					}
@@ -163,44 +163,55 @@ class GigyaReportGenerator {
 		};
 
 		/*sorting the array after getting out all the emails from the loginIDs*/
-		usort( $gigya_users_list, function ( $a, $b ) {
-			return strcmp( $a['email'], $b['email'] );
-		} );
+		if ( count( $gigya_users_extended ) > 1 ) {
+			usort( $gigya_users_list, function ( $a, $b ) {
+				return strcmp( $a['email'], $b['email'] );
+			} );
+		}
 
 		/*compare between two sorted array algo*/
 		foreach ( $gigya_users_extended as $gigya_user ) {
 
-			$is_user_exists = false;
-			if ( isset( $wp_users[ $wp_user_index ] ) ) {
+			$is_user_exists        = false;
+			$does_array_key_exists = array_key_exists( $wp_user_index, $wp_users );
+
+			if ( $does_array_key_exists ) {
 				$wp_user = array(
 					'id'    => $wp_users[ $wp_user_index ]->ID,
 					'email' => $wp_users[ $wp_user_index ]->user_email
 				);
-			} else {
-				$wp_user = false;
 			}
 
-			while ( ! $is_user_exists and ! $wp_user and strcmp( $gigya_user['email'], $wp_user['email'] ) >= 0 ) {
+			while ( ! $is_user_exists and $does_array_key_exists and ( strcmp( $gigya_user['email'], $wp_user['email'] ) >= 0 ) ) {
 
 				if ( $gigya_user['email'] === $wp_users['email'] ) {
 					$is_user_exists = true;
 					$wp_meta_uid    = get_user_meta( $wp_user['id']->ID, 'gigya_uid', true );
 
 					if ( $wp_meta_uid == false ) {
-						$user_exists_but_there_is_no_uid_in_wp[ $wp_user['id'] ] = $wp_user;
+						$user_exists_but_there_is_no_uid_in_wp[ $wp_user ['email'] ] = $wp_user;
 					} else {
 						if ( $wp_meta_uid !== $gigya_user['UID'] ) {
-							$user_exists_but_different_uid[ $wp_user['id'] ] = $wp_user;
+							$user_exists_but_different_uid[ $wp_user ['email'] ] = $wp_user;
 						}
 					}
 				} else {
 					$wp_user_index ++;
 				}
+
+				$does_array_key_exists = array_key_exists( $wp_user_index, $wp_users );
+
+				if ( $does_array_key_exists ) {
+					$wp_user = array(
+						'id'    => $wp_users[ $wp_user_index ]->ID,
+						'email' => $wp_users[ $wp_user_index ]->user_email
+					);
+				}
 			}
 			if ( ! $is_user_exists ) {
 				$user_exists_in_gigya_but_not_in_wordpress[ $gigya_user['UID'] ] = array(
-					( $gigya_user['UID'] ),
-					( $gigya_user['email'] )
+					$gigya_user['UID'],
+					$gigya_user['email']
 				);
 			}
 		}
@@ -319,24 +330,23 @@ class GigyaReportGenerator {
 			$does_user_exist  = false;
 			$gigya_user_index = 0;
 
-			while ( ! $does_user_exist and isset( $gigya_users_extended[ $gigya_user_index ] ) ) {
+			while ( ! $does_user_exist and array_key_exists( $gigya_user_index, $gigya_users_extended ) ) {
 				$gigya_user = $gigya_users_extended[ $gigya_user_index ++ ];
 				if ( $gigya_user['email'] === $wp_user['email'] ) {
 					$does_user_exist = true;
 					$wp_uid          = get_user_meta( $wp_user['id'], 'gigya_uid', true );
 
 					if ( ! $wp_uid ) {
-						$user_exists_but_there_is_no_uid_in_wp[ $wp_user['id'] ] = $wp_user;
+						$user_exists_but_there_is_no_uid_in_wp[ $wp_user['email'] ] = $wp_user;
 
 					} else if ( $gigya_user['UID'] != $wp_uid ) {
-
-						$user_exists_but_different_uid[ $wp_user['id'] ] = $wp_user;
+						$user_exists_but_different_uid[ $wp_user['email'] ] = $wp_user;
 					}
 					unset( $gigya_user );
 				}
 			}
 			if ( ! $does_user_exist ) {
-				$user_exists_in_wp_but_not_in_gigya[ $wp_user['id'] ] = $wp_user;
+				$user_exists_in_wp_but_not_in_gigya[ $wp_user['email'] ] = $wp_user;
 			}
 		}
 
