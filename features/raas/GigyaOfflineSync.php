@@ -13,8 +13,8 @@ class GigyaOfflineSync {
 	 * @param string $job_type
 	 * @param string $job_status
 	 * @param string $to
-	 * @param int $processed_items
-	 * @param int $failed_items
+	 * @param int|null $processed_items
+	 * @param int|null $failed_items
 	 * @param string $custom_email_body
 	 */
 	public function sendCronEmail( $job_type, $job_status, $to, $processed_items = null, $failed_items = null, $custom_email_body = '' ) {
