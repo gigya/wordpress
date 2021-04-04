@@ -207,7 +207,7 @@ class GigyaAction {
 		if ( is_admin() ) {
 			/* Loads requirements for the admin settings section. */
 			require_once GIGYA__PLUGIN_DIR . 'admin/admin.GigyaSettings.php';
-			require_once GIGYA__PLUGIN_DIR . 'features/admin/GigyaReportGenerator.php';
+			require_once GIGYA__PLUGIN_DIR . 'admin/features/GigyaReportGenerator.php';
 
 			new GigyaSettings;
 		}
@@ -636,9 +636,9 @@ class GigyaAction {
 	}
 
 	/**
-	 * Get 'GIGYA__SYNC_REPORT_MAX_USERS' from Gigya and check if the users exists at WP DB. and each user have the same UID,
-	 * and exactly the same with the same amount of users from WP that have been searching in Gigya.
-	 *
+	 * Get GIGYA__SYNC_REPORT_MAX_USERS from Gigya and check if the users exist at WP DB. and that their UIDs match.
+	 * The same idea with getting the same amount of users from Gigya and searching in WP DB.
+	 * the file will be generated inside GIGYA__USER_FILES folder.
 	 */
 	public function getOutOfSyncUsers() {
 
@@ -646,46 +646,52 @@ class GigyaAction {
 			$message = "Could not generate report: The path: " . GIGYA__USER_FILES . " does not exist";
 			error_log( $message );
 			wp_send_json_error( $message );
+
 			return;
 		};
 
-		$wp_to_gigya_compare = GigyaReportGenerator:: getWPUsersNotInGigya();
-		if ( gettype( $wp_to_gigya_compare ) == 'string' ) {
-			error_log( $wp_to_gigya_compare );
-			wp_send_json_error( $wp_to_gigya_compare );
+		try {
+			$wp_to_gigya_compare = GigyaReportGenerator::getWPUsersNotInGigya();
+			$gigya_to_wp_compare = GigyaReportGenerator::getGigyaUsersNotInWP();
+		} catch ( GSApiException $e ) {
+			$message = "There was an error with the request, callID: " . $e->getCallId() . ', Error Code: ' . $e->getErrorCode();
+
+			wp_send_json_error( $message );
+			error_log( $message );
+			return;
+
+		} catch ( GSException $e ) {
+			$message = "Could not reach SAP server: " . $e->errorMessage;
+
+			wp_send_json_error( $message );
+			error_log( $message );
 			return;
 		}
 
-		$gigya_to_wp_compare = GigyaReportGenerator::getGigyaUsersNotInWP();
-		if ( gettype( $gigya_to_wp_compare ) == 'string' ) {
-			error_log( $gigya_to_wp_compare );
-			wp_send_json_error( $gigya_to_wp_compare );
-			return;
-		}
-		$message = '';
-		$keys    = array_keys( array_merge( $wp_to_gigya_compare, ( $gigya_to_wp_compare ) ) );
+		$message     = '';
+		$files_names = array_keys( array_merge( $wp_to_gigya_compare, $gigya_to_wp_compare ) );
 
-		/*generating files for each key*/
-		foreach ( $keys as $key ) {
+		/*generating files for each file_name*/
+		foreach ( $files_names as $file_name ) {
 
-			if ( isset( $wp_to_gigya_compare[ $key ] ) and isset( $gigya_to_wp_compare[ $key ] ) ) {
-				$merged_array = array_merge( $wp_to_gigya_compare[ $key ], $gigya_to_wp_compare[ $key ] );
-			} else if ( isset( $wp_to_gigya_compare[ $key ] ) ) {
-				$merged_array = $wp_to_gigya_compare[ $key ];
-			} else if ( isset( $gigya_to_wp_compare[ $key ] ) ) {
-				$merged_array = $gigya_to_wp_compare[ $key ];
+			if ( isset( $wp_to_gigya_compare[ $file_name ] ) and isset( $gigya_to_wp_compare[ $file_name ] ) ) {
+				$merged_array = array_merge( $wp_to_gigya_compare[ $file_name ], $gigya_to_wp_compare[ $file_name ] );
+			} else if ( isset( $wp_to_gigya_compare[ $file_name ] ) ) {
+				$merged_array = $wp_to_gigya_compare[ $file_name ];
+			} else if ( isset( $gigya_to_wp_compare[ $file_name ] ) ) {
+				$merged_array = $gigya_to_wp_compare[ $file_name ];
 			} else {
 				$merged_array = array();
 			}
 
-			$file = fopen( GIGYA__USER_FILES . $key . '_' . date( "Y-m-d_H-i-s" ) . ".csv", 'w' );
-			if ( strstr( $key, 'SAP_users' ) != false ) {
+			$file = fopen( GIGYA__USER_FILES . $file_name . '_' . date( "Y-m-d_H-i-s" ) . ".csv", 'w' );
+			if ( strstr( $file_name, GigyaReportGenerator::$SAP_users_not_existing_in_WP ) !== false ) {
 				fputcsv( $file, array( 'UID', 'Email' ) );
 			} else {
 				fputcsv( $file, array( 'ID', 'Email' ) );
 			}
 			if ( ! empty( $merged_array ) ) {
-				$message .= '<br>* ' . $key . '_' . date( "Y-m-d_H-i-s" ) . '.csv';
+				$message .= '<br>* ' . $file_name . '_' . date( "Y-m-d_H-i-s" ) . '.csv';
 				foreach ( $merged_array as $user ) {
 					fputcsv( $file, $user );
 				}
@@ -694,7 +700,7 @@ class GigyaAction {
 		}
 
 		if ( empty( $message ) ) {
-			$message = 'All the ' . number_format( GIGYA__SYNC_REPORT_MAX_USERS ) . ' users that checked are synchronized.';
+			$message = 'All  ' . number_format( GIGYA__SYNC_REPORT_MAX_USERS ) . '  users that have been checked are in sync.';
 		} else {
 			$message = 'The report has been generated successfully and saved to: ' . GIGYA__USER_FILES . '<br> Generated filenames are below. Note, this list does not include empty files. <br>' . $message;
 		}

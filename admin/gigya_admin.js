@@ -350,8 +350,8 @@
 
 		var removeLastMessage = function () {
 			var success_message_element = $('#generated_out_of_sync_users_succeed_notice');
-			var error_message_element =$('#generated_out_of_sync_users_failed_notice');
-			var loading_message_element =$('#generated_out_of_sync_users_loading_notice');
+			var error_message_element = $('#generated_out_of_sync_users_failed_notice');
+			var loading_message_element = $('#generated_out_of_sync_users_loading_notice');
 
 			if (success_message_element.length)
 				success_message_element.remove();

@@ -480,7 +480,8 @@ class GigyaCMS
 	 * Queries Gigya with the accounts.search call
 	 *
 	 * @param array $params Full parameters of the call. Usually in the form of [ 'query' => 'SELECT ...', 'openCursor' => true ], but can be [ 'cursorId' => ... ]
-	 * @param string|null $required_field Specific account field's that all the searched user must include for example: 'profile', 'identities', 'phoneNumber' etc.
+	 * @param string|null $required_field The field (if any) that every searched user must include, in order to appear in the result. For example: 'profile', 'identities'.
+	 * If the field is missing in the user record, it will be filtered out.
 	 * @param int $max_page optional for getting limited pages.
 	 *
 	 * @return array
