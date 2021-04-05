@@ -654,7 +654,7 @@ class GigyaAction {
 			$wp_to_gigya_compare = GigyaReportGenerator::getWPUsersNotInGigya();
 			$gigya_to_wp_compare = GigyaReportGenerator::getGigyaUsersNotInWP();
 		} catch ( GSApiException $e ) {
-			$message = "There was an error with the request, callID: " . $e->getCallId() . ', Error Code: ' . $e->getErrorCode();
+			$message = "There was an error getting the data from SAP servers, callID: " . $e->getCallId() . ', Error Code: ' . $e->getErrorCode();
 
 			wp_send_json_error( $message );
 			error_log( $message );
