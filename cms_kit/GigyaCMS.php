@@ -269,7 +269,7 @@ class GigyaCMS
 	 * @param array $params .
 	 *                      an associative array of params to pass to Gigya
 	 *
-	 * @see http://developers.gigya.com/020_Client_API/020_Methods/socialize.getFriends
+	 * @see https://help.sap.com/viewer/8b8d6fffe113457094a17701f63e3d6a/GIGYA/en-US/4174b27f70b21014bbc5a10ce4041860.html
 	 * @return array | false
 	 *      the response from gigya.
 	 *

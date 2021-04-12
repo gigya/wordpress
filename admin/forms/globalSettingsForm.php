@@ -101,7 +101,7 @@ function globalSettingsForm() {
 			'type'  => 'text',
 			'label' => __( 'List of providers' ),
 			'value' => _gigParam( $values, 'enabledProviders', '*' ),
-			'desc'  => __( 'Comma separated list of providers to include. For example: facebook,twitter,google. Leave empty or type * for all providers. See the entire ' ) . ' <a href="https://developers.gigya.com/display/GD/socialize.showLoginUI+JS">list of available providers</a>.'
+			'desc'  => __( 'Comma separated list of providers to include. For example: facebook,twitter,google. Leave empty or type * for all providers. See the entire ' ) . ' <a href="https://help.sap.com/viewer/8b8d6fffe113457094a17701f63e3d6a/GIGYA/en-US/417916f470b21014bbc5a10ce4041860.html">list of available providers</a>.'
 	);
 
 	$form['lang'] = array(
@@ -149,7 +149,7 @@ function globalSettingsForm() {
 			'class' => 'json',
 			'value' => _gigParam( $values, 'advanced', '' ),
 			'label' => __( 'Additional Parameters (advanced)' ),
-			'desc'  => sprintf( __( 'Enter valid %s. See list of available ' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://developers.gigya.com/display/GD/Global+Configuration#GlobalConfiguration-DataMembers" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
+			'desc'  => sprintf( __( 'Enter valid %s. See list of available ' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://help.sap.com/viewer/8b8d6fffe113457094a17701f63e3d6a/GIGYA/en-US/417fa48b70b21014bbc5a10ce4041860.html" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
 	);
 
 	$form['google_analytics'] = array(
@@ -182,7 +182,8 @@ function globalSettingsForm() {
 
 	if ( get_option( 'gigya_settings_fields' ) ) {
 		$form['clean_db'] = array(
-				'markup' => '<a href="javascript:void(0)" class="clean-db">Database cleaner after upgrade</a><br><small>Press this button to remove all unnecessary elements of the previous version from your database.Please make sure to backup your database before performing the clean. Learn more about upgrading from the previous version <a href="https://developers.gigya.com/display/GD/WordPress+Plugin#WordPressPlugin-InstallingtheGigyaPluginforWordPress">here.</a></small>'
+			'markup' => '<a href="javascript:void(0)" class="clean-db">Database cleaner after upgrade</a><br><small>Press this button to remove all unnecessary elements of the previous version from your database.Please make sure to backup your database before performing the clean.For more information about upgrading from the 
+								previous version <a href="https://github.com/gigya/wordpress/wiki#installing-the-gigya-plugin-for-wordpress-1">here.</a></small>'
 		);
 	}
 

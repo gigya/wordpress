@@ -16,7 +16,7 @@
 		<?php endforeach; ?>
 	</div>
 	<?php
-		$helpUrl = 'https://developers.gigya.com/display/GD/WordPress';
+		$helpUrl = 'https://github.com/gigya/wordpress/wiki';
 		printf( __( 'To learn more about SAP Customer Data Cloud & how to setup an account, please visit our developer documentation <a target="_blank" rel="noopener noreferrer" href="%1$s">here</a>.' ), $helpUrl );
 	?>
 </div>

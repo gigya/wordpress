@@ -303,7 +303,7 @@ class GigyaSettings {
 	}
 
 	private static function setError( $errorCode, $errorMessage, $callId = null ) {
-		$errorLink  = "<a href='https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST' target='_blank' rel='noopener noreferrer'>Response_Codes_and_Errors</a>";
+		$errorLink  = "<a href='https://help.sap.com/viewer/8b8d6fffe113457094a17701f63e3d6a/GIGYA/en-US/416d41b170b21014bbc5a10ce4041860.html' target='_blank' rel='noopener noreferrer'>Response_Codes_and_Errors</a>";
 		$message     = "SAP CDC API error: {$errorCode} - {$errorMessage}.";
 		add_settings_error( 'gigya_global_settings', 'api_validate', __( $message . " For more information please refer to {$errorLink}", 'error' ) );
 		error_log( 'Error updating SAP CDC settings: ' . $message . ' Call ID: ' . $callId );

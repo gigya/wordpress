@@ -17,7 +17,7 @@ function loginSettingsForm() {
 		'options' => array(
 			'wp_only' => __( 'WordPress only' ),
 			'wp_sl'   => __( 'WordPress + Social Login <small class="gigya-raas-warn hidden">Warning: this site is configured on SAP CDC server to use Registration-as-a-Service. Please contact your SAP CDC account manager for migration instruction.</small>' ),
-			'raas'    => __( 'Registration-as-a-Service <small>Selecting this option overrides the WordPress user management system. This requires additional administration steps. Learn more <a href="https://developers.gigya.com/display/GD/WordPress#WordPress-UserManagementSettings">here</a></small>' )
+			'raas'    => __( 'Registration-as-a-Service <small>Selecting this option overrides the WordPress user management system. This requires additional administration steps. Learn more <a href="https://github.com/gigya/wordpress/wiki#user-management-settings">here</a></small>' )
 		),
 		'value'   => _gigParam( $values, 'mode', 'wp_only' ),
 	);
@@ -34,7 +34,7 @@ function loginSettingsForm() {
 				'markup' => '<div id="setting-error-api_validate" class="error settings-error notice is-dismissible"> 
 								<p>
 								<strong>' . __( 'Error determining RaaS status. There could be an issue with your machine or SAP CDC account. Please contact support if the problem persists. Message from SAP CDC' ) . ': ' . $e->getMessage() . '.
-								For more information please refer to <a href="https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST" target="_blank" rel="noopener noreferrer">Response_Codes_and_Errors</a>.
+								For more information please refer to <a href="https://help.sap.com/viewer/8b8d6fffe113457094a17701f63e3d6a/GIGYA/en-US/416d41b170b21014bbc5a10ce4041860.html" target="_blank" rel="noopener noreferrer">Response_Codes_and_Errors</a>.
 								</strong>
 								</p>
 								<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
@@ -126,14 +126,14 @@ function loginSettingsForm() {
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced) LoginUI" ),
 			'value' => _gigParam( $values, 'advancedLoginUI', '' ),
-			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://developers.gigya.com/display/GD/socialize.showLoginUI+JS" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
+			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://help.sap.com/viewer/8b8d6fffe113457094a17701f63e3d6a/GIGYA/en-US/417916f470b21014bbc5a10ce4041860.html" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
 	);
 
 	$form['advancedAddConnectionsUI'] = array(
 			'type'  => 'textarea',
 			'label' => __( "Additional Parameters (advanced) AddConnectionsUI" ),
 			'value' => _gigParam( $values, 'advancedAddConnectionsUI', '' ),
-			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://developers.gigya.com/display/GD/socialize.showAddConnectionsUI+JS" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
+			'desc'  => sprintf( __( 'Enter valid %s. See list of available:' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://help.sap.com/viewer/8b8d6fffe113457094a17701f63e3d6a/GIGYA/en-US/4178f00d70b21014bbc5a10ce4041860.html" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
 	);
 
 	$form['sl_end'] = array(
