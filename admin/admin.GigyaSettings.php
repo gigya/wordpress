@@ -9,6 +9,7 @@ namespace Gigya\WordPress\Admin;
 use Exception;
 use Gigya\CMSKit\GigyaApiHelper;
 use Gigya\CMSKit\GigyaCMS;
+use Gigya\PHP\GSException;
 
 define( "GIGYA__PERMISSION_LEVEL", "manage_options" );
 define( "GIGYA__SECRET_PERMISSION_LEVEL", "install_plugins" ); // Network super admin + single site admin
@@ -218,6 +219,7 @@ class GigyaSettings {
 				update_option( 'users_can_register', 0 );
 			}
 		} elseif ( isset( $_POST['gigya_field_mapping_settings'] ) ) {
+			$has_been_an_error = false;
 			/* Validate field mapping settings, including offline sync */
 			$data = $_POST['gigya_field_mapping_settings'];
 			if ( $data['map_offline_sync_enable'] ) {
@@ -226,6 +228,7 @@ class GigyaSettings {
 						__( 'Error: Offline sync job frequency cannot be lower than ' . GIGYA__OFFLINE_SYNC_MIN_FREQ . ' minutes' ),
 						'error' );
 					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
+					$has_been_an_error = true;
 				}
 
 				$emails_are_valid = true;
@@ -237,6 +240,7 @@ class GigyaSettings {
 				if ( ! $emails_are_valid ) {
 					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Error: Invalid emails entered' ), 'error' );
 					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
+					$has_been_an_error = true;
 				}
 			}
 
@@ -249,6 +253,36 @@ class GigyaSettings {
 			if ( $data['map_offline_sync_enable'] ) {
 				wp_schedule_event( time(), 'gigya_offline_sync_custom', $cron_name );
 			}
+
+			if ( $data['map_raas_full_map'] ) {
+				$cms      = new gigyaCMS();
+				$method   = 'accounts.getSchema';
+				$params   = [ 'include' => 'profileSchema, dataSchema, subscriptionsSchema, preferencesSchema, systemSchema' ];
+				$response = '';
+
+				try {
+					$response = $cms->call( $method, $params );
+
+				} catch ( GSException $e ) {
+					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Error: Can\'t reach sap servers, please check the global configuration setting' ), 'error' );
+					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
+					$has_been_an_error = true;
+				}
+				if ( is_wp_error( $response ) ) {
+					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Error: Can\'t reach sap servers, please check the global configuration setting: ' . $response->get_error_message() ), 'error' );
+					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
+
+				} else {
+
+					$error_message = static::getDupAndNotExistsFields( $data, $response );
+
+					//Sending the error message if necessary.
+					if ( ! empty( $error_message ) and ( ! $has_been_an_error ) ) {
+						add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', $error_message, 'warning' );
+					}
+				}
+			}
+
 		} elseif ( isset( $_POST['gigya_screenset_settings'] ) ) {
 			/* Screen-set page validation */
 			foreach ( $_POST['gigya_screenset_settings']['custom_screen_sets'] as $key => $screen_set ) {
@@ -268,6 +302,106 @@ class GigyaSettings {
 				}
 			}
 		}
+	}
+
+
+	/**The function read the field mapping map and searching for duplication in cmsName fields, and not exists fields in gigyaCms property.
+	 *
+	 * @param $data array The data of field mapping setting page.
+	 * @param $response array The response from 'accounts.getSchema' query.
+	 *
+	 * @return string The error message should be printing. Emtpty string will return in case of no errors.
+	 */
+
+	private static function getDupAndNotExistsFields( $data, $response ) {
+
+		$not_existing_fields_str       = '';
+		$duplications_of_wp_fields_str = '';
+		$array_of_wp_fields            = array();
+		$json_block                    = json_decode( stripslashes( $data['map_raas_full_map'] ), true );
+
+		//Searching each block.
+		foreach ( $json_block as $meta_key ) {
+			$meta_key  = (array) $meta_key;
+			$gigya_key = $meta_key['gigyaName'];
+			$wp_key    = $meta_key['cmsName'];
+
+			//Searching for duplications of WP fields.
+			if ( array_search( $wp_key, $array_of_wp_fields ) === false ) {
+				array_push( $array_of_wp_fields, $wp_key );
+			} else if ( empty( $not_existing_fields_str ) ) {
+				$duplications_of_wp_fields_str = '"' . $wp_key . '"';
+			} else {
+				$duplications_of_wp_fields_str .= ', "' . $wp_key . '"';
+			}
+
+			//Searching for not existing fields in gigya
+			if ( ! static::doesFieldExists( $response, $gigya_key ) ) {
+
+				if ( empty( $not_existing_fields_str ) ) {
+					$not_existing_fields_str = '"' . $gigya_key . '"';
+				} else {
+					$not_existing_fields_str .= ', "' . $gigya_key . '"';
+				}
+			}
+		}
+
+		//Builds the error message.
+		$not_existing_fields_warning = __( 'those "gigyaName"s don\'t exists in gigya: <br>' ) . $not_existing_fields_str;
+		$duplications_warning        = __( 'those "cmsName"s used several times: <br>' ) . $duplications_of_wp_fields_str;
+		if ( ! empty( $not_existing_fields_str ) and ! empty( $duplications_of_wp_fields_str ) ) {
+			return __( 'Setting saved. <br>Warning: ' ) . $not_existing_fields_warning . '<br>' . $duplications_warning;
+		} else if ( ! empty ( $not_existing_fields_str ) ) {
+			return __( 'Setting saved. <br>Warning: ' ) . $not_existing_fields_warning;
+		} else if ( ! empty( $duplications_of_wp_fields_str ) ) {
+			return __( 'Setting saved. <br>Warning: ' ) . $duplications_warning;
+		} else {
+			return '';
+		}
+	}
+
+	/**
+	 * @param $response array The response from 'accounts.getSchema' query.
+	 * @param $key string Field of gigyaName property should be search for, in gigya schema.
+	 *
+	 * @return bool True if the field has been found false otherwise.
+	 */
+	private static function doesFieldExists( $response, $key ) {
+
+		$field_name_in_array          = explode( '.', $key );
+		$schema_type                  = $field_name_in_array[0];
+		$does_include_the_name_fields = ( isset( $field_name_in_array[1] ) ) ? ( $field_name_in_array[1] === 'fields' ) : false;
+		$field_name                   = substr( strpbrk( $key, '.' ), 1 );
+
+		if ( $does_include_the_name_fields ) {
+			$field_name = substr( strpbrk( $field_name, '.' ), 1 );
+		}
+
+		switch ( $schema_type ) {
+			case 'profile':
+				$array_of_keys = $response['profileSchema'] ['fields'];
+
+				break;
+			case'data':
+				$array_of_keys = $response['dataSchema']['fields'];
+				break;
+
+			case 'subscriptions':
+				$array_of_keys = $response['subscriptionsSchema']['fields'];
+				break;
+			case 'preferences':
+				$array_of_keys = $response['preferencesSchema']['fields'];
+				break;
+
+			//Should be the systemSchema (doesn't include specific name).
+			default:
+				$field_name    = $key;
+				$array_of_keys = $response['systemSchema']['fields'];
+				break;
+
+		}
+
+		return ( ( ! empty ( $field_name ) ) and array_key_exists( $field_name, $array_of_keys ) );
 	}
 
 	public static function generateMachineName( $desktop_screen_set_id, $serial ) {
