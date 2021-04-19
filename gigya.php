@@ -264,6 +264,7 @@ function _gigParam( $array, $key, $default = null, $obfuscate = false ) {
  */
 function _gigya_data_center( $settings ) {
 	$default_data_center = 'us1.gigya.com';
+
 	if ( $settings['data_center'] == 'other' ) {
 		if ( ! empty( $settings['other_ds'] ) ) {
 			return $settings['other_ds'];

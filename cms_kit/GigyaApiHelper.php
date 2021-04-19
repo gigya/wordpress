@@ -33,14 +33,14 @@ class GigyaApiHelper
 	 * @param string $authMode Authentication method: user_secret or user_rsa
 	 */
 	public function __construct( $apiKey, $userKey, $authKey, $dataCenter, $authMode = 'user_secret' ) {
-		$this->defConfigFilePath = ".." . DIRECTORY_SEPARATOR . "configuration/DefaultConfiguration.json";
+		$this->defConfigFilePath = '..' . DIRECTORY_SEPARATOR . 'configuration/DefaultConfiguration.json';
 		$defaultConf             = @file_get_contents( $this->defConfigFilePath );
 		if ( ! $defaultConf ) {
 			$confArray = array();
 		} else {
 			$confArray = json_decode( file_get_contents( $this->defConfigFilePath ) );
 		}
-		$this->userKey  = ! empty( $userKey ) ? $userKey : $confArray['appKey'];
+		$this->userKey  = ! empty( $userKey ) ? $userKey : ( $confArray['appKey'] ?? '');
 		$this->authMode = $authMode;
 		if ( $authMode === 'user_secret' ) {
 			$this->authKey = ! empty( $authKey ) ? self::decrypt( $authKey, SECURE_AUTH_KEY ) : self::decrypt( $confArray['appSecret'], SECURE_AUTH_KEY );
@@ -48,8 +48,8 @@ class GigyaApiHelper
 			$this->authKey = self::decrypt( $authKey, SECURE_AUTH_KEY );
 		}
 
-		$this->apiKey     = ! empty( $apiKey ) ? $apiKey : $confArray['apiKey'];
-		$this->dataCenter = ! empty( $dataCenter ) ? $dataCenter : $confArray['dataCenter'];
+		$this->apiKey     = ! empty( $apiKey ) ? $apiKey : ( $confArray['apiKey'] ?? '');
+		$this->dataCenter = ! empty( $dataCenter ) ? $dataCenter : ( $confArray['dataCenter'] ?? 'us1.gigya.com' );
 
 		$this->env = '{"cms_name":"WordPress","cms_version":"WordPress_' . get_bloginfo( 'version' ) . '","gigya_version":"Gigya_module_' . GIGYA__VERSION . '","php_version":"' . phpversion() . '"}'; /* WordPress only */
 	}
