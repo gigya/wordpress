@@ -3,7 +3,7 @@
  * Plugin Name: SAP Customer Data Cloud
  * Plugin URI: https://www.sap.com/products/crm/customer-data-management.html
  * Description: Allows sites to utilize the SAP Customer Data Cloud API for authentication and social network updates.
- * Version: 6.1.0
+ * Version: 6.1.1
  * Author: SAP SE
  * Author URI: https://www.sap.com/products/crm/customer-data-management.html
  * License: Apache v2.0
@@ -20,7 +20,7 @@ use Gigya\WordPress\GigyaAction;
  */
 define( 'GIGYA__MINIMUM_WP_VERSION', '4.7' );
 define( 'GIGYA__MINIMUM_PHP_VERSION', '7.0' );
-define( 'GIGYA__VERSION', '6.1.0' );
+define( 'GIGYA__VERSION', '6.1.1' );
 define( 'GIGYA__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GIGYA__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'GIGYA__DEFAULT_JS_CDN', 'https://cdns.gigya.com/js/socialize.js' );
@@ -264,6 +264,7 @@ function _gigParam( $array, $key, $default = null, $obfuscate = false ) {
  */
 function _gigya_data_center( $settings ) {
 	$default_data_center = 'us1.gigya.com';
+
 	if ( $settings['data_center'] == 'other' ) {
 		if ( ! empty( $settings['other_ds'] ) ) {
 			return $settings['other_ds'];

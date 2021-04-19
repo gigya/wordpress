@@ -193,11 +193,11 @@ class GigyaSettings {
 				);
 
 				if ( ! empty( $res ) ) {
-					$gigyaErrCode = $res->getErrorCode();
-					if ( $gigyaErrCode > 0 ) {
-						$gigyaErrMsg = $res->getErrorMessage();
+					$gigya_error_code = $res->getErrorCode();
+					if ( $gigya_error_code > 0 ) {
+						$gigya_error_message = $res->getErrorMessage();
 
-						self::setError( $gigyaErrCode, $gigyaErrMsg, ( ! empty( $res->getData() ) ) ? $res->getString( "callId", "N/A" ) : null );
+						self::setError( $gigya_error_code, $gigya_error_message, ( ! empty( $res->getData() ) ) ? $res->getString( "callId", "N/A" ) : null );
 
 						/* Prevent updating values */
 						static::_keepOldApiValues();
