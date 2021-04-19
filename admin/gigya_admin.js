@@ -156,47 +156,57 @@
 			}
 		};
 
+		/**
+		 *
+		 * @param textField The field mapping JSON.
+		 * @param e The event object.
+		 */
 		var fieldMappingJsonValidation = function (textField, e) {
 			var json = textField.val();
 			$('.msg').remove();
 			try {
 				var result = jsonlint.parse(json);
 				if (result) {
-					var doesJsonValid = true;
 					for (var index in result) {
 						if (result.hasOwnProperty(index)) {
-							var realPlace = index;
-							realPlace++;
+							var sectionID = index;
+							sectionID++;
 							var section = result[index];
 
-							if (!section.hasOwnProperty('cmsName') || section.cmsName.length === 0) {
-								doesJsonValid = false;
-								showInlineError(textField, 'Error: The property "cmsName" is missing or is empty, at section: ' + realPlace + '.', e)
+							if (!section.hasOwnProperty('cmsName')) {
+								showInlineError(textField, 'Error: The property cmsName is missing at section: ' + sectionID + '.', e);
+								return;
 
+							} else if (!isValidFieldMappingValue(section.cmsName)) {
+								showInlineError(textField, 'Error: Invalid cmsName at section: ' + sectionID +'.', e);
+								return;
 							}
-							if (!section.hasOwnProperty('gigyaName') || section.gigyaName.length === 0) {
-								doesJsonValid = false;
-								showInlineError(textField, 'Error: The property "gigyaName" is missing or is empty, at section: ' + realPlace + '.', e);
 
+							if (!section.hasOwnProperty('gigyaName')) {
+								showInlineError(textField, 'Error: The property gigyaName is missing at section: ' + sectionID + '.', e);
+								return;
+
+							} else if (!isValidFieldMappingValue(section.gigyaName)) {
+								showInlineError(textField, 'Error: Invalid gigyaName at section: ' + sectionID + '.', e);
+								return;
 							}
-							if (Object.keys(section).length > 2) {
-								doesJsonValid = false;
-								for (var propertyName in section)
-									if (propertyName !== "gigyaName" && propertyName !== 'cmsName')
-										showInlineError(textField, 'Error: There is unnecessary property named by "' + propertyName + '" at section: ' + realPlace + '.', e);
-							}
+
 						}
 					}
-
-					if (doesJsonValid) {
-						textField.after('<div class="msg updated">JSON is valid</div>');
-						textField.addClass('valid');
-					}
+					textField.after('<div class="msg updated">JSON is valid</div>');
+					textField.addClass('valid');
 				}
 
 			} catch (err) {
 				showInlineError(textField, 'Error: The text you have entered is not a valid JSON format. JSON Parser error message: ' + err, e);
 			}
+
+		};
+
+
+		var isValidFieldMappingValue = function (el) {
+
+			return (el.length !== 0)
 
 		};
 
@@ -488,13 +498,13 @@
 			}
 
 			// Validate JSON format
-			var fieldMappingTextArea = $('#gigya_map_raas_full_map');
+			var fieldMappingMapElementId = 'gigya_map_raas_full_map';
 			$('form.gigya-settings .json textarea').each(function () {
-				if (fieldMappingTextArea.length > 0)
-					fieldMappingJsonValidation(fieldMappingTextArea, e);
-				else
+				if ($(this).attr('id') === fieldMappingMapElementId) {
+					fieldMappingJsonValidation($(this), e);
+				} else {
 					jsonValidate($(this), e);
-
+				}
 			});
 		});
 
