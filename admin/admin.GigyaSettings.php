@@ -370,12 +370,7 @@ class GigyaSettings {
 
 		$field_name_in_array          = explode( '.', $key );
 		$schema_type                  = $field_name_in_array[0];
-		$does_include_the_name_fields = ( isset( $field_name_in_array[1] ) ) ? ( $field_name_in_array[1] === 'fields' ) : false;
 		$field_name                   = substr( strpbrk( $key, '.' ), 1 );
-
-		if ( $does_include_the_name_fields ) {
-			$field_name = substr( strpbrk( $field_name, '.' ), 1 );
-		}
 
 		switch ( $schema_type ) {
 			case 'profile':
