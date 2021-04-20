@@ -23,6 +23,7 @@ define( 'GIGYA__MINIMUM_PHP_VERSION', '7.0' );
 define( 'GIGYA__VERSION', '6.1.1' );
 define( 'GIGYA__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GIGYA__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'GIGYA__USER_FILES', GIGYA__PLUGIN_DIR . 'user_files/' );
 define( 'GIGYA__DEFAULT_JS_CDN', 'https://cdns.gigya.com/js/socialize.js' );
 define( 'GIGYA__LOG_LIMIT', 50 );
 define( 'GIGYA__DEFAULT_COOKIE_EXPIRATION', 1800 ); /* WordPress defaults to 172800 (48 hours) */
@@ -50,6 +51,11 @@ define( 'GIGYA__SESSION_FOREVER', -2 );
 define( 'GIGYA__OFFLINE_SYNC_MIN_FREQ', 5 );
 define( 'GIGYA__OFFLINE_SYNC_MAX_USERS', 1000 );
 define( 'GIGYA__OFFLINE_SYNC_UPDATE_DELAY', 10 );
+
+/**  get out of sync users */
+define( 'GIGYA__ACCOUNT_SEARCH_NUMBER_OF_PAGES', 9 );
+define( 'GIGYA__GET_USERS_MAX', 1000 );
+
 
 /**
  * Register activation hook

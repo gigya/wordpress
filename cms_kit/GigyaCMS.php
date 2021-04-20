@@ -480,13 +480,14 @@ class GigyaCMS
 	 * Queries Gigya with the accounts.search call
 	 *
 	 * @param array $params Full parameters of the call. Usually in the form of [ 'query' => 'SELECT ...', 'openCursor' => true ], but can be [ 'cursorId' => ... ]
+	 * @param int $max_page optional for getting limited pages
 	 *
 	 * @return array
 	 *
 	 * @throws GSApiException
 	 * @throws GSException
 	 */
-	public function searchGigyaUsers( $params ) {
+	public function searchGigyaUsers( $params, $max_page = - 1 ) {
 		$gigya_users = [];
 
 		$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
@@ -498,10 +499,10 @@ class GigyaCMS
 			}
 		}
 
-		if ( ! empty( $gigya_data['nextCursorId'] ) ) {
+		if ( ! empty( $gigya_data['nextCursorId'] ) and $max_page != 0 ) {
 			$cursorId = $gigya_data['nextCursorId'];
 
-			return array_merge( $gigya_users, $this->searchGigyaUsers( [ 'cursorId' => $cursorId ] ) );
+			return array_merge( $gigya_users, $this->searchGigyaUsers( [ 'cursorId' => $cursorId ], -- $max_page ) );
 		}
 
 		return $gigya_users;
