@@ -200,7 +200,7 @@ class GigyaAction {
 
 			/* Loads requirements for any Gigya's Google-Analytics integration. */
 			if ( ! empty( $this->global_options['google_analytics'] ) ) {
-				wp_enqueue_script( 'gigya_ga', GIGYA__CDN_PROTOCOL . '.gigya.com/js/gigyaGAIntegration.js' );
+				wp_enqueue_script( 'gigya_ga', 'https://cdns.gigya.com/js/gigyaGAIntegration.js' );
 			}
 		}
 

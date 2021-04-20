@@ -482,7 +482,7 @@ class GigyaCMS
 	 * @param array $params Full parameters of the call. Usually in the form of [ 'query' => 'SELECT ...', 'openCursor' => true ], but can be [ 'cursorId' => ... ]
 	 * @param string|null $required_field The field (if any) that every searched user must include, in order to appear in the result. For example: 'profile', 'identities'.
 	 * If the field is missing in the user record, it will be filtered out.
-	 * @param int $max_page optional for getting limited pages.
+	 * @param int $max_page optional, gets the first $max_page pages. Useful if the number of records is high and we only need some of them, similar to LIMIT in some SQL systems.
 	 *
 	 * @return array
 	 *

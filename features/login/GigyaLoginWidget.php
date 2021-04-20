@@ -1,5 +1,7 @@
 <?php
 
+use Gigya\WordPress\GigyaLoginSet;
+
 /**
  * Adds LoginWidget widget.
  */
@@ -10,7 +12,7 @@ class GigyaLogin_Widget extends WP_Widget {
 	 */
 	function __construct() {
 		$args = array(
-				'description' => __( 'Login by SAP Customer Data Cloud' )
+			'description' => __( 'Login by SAP Customer Data Cloud' )
 		);
 		parent::__construct( 'gigya_login', __( 'SAP CDC Login' ), $args );
 	}

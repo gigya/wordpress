@@ -76,7 +76,7 @@ function globalSettingsForm() {
 				'eu1.gigya.com' => __( 'EU Data Center' ),
 				'au1.gigya.com' => __( 'AU Data Center' ),
 				'ru1.gigya.com' => __( 'RU Data Center' ),
-				'cn1.gigya-api.cn' => __( 'CN Data Center' ),
+				'cn1.sapcdm.cn' => __( 'CN Data Center' ),
 				'other' => __( 'Other' )
 	);
 	if (!array_key_exists($dataCenter, $options)) {

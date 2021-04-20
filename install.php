@@ -144,7 +144,7 @@ class GigyaInstall {
 		// Updating the sidebars.
 		$sb = get_option( 'sidebars_widgets' );
 		foreach ( $sb as $k => $sidebar ) {
-			if ( count( $sidebar ) > 0 )
+			if ( is_array( $sidebar ) and ( count( $sidebar ) > 0 ) )
 			{
 				foreach ( $sidebar as $widget )
 				{
