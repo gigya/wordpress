@@ -182,8 +182,7 @@ function globalSettingsForm() {
 
 	if ( get_option( 'gigya_settings_fields' ) ) {
 		$form['clean_db'] = array(
-			'markup' => '<a href="javascript:void(0)" class="clean-db">Database cleaner after upgrade</a><br><small>Press this button to remove all unnecessary elements of the previous version from your database.Please make sure to backup your database before performing the clean.For more information about upgrading from the 
-								previous version <a href="https://github.com/gigya/wordpress/wiki#installing-the-gigya-plugin-for-wordpress-1">here.</a></small>'
+			'markup' => '<a href="javascript:void(0)" class="clean-db">Database cleaner after upgrade</a><br><small>Press this button to remove all unnecessary elements of the previous version from your database.Please make sure to backup your database before performing the clean.For more information about upgrading from the previous version <a href="https://github.com/gigya/wordpress/wiki#installing-the-gigya-plugin-for-wordpress-1">here.</a></small>'
 		);
 	}
 
