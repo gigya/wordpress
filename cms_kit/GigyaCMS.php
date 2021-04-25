@@ -480,29 +480,35 @@ class GigyaCMS
 	 * Queries Gigya with the accounts.search call
 	 *
 	 * @param array $params Full parameters of the call. Usually in the form of [ 'query' => 'SELECT ...', 'openCursor' => true ], but can be [ 'cursorId' => ... ]
-	 * @param int $max_page optional for getting limited pages
+	 * @param string|null $required_field The field (if any) that every searched user must include, in order to appear in the result. For example: 'profile', 'identities'.
+	 * If the field is missing in the user record, it will be filtered out.
+	 * @param int $max_page optional, gets the first $max_page pages. Useful if the number of records is high and we only need some of them, similar to LIMIT in some SQL systems.
 	 *
 	 * @return array
 	 *
 	 * @throws GSApiException
 	 * @throws GSException
 	 */
-	public function searchGigyaUsers( $params, $max_page = - 1 ) {
+	public function searchGigyaUsers( $params, $required_field = null, $max_page = - 1 ) {
 		$gigya_users = [];
 
 		$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, GIGYA__AUTH_MODE );
 		$gigya_data       = $gigya_api_helper->sendApiCall( 'accounts.search', $params )->getData()->serialize();
 
-		foreach ( $gigya_data['results'] as $user_data ) {
-			if ( isset( $user_data['profile'] ) ) {
-				$gigya_users[] = $user_data;
+		if ( $required_field !== null ) {
+			foreach ( $gigya_data['results'] as $user_data ) {
+				if ( isset( $user_data[ $required_field ] ) ) {
+					$gigya_users[] = $user_data;
+				}
 			}
+		} else {
+			$gigya_users = $gigya_data['results'];
 		}
 
 		if ( ! empty( $gigya_data['nextCursorId'] ) and $max_page != 0 ) {
 			$cursorId = $gigya_data['nextCursorId'];
 
-			return array_merge( $gigya_users, $this->searchGigyaUsers( [ 'cursorId' => $cursorId ], -- $max_page ) );
+			return array_merge( $gigya_users, $this->searchGigyaUsers( [ 'cursorId' => $cursorId ], $required_field, -- $max_page ) );
 		}
 
 		return $gigya_users;
