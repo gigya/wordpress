@@ -29,6 +29,11 @@ class GigyaSettings {
 		wp_enqueue_script( 'gigya_admin_js', GIGYA__PLUGIN_URL . 'admin/gigya_admin.js' );
 		wp_enqueue_script( 'gigya_jsonlint_js', GIGYA__PLUGIN_URL . 'admin/jsonlint.js' );
 
+		//Adding variables to gigya_Admin.js
+		$params = ['offLineSyncMinFreq'=>GIGYA__OFFLINE_SYNC_MIN_FREQ];
+		wp_localize_script( 'gigya_admin_js', 'gigyaAdminParams', $params );
+
+
 		// Actions.
 		add_action( 'admin_init', array( $this, 'adminInit' ) );
 		add_action( 'admin_menu', array( $this, 'adminMenu' ) );
@@ -265,16 +270,15 @@ class GigyaSettings {
 					$response = $cms->call( $method, $params );
 
 				} catch ( GSException $e ) {
-					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Error: Can\'t reach sap servers, please check the global configuration setting' ), 'error' );
+					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Setting saved.<p>Warning: Can\'t reach SAP servers, please check the global configuration settings.<br> Can\'t validate SAP CDC fields.</p>' ), 'warning' );
 					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
 					$has_error = true;
 				}
 				if ( is_wp_error( $response ) ) {
-					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Error: Can\'t reach sap servers, please check the global configuration setting: ' . $response->get_error_message() ), 'error' );
+					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Setting saved.<br>Warning: Can\'t reach SAP servers, please check the global configuration settings: ' . $response->get_error_message() . '.<br> Can\'t validate SAP CDC fields.' ), 'warning' );
 					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
 
-				} else {
-
+				} else if ( $response['errorCode'] === 0 ) {
 					$error_message = static::getDuplicateAndMissingFields( $data, $response );
 
 					//Sending the error message if necessary.
@@ -322,9 +326,9 @@ class GigyaSettings {
 		$unnecessary_fields        = array();
 		$not_existing_fields       = array();
 		$is_valid                  = true;
-		$error_message             = __( 'Setting saved. <br><br>Warning: ' );
+		$error_message             = __( 'Setting saved.<p>Warning:</p>' );
 		$json_block                = json_decode( stripslashes( $data['map_raas_full_map'] ), true );
-
+		$warnings_counter          = 0;
 		//Searching each block.
 		foreach ( $json_block as $meta_key ) {
 
@@ -361,31 +365,37 @@ class GigyaSettings {
 		$not_existing_fields_str       = implode( ', ', $not_existing_fields );
 		$unnecessary_fields_str        = implode( ', ', $unnecessary_fields );
 
+		//Checking if there is two different warnings cases
+		if ( ( ! empty( $duplications_of_wp_fields_str ) and ! empty( $not_existing_fields_str ) )
+			 or ( ! empty( $duplications_of_wp_fields_str ) and ! empty( $unnecessary_fields_str ) )
+			 or ( ! empty( $not_existing_fields_str ) and ! empty( $unnecessary_fields_str ) ) ) {
+			$error_message    = __( 'Setting saved.<p>Warnings: </p>' );
+			$warnings_counter = 1;
+		}
+
+
 		//Builds the error message.
 		if ( ! empty( $not_existing_fields_str ) ) {
-			$not_existing_fields_warning = __( '<br>&nbsp The following fields were not found in Customer Data Cloud\'s account schema: <br> &nbsp&nbsp&nbsp&nbsp ')
-										   . $not_existing_fields_str . __( '<br>&nbsp&nbsp Please make sure that the names are spelled correctly, or add the fields in the schema editor.' );
-			$error_message               .= $not_existing_fields_warning;
-			$is_valid                    = false;
+			$case         = __( 'The following fields were not found in Customer Data Cloud\'s account schema:' );
+			$solution           = __( 'Please make sure that the names are spelled correctly, or add the fields in the schema editor.' );
+			$error_message .= static:: fieldsMappingWarningsBuilder( $case, $not_existing_fields_str, $solution, $warnings_counter );
+			$is_valid      = false;
 		}
+
 		if ( ! empty( $duplications_of_wp_fields_str ) ) {
 
-			if ( ! $is_valid ) {
-				$error_message .= '<br>';
-			}
-			$duplications_warning = __( '<br> &nbsp The following duplicates have been found in the cmsName field:<br>&nbsp&nbsp&nbsp&nbsp' )  . $duplications_of_wp_fields_str . __( '<br>&nbsp&nbsp Field mapping for these fields may not work as expected.' );
-			$error_message        .= $duplications_warning;
-			$is_valid             = false;
-
+			$case         = __( 'The following duplicates have been found in the cmsName field:' );
+			$solution           = __( 'Field mapping for these fields may not work as expected.' );
+			$error_message .= static:: fieldsMappingWarningsBuilder( $case, $duplications_of_wp_fields_str, $solution, $warnings_counter );
+			$is_valid      = false;
 		}
-		if ( ! empty( $unnecessary_fields_str ) ) {
-			if ( ! $is_valid ) {
-				$error_message .= '<br>';
-			}
-			$unnecessary_fields_warning = __( '<br>&nbsp The following unnecessary fields have been found in the JSON:<br>&nbsp&nbsp&nbsp&nbsp' )  . $unnecessary_fields_str . __( '<br>&nbsp&nbsp These fields will be ignored.' );
-			$error_message              .= $unnecessary_fields_warning;
-			$is_valid                   = false;
 
+		if ( ! empty( $unnecessary_fields_str ) ) {
+
+			$case         = __( 'The following unnecessary fields have been found in the JSON:' );
+			$solution           = __( 'These fields will be ignored.' );
+			$error_message .= static:: fieldsMappingWarningsBuilder( $case, $unnecessary_fields_str, $solution, $warnings_counter );
+			$is_valid      = false;
 		}
 
 		if ( $is_valid ) {
@@ -398,7 +408,7 @@ class GigyaSettings {
 	/**
 	 * @param $response array The response from 'accounts.getSchema' query.
 	 * @param $key string Field to search for in Gigya schema, with dot notation.
-	 * 						Example: subscriptions.mySubscription.isSubscribed
+	 *                        Example: subscriptions.mySubscription.isSubscribed
 	 *
 	 * @return bool True if the field has been found false otherwise.
 	 */
@@ -408,9 +418,9 @@ class GigyaSettings {
 			return false;
 		}
 
-		$field_name_in_array          = explode( '.', $key );
-		$schema_type                  = $field_name_in_array[0];
-		$field_name                   = substr( strpbrk( $key, '.' ), 1 );
+		$field_name_in_array = explode( '.', $key );
+		$schema_type         = $field_name_in_array[0];
+		$field_name          = substr( strpbrk( $key, '.' ), 1 );
 
 
 		switch ( $schema_type ) {
@@ -445,6 +455,22 @@ class GigyaSettings {
 		}
 
 		return $machine_name;
+	}
+
+	public static function fieldsMappingWarningsBuilder( $case_Str, $fields, $solution, &$warnings_counter ) {
+
+		$error = '<p class="gigya-field-mapping-error-p">';
+		if ( $warnings_counter !== 0 ) {
+			$error .= $warnings_counter ++ . '. ';
+		}
+		$error .= $case_Str
+				  . '<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
+				  . '<i>' . $fields . '</i>'
+				  . '<br>'
+				  . $solution
+				  . '</p>';
+
+		return $error;
 	}
 
 	/**

@@ -3,6 +3,7 @@
 		/**
 		 * Expose the relevant form element for the login mode selected.
 		 * @param $el
+		 *@class gigyaAdminParams
 		 */
 		var userManagementPage = function ($el) {
 			if ($el.attr("checked") === 'checked') {
@@ -453,6 +454,77 @@
 		});
 
 		// --------------------------------------------------------------------
+		/*
+		* Field-Mapping Settings page
+		*/
+		var submitButton = $('#submit');
+		var enableOffLineSync = $('#gigya_map_offline_sync_enable');
+		var freqValue = $('#gigya_map_offline_sync_frequency');
+		var emailOnSuccess = $('#gigya_map_offline_sync_email_on_success');
+		var emailOnFailure = $('#gigya_map_offline_sync_email_on_failure');
+
+
+		var fieldMappingValidation = function (e) {
+			if (enableOffLineSync.is(':checked')) {
+				var isFieldMappingValid = emailValidation(emailOnSuccess, e);
+				isFieldMappingValid = emailValidation(emailOnFailure, e) && isFieldMappingValid;
+				isFieldMappingValid = freqValidation(freqValue, e) && isFieldMappingValid;
+				if (isFieldMappingValid)
+					submitButton.removeAttr('disabled');
+				else
+					submitButton.attr('disabled', 'disabled');
+			} else {
+				removeError(emailOnSuccess);
+				removeError(emailOnFailure);
+				removeError(freqValue);
+				submitButton.removeAttr('disabled');
+			}
+
+		};
+		var emailValidation = function (element, e) {
+			var regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+			var textFieldEmail = element.val();
+			var emails = element.val().split(",");
+			if (textFieldEmail) {
+				emails.forEach(function (email) {
+					if (!regex.test(email)) {
+						enableError(element, 'Error: Invalid emails entered. please enter emails without space after comma.', e);
+						return false;
+					}
+				})
+			}
+			return true;
+
+		};
+
+		var freqValidation = function (element, e) {
+			if (parseInt(element.val()) < gigyaAdminParams.offLineSyncMinFreq) {
+				enableError(element, 'Error: Offline sync job frequency cannot be lower than ' + gigyaAdminParams.offLineSyncMinFreq + ' minutes.', e);
+				return false;
+			}
+			else {
+				removeError(element);
+				return true;
+			}
+
+		};
+
+		freqValue.on('change', function (e) {
+			fieldMappingValidation(e);
+		});
+
+		emailOnSuccess.on('change', function (e) {
+			fieldMappingValidation(e);
+		});
+		emailOnFailure.on('change', function (e) {
+			fieldMappingValidation(e);
+		});
+
+		enableOffLineSync.on('click',function (e) {
+			fieldMappingValidation(e);
+	});
+
+		// --------------------------------------------------------------------
 
 		/* Form manipulation functions */
 
@@ -501,6 +573,7 @@
 			var fieldMappingMapElementId = 'gigya_map_raas_full_map';
 			$('form.gigya-settings .json textarea').each(function () {
 				if ($(this).attr('id') === fieldMappingMapElementId) {
+					fieldMappingValidation(e);
 					fieldMappingJsonValidation($(this), e);
 				} else {
 					jsonValidate($(this), e);

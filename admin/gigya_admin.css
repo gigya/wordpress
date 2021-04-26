@@ -128,3 +128,7 @@ label[for=gigya_raasOverrideLinks] {
 }
 
 
+.gigya-field-mapping-error-p {
+    padding-left: 20px !important;
+    font-size: 12px !important;
+}
