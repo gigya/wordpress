@@ -3,10 +3,9 @@
 		/**
 		 * Expose the relevant form element for the login mode selected.
 		 * @param $el
-		 * /
-		 /**
 		 * @class gigyaAdminParams
 		 * @property max_execution_time
+		 * @property offLineSyncMinFreq
 		 *
 		 */
 		var userManagementPage = function ($el) {
@@ -94,6 +93,7 @@
 				e.preventDefault();
 				e.stopPropagation();
 			}
+
 			element.addClass('gigya-wp-field-error');
 			if (element.next('div.gigya-error-message-notice-div').length === 0) {
 				element.after('<div class="gigya-error-message-notice-div"><p><strong>' + text + '</strond></p>' +
@@ -161,59 +161,6 @@
 			}
 		};
 
-		/**
-		 *
-		 * @param textField The field mapping JSON.
-		 * @param e The event object.
-		 */
-		var fieldMappingJsonValidation = function (textField, e) {
-			var json = textField.val();
-			$('.msg').remove();
-			try {
-				var result = jsonlint.parse(json);
-				if (result) {
-					for (var index in result) {
-						if (result.hasOwnProperty(index)) {
-							var sectionID = index;
-							sectionID++;
-							var section = result[index];
-
-							if (!section.hasOwnProperty('cmsName')) {
-								showInlineError(textField, 'Error: The property cmsName is missing at section: ' + sectionID + '.', e);
-								return;
-
-							} else if (!isValidFieldMappingValue(section.cmsName)) {
-								showInlineError(textField, 'Error: Invalid cmsName at section: ' + sectionID +'.', e);
-								return;
-							}
-
-							if (!section.hasOwnProperty('gigyaName')) {
-								showInlineError(textField, 'Error: The property gigyaName is missing at section: ' + sectionID + '.', e);
-								return;
-
-							} else if (!isValidFieldMappingValue(section.gigyaName)) {
-								showInlineError(textField, 'Error: Invalid gigyaName at section: ' + sectionID + '.', e);
-								return;
-							}
-
-						}
-					}
-					textField.after('<div class="msg updated">JSON is valid</div>');
-					textField.addClass('valid');
-				}
-
-			} catch (err) {
-				showInlineError(textField, 'Error: The text you have entered is not a valid JSON format. JSON Parser error message: ' + err, e);
-			}
-
-		};
-
-
-		var isValidFieldMappingValue = function (el) {
-
-			return (el.length !== 0)
-
-		};
 
 		/**
 		 * @param form The form element object
@@ -512,38 +459,43 @@
 		/*
 		* Field-Mapping Settings page
 		*/
-		var submitButton = $('#submit');
 		var enableOffLineSync = $('#gigya_map_offline_sync_enable');
 		var freqValue = $('#gigya_map_offline_sync_frequency');
 		var emailOnSuccess = $('#gigya_map_offline_sync_email_on_success');
 		var emailOnFailure = $('#gigya_map_offline_sync_email_on_failure');
 
 
-		var fieldMappingValidation = function (e) {
+		var fieldMappingValidation = function (event) {
+			removeError(emailOnSuccess);
+			removeError(emailOnFailure);
+			removeError(freqValue.parent());
 			if (enableOffLineSync.is(':checked')) {
-				var isFieldMappingValid = emailValidation(emailOnSuccess, e);
-				isFieldMappingValid = emailValidation(emailOnFailure, e) && isFieldMappingValid;
-				isFieldMappingValid = freqValidation(freqValue, e) && isFieldMappingValid;
-				if (isFieldMappingValid)
-					submitButton.removeAttr('disabled');
-				else
-					submitButton.attr('disabled', 'disabled');
-			} else {
-				removeError(emailOnSuccess);
-				removeError(emailOnFailure);
-				removeError(freqValue);
-				submitButton.removeAttr('disabled');
+				freqValidation(freqValue, event);
+				emailValidation(emailOnSuccess, event);
+				emailValidation(emailOnFailure, event);
 			}
 
 		};
-		var emailValidation = function (element, e) {
+
+		var freqValidation = function (element, event) {
+			if ((element.val().length===0) || (parseInt(element.val()) < gigyaAdminParams.offLineSyncMinFreq)) {
+				enableError(element.parent(), 'Error: Offline sync job frequency cannot be lower than ' + gigyaAdminParams.offLineSyncMinFreq + ' minutes, or empty.', event);
+				element.parent().removeClass('gigya-wp-field-error');
+				return false;
+			} else {
+				return true;
+			}
+
+		};
+
+		var emailValidation = function (element, event) {
 			var regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 			var textFieldEmail = element.val();
 			var emails = element.val().split(",");
 			if (textFieldEmail) {
 				emails.forEach(function (email) {
 					if (!regex.test(email)) {
-						enableError(element, 'Error: Invalid emails entered. please enter emails without space after comma.', e);
+						enableError(element, 'Error: Invalid email entered.', event);
 						return false;
 					}
 				})
@@ -552,32 +504,65 @@
 
 		};
 
-		var freqValidation = function (element, e) {
-			if (parseInt(element.val()) < gigyaAdminParams.offLineSyncMinFreq) {
-				enableError(element, 'Error: Offline sync job frequency cannot be lower than ' + gigyaAdminParams.offLineSyncMinFreq + ' minutes.', e);
-				return false;
-			}
-			else {
-				removeError(element);
-				return true;
+		/**
+		 *
+		 * @param textField The field mapping JSON.
+		 * @param e The event object.
+		 */
+		var fieldMappingJsonValidation = function (textField, e) {
+			var json = textField.val();
+			$('.msg').remove();
+			try {
+				var result = jsonlint.parse(json);
+				if (result) {
+					for (var index in result) {
+						if (result.hasOwnProperty(index)) {
+							var sectionID = index;
+							sectionID++;
+							var section = result[index];
+
+							if (!section.hasOwnProperty('cmsName')) {
+								enableError(textField, 'Error: The property cmsName is missing at section: ' + sectionID + '.', e);
+								textField.removeClass('gigya-wp-field-error');
+								return;
+
+							} else if (!isValidFieldMappingValue(section.cmsName)) {
+								enableError(textField, 'Error: Invalid cmsName at section: ' + sectionID +'.', e);
+								textField.removeClass('gigya-wp-field-error');
+								return;
+							}
+
+							if (!section.hasOwnProperty('gigyaName')) {
+								enableError(textField, 'Error: The property gigyaName is missing at section: ' + sectionID + '.', e);
+								textField.removeClass('gigya-wp-field-error');
+								return;
+
+							} else if (!isValidFieldMappingValue(section.gigyaName)) {
+								enableError(textField, 'Error: Invalid gigyaName at section: ' + sectionID + '.', e);
+								textField.removeClass('gigya-wp-field-error');
+								return;
+							}
+
+						}
+					}
+					textField.after('<div class="msg updated">JSON is valid</div>');
+					textField.addClass('valid');
+				}
+
+			} catch (err) {
+				enableError(textField, 'Error: The text you have entered is not a valid JSON format. JSON Parser error message: ' + err, e);
+				textField.removeClass('gigya-wp-field-error');
+
 			}
 
 		};
 
-		freqValue.on('change', function (e) {
-			fieldMappingValidation(e);
-		});
 
-		emailOnSuccess.on('change', function (e) {
-			fieldMappingValidation(e);
-		});
-		emailOnFailure.on('change', function (e) {
-			fieldMappingValidation(e);
-		});
+		var isValidFieldMappingValue = function (el) {
 
-		enableOffLineSync.on('click',function (e) {
-			fieldMappingValidation(e);
-	});
+			return (el.length !== 0)
+
+		};
 
 		// --------------------------------------------------------------------
 
@@ -618,22 +603,31 @@
 		/* Form validation */
 
 		// Validate form before submit
-		$('form.gigya-settings').on('submit', function (e) {
+		var fieldMappingMapElementId = 'gigya_map_raas_full_map';
+		var fieldMappingMapElement = $('#gigya_map_raas_full_map');
+
+		$('form.gigya-settings').on('submit', function (event) {
+
 			var sessionDurationObj = $('#gigya_session_duration');
 			if (sessionDurationObj.length > 0) {
-				emptyNumericValidate(sessionDurationObj, e);
+				emptyNumericValidate(sessionDurationObj, event);
 			}
+			//Removing all the notice messages from the headline.
+			var noticeMessage = document.getElementsByClassName('notice  settings-error is-dismissible');
+			for ( element of noticeMessage)
+				element.remove();
 
-			// Validate JSON format
-			var fieldMappingMapElementId = 'gigya_map_raas_full_map';
-			$('form.gigya-settings .json textarea').each(function () {
-				if ($(this).attr('id') === fieldMappingMapElementId) {
-					fieldMappingValidation(e);
-					fieldMappingJsonValidation($(this), e);
-				} else {
-					jsonValidate($(this), e);
-				}
-			});
+			//Checking case of the field-mapping page.
+			if (document.getElementById(fieldMappingMapElementId) !== null) {
+				fieldMappingValidation(event);
+				fieldMappingJsonValidation(fieldMappingMapElement, event);
+
+			} else {
+				// Validate JSON format
+				$('form.gigya-settings .json textarea').each(function () {
+					jsonValidate($(this), event);
+				});
+			}
 		});
 
 		// Validate required fields

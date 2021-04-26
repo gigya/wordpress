@@ -29,9 +29,6 @@ class GigyaSettings {
 		wp_enqueue_script( 'gigya_admin_js', GIGYA__PLUGIN_URL . 'admin/gigya_admin.js' );
 		wp_enqueue_script( 'gigya_jsonlint_js', GIGYA__PLUGIN_URL . 'admin/jsonlint.js' );
 
-		//Adding variables to gigya_Admin.js
-		$params = ['offLineSyncMinFreq'=>GIGYA__OFFLINE_SYNC_MIN_FREQ];
-		wp_localize_script( 'gigya_admin_js', 'gigyaAdminParams', $params );
 
 
 		// Actions.
@@ -45,8 +42,10 @@ class GigyaSettings {
 	 */
 	public function adminInit() {
 
+		//Adding variables to gigya_Admin.js
 		$params = array(
-			'max_execution_time' => intval( ini_get( 'max_execution_time' ) ) * 1000
+			'max_execution_time' => intval( ini_get( 'max_execution_time' ) ) * 1000,
+			'offLineSyncMinFreq'=>GIGYA__OFFLINE_SYNC_MIN_FREQ
 		);
 
 		$params = apply_filters( 'gigya_admin_params', $params );
@@ -230,7 +229,7 @@ class GigyaSettings {
 			} elseif ( $_POST['gigya_login_settings']['mode'] == 'raas' ) {
 				update_option( 'users_can_register', 0 );
 			}
-		} elseif ( isset( $_POST['gigya_field_mapping_settings'] ) ) {
+		}  elseif ( isset( $_POST['gigya_field_mapping_settings'] ) ) {
 			$has_error = false;
 
 			/* Validate field mapping settings, including offline sync */
@@ -277,12 +276,12 @@ class GigyaSettings {
 					$response = $cms->call( $method, $params );
 
 				} catch ( GSException $e ) {
-					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Setting saved.<p>Warning: Can\'t reach SAP servers, please check the global configuration settings.<br> Can\'t validate SAP CDC fields.</p>' ), 'warning' );
+					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Settings saved.<p>Warning: Can\'t reach SAP servers, please check the global configuration settings.<br> Can\'t validate SAP CDC fields.</p>' ), 'warning' );
 					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
 					$has_error = true;
 				}
 				if ( is_wp_error( $response ) ) {
-					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Setting saved.<br>Warning: Can\'t reach SAP servers, please check the global configuration settings: ' . $response->get_error_message() . '.<br> Can\'t validate SAP CDC fields.' ), 'warning' );
+					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Settings saved.<p>Warning: Can\'t reach SAP servers, please check the global configuration settings: ' . $response->get_error_message() . '.<br> Can\'t validate SAP CDC fields.</p>' ), 'warning' );
 					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
 
 				} else if ( $response['errorCode'] === 0 ) {
@@ -328,14 +327,14 @@ class GigyaSettings {
 	 */
 	private static function getDuplicateAndMissingFields( $data, $response ) {
 
-		$array_of_wp_fields        = array();
-		$duplications_of_wp_fields = array();
-		$unnecessary_fields        = array();
-		$not_existing_fields       = array();
-		$is_valid                  = true;
-		$error_message             = __( 'Setting saved.<p>Warning:</p>' );
-		$json_block                = json_decode( stripslashes( $data['map_raas_full_map'] ), true );
-		$warnings_counter          = 0;
+		$array_of_wp_fields         = array();
+		$duplications_of_wp_fields  = array();
+		$unnecessary_fields         = array();
+		$not_existing_fields        = array();
+		$is_valid                   = true;
+		$error_message              = __( 'Settings saved.<p>Warning:</p>' );
+		$json_block                 = json_decode( stripslashes( $data['map_raas_full_map'] ), true );
+		$does_have_several_warnings = false;
 		//Searching each block.
 		foreach ( $json_block as $meta_key ) {
 
@@ -376,33 +375,36 @@ class GigyaSettings {
 		if ( ( ! empty( $duplications_of_wp_fields_str ) and ! empty( $not_existing_fields_str ) )
 			 or ( ! empty( $duplications_of_wp_fields_str ) and ! empty( $unnecessary_fields_str ) )
 			 or ( ! empty( $not_existing_fields_str ) and ! empty( $unnecessary_fields_str ) ) ) {
-			$error_message    = __( 'Setting saved.<p>Warnings: </p>' );
-			$warnings_counter = 1;
+			$error_message              = __( 'Settings saved.<p>Warnings: </p> <ol class="gigya-field-mapping-error-p">' );
+			$does_have_several_warnings = true;
 		}
 
 
 		//Builds the error message.
 		if ( ! empty( $not_existing_fields_str ) ) {
-			$case         = __( 'The following fields were not found in Customer Data Cloud\'s account schema:' );
-			$solution           = __( 'Please make sure that the names are spelled correctly, or add the fields in the schema editor.' );
-			$error_message .= static:: fieldsMappingWarningsBuilder( $case, $not_existing_fields_str, $solution, $warnings_counter );
+			$case          = __( 'The following fields were not found in Customer Data Cloud\'s account schema:' );
+			$solution      = __( 'Please make sure that the names are spelled correctly, or add the fields in the schema editor.' );
+			$error_message .= static:: fieldsMappingWarningsBuilder( $case, $not_existing_fields_str, $solution, $does_have_several_warnings );
 			$is_valid      = false;
 		}
 
 		if ( ! empty( $duplications_of_wp_fields_str ) ) {
 
-			$case         = __( 'The following duplicates have been found in the cmsName field:' );
-			$solution           = __( 'Field mapping for these fields may not work as expected.' );
-			$error_message .= static:: fieldsMappingWarningsBuilder( $case, $duplications_of_wp_fields_str, $solution, $warnings_counter );
+			$case          = __( 'The following duplicates have been found in the cmsName field:' );
+			$solution      = __( 'Field mapping for these fields may not work as expected.' );
+			$error_message .= static:: fieldsMappingWarningsBuilder( $case, $duplications_of_wp_fields_str, $solution, $does_have_several_warnings );
 			$is_valid      = false;
 		}
 
 		if ( ! empty( $unnecessary_fields_str ) ) {
 
-			$case         = __( 'The following unnecessary fields have been found in the JSON:' );
-			$solution           = __( 'These fields will be ignored.' );
-			$error_message .= static:: fieldsMappingWarningsBuilder( $case, $unnecessary_fields_str, $solution, $warnings_counter );
+			$case          = __( 'The following fields will be ignored:' );
+			$solution      ='';
+			$error_message .= static:: fieldsMappingWarningsBuilder( $case, $unnecessary_fields_str, $solution, $does_have_several_warnings );
 			$is_valid      = false;
+		}
+		if ( $does_have_several_warnings ) {
+			$error_message .= '</ol>';
 		}
 
 		if ( $is_valid ) {
@@ -464,18 +466,20 @@ class GigyaSettings {
 		return $machine_name;
 	}
 
-	public static function fieldsMappingWarningsBuilder( $case_Str, $fields, $solution, &$warnings_counter ) {
+	public static function fieldsMappingWarningsBuilder( $case_Str, $fields, $solution, $does_have_several_warnings ) {
 
-		$error = '<p class="gigya-field-mapping-error-p">';
-		if ( $warnings_counter !== 0 ) {
-			$error .= $warnings_counter ++ . '. ';
+
+		$error = $case_Str
+				 . '<br>&nbsp;&nbsp;&nbsp;'
+				 . '<i>' . $fields . '</i>'
+				 . '<br>'
+				 . $solution;
+
+		if ( $does_have_several_warnings ) {
+			$error = '<li>' . $error . '</li>';
+		} else {
+			$error = '<p class="gigya-field-mapping-error-p">' . $error . '</p>';
 		}
-		$error .= $case_Str
-				  . '<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
-				  . '<i>' . $fields . '</i>'
-				  . '<br>'
-				  . $solution
-				  . '</p>';
 
 		return $error;
 	}
