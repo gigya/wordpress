@@ -81,6 +81,10 @@ class GigyaAction {
 		add_filter( 'get_avatar', array( $this, 'getGigyaAvatar' ), 10, 5 );
 		add_filter( 'login_message', 'raas_wp_login_custom_message' );
 		add_filter( 'cron_schedules', array( $this, 'getOfflineSyncSchedules' ) );
+		add_action( 'wp_ajax_get_out_of_sync_users', array( $this, 'getOutOfSyncUsers' ) );
+		add_action( 'get_out_of_sync_users', array( $this, 'getOutOfSyncUsers' ) );
+		add_action( 'wp_ajax_nopriv_get_out_of_sync_users', array( $this, 'getOutOfSyncUsers' ) );
+
 
 		/* Plugins shortcode activation switches */
 		require_once GIGYA__PLUGIN_DIR . 'features/gigyaPluginsShortcodes.php';
@@ -196,13 +200,15 @@ class GigyaAction {
 
 			/* Loads requirements for any Gigya's Google-Analytics integration. */
 			if ( ! empty( $this->global_options['google_analytics'] ) ) {
-				wp_enqueue_script( 'gigya_ga', GIGYA__CDN_PROTOCOL . '.gigya.com/js/gigyaGAIntegration.js' );
+				wp_enqueue_script( 'gigya_ga', 'https://cdns.gigya.com/js/gigyaGAIntegration.js' );
 			}
 		}
 
 		if ( is_admin() ) {
 			/* Loads requirements for the admin settings section. */
 			require_once GIGYA__PLUGIN_DIR . 'admin/admin.GigyaSettings.php';
+			require_once GIGYA__PLUGIN_DIR . 'admin/features/GigyaReportGenerator.php';
+
 			new GigyaSettings;
 		}
 	}
@@ -630,6 +636,79 @@ class GigyaAction {
 	}
 
 	/**
+	 * Get GIGYA__SYNC_REPORT_MAX_USERS from Gigya and check if the users exist at WP DB. and that their UIDs match.
+	 * The same idea with getting the same amount of users from Gigya and searching in WP DB.
+	 * the file will be generated inside GIGYA__USER_FILES folder.
+	 */
+	public function getOutOfSyncUsers() {
+
+		if ( ! is_dir( GIGYA__USER_FILES ) ) {
+			$message = "Could not generate report: The path: " . GIGYA__USER_FILES . " does not exist";
+			error_log( $message );
+			wp_send_json_error( $message );
+
+			return;
+		};
+
+		try {
+			$wp_to_gigya_compare = GigyaReportGenerator::getWPUsersNotInGigya();
+			$gigya_to_wp_compare = GigyaReportGenerator::getGigyaUsersNotInWP();
+		} catch ( GSApiException $e ) {
+			$message = "There was an error getting the data from SAP servers, callID: " . $e->getCallId() . ', Error Code: ' . $e->getErrorCode();
+
+			wp_send_json_error( $message );
+			error_log( $message );
+			return;
+
+		} catch ( GSException $e ) {
+			$message = "Could not reach SAP server: " . $e->errorMessage;
+
+			wp_send_json_error( $message );
+			error_log( $message );
+			return;
+		}
+
+		$message     = '';
+		$files_names = array_keys( array_merge( $wp_to_gigya_compare, $gigya_to_wp_compare ) );
+
+		/*generating files for each file_name*/
+		foreach ( $files_names as $file_name ) {
+
+			if ( array_key_exists( $file_name, $wp_to_gigya_compare ) and array_key_exists( $file_name, $gigya_to_wp_compare ) ) {
+				$merged_array = array_merge( $wp_to_gigya_compare[ $file_name ], $gigya_to_wp_compare[ $file_name ] );
+			} else if ( array_key_exists( $file_name, $wp_to_gigya_compare ) ) {
+				$merged_array = $wp_to_gigya_compare[ $file_name ];
+			} else if ( array_key_exists( $file_name, $gigya_to_wp_compare ) ) {
+				$merged_array = $gigya_to_wp_compare[ $file_name ];
+			} else {
+				$merged_array = array();
+			}
+
+			$file = fopen( GIGYA__USER_FILES . $file_name . '_' . date( "Y-m-d_H-i-s" ) . ".csv", 'w' );
+			if ( strstr( $file_name, GigyaReportGenerator::$SAP_users_not_existing_in_WP ) !== false ) {
+				fputcsv( $file, array( 'UID', 'Email' ) );
+			} else {
+				fputcsv( $file, array( 'ID', 'Email' ) );
+			}
+			if ( ! empty( $merged_array ) ) {
+				$message .= '<br>* ' . $file_name . '_' . date( "Y-m-d_H-i-s" ) . '.csv';
+				foreach ( $merged_array as $user ) {
+					fputcsv( $file, $user );
+				}
+			}
+			fclose( $file );
+		}
+
+		if ( empty( $message ) ) {
+			$message = 'All  ' . number_format( GIGYA__SYNC_REPORT_MAX_USERS ) . '  users that have been checked are in sync.';
+		} else {
+			$message = 'The report has been generated successfully and saved to: ' . GIGYA__USER_FILES . '<br> Generated filenames are below. Note, this list does not include empty files. <br>' . $message;
+		}
+
+		wp_send_json_success( $message );
+	}
+
+	/**
 	 * Get WordPress user object by Gigya UID
 	 *
 	 * @param string $gigya_uid Gigya UID
@@ -710,6 +789,7 @@ class GigyaAction {
 		$enable_job       = $config['map_offline_sync_enable'];
 		$email_on_success = $config['map_offline_sync_email_on_success'];
 		$email_on_failure = $config['map_offline_sync_email_on_failure'];
+		$required_field   = 'profile'; /* Offline sync might not work on users without a profile */
 
 		$helper = new GigyaOfflineSync();
 
@@ -723,7 +803,7 @@ class GigyaAction {
 				}
 				$gigya_query     .= " ORDER BY lastUpdatedTimestamp ASC LIMIT " . GIGYA__OFFLINE_SYNC_MAX_USERS;
 				$gigya_cms       = new GigyaCMS();
-				$gigya_users     = $gigya_cms->searchGigyaUsers( [ 'query' => $gigya_query ] );
+				$gigya_users     = $gigya_cms->searchGigyaUsers( [ 'query' => $gigya_query ], $required_field );
 				$processed_users = 0;
 				$users_not_found = 0;
 				$uids_not_found  = [];

@@ -7,10 +7,10 @@ use Gigya\PHP\GSException;
  * Form builder for 'User Management Settings' configuration page.
  */
 function loginSettingsForm() {
-	$values = get_option( GIGYA__SETTINGS_LOGIN );
+	$values          = get_option( GIGYA__SETTINGS_LOGIN );
 	$global_settings = get_option( GIGYA__SETTINGS_GLOBAL );
-	$roles = get_editable_roles();
-	$form   = array();
+	$roles           = get_editable_roles();
+	$form            = array();
 
 	$form['mode'] = array(
 		'type'    => 'radio',
@@ -20,35 +20,36 @@ function loginSettingsForm() {
 			'raas'    => __( 'Registration-as-a-Service <small>Selecting this option overrides the WordPress user management system. This requires additional administration steps. Learn more <a href="https://developers.gigya.com/display/GD/WordPress#WordPress-UserManagementSettings">here</a></small>' )
 		),
 		'value'   => _gigParam( $values, 'mode', 'wp_only' ),
+		'class'   => 'raas_disabled'
 	);
 
 	// check if raas is enabled, and add the raas_enabled class to the form mode element
 	$c = new GigyaCMS();
 	try {
 		$is_raas = $c->isRaaS();
-	} catch ( GSException $e ) {
-		$is_raas = true;
-
-		if ( ! empty( $global_settings ) ) {
-			$form['raas_error'] = [
-				'markup' => '<div id="setting-error-api_validate" class="error settings-error notice is-dismissible"> 
-								<p>
-								<strong>' . __( 'Error determining RaaS status. There could be an issue with your machine or SAP CDC account. Please contact support if the problem persists. Message from SAP CDC' ) . ': ' . $e->getMessage() . '.
-								For more information please refer to <a href="https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST" target="_blank" rel="noopener noreferrer">Response_Codes_and_Errors</a>.
-								</strong>
-								</p>
-								<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
-							</div>',
-			];
-		}
 	}
-	if ( ! $is_raas or empty( $global_settings ) ) {
-		$form['mode']['disabled'] = true;
+	catch ( GSException $e ) {
+		$is_raas = true;
+		$form['raas_error'] = [
+			'markup' => '<div id="setting-error-api_validate" class="error settings-error notice is-dismissible"> 
+							<p>
+							<strong>' . __( 'Error determining RaaS status. There could be an issue with your machine or SAP CDC account. Please contact support if the problem persists. Message from SAP CDC') . ': ' . $e->getMessage() . '.
+							For more information please refer to <a href="https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST" target="_blank" rel="noopener noreferrer">Response_Codes_and_Errors</a>.
+							</strong>
+							</p>
+							<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
+						</div>',
+		];
+	}
+
+	if ( $is_raas ) {
+		$form['mode']['class'] = 'raas_enabled';
 	}
 
 	$form['gl_start'] = array(
 			'markup' => '<div class="global-login-wrapper">'
 	);
+
 
 	$form['connectWithoutLoginBehavior'] = array(
 			'type'    => 'select',
@@ -176,6 +177,24 @@ function loginSettingsForm() {
 			);
 		}
 	}
+
+	$form['get_out_of_sync_users'] = array(
+		'markup' => ' <div id="generate_report_users_get_out_of_sync">  
+			 <h4>Out of Sync Users</h4>
+			<input type="button" id="gigya_get_out_of_sync_users" class="button" value="Generate Report" />
+			<small>SAP Customer Data Cloud is now able to sync users with WordPress based on UID instead of Email.<br>To locate and generate a report for the first ' . number_format( GIGYA__SYNC_REPORT_MAX_USERS ) . ' users (maximum) that were not previously synced between SAP Customer Data Cloud and WordPress, <br> use the Generate Report button above.</small></div>',
+		'desc'   => __( 'Generate a report of users that were not synced between SAP Customer Data Cloud and WordPress.' )
+	);
+
+	$form['login_verification_mode'] = array(
+		'label'   => '<h4>Login Verification Mode</h4>',
+		'type'    => 'radio',
+		'options' => array(
+			'uid_and_email' => __( 'Using SAP CDC UID and email address (may cause multiple users) ' ),
+			'uid_only'      => __( 'Using SAP Customer Data Cloud UID (recommended)' ),
+		),
+		'value'   => _gigParam( $values, 'login_verification_mode', 'uid_and_email' )
+	);
 
 	/* Use this field in multisite to flag when sub site settings are saved locally for site */
 	if ( is_multisite() ) {
