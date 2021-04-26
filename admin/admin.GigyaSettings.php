@@ -45,7 +45,7 @@ class GigyaSettings {
 		//Adding variables to gigya_Admin.js
 		$params = array(
 			'max_execution_time' => intval( ini_get( 'max_execution_time' ) ) * 1000,
-			'offLineSyncMinFreq'=>GIGYA__OFFLINE_SYNC_MIN_FREQ
+			'offline_sync_min_freq'=>GIGYA__OFFLINE_SYNC_MIN_FREQ
 		);
 
 		$params = apply_filters( 'gigya_admin_params', $params );
@@ -183,9 +183,10 @@ class GigyaSettings {
 	 * @throws Exception
 	 */
 	public static function onSave() {
+		$cms = new gigyaCMS();
+
 		/* When a Gigya's setting page is submitted */
 		if ( isset( $_POST['gigya_global_settings'] ) ) {
-			$cms = new gigyaCMS();
 
 			$auth_field = 'api_secret';
 			if ($_POST['gigya_global_settings']['auth_mode'] === 'user_rsa') {
@@ -267,21 +268,19 @@ class GigyaSettings {
 			}
 
 			if ( $data['map_raas_full_map'] ) {
-				$cms      = new gigyaCMS();
-				$method   = 'accounts.getSchema';
 				$params   = [ 'include' => 'profileSchema, dataSchema, subscriptionsSchema, preferencesSchema, systemSchema' ];
 				$response = '';
 
 				try {
-					$response = $cms->call( $method, $params );
+					$response = $cms->call( 'accounts.getSchema', $params );
 
 				} catch ( GSException $e ) {
-					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Settings saved.<p>Warning: Can\'t reach SAP servers, please check the global configuration settings.<br> Can\'t validate SAP CDC fields.</p>' ), 'warning' );
+					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Settings saved.').'<p>'.__('Warning: Can\'t reach SAP servers, please check the global configuration settings.').'<br>'.__('Can\'t validate SAP CDC fields.').'</p>' , 'warning' );
 					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
 					$has_error = true;
 				}
 				if ( is_wp_error( $response ) ) {
-					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Settings saved.<p>Warning: Can\'t reach SAP servers, please check the global configuration settings: ' . $response->get_error_message() . '.<br> Can\'t validate SAP CDC fields.</p>' ), 'warning' );
+					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Settings saved.').'<p>'.__('Warning: Can\'t reach SAP servers, please check the global configuration settings: ') . $response->get_error_message() .'<br>'.__('Can\'t validate SAP CDC fields.').'</p>' , 'warning' );
 					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
 
 				} else if ( $response['errorCode'] === 0 ) {
@@ -332,7 +331,7 @@ class GigyaSettings {
 		$unnecessary_fields         = array();
 		$not_existing_fields        = array();
 		$is_valid                   = true;
-		$error_message              = __( 'Settings saved.<p>Warning:</p>' );
+		$error_message              = __( 'Settings saved.').'<p>'.__('Warning:').'</p>' ;
 		$json_block                 = json_decode( stripslashes( $data['map_raas_full_map'] ), true );
 		$does_have_several_warnings = false;
 		//Searching each block.
@@ -375,7 +374,8 @@ class GigyaSettings {
 		if ( ( ! empty( $duplications_of_wp_fields_str ) and ! empty( $not_existing_fields_str ) )
 			 or ( ! empty( $duplications_of_wp_fields_str ) and ! empty( $unnecessary_fields_str ) )
 			 or ( ! empty( $not_existing_fields_str ) and ! empty( $unnecessary_fields_str ) ) ) {
-			$error_message              = __( 'Settings saved.<p>Warnings: </p> <ol class="gigya-field-mapping-error-p">' );
+
+			$error_message              = __( 'Settings saved.').'<p>'.__('Warning:').'</p>' .'<ol class="gigya-field-mapping-error-p">' ;
 			$does_have_several_warnings = true;
 		}
 
@@ -466,10 +466,10 @@ class GigyaSettings {
 		return $machine_name;
 	}
 
-	public static function fieldsMappingWarningsBuilder( $case_Str, $fields, $solution, $does_have_several_warnings ) {
+	public static function fieldsMappingWarningsBuilder( $case_str, $fields, $solution, $does_have_several_warnings ) {
 
 
-		$error = $case_Str
+		$error = $case_str
 				 . '<br>&nbsp;&nbsp;&nbsp;'
 				 . '<i>' . $fields . '</i>'
 				 . '<br>'

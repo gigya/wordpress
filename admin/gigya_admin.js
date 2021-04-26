@@ -5,7 +5,7 @@
 		 * @param $el
 		 * @class gigyaAdminParams
 		 * @property max_execution_time
-		 * @property offLineSyncMinFreq
+		 * @property offline_sync_min_freq
 		 *
 		 */
 		var userManagementPage = function ($el) {
@@ -478,8 +478,8 @@
 		};
 
 		var freqValidation = function (element, event) {
-			if ((element.val().length===0) || (parseInt(element.val()) < gigyaAdminParams.offLineSyncMinFreq)) {
-				enableError(element.parent(), 'Error: Offline sync job frequency cannot be lower than ' + gigyaAdminParams.offLineSyncMinFreq + ' minutes, or empty.', event);
+			if ((element.val().length===0) || (parseInt(element.val()) < gigyaAdminParams.offline_sync_min_freq)) {
+				enableError(element.parent(), 'Error: Offline sync job frequency cannot be lower than ' + gigyaAdminParams.offline_sync_min_freq + ' minutes, or empty.', event);
 				element.parent().removeClass('gigya-wp-field-error');
 				return false;
 			} else {
