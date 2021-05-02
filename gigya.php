@@ -603,7 +603,7 @@ function _gigya_add_to_wp_user_meta( $gigya_object, $user_id ) {
 				}
 				update_user_meta( $user_id, $meta_key['cmsName'], sanitize_text_field( $gigya_object[ $meta_key['gigyaName'] ] ) );
 			}
-		} else {
+		} else if(!empty((array)$result)){
 			$meta_key = (array) $result;
 			if ( ! isset( $gigya_object[ $meta_key['gigyaName'] ] ) ) {
 				$gigya_object[ $meta_key['gigyaName'] ] = '';

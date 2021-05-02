@@ -345,7 +345,8 @@ class GigyaSettings {
 		$does_have_several_warnings = false;
 
 		if ( ! $json_block ) {
-			throw new Exception( 'Error: The Field-mapping text, is not a valid JSON.' );
+			if(!is_array($json_block))
+				throw new Exception( 'Error: The Field-mapping text, is not a valid JSON.' );
 		};
 
 		if ( is_array( $json_block ) ) {
@@ -394,19 +395,19 @@ class GigyaSettings {
 			if ( ! empty( $error ) ) {
 				throw new Exception( $error );
 			}
-
-
-			if ( ! static::doesFieldExist( $response, $json_block['gigyaName'] ) ) {
-				$not_existing_fields[] = $json_block['gigyaName'];
-			};
-			if ( count( $json_block ) > 2 ) {
-				$fields = array_keys( $json_block );
-				foreach ( $fields as $field ) {
-					if ( ( $field !== 'gigyaName' ) and ( $field !== 'cmsName' ) ) {
-						$unnecessary_fields [] = $field;
+			if ( ! empty( $json_block ) ) {
+				if ( ! static::doesFieldExist( $response, $json_block['gigyaName'] ) ) {
+					$not_existing_fields[] = $json_block['gigyaName'];
+				};
+				if ( count( $json_block ) > 2 ) {
+					$fields = array_keys( $json_block );
+					foreach ( $fields as $field ) {
+						if ( ( $field !== 'gigyaName' ) and ( $field !== 'cmsName' ) ) {
+							$unnecessary_fields [] = $field;
+						}
 					}
-				}
 
+				}
 			}
 		}
 		$duplications_of_wp_fields_str = implode( ', ', $duplications_of_wp_fields );
@@ -464,9 +465,7 @@ class GigyaSettings {
 	 */
 
 	private static function getBlockValidationError( $block ) {
-
 		if ( ( ! key_exists( 'gigyaName', $block ) ) and ( ! key_exists( 'cmsName', $block ) ) and ( count( $block ) === 0 ) ) {        //empty JSON
-
 			return '';
 		} else if ( ( ! key_exists( 'gigyaName', $block ) ) || ( ! key_exists( 'cmsName', $block ) ) ) {        //Missing property
 			return 'Error: gigyaName or cmsName does not exist in one of the blocks of the field mapping JSON.';
