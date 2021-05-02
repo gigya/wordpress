@@ -571,9 +571,9 @@ function _gigya_add_to_wp_user_meta( $gigya_object, $user_id ) {
 		$gigya_object = $gigya_object->serialize();
 	}
 
-	$gigya_object = _gigArrayFlatten( $gigya_object );
+	$gigya_object       = _gigArrayFlatten( $gigya_object );
 	$field_mapping_opts = get_option( GIGYA__SETTINGS_FIELD_MAPPING );
-	$prefix = _gigya_get_mode_prefix();
+	$prefix             = _gigya_get_mode_prefix();
 	if ( ! $prefix ) {
 		return;
 	}
@@ -589,18 +589,33 @@ function _gigya_add_to_wp_user_meta( $gigya_object, $user_id ) {
 		} catch ( Exception $e ) {
 			throw new GigyaHookException( 'Exception while running hook. Error message: ' . $e->getMessage() );
 		}
-
-		foreach ( json_decode( $field_mapping_opts['map_raas_full_map'] ) as $meta_key ) {
-			$meta_key = (array) $meta_key;
+		$result = json_decode( $field_mapping_opts['map_raas_full_map'] );
+		if ( is_array( $result ) ) {
+			foreach ( $result as $meta_key ) {
+				$meta_key = (array) $meta_key;
+				if ( ! isset( $gigya_object[ $meta_key['gigyaName'] ] ) ) {
+					$gigya_object[ $meta_key['gigyaName'] ] = '';
+					/*
+					 * Uncomment this line if you want to send a notice to the WordPress log about *every* field mapping failure on *every* user login/registration.
+					 *
+					 * trigger_error('The Gigya field '.$meta_key['gigyaName'].', specified in the field mapping, does not exist. WP user ID: '.$user_id, E_USER_NOTICE);
+					 */
+				}
+				update_user_meta( $user_id, $meta_key['cmsName'], sanitize_text_field( $gigya_object[ $meta_key['gigyaName'] ] ) );
+			}
+		} else {
+			$meta_key = (array) $result;
 			if ( ! isset( $gigya_object[ $meta_key['gigyaName'] ] ) ) {
 				$gigya_object[ $meta_key['gigyaName'] ] = '';
-				/*
-				 * Uncomment this line if you want to send a notice to the WordPress log about *every* field mapping failure on *every* user login/registration.
-				 *
-				 * trigger_error('The Gigya field '.$meta_key['gigyaName'].', specified in the field mapping, does not exist. WP user ID: '.$user_id, E_USER_NOTICE);
-				 */
 			}
+					/*
+					 * Uncomment this line if you want to send a notice to the WordPress log about *every* field mapping failure on *every* user login/registration.
+					 *
+					 * trigger_error('The Gigya field '.$meta_key['gigyaName'].', specified in the field mapping, does not exist. WP user ID: '.$user_id, E_USER_NOTICE);
+					 */
 			update_user_meta( $user_id, $meta_key['cmsName'], sanitize_text_field( $gigya_object[ $meta_key['gigyaName'] ] ) );
+
+
 		}
 	} elseif ( is_array( $field_mapping_opts ) ) /* Legacy field mapping options */ {
 		foreach ( $field_mapping_opts as $key => $opt ) {
