@@ -74,7 +74,7 @@ require_once( GIGYA__PLUGIN_DIR . 'GigyaAction.php' );
 /**
  * Lets start.
  */
-new GigyaAction;
+$gigyaAction = new GigyaAction;
 
 if ( ! function_exists( 'wp_new_user_notification' ) )
 {
