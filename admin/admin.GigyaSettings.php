@@ -30,7 +30,6 @@ class GigyaSettings {
 		wp_enqueue_script( 'gigya_jsonlint_js', GIGYA__PLUGIN_URL . 'admin/jsonlint.js' );
 
 
-
 		// Actions.
 		add_action( 'admin_init', array( $this, 'adminInit' ) );
 		add_action( 'admin_menu', array( $this, 'adminMenu' ) );
@@ -44,8 +43,8 @@ class GigyaSettings {
 
 		//Adding variables to gigya_Admin.js
 		$params = array(
-			'max_execution_time' => intval( ini_get( 'max_execution_time' ) ) * 1000,
-			'offline_sync_min_freq'=>GIGYA__OFFLINE_SYNC_MIN_FREQ
+			'max_execution_time'    => intval( ini_get( 'max_execution_time' ) ) * 1000,
+			'offline_sync_min_freq' => GIGYA__OFFLINE_SYNC_MIN_FREQ
 		);
 
 		$params = apply_filters( 'gigya_admin_params', $params );
@@ -189,8 +188,8 @@ class GigyaSettings {
 		if ( isset( $_POST['gigya_global_settings'] ) ) {
 
 			$auth_field = 'api_secret';
-			if ($_POST['gigya_global_settings']['auth_mode'] === 'user_rsa') {
-				$auth_field = 'rsa_private_key';
+			if ( $_POST['gigya_global_settings']['auth_mode'] === 'user_rsa' ) {
+				$auth_field                                       = 'rsa_private_key';
 				$_POST['gigya_gigya_settings']['rsa_private_key'] = '';
 			} else {
 				$_POST['gigya_gigya_settings']['api_secret'] = '';
@@ -230,7 +229,7 @@ class GigyaSettings {
 			} elseif ( $_POST['gigya_login_settings']['mode'] == 'raas' ) {
 				update_option( 'users_can_register', 0 );
 			}
-		}  elseif ( isset( $_POST['gigya_field_mapping_settings'] ) ) {
+		} elseif ( isset( $_POST['gigya_field_mapping_settings'] ) ) {
 			$has_error = false;
 
 			/* Validate field mapping settings, including offline sync */
@@ -275,20 +274,20 @@ class GigyaSettings {
 					$response = $cms->call( 'accounts.getSchema', $params );
 
 				} catch ( GSException $e ) {
-					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Settings saved.').'<p>'.__('Warning: Can\'t reach SAP servers, please check the global configuration settings.').'<br>'.__('Can\'t validate SAP CDC fields.').'</p>' , 'warning' );
+					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Settings saved.' ) . '<p>' . __( 'Warning: Can\'t reach SAP servers, please check the global configuration settings.' ) . '<br>' . __( 'Can\'t validate SAP CDC fields.' ) . '</p>', 'warning' );
 					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
 					$has_error = true;
 				}
 				if ( is_wp_error( $response ) ) {
-					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Settings saved.').'<p>'.__('Warning: Can\'t reach SAP servers, please check the global configuration settings: ') . $response->get_error_message() .'<br>'.__('Can\'t validate SAP CDC fields.').'</p>' , 'warning' );
+					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Settings saved.' ) . '<p>' . __( 'Warning: Can\'t reach SAP servers, please check the global configuration settings: ' ) . $response->get_error_message() . '<br>' . __( 'Can\'t validate SAP CDC fields.' ) . '</p>', 'warning' );
 					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
 
-				} else if ( $response['errorCode'] === 0 ) {
+				} elseif ( $response['errorCode'] === 0 ) {
 					$error_message = '';
 					try {
 						$error_message = static::getDuplicateAndMissingFields( $data['map_raas_full_map'], $response );
-					}catch (Exception $e){
-						add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', $e->getMessage() , 'error' );
+					} catch ( Exception $e ) {
+						add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', $e->getMessage(), 'error' );
 						static::_keepOldApiValues( 'gigya_field_mapping_settings' );
 						$has_error = true;
 					}
@@ -330,7 +329,7 @@ class GigyaSettings {
 	 * @param $response array The response from 'accounts.getSchema' query.
 	 *
 	 * @return string The error message should be printing. Empty string will return in case of no errors.
-	 * @throws Exception Exception will send if there is an issue with the JSON, missing gigyName or cmsName, or if one of this properties is empty.
+	 * @throws Exception An exception will be thrown if there is an issue with the JSON, missing gigyName or cmsName, or if one of the properties is empty.
 	 */
 	private static function getDuplicateAndMissingFields( $data, $response ) {
 
@@ -340,21 +339,25 @@ class GigyaSettings {
 		$unnecessary_fields         = array();
 		$not_existing_fields        = array();
 		$is_valid                   = true;
+		$invalid_json_error_message = 'Error: The field mapping configuration must be an array of objects containing the following fields: cmsName, gigyaName.';
 		$warning_message            = __( 'Settings saved.' ) . '<p>' . __( 'Warning:' ) . '</p>';
-		$json_block                 = json_decode( stripslashes( $data ) );
+		$json_block                 = json_decode( stripslashes( $data ), true );
 		$does_have_several_warnings = false;
 
-		if ( ! $json_block ) {
-			if(!is_array($json_block))
-				throw new Exception( 'Error: The field mapping configuration is not a valid JSON string.' );
-		};
+		//JSON validations.
+		if ( ( is_null( $json_block ) ) or ( $json_block === false ) or ( ! is_array( $json_block ) and ! empty( (array) $json_block ) ) ) {
+			throw new Exception( $invalid_json_error_message );
+		}
 
 		if ( is_array( $json_block ) ) {
 
 			//Searching each block.
 			foreach ( $json_block as $meta_key ) {
-				$meta_key = (array) $meta_key;
-				$error    = static::getBlockValidationError( $meta_key );
+				if ( ! is_array( $meta_key ) ) {
+					throw new Exception( $invalid_json_error_message );
+				}
+
+				$error = static::getBlockValidationError( $meta_key );
 				if ( ! empty( $error ) ) {
 					throw new Exception( $error );
 				}
@@ -366,7 +369,7 @@ class GigyaSettings {
 				//Searching for duplications of WP fields.
 				if ( array_key_exists( $cms_name, $array_of_wp_fields ) === false ) {
 					$array_of_wp_fields[ $cms_name ] = $gigya_name;
-				} else if ( $array_of_wp_fields[ $cms_name ] !== $gigya_name ) {
+				} elseif ( $array_of_wp_fields[ $cms_name ] !== $gigya_name ) {
 					$duplications_of_wp_fields[] = $cms_name;
 				}
 
@@ -381,35 +384,13 @@ class GigyaSettings {
 					$fields = array_keys( $meta_key );
 					foreach ( $fields as $field ) {
 						if ( ( $field !== 'gigyaName' ) and ( $field !== 'cmsName' ) ) {
-							$unnecessary_fields [] = $field;
+							$unnecessary_fields[] = $field;
 						}
 					}
-				}
-			}
-
-
-		} else {
-			$json_block = (array) $json_block;
-
-			$error = static::getBlockValidationError( $json_block );
-			if ( ! empty( $error ) ) {
-				throw new Exception( $error );
-			}
-			if ( ! empty( $json_block ) ) {
-				if ( ! static::doesFieldExist( $response, $json_block['gigyaName'] ) ) {
-					$not_existing_fields[] = $json_block['gigyaName'];
-				};
-				if ( count( $json_block ) > 2 ) {
-					$fields = array_keys( $json_block );
-					foreach ( $fields as $field ) {
-						if ( ( $field !== 'gigyaName' ) and ( $field !== 'cmsName' ) ) {
-							$unnecessary_fields [] = $field;
-						}
-					}
-
 				}
 			}
 		}
+
 		$duplications_of_wp_fields_str = implode( ', ', $duplications_of_wp_fields );
 		$not_existing_fields_str       = implode( ', ', $not_existing_fields );
 		$unnecessary_fields_str        = implode( ', ', $unnecessary_fields );
@@ -459,20 +440,20 @@ class GigyaSettings {
 	}
 
 	/**
-	 * @param $block array Array of Json property to validate that cmsName and gigyaName exists and not empty.
+	 * @param $block array Array of JSON properties to validate that cmsName and gigyaName exist and are not empty.
 	 *
-	 * @return string The error message will be send to the user, and empty string in case there is no error.
+	 * @return string The error message will be sent to the user, and empty string in case there is no error.
 	 */
 
 	private static function getBlockValidationError( $block ) {
 		if ( ( ! key_exists( 'gigyaName', $block ) ) and ( ! key_exists( 'cmsName', $block ) ) and ( count( $block ) === 0 ) ) {        //empty JSON
 			return '';
-		} else if ( ( ! key_exists( 'gigyaName', $block ) ) || ( ! key_exists( 'cmsName', $block ) ) ) {        //Missing property
+		} elseif ( ( ! key_exists( 'gigyaName', $block ) ) || ( ! key_exists( 'cmsName', $block ) ) ) {        //Missing property
 			return 'Error: gigyaName or cmsName does not exist in one of the blocks of the field mapping JSON.';
-		} else if ( key_exists( 'gigyaName', $block ) and empty( $block['gigyaName'] ) ) {                             // gigyaName is empty
+		} elseif ( key_exists( 'gigyaName', $block ) and empty( $block['gigyaName'] ) ) {                             // gigyaName is empty
 			return 'Error: gigyaName is empty in the field mapping JSON, this property can\'t be empty. Please enter a value.';
 
-		} else if ( key_exists( 'cmsName', $block ) and empty( $block['cmsName'] ) ) {                                //cmsName is empty
+		} elseif ( key_exists( 'cmsName', $block ) and empty( $block['cmsName'] ) ) {                                //cmsName is empty
 			return 'Error: cmsName is empty in the field mapping JSON, this property can\'t be empty. Please enter a value.';
 		} else {
 			return '';
@@ -553,28 +534,28 @@ class GigyaSettings {
 	 * Set the POSTed secret key.
 	 * If it's not submitted, take it from DB.
 	 *
-	 * @param string $field	The obfuscated field
+	 * @param string $field The obfuscated field
 	 *
 	 * @return bool
 	 */
 	private static function _setObfuscatedField( $field ) {
-		if ( empty( $_POST['gigya_global_settings'][$field] ) ) {
+		if ( empty( $_POST['gigya_global_settings'][ $field ] ) ) {
 			$options = static::_getSiteOptions();
 			if ( $options === false ) {
 				return false;
 			}
 
-			$_POST['gigya_global_settings'][$field] = $options[$field];
+			$_POST['gigya_global_settings'][ $field ] = $options[ $field ];
 		} else {
-			$_POST['gigya_global_settings'][$field] = GigyaApiHelper::encrypt( $_POST['gigya_global_settings'][$field], SECURE_AUTH_KEY );
+			$_POST['gigya_global_settings'][ $field ] = GigyaApiHelper::encrypt( $_POST['gigya_global_settings'][ $field ], SECURE_AUTH_KEY );
 		}
 
 		return true;
 	}
 
 	private static function setError( $errorCode, $errorMessage, $callId = null ) {
-		$errorLink  = "<a href='https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST' target='_blank' rel='noopener noreferrer'>Response_Codes_and_Errors</a>";
-		$message     = "SAP CDC API error: {$errorCode} - {$errorMessage}.";
+		$errorLink = "<a href='https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST' target='_blank' rel='noopener noreferrer'>Response_Codes_and_Errors</a>";
+		$message   = "SAP CDC API error: {$errorCode} - {$errorMessage}.";
 		add_settings_error( 'gigya_global_settings', 'api_validate', __( $message . " For more information please refer to {$errorLink}", 'error' ) );
 		error_log( 'Error updating SAP CDC settings: ' . $message . ' Call ID: ' . $callId );
 	}

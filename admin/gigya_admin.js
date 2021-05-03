@@ -515,7 +515,7 @@
 			try {
 				var result = jsonlint.parse(json);
 				if (result) {
-					if (Array.isArray(result) ) {
+					if (Array.isArray(result)) {
 						for (var index in result) {
 							if (result.hasOwnProperty(index)) {
 								var sectionID = index;
@@ -548,28 +548,11 @@
 
 							}
 						}
-					} else if(Object.keys(result).length !== 0 ){
-						if ((result.hasOwnProperty('cmsName')) && (!isValidFieldMappingValue(result['cmsName']))) {
-							enableError(textField, 'Error: Invalid cmsName at section: 1.', e);
-							textField.removeClass('gigya-wp-field-error');
-							return;
-						} else if (!result.hasOwnProperty('cmsName')) {
-							enableError(textField, 'Error: The property cmsName is missing at section: 1.', e);
-							textField.removeClass('gigya-wp-field-error');
-							return;
-						}
-						if ((result.hasOwnProperty('gigyaName')) && (!isValidFieldMappingValue(result['gigyaName']))) {
-							enableError(textField, 'Error: Invalid gigyaName at section: 1.', e);
-							textField.removeClass('gigya-wp-field-error');
-
-						} else if (!result.hasOwnProperty('gigyaName')) {
-							enableError(textField, 'Error: The property gigyaName is missing at section: 1.', e);
-							textField.removeClass('gigya-wp-field-error');
-							return;
-						}
+					} else if (Object.keys(result).length !== 0) {
+						enableError(textField, 'Error: The field mapping configuration must be an array of objects containing the following fields: cmsName, gigyaName.', e);
+						textField.removeClass('gigya-wp-field-error');
 					}
 				}
-
 
 			} catch (err) {
 				enableError(textField, 'Error: The text you have entered is not a valid JSON format. Parser message: ' + err, e);
@@ -636,16 +619,22 @@
 			}
 			//Removing all the notice messages from the headline.
 			var noticeMessage = document.getElementsByClassName('notice  settings-error is-dismissible');
-			for ( element of noticeMessage)
+
+			for (element of noticeMessage) {
 				element.remove();
+			}
 
 			noticeMessage = document.getElementsByClassName('gigya-error-message-notice-div');
-			for ( element of noticeMessage)
-				element.remove();
 
-			noticeMessage = document.getElementsByClassName('msg error error');
-			for ( element of noticeMessage)
+			for (element of noticeMessage) {
 				element.remove();
+			}
+
+			noticeMessage = document.getElementsByClassName('msg error');
+
+			for (element of noticeMessage) {
+				element.remove();
+			}
 
 			//Checking case of the field-mapping page.
 			if (document.getElementById(fieldMappingMapElementId) !== null) {
