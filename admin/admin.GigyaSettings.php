@@ -346,7 +346,7 @@ class GigyaSettings {
 
 		if ( ! $json_block ) {
 			if(!is_array($json_block))
-				throw new Exception( 'Error: The Field-mapping text, is not a valid JSON.' );
+				throw new Exception( 'Error: The field mapping configuration is not a valid JSON string.' );
 		};
 
 		if ( is_array( $json_block ) ) {
