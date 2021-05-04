@@ -39,6 +39,13 @@ class GigyaSettings {
 	 */
 	public function adminInit() {
 
+		$params = array(
+			'max_execution_time' => intval( ini_get( 'max_execution_time' ) ) * 1000
+		);
+
+		$params = apply_filters( 'gigya_admin_params', $params );
+		wp_localize_script( 'gigya_admin_js', 'gigyaAdminParams', $params );
+
 		// Add settings sections.
 		foreach ( $this->getSections() as $id => $section ) {
 			$option_group = $section['slug'] . '-group';
@@ -193,11 +200,11 @@ class GigyaSettings {
 				);
 
 				if ( ! empty( $res ) ) {
-					$gigyaErrCode = $res->getErrorCode();
-					if ( $gigyaErrCode > 0 ) {
-						$gigyaErrMsg = $res->getErrorMessage();
+					$gigya_error_code = $res->getErrorCode();
+					if ( $gigya_error_code > 0 ) {
+						$gigya_error_message = $res->getErrorMessage();
 
-						self::setError( $gigyaErrCode, $gigyaErrMsg, ( ! empty( $res->getData() ) ) ? $res->getString( "callId", "N/A" ) : null );
+						self::setError( $gigya_error_code, $gigya_error_message, ( ! empty( $res->getData() ) ) ? $res->getString( "callId", "N/A" ) : null );
 
 						/* Prevent updating values */
 						static::_keepOldApiValues();

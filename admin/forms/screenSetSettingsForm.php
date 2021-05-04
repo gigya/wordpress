@@ -115,7 +115,16 @@ function screenSetSettingsForm() {
 	$form   = [];
 
 	$form['raas_txt'] = [
-		'markup' => '<small><span>RaaS requires initial configuration in SAP Customer Data Cloud\'s Admin Console. Screen sets can be defined in the <a class="link-https" target="_blank" rel="external nofollow noopener noreferrer" href="https://console.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets" title="https://console.gigya.com/site/partners/Settings.aspx#/screen-sets-app/dashboard">UI Builder</a>. The page will display a list of predefined default screen-sets, each with an ID. Click on the "Visual Editor" link next to the screen-set that you want to use, this will open the <a class="external" target="_blank" title="UI Builder" rel="internal" href="https://help.sap.com/viewer/8b8d6fffe113457094a17701f63e3d6a/GIGYA/en-US/417d11df70b21014bbc5a10ce4041860.html">Visual Editor</a> window. You can modify the screens, or just hit the "Save" button to activate them. Please make sure that the screen-set IDs that are defined below match the IDs of the screen-sets you have configured in the <a class="link-https" target="_blank" rel="external nofollow noopener noreferrer" href="https://console.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets" title="https://console.gigya.com/site/partners/Settings.aspx#cmd%3DUserManagement360.ScreenSets">UI Builder</a> page.</span></small>',
+		'markup' => '<small><span>RaaS requires initial configuration in SAP Customer Data Cloud\'s Admin Console. Screen sets can be defined in the
+<a class="link-https" target="_blank" rel="external nofollow noopener noreferrer" href="https://console.gigya.com/site/partners/Settings.aspx#/screen-sets-app/web/dashboard" title="UI Builder">UI Builder</a>.
+The page will display a list of predefined default screen-sets, each with an ID.
+Click on the "Visual Editor" link next to the screen-set that you want to use, this will open the
+<a class="external" target="_blank" title="UI Builder" rel="internal" href="https://help.sap.com/viewer/8b8d6fffe113457094a17701f63e3d6a/GIGYA/en-US/417d11df70b21014bbc5a10ce4041860.html">Visual Editor</a>
+window.
+You can modify the screens, or just hit the "Save" button to activate them.
+Please make sure that the screen-set IDs that are defined below match the IDs of the screen-sets you have configured in the
+<a class="link-https" target="_blank" rel="external nofollow noopener noreferrer" href="https://console.gigya.com/site/partners/Settings.aspx#/screen-sets-app/web/dashboard" title="UI Builder">UI Builder</a>
+page.</span></small>',
 	];
 
 	$form['raas_screens'] = [
@@ -220,7 +229,7 @@ function screenSetSettingsForm() {
 			'rows' => buildExistingCustomScreenSetArray( $table_name, $screenset_list ),
 		];
 	} else {
-		$first_line       = __( 'Error retrieving custom screen-set list from SAP Customer Data Cloud. It will not be possible to embed CDC screen-sets on your website. If the problem persists, please contact CDC support.' );
+		$first_line       = __( 'Error retrieving custom screen-set list from SAP Customer Data Cloud. It will not be possible to embed CDC screen-sets on your website. Please make sure that the <a href="?page=gigya_global_settings">Global Configuration</a> has been set correctly. If the problem persists, please contact SAP CDC support.' );
 		$second_line      = __( 'Check the error log for more details.' );
 		$connection_error = array(
 			'error_message' => array(),
