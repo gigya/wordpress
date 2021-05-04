@@ -89,12 +89,16 @@ class GigyaRaasAjax {
 		$wp_user = get_users( array(
 			                      'meta_key'   => 'gigya_uid',
 			                      'meta_value' => $data['UID'],
-		                      ) );
-		if ( ! empty( $wp_user ) )
+		) );
+		if ( ! empty( $wp_user ) ) {
 			$wp_user = $wp_user[0];
-		else /* Comment this ELSE statement to verify *only* by UID */
-			$wp_user = get_user_by( 'email', $this->gigya_account['profile']['email'] );
-
+		} else {
+			$login_setting              = get_option( GIGYA__SETTINGS_LOGIN );
+			$uid_and_email_verification = array_key_exists( 'login_verification_mode', $login_setting ) ? ( $login_setting['login_verification_mode'] == 'uid_and_email' ) : true;
+			if ( $uid_and_email_verification ) {
+				$wp_user = get_user_by( 'email', $this->gigya_account['profile']['email'] );
+			};
+		};
 		if ( ! empty( $wp_user ) )
 		{
 			$is_primary_user = $gigyaCMS->isPrimaryUser( $this->gigya_account['loginIDs']['emails'], strtolower( $wp_user->data->user_email ) );

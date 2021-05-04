@@ -39,6 +39,13 @@ class GigyaSettings {
 	 */
 	public function adminInit() {
 
+		$params = array(
+			'max_execution_time' => intval( ini_get( 'max_execution_time' ) ) * 1000
+		);
+
+		$params = apply_filters( 'gigya_admin_params', $params );
+		wp_localize_script( 'gigya_admin_js', 'gigyaAdminParams', $params );
+
 		// Add settings sections.
 		foreach ( $this->getSections() as $id => $section ) {
 			$option_group = $section['slug'] . '-group';
