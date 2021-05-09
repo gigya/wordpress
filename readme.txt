@@ -32,12 +32,12 @@ More than 700 of the world’s leading businesses such as Fox, Forbes, and Veriz
 
 
 
-For more information, installation steps and configuration options - please refer to SAP Customer Data Cloud's [WP Documentation](https://developers.gigya.com/display/GD/WordPress "SAP CDC WP documentation")
+For more information, installation steps and configuration options - please refer to SAP Customer Data Cloud's [WP Documentation](https://github.com/gigya/wordpress/wiki "SAP CDC WP documentation")
 
 
 == Installation ==
 
-You can read more about the installation steps and other advanced configuration options in SAP Customer Data Cloud's online [WP Documentation](https://developers.gigya.com/display/GD/WordPress "SAP CDC WP documentation")
+You can read more about the installation steps and other advanced configuration options in SAP Customer Data Cloud's online [WP Documentation](https://github.com/gigya/wordpress/wiki "SAP CDC WP documentation")
 
 1.	After downloading the SAP Customer Data Cloud plug-in, unpack and upload the folder to the the /wp-content/plugins/ directory on your blog.
 2.	Go to the Plug-in tab in the WordPress administration panel, find the SAP Customer Data Cloud plug-in on the list and click Activate.
@@ -82,10 +82,10 @@ For question about installations or configuration, please contact your account m
 
 
 = 4.0 =
-* Added [Reaction bar](https://developers.gigya.com/display/GD/Reactions)
-* Added [Gamification](https://developers.gigya.com/display/GD/Loyalty+-+Gamification+and+User+Behavior)
+* Added Reaction bar
+* Added Gamification
 * Activity Feed
-* Upgraded [Comments plugin](https://developers.gigya.com/display/GD/Comments)
+* Upgraded Comments plugin
 * Support connecting to an alternative data centers (e.g. Europe data center)
 * Improved administration
 * Integrated Google Analytics
@@ -93,8 +93,8 @@ For question about installations or configuration, please contact your account m
 
 = 5.0 =
 * The Plugin has been rewritten, providing improved architecture, administration and security.
-* [Registration-as-a-Service Integration](https://developers.gigya.com/display/GD/Customer+Identity).
-* [Ratings & Reviews](https://developers.gigya.com/display/GD/R+and+R).
+* [Registration-as-a-Service Integration](https://help.sap.com/viewer/8b8d6fffe113457094a17701f63e3d6a/GIGYA/en-US/414f36ba70b21014bbc5a10ce4041860.html).
+* Ratings & Reviews
 * Added SEO support in the Comments and Rating&Reviews plugins, meaning the comments/reviews content is searchable by the main search engines.
 * All social plugins are provides as WP widgets that can be placed anywhere on your site.
 
@@ -112,7 +112,7 @@ For question about installations or configuration, please contact your account m
 * Fixed breaking change: Strings must be enclosed with quotes in search queries
 
 = 5.2 =
-* For security reasons, the Secret Key can now only be viewed or edited by privileged users. By default only by <strong>network admins</strong> (in a multi-site installation) or <strong>admins</strong> (in a single-site installation). Learn more in (https://developers.gigya.com/display/GD/WordPress+Plugin#WordPressPlugin-RolesandPermissions) Roles and Permissions</a>.
+* For security reasons, the Secret Key can now only be viewed or edited by privileged users. By default only by <strong>network admins</strong> (in a multi-site installation) or <strong>admins</strong> (in a single-site installation). Learn more in (https://github.com/gigya/wordpress/wiki#roles-and-permissions)</a>.
 * Security enhancements
 
 = 5.2.2.2 =
@@ -217,7 +217,7 @@ For question about installations or configuration, please contact your account m
 
 Can I configure the design of the SAP Customer Data Cloud component?
 
-Yes, the design is fully configurable. You can read more about configuring the SAP Customer Data Cloud component design in our online [Documentation](https://developers.gigya.com/display/GD/WordPress )
+Yes, the design is fully configurable. You can read more about configuring the SAP Customer Data Cloud component design in our online [Documentation](https://github.com/gigya/wordpress/wiki )
 
 How can I get support for the SAP Customer Data Cloud Plugin?
 
