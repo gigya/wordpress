@@ -274,12 +274,12 @@ class GigyaSettings {
 					$response = $cms->call( 'accounts.getSchema', $params );
 
 				} catch ( GSException $e ) {
-					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Settings saved.' ) . '<p>' . __( 'Warning: Can\'t reach SAP servers, please check the global configuration settings.' ) . '<br>' . __( 'Can\'t validate SAP CDC fields.' ) . '</p>', 'warning' );
+					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Settings saved.' ) . '<p>' . __( 'Warning: Can\'t reach SAP servers, please check the global configuration settings.' ) .  '</p>', 'warning' );
 					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
 					$has_error = true;
 				}
 				if ( is_wp_error( $response ) ) {
-					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Settings saved.' ) . '<p>' . __( 'Warning: Can\'t reach SAP servers, please check the global configuration settings: ' ) . $response->get_error_message() . '<br>' . __( 'Can\'t validate SAP CDC fields.' ) . '</p>', 'warning' );
+					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Settings saved.' ) . '<p>' . __( 'Warning: Can\'t reach SAP servers, please check the global configuration settings: ' ) . $response->get_error_message()  . '</p>', 'warning' );
 					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
 
 				} elseif ( $response['errorCode'] === 0 ) {
