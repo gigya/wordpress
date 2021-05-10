@@ -29,7 +29,6 @@ class GigyaSettings {
 		wp_enqueue_script( 'gigya_admin_js', GIGYA__PLUGIN_URL . 'admin/gigya_admin.js' );
 		wp_enqueue_script( 'gigya_jsonlint_js', GIGYA__PLUGIN_URL . 'admin/jsonlint.js' );
 
-
 		// Actions.
 		add_action( 'admin_init', array( $this, 'adminInit' ) );
 		add_action( 'admin_menu', array( $this, 'adminMenu' ) );
@@ -534,28 +533,28 @@ class GigyaSettings {
 	 * Set the POSTed secret key.
 	 * If it's not submitted, take it from DB.
 	 *
-	 * @param string $field The obfuscated field
+	 * @param string $field	The obfuscated field
 	 *
 	 * @return bool
 	 */
 	private static function _setObfuscatedField( $field ) {
-		if ( empty( $_POST['gigya_global_settings'][ $field ] ) ) {
+		if ( empty( $_POST['gigya_global_settings'][$field] ) ) {
 			$options = static::_getSiteOptions();
 			if ( $options === false ) {
 				return false;
 			}
 
-			$_POST['gigya_global_settings'][ $field ] = $options[ $field ];
+			$_POST['gigya_global_settings'][$field] = $options[$field];
 		} else {
-			$_POST['gigya_global_settings'][ $field ] = GigyaApiHelper::encrypt( $_POST['gigya_global_settings'][ $field ], SECURE_AUTH_KEY );
+			$_POST['gigya_global_settings'][$field] = GigyaApiHelper::encrypt( $_POST['gigya_global_settings'][$field], SECURE_AUTH_KEY );
 		}
 
 		return true;
 	}
 
 	private static function setError( $errorCode, $errorMessage, $callId = null ) {
-		$errorLink = "<a href='https://developers.gigya.com/display/GD/Response+Codes+and+Errors+REST' target='_blank' rel='noopener noreferrer'>Response_Codes_and_Errors</a>";
-		$message   = "SAP CDC API error: {$errorCode} - {$errorMessage}.";
+		$errorLink  = "<a href='https://help.sap.com/viewer/8b8d6fffe113457094a17701f63e3d6a/GIGYA/en-US/416d41b170b21014bbc5a10ce4041860.html' target='_blank' rel='noopener noreferrer'>Response_Codes_and_Errors</a>";
+		$message     = "SAP CDC API error: {$errorCode} - {$errorMessage}.";
 		add_settings_error( 'gigya_global_settings', 'api_validate', __( $message . " For more information please refer to {$errorLink}", 'error' ) );
 		error_log( 'Error updating SAP CDC settings: ' . $message . ' Call ID: ' . $callId );
 	}
