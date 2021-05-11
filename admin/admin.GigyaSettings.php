@@ -9,6 +9,7 @@ namespace Gigya\WordPress\Admin;
 use Exception;
 use Gigya\CMSKit\GigyaApiHelper;
 use Gigya\CMSKit\GigyaCMS;
+use Gigya\PHP\GSException;
 
 define( "GIGYA__PERMISSION_LEVEL", "manage_options" );
 define( "GIGYA__SECRET_PERMISSION_LEVEL", "install_plugins" ); // Network super admin + single site admin
@@ -39,8 +40,10 @@ class GigyaSettings {
 	 */
 	public function adminInit() {
 
+		//Adding variables to gigya_Admin.js
 		$params = array(
-			'max_execution_time' => intval( ini_get( 'max_execution_time' ) ) * 1000
+			'max_execution_time'    => intval( ini_get( 'max_execution_time' ) ) * 1000,
+			'offline_sync_min_freq' => GIGYA__OFFLINE_SYNC_MIN_FREQ
 		);
 
 		$params = apply_filters( 'gigya_admin_params', $params );
@@ -178,13 +181,14 @@ class GigyaSettings {
 	 * @throws Exception
 	 */
 	public static function onSave() {
+		$cms = new gigyaCMS();
+
 		/* When a Gigya's setting page is submitted */
 		if ( isset( $_POST['gigya_global_settings'] ) ) {
-			$cms = new gigyaCMS();
 
 			$auth_field = 'api_secret';
-			if ($_POST['gigya_global_settings']['auth_mode'] === 'user_rsa') {
-				$auth_field = 'rsa_private_key';
+			if ( $_POST['gigya_global_settings']['auth_mode'] === 'user_rsa' ) {
+				$auth_field                                       = 'rsa_private_key';
 				$_POST['gigya_gigya_settings']['rsa_private_key'] = '';
 			} else {
 				$_POST['gigya_gigya_settings']['api_secret'] = '';
@@ -225,6 +229,8 @@ class GigyaSettings {
 				update_option( 'users_can_register', 0 );
 			}
 		} elseif ( isset( $_POST['gigya_field_mapping_settings'] ) ) {
+			$has_error = false;
+
 			/* Validate field mapping settings, including offline sync */
 			$data = $_POST['gigya_field_mapping_settings'];
 			if ( $data['map_offline_sync_enable'] ) {
@@ -233,6 +239,7 @@ class GigyaSettings {
 						__( 'Error: Offline sync job frequency cannot be lower than ' . GIGYA__OFFLINE_SYNC_MIN_FREQ . ' minutes' ),
 						'error' );
 					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
+					$has_error = true;
 				}
 
 				$emails_are_valid = true;
@@ -244,6 +251,7 @@ class GigyaSettings {
 				if ( ! $emails_are_valid ) {
 					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Error: Invalid emails entered' ), 'error' );
 					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
+					$has_error = true;
 				}
 			}
 
@@ -256,6 +264,40 @@ class GigyaSettings {
 			if ( $data['map_offline_sync_enable'] ) {
 				wp_schedule_event( time(), 'gigya_offline_sync_custom', $cron_name );
 			}
+
+			if ( $data['map_raas_full_map'] ) {
+				$params   = [ 'include' => 'profileSchema, dataSchema, subscriptionsSchema, preferencesSchema, systemSchema' ];
+				$response = '';
+
+				try {
+					$response = $cms->call( 'accounts.getSchema', $params );
+
+				} catch ( GSException $e ) {
+					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Settings saved.' ) . '<p>' . __( 'Warning: Can\'t reach SAP servers, please check the global configuration settings.' ) .  '</p>', 'warning' );
+					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
+					$has_error = true;
+				}
+				if ( is_wp_error( $response ) ) {
+					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Settings saved.' ) . '<p>' . __( 'Warning: Can\'t reach SAP servers, please check the global configuration settings: ' ) . $response->get_error_message()  . '</p>', 'warning' );
+					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
+
+				} elseif ( $response['errorCode'] === 0 ) {
+					$error_message = '';
+					try {
+						$error_message = static::getDuplicateAndMissingFields( $data['map_raas_full_map'], $response );
+					} catch ( Exception $e ) {
+						add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', $e->getMessage(), 'error' );
+						static::_keepOldApiValues( 'gigya_field_mapping_settings' );
+						$has_error = true;
+					}
+
+					//Sending the warning message if necessary.
+					if ( ! empty( $error_message ) and ( ! $has_error ) ) {
+						add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', $error_message, 'warning' );
+					}
+				}
+			}
+
 		} elseif ( isset( $_POST['gigya_screenset_settings'] ) ) {
 			/* Screen-set page validation */
 			foreach ( $_POST['gigya_screenset_settings']['custom_screen_sets'] as $key => $screen_set ) {
@@ -277,6 +319,189 @@ class GigyaSettings {
 		}
 	}
 
+
+	/**
+	 * The function reads the field mapping map and searches for duplication in cmsName fields,
+	 * and missing fields in the gigyaCms property.
+	 *
+	 * @param $data string The data of field mapping setting page.
+	 * @param $response array The response from 'accounts.getSchema' query.
+	 *
+	 * @return string The error message should be printing. Empty string will return in case of no errors.
+	 * @throws Exception An exception will be thrown if there is an issue with the JSON, missing gigyName or cmsName, or if one of the properties is empty.
+	 */
+	private static function getDuplicateAndMissingFields( $data, $response ) {
+
+
+		$array_of_wp_fields         = array();
+		$duplications_of_wp_fields  = array();
+		$unnecessary_fields         = array();
+		$not_existing_fields        = array();
+		$is_valid                   = true;
+		$invalid_json_error_message = 'Error: The field mapping configuration must be an array of objects containing the following fields: cmsName, gigyaName.';
+		$warning_message            = __( 'Settings saved.' ) . '<p>' . __( 'Warning:' ) . '</p>';
+		$json_block                 = json_decode( stripslashes( $data ), true );
+		$does_have_several_warnings = false;
+
+		//JSON validations.
+		if ( ( is_null( $json_block ) ) or ( $json_block === false ) or ( ! is_array( $json_block ) and ! empty( (array) $json_block ) ) ) {
+			throw new Exception( $invalid_json_error_message );
+		}
+
+		if ( is_array( $json_block ) ) {
+
+			//Searching each block.
+			foreach ( $json_block as $meta_key ) {
+				if ( ! is_array( $meta_key ) ) {
+					throw new Exception( $invalid_json_error_message );
+				}
+
+				$error = static::getBlockValidationError( $meta_key );
+				if ( ! empty( $error ) ) {
+					throw new Exception( $error );
+				}
+
+				$gigya_name = $meta_key['gigyaName'];
+				$cms_name   = $meta_key['cmsName'];
+
+
+				//Searching for duplications of WP fields.
+				if ( array_key_exists( $cms_name, $array_of_wp_fields ) === false ) {
+					$array_of_wp_fields[ $cms_name ] = $gigya_name;
+				} elseif ( $array_of_wp_fields[ $cms_name ] !== $gigya_name ) {
+					$duplications_of_wp_fields[] = $cms_name;
+				}
+
+				//Searching for not existing fields in gigya
+				if ( ! static::doesFieldExist( $response, $gigya_name ) ) {
+					$not_existing_fields[] = $gigya_name;
+
+				}
+
+				//Getting unnecessary fields.
+				if ( count( $meta_key ) > 2 ) {
+					$fields = array_keys( $meta_key );
+					foreach ( $fields as $field ) {
+						if ( ( $field !== 'gigyaName' ) and ( $field !== 'cmsName' ) ) {
+							$unnecessary_fields[] = $field;
+						}
+					}
+				}
+			}
+		}
+
+		$duplications_of_wp_fields_str = implode( ', ', $duplications_of_wp_fields );
+		$not_existing_fields_str       = implode( ', ', $not_existing_fields );
+		$unnecessary_fields_str        = implode( ', ', $unnecessary_fields );
+
+		//Checking if there is two different warnings cases
+		if ( ( ! empty( $duplications_of_wp_fields_str ) and ! empty( $not_existing_fields_str ) )
+			 or ( ! empty( $duplications_of_wp_fields_str ) and ! empty( $unnecessary_fields_str ) )
+			 or ( ! empty( $not_existing_fields_str ) and ! empty( $unnecessary_fields_str ) ) ) {
+
+			$warning_message            = __( 'Settings saved.' ) . '<p>' . __( 'Warning:' ) . '</p>' . '<ol class="gigya-field-mapping-error-p">';
+			$does_have_several_warnings = true;
+		}
+
+
+		//Builds the error message.
+		if ( ! empty( $not_existing_fields_str ) ) {
+			$case            = __( 'The following fields were not found in Customer Data Cloud\'s account schema:' );
+			$solution        = __( 'Please make sure that the names are spelled correctly, or add the fields in the schema editor.' );
+			$warning_message .= static:: fieldsMappingWarningsBuilder( $case, $not_existing_fields_str, $solution, $does_have_several_warnings );
+			$is_valid        = false;
+		}
+
+		if ( ! empty( $duplications_of_wp_fields_str ) ) {
+
+			$case            = __( 'The following duplicates have been found in the cmsName field:' );
+			$solution        = __( 'Field mapping for these fields may not work as expected.' );
+			$warning_message .= static:: fieldsMappingWarningsBuilder( $case, $duplications_of_wp_fields_str, $solution, $does_have_several_warnings );
+			$is_valid        = false;
+		}
+
+		if ( ! empty( $unnecessary_fields_str ) ) {
+
+			$case            = __( 'The following fields will be ignored:' );
+			$solution        = '';
+			$warning_message .= static:: fieldsMappingWarningsBuilder( $case, $unnecessary_fields_str, $solution, $does_have_several_warnings );
+			$is_valid        = false;
+		}
+		if ( $does_have_several_warnings ) {
+			$warning_message .= '</ol>';
+		}
+
+		if ( $is_valid ) {
+			return '';
+		} else {
+			return $warning_message;
+		}
+	}
+
+	/**
+	 * @param $block array Array of JSON properties to validate that cmsName and gigyaName exist and are not empty.
+	 *
+	 * @return string The error message will be sent to the user, and empty string in case there is no error.
+	 */
+
+	private static function getBlockValidationError( $block ) {
+		if ( ( ! key_exists( 'gigyaName', $block ) ) and ( ! key_exists( 'cmsName', $block ) ) and ( count( $block ) === 0 ) ) {        //empty JSON
+			return '';
+		} elseif ( ( ! key_exists( 'gigyaName', $block ) ) || ( ! key_exists( 'cmsName', $block ) ) ) {        //Missing property
+			return 'Error: gigyaName or cmsName does not exist in one of the blocks of the field mapping JSON.';
+		} elseif ( key_exists( 'gigyaName', $block ) and empty( $block['gigyaName'] ) ) {                             // gigyaName is empty
+			return 'Error: gigyaName is empty in the field mapping JSON, this property can\'t be empty. Please enter a value.';
+
+		} elseif ( key_exists( 'cmsName', $block ) and empty( $block['cmsName'] ) ) {                                //cmsName is empty
+			return 'Error: cmsName is empty in the field mapping JSON, this property can\'t be empty. Please enter a value.';
+		} else {
+			return '';
+		}
+	}
+
+	/**
+	 * @param $response array The response from 'accounts.getSchema' query.
+	 * @param $key string Field to search for in Gigya schema, with dot notation.
+	 *                        Example: subscriptions.mySubscription.isSubscribed
+	 *
+	 * @return bool True if the field has been found false otherwise.
+	 */
+	private static function doesFieldExist( $response, $key ) {
+
+		if ( empty( $key ) ) {
+			return false;
+		}
+
+		$field_name_in_array = explode( '.', $key );
+		$schema_type         = $field_name_in_array[0];
+		$field_name          = substr( strpbrk( $key, '.' ), 1 );
+
+
+		switch ( $schema_type ) {
+			case 'profile':
+				$array_of_keys = $response['profileSchema'] ['fields'];
+				break;
+			case'data':
+				$array_of_keys = $response['dataSchema']['fields'];
+				break;
+			case 'subscriptions':
+				$array_of_keys = $response['subscriptionsSchema']['fields'];
+				break;
+			case 'preferences':
+				$array_of_keys = $response['preferencesSchema']['fields'];
+				break;
+
+			//Should be the systemSchema (doesn't include specific name).
+			default:
+				$field_name    = $key;
+				$array_of_keys = $response['systemSchema']['fields'];
+				break;
+
+		}
+
+		return ( ( ! empty ( $field_name ) ) and array_key_exists( $field_name, $array_of_keys ) );
+	}
+
 	public static function generateMachineName( $desktop_screen_set_id, $serial ) {
 		$machine_name = $desktop_screen_set_id;
 		if ( $serial !== 0 ) {
@@ -284,6 +509,24 @@ class GigyaSettings {
 		}
 
 		return $machine_name;
+	}
+
+	public static function fieldsMappingWarningsBuilder( $case_str, $fields, $solution, $does_have_several_warnings ) {
+
+
+		$error = $case_str
+				 . '<br>&nbsp;&nbsp;&nbsp;'
+				 . '<i>' . $fields . '</i>'
+				 . '<br>'
+				 . $solution;
+
+		if ( $does_have_several_warnings ) {
+			$error = '<li>' . $error . '</li>';
+		} else {
+			$error = '<p class="gigya-field-mapping-error-p">' . $error . '</p>';
+		}
+
+		return $error;
 	}
 
 	/**
