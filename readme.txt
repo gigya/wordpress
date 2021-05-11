@@ -4,7 +4,7 @@ Contributors: SAP SE/gigya.com konforti, luciodiri, ynhockey, shaharzillber.
 Tags: CIAM, CIM, Registration, Social Login, Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, SAP Customer Data Cloud, Social Infrastructure, feed
 Requires at least: 4.2
 Tested up to: 4.9
-Stable tag: 6.2.0
+Stable tag: 6.3.0
 License: Apache v2.0
 
 Integrate your WordPress site with SAP Customer Data Cloud.
@@ -212,6 +212,11 @@ For question about installations or configuration, please contact your account m
 * Added a report that can be generated to find out which users are not synchronized between WordPress and SAP CDC
 * Added a configuration option for user verification by UID only (recommended)
 * Fixed an issue when the Override WordPress Link option was unchecked
+
+= 6.3.0 =
+* Improved validation in the field mapping configuration, so that it is now possible to catch non-existent fields and other issues at the configuration stage
+* Fixed an issue where actions added by the plugin could not be overridden
+* Fixed a possible login issue when using private/public key pair authentication
 
 == FAQ ==
 
