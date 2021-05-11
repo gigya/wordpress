@@ -128,9 +128,14 @@ label[for=gigya_raasOverrideLinks] {
 }
 
 
+.gigya-field-mapping-error-p {
+    padding-left: 20px !important;
+    font-size: 12px !important;
+}
+
 .loader {
-    border: 1.6px solid #fff; /* Light grey */
-    border-top: 1.6px solid #3498db; /* Blue */
+    border: 1.6px solid white;
+    border-top: 1.6px solid #3498db;
     border-radius: 50%;
     width: 12px;
     height: 12px;

@@ -134,13 +134,20 @@ class GigyaApiHelper
 	}
 
 	/**
+	 * @param $uid
 	 * @param $idToken
 	 *
 	 * @return bool|stdClass
 	 * @throws Exception
 	 */
-	public function validateJwtAuth( $idToken ) {
-		return JWTUtils::validateSignature( $idToken, $this->apiKey, $this->dataCenter );
+	public function validateJwtAuth( $uid, $idToken ) {
+		$jwtDetails = JWTUtils::validateSignature( $idToken, $this->apiKey, $this->dataCenter );
+
+		if ($jwtDetails !== false and !empty($jwtDetails->sub) and $jwtDetails->sub === $uid) {
+			return $jwtDetails;
+		}
+
+		return false;
 	}
 
 	/**

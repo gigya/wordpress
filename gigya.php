@@ -3,7 +3,7 @@
  * Plugin Name: SAP Customer Data Cloud
  * Plugin URI: https://www.sap.com/products/crm/customer-data-management.html
  * Description: Allows sites to utilize the SAP Customer Data Cloud API for authentication and social network updates.
- * Version: 6.2.0
+ * Version: 6.3.0
  * Author: SAP SE
  * Author URI: https://www.sap.com/products/crm/customer-data-management.html
  * License: Apache v2.0
@@ -20,7 +20,7 @@ use Gigya\WordPress\GigyaAction;
  */
 define( 'GIGYA__MINIMUM_WP_VERSION', '4.7' );
 define( 'GIGYA__MINIMUM_PHP_VERSION', '7.0' );
-define( 'GIGYA__VERSION', '6.2.0' );
+define( 'GIGYA__VERSION', '6.3.0' );
 define( 'GIGYA__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GIGYA__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'GIGYA__USER_FILES', GIGYA__PLUGIN_DIR . 'user_files/' );
@@ -74,7 +74,7 @@ require_once( GIGYA__PLUGIN_DIR . 'GigyaAction.php' );
 /**
  * Lets start.
  */
-new GigyaAction;
+$gigyaAction = new GigyaAction;
 
 if ( ! function_exists( 'wp_new_user_notification' ) )
 {
@@ -571,9 +571,9 @@ function _gigya_add_to_wp_user_meta( $gigya_object, $user_id ) {
 		$gigya_object = $gigya_object->serialize();
 	}
 
-	$gigya_object = _gigArrayFlatten( $gigya_object );
+	$gigya_object       = _gigArrayFlatten( $gigya_object );
 	$field_mapping_opts = get_option( GIGYA__SETTINGS_FIELD_MAPPING );
-	$prefix = _gigya_get_mode_prefix();
+	$prefix             = _gigya_get_mode_prefix();
 	if ( ! $prefix ) {
 		return;
 	}
@@ -589,18 +589,20 @@ function _gigya_add_to_wp_user_meta( $gigya_object, $user_id ) {
 		} catch ( Exception $e ) {
 			throw new GigyaHookException( 'Exception while running hook. Error message: ' . $e->getMessage() );
 		}
-
-		foreach ( json_decode( $field_mapping_opts['map_raas_full_map'] ) as $meta_key ) {
-			$meta_key = (array) $meta_key;
-			if ( ! isset( $gigya_object[ $meta_key['gigyaName'] ] ) ) {
-				$gigya_object[ $meta_key['gigyaName'] ] = '';
-				/*
-				 * Uncomment this line if you want to send a notice to the WordPress log about *every* field mapping failure on *every* user login/registration.
-				 *
-				 * trigger_error('The Gigya field '.$meta_key['gigyaName'].', specified in the field mapping, does not exist. WP user ID: '.$user_id, E_USER_NOTICE);
-				 */
+		$result = json_decode( $field_mapping_opts['map_raas_full_map'] );
+		if ( is_array( $result ) ) {
+			foreach ( $result as $meta_key ) {
+				$meta_key = (array) $meta_key;
+				if ( ! isset( $gigya_object[ $meta_key['gigyaName'] ] ) ) {
+					$gigya_object[ $meta_key['gigyaName'] ] = '';
+					/*
+					 * Uncomment this line if you want to send a notice to the WordPress log about *every* field mapping failure on *every* user login/registration.
+					 *
+					 * trigger_error('The Gigya field '.$meta_key['gigyaName'].', specified in the field mapping, does not exist. WP user ID: '.$user_id, E_USER_NOTICE);
+					 */
+				}
+				update_user_meta( $user_id, $meta_key['cmsName'], sanitize_text_field( $gigya_object[ $meta_key['gigyaName'] ] ) );
 			}
-			update_user_meta( $user_id, $meta_key['cmsName'], sanitize_text_field( $gigya_object[ $meta_key['gigyaName'] ] ) );
 		}
 	} elseif ( is_array( $field_mapping_opts ) ) /* Legacy field mapping options */ {
 		foreach ( $field_mapping_opts as $key => $opt ) {

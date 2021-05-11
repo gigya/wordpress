@@ -3,10 +3,9 @@
 		/**
 		 * Expose the relevant form element for the login mode selected.
 		 * @param $el
-		 * /
-		 /**
 		 * @class gigyaAdminParams
 		 * @property max_execution_time
+		 * @property offline_sync_min_freq
 		 *
 		 */
 		var userManagementPage = function ($el) {
@@ -94,6 +93,7 @@
 				e.preventDefault();
 				e.stopPropagation();
 			}
+
 			element.addClass('gigya-wp-field-error');
 			if (element.next('div.gigya-error-message-notice-div').length === 0) {
 				element.after('<div class="gigya-error-message-notice-div"><p><strong>' + text + '</strond></p>' +
@@ -160,6 +160,7 @@
 
 			}
 		};
+
 
 		/**
 		 * @param form The form element object
@@ -455,6 +456,120 @@
 		});
 
 		// --------------------------------------------------------------------
+		/*
+		* Field-Mapping Settings page
+		*/
+		var enableOffLineSync = $('#gigya_map_offline_sync_enable');
+		var freqValue = $('#gigya_map_offline_sync_frequency');
+		var emailOnSuccess = $('#gigya_map_offline_sync_email_on_success');
+		var emailOnFailure = $('#gigya_map_offline_sync_email_on_failure');
+
+
+		var fieldMappingValidation = function (event) {
+			removeError(emailOnSuccess);
+			removeError(emailOnFailure);
+			removeError(freqValue.parent());
+			if (enableOffLineSync.is(':checked')) {
+				freqValidation(freqValue, event);
+				emailValidation(emailOnSuccess, event);
+				emailValidation(emailOnFailure, event);
+			}
+
+		};
+
+		var freqValidation = function (element, event) {
+			if ((element.val().length===0) || (parseInt(element.val()) < gigyaAdminParams.offline_sync_min_freq)) {
+				enableError(element.parent(), 'Error: Offline sync job frequency cannot be lower than ' + gigyaAdminParams.offline_sync_min_freq + ' minutes, or empty.', event);
+				element.parent().removeClass('gigya-wp-field-error');
+				return false;
+			} else {
+				return true;
+			}
+
+		};
+
+		var emailValidation = function (element, event) {
+			var regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+			var textFieldEmail = element.val();
+			var emails = element.val().split(",");
+			if (textFieldEmail) {
+				emails.forEach(function (email) {
+					if (!regex.test(email)) {
+						enableError(element, 'Error: Invalid email entered.', event);
+						return false;
+					}
+				})
+			}
+			return true;
+
+		};
+
+		/**
+		 *
+		 * @param textField The field mapping JSON.
+		 * @param e The event object.
+		 */
+		var fieldMappingJsonValidation = function (textField, e) {
+			var json = textField.val();
+			$('.msg').remove();
+			try {
+				var result = jsonlint.parse(json);
+				if (result) {
+					if (Array.isArray(result)) {
+						for (var index in result) {
+							if (result.hasOwnProperty(index)) {
+								var sectionID = index;
+								if (Number.isNaN(sectionID))
+									sectionID = 1;
+								else
+									sectionID++;
+								var section = result[index];
+								if (!section.hasOwnProperty('cmsName')) {
+									enableError(textField, 'Error: The property cmsName is missing at section: ' + sectionID + '.', e);
+									textField.removeClass('gigya-wp-field-error');
+									return;
+
+								} else if (!isValidFieldMappingValue(section.cmsName)) {
+									enableError(textField, 'Error: Invalid cmsName at section: ' + sectionID + '.', e);
+									textField.removeClass('gigya-wp-field-error');
+									return;
+								}
+
+								if (!section.hasOwnProperty('gigyaName')) {
+									enableError(textField, 'Error: The property gigyaName is missing at section: ' + sectionID + '.', e);
+									textField.removeClass('gigya-wp-field-error');
+									return;
+
+								} else if (!isValidFieldMappingValue(section.gigyaName)) {
+									enableError(textField, 'Error: Invalid gigyaName at section: ' + sectionID + '.', e);
+									textField.removeClass('gigya-wp-field-error');
+									return;
+								}
+
+							}
+						}
+					} else if (Object.keys(result).length !== 0) {
+						enableError(textField, 'Error: The field mapping configuration must be an array of objects containing the following fields: cmsName, gigyaName.', e);
+						textField.removeClass('gigya-wp-field-error');
+					}
+				}
+
+			} catch (err) {
+				enableError(textField, 'Error: The text you have entered is not a valid JSON format. Parser message: ' + err, e);
+				textField.removeClass('gigya-wp-field-error');
+
+			}
+
+		};
+
+
+		var isValidFieldMappingValue = function (el) {
+
+			return (el.length !== 0)
+
+		};
+
+		// --------------------------------------------------------------------
 
 		/* Form manipulation functions */
 
@@ -493,16 +608,45 @@
 		/* Form validation */
 
 		// Validate form before submit
-		$('form.gigya-settings').on('submit', function (e) {
+		var fieldMappingMapElementId = 'gigya_map_raas_full_map';
+		var fieldMappingMapElement = $('#gigya_map_raas_full_map');
+
+		$('form.gigya-settings').on('submit', function (event) {
+
 			var sessionDurationObj = $('#gigya_session_duration');
 			if (sessionDurationObj.length > 0) {
-				emptyNumericValidate(sessionDurationObj, e);
+				emptyNumericValidate(sessionDurationObj, event);
+			}
+			//Removing all the notice messages from the headline.
+			var noticeMessage = document.getElementsByClassName('notice  settings-error is-dismissible');
+
+			for (element of noticeMessage) {
+				element.remove();
 			}
 
-			// Validate JSON format
-			$('form.gigya-settings .json textarea').each(function () {
-				jsonValidate($(this), e);
-			});
+			noticeMessage = document.getElementsByClassName('gigya-error-message-notice-div');
+
+			for (element of noticeMessage) {
+				element.remove();
+			}
+
+			noticeMessage = document.getElementsByClassName('msg error');
+
+			for (element of noticeMessage) {
+				element.remove();
+			}
+
+			//Checking case of the field-mapping page.
+			if (document.getElementById(fieldMappingMapElementId) !== null) {
+				fieldMappingValidation(event);
+				fieldMappingJsonValidation(fieldMappingMapElement, event);
+
+			} else {
+				// Validate JSON format
+				$('form.gigya-settings .json textarea').each(function () {
+					jsonValidate($(this), event);
+				});
+			}
 		});
 
 		// Validate required fields
