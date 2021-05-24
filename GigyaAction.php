@@ -10,6 +10,7 @@ use Gigya\PHP\GSResponse;
 use Gigya\WordPress\Admin\GigyaSettings;
 use GigyaHookException;
 use GigyaInstall;
+
 use WP_User;
 
 /**
@@ -19,6 +20,7 @@ class GigyaAction {
 	protected $login_options;
 	protected $global_options;
 	protected $session_options;
+	protected $logger;
 
 	/**
 	 * Constructor.
@@ -38,7 +40,7 @@ class GigyaAction {
 			define( 'GIGYA__API_SECRET', $this->global_options['api_secret'] );
 			define( 'GIGYA__PRIVATE_KEY', $this->global_options['rsa_private_key'] ?? '' );
 			define( 'GIGYA__API_DOMAIN', _gigya_data_center( $this->global_options ) );
-			define( 'GIGYA__API_DEBUG', $this->global_options['debug'] );
+			define( 'GIGYA__LOG_LEVEL', $this->global_options['logLevel'] );
 			define( 'GIGYA__JS_CDN', 'https://cdns.' . GIGYA__API_DOMAIN . '/js/socialize.js' );
 		} else {
 			define( 'GIGYA__API_KEY', '' );
@@ -48,7 +50,7 @@ class GigyaAction {
 			define( 'GIGYA__API_SECRET', '' );
 			define( 'GIGYA__PRIVATE_KEY', '' );
 			define( 'GIGYA__API_DOMAIN', '' );
-			define( 'GIGYA__API_DEBUG', '' );
+			define( 'GIGYA__LOG_LEVEL', 'info' );
 			define( 'GIGYA__JS_CDN', GIGYA__DEFAULT_JS_CDN );
 		}
 
@@ -113,6 +115,7 @@ class GigyaAction {
 		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaAuthRequest.php';
 		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GSApiException.php';
 		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GSFactory.php';
+		require_once GIGYA__PLUGIN_DIR . 'features/GigyaLogger.php';
 
 		GSResponse::init();
 
@@ -211,6 +214,7 @@ class GigyaAction {
 
 			new GigyaSettings;
 		}
+		$this->logger = new GigyaLogger();
 	}
 
 	/**
@@ -271,7 +275,7 @@ class GigyaAction {
 
 					wp_send_json_success();
 				} catch ( Exception $e ) {
-					error_log( 'Unable to process field mapping for SAP Customer Data Cloud user ' . $gigya_uid );
+					$this->logger->error( 'Unable to process field mapping for SAP Customer Data Cloud user ' . $gigya_uid );
 
 					wp_send_json_error( [ 'msg' => $generic_msg ] );
 				}
@@ -502,7 +506,7 @@ class GigyaAction {
 		}
 
 		if ( empty( $_POST['action'] ) ) {
-			error_log( 'Login: No POST action specified' );
+			$this->logger->error( 'Login: No POST action specified' );
 		} else {
 			/* RaaS Login */
 			if ( $_POST['action'] === 'gigya_raas' ) {
@@ -644,7 +648,7 @@ class GigyaAction {
 
 		if ( ! is_dir( GIGYA__USER_FILES ) ) {
 			$message = "Could not generate report: The path: " . GIGYA__USER_FILES . " does not exist";
-			error_log( $message );
+			$this->logger->error( $message );
 			wp_send_json_error( $message );
 
 			return;
@@ -657,14 +661,14 @@ class GigyaAction {
 			$message = "There was an error getting the data from SAP servers, callID: " . $e->getCallId() . ', Error Code: ' . $e->getErrorCode();
 
 			wp_send_json_error( $message );
-			error_log( $message );
+			$this->logger->error( $message );
 			return;
 
 		} catch ( GSException $e ) {
 			$message = "Could not reach SAP server: " . $e->errorMessage;
 
 			wp_send_json_error( $message );
-			error_log( $message );
+			$this->logger->error( $message );
 			return;
 		}
 
@@ -826,7 +830,7 @@ class GigyaAction {
 							$uids_not_found[] = $gigya_user['UID'];
 						}
 					} else {
-						error_log( 'Gigya offline sync: unable to process user due to a lack of essential data. User data received: ' . json_encode( $gigya_user,
+						$this->logger->error( 'Gigya offline sync: unable to process user due to a lack of essential data. User data received: ' . json_encode( $gigya_user,
 								JSON_PRETTY_PRINT ) );
 					}
 				}
@@ -834,22 +838,22 @@ class GigyaAction {
 				$job_config['last_run'] = round( microtime( true ) * 1000 );
 				update_option( 'gigya_offline_sync_params', $job_config );
 
-				error_log( 'Gigya offline sync completed. Users processed: ' . $processed_users . ( ( $users_not_found )
+				$this->logger->error( 'Gigya offline sync completed. Users processed: ' . $processed_users . ( ( $users_not_found )
 						? '. Users not found: ' . $users_not_found . PHP_EOL . implode( ',' . PHP_EOL, $uids_not_found )
 						: '' ) );
 
 				$status = ( $users_not_found > 0 ) ? 'completed with errors' : 'succeeded';
 				$helper->sendCronEmail( 'offline sync', $status, $email_on_success, $processed_users, $users_not_found );
 			} catch ( GigyaHookException $e ) {
-				error_log( 'Gigya offline sync: There was a problem adding custom data to field mapping: ' . $e->getMessage() );
+				$this->logger->error( 'Gigya offline sync: There was a problem adding custom data to field mapping: ' . $e->getMessage() );
 				$status = 'failed';
 				$helper->sendCronEmail( 'offline sync', $status, $email_on_failure );
 			} catch ( GSApiException $e ) {
-				error_log( 'Offline sync failed: ' . $e->getErrorCode() . ' – ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
+				$this->logger->error( 'Offline sync failed: ' . $e->getErrorCode() . ' – ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
 				$status = 'failed';
 				$helper->sendCronEmail( 'offline sync', $status, $email_on_failure );
 			} catch ( Exception $e ) {
-				error_log( 'Offline sync failed: ' . $e->getMessage() );
+				$this->logger->error( 'Offline sync failed: ' . $e->getMessage() );
 				$status = 'failed';
 				$helper->sendCronEmail( 'offline sync', $status, $email_on_failure );
 			}

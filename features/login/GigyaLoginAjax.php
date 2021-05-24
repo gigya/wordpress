@@ -28,6 +28,8 @@ class GigyaLoginAjax {
 	 * @throws Exception
 	 */
 	public function init() {
+		$logger = new GigyaLogger();
+
 		/* Get the data from the client (AJAX) */
 		$data = $_POST['data'];
 
@@ -47,7 +49,7 @@ class GigyaLoginAjax {
 		}
 		catch ( Exception $e )
 		{
-			error_log($login_validate_error);
+			$logger->error( $login_validate_error );
 			wp_send_json_error( array( 'msg' => __( $login_validate_error ) ) );
 		}
 

@@ -1,6 +1,7 @@
 <?php
 
 use Gigya\CMSKit\GigyaCMS;
+use Gigya\WordPress\GigyaLogger;
 
 function buildCustomScreenSetRow( $screenSetList, $values = array(), $more_options = array(), $more_field_options = array() ) {
 	$more_field_options   = array_values( $more_field_options );
@@ -236,14 +237,12 @@ page.</span></small>',
 			'attrs'         => array( 'class' => 'notice notice-error is-dismissible' )
 		);
 
-		if ( ! empty( get_option( GIGYA__SETTINGS_GLOBAL )['debug'] ) ) {
-			if ( $screenset_list !== false ) {
-				error_log( 'The current site has no screen sets defined. Either the screen-sets are at the parent site level, or they have not been initialized. Check Screen-Set settings in the SAP CDC console.' );
-			}
-			$connection_error['error_message'] = array( $first_line, $second_line );
-		} else {
-			$connection_error['error_message'] = array( $first_line );
-		};
+		if ( $screenset_list !== false ) {
+			$logger = new GigyaLogger();
+			$logger->error( 'The current site has no screen sets defined. Either the screen-sets are at the parent site level, or they have not been initialized. Check Screen-Set settings in the SAP CDC console.' );
+		}
+
+		$connection_error['error_message'] = array( $first_line, $second_line );
 
 		echo _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $connection_error );
 	}

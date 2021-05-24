@@ -8,6 +8,7 @@ use Gigya\PHP\GSResponse;
 use \Exception;
 use Gigya\PHP\JWTUtils;
 use Gigya\PHP\SigUtils;
+use Gigya\WordPress\GigyaLogger;
 use InvalidArgumentException;
 use stdClass;
 
@@ -65,9 +66,11 @@ class GigyaApiHelper
 	 * @throws GSKeyNotFoundException
 	 */
 	public function sendApiCall( $method, $params ) {
+
+		$logger = new GigyaLogger();
 		$params['environment'] = $this->env;
 
-		if ($this->authMode === 'user_rsa') {
+		if ( $this->authMode === 'user_rsa' ) {
 			$req = GSFactory::createGSRequestPrivateKey( $this->apiKey, $this->userKey, $this->authKey, $method,
 				GSFactory::createGSObjectFromArray( $params ), $this->dataCenter );
 		} else {
@@ -75,7 +78,14 @@ class GigyaApiHelper
 				GSFactory::createGSObjectFromArray( $params ), $this->dataCenter );
 		}
 
-		return $req->send();
+		$response = $req->send();
+		try {
+			$callID = $response->getString( 'callId', 'N/A' );
+			$logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID: ' . $callID );
+		} catch ( GSKeyNotFoundException $e ) {
+			$logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID: M/A' );
+		}
+		return $response;
 	}
 
 	/**
@@ -183,10 +193,9 @@ class GigyaApiHelper
 		try
 		{
 			$res = $this->sendApiCall("accounts.getAccountInfo", $params);
-		}
-		catch (GSApiException $e)
-		{
-			error_log( 'Error fetching SAP Customer Data Cloud account: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
+		} catch ( GSApiException $e ) {
+			$logger = new GigyaLogger();
+			$logger->error( 'Error fetching SAP Customer Data Cloud account: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
 			return false;
 		}
 
@@ -247,11 +256,12 @@ class GigyaApiHelper
 		}
 		catch ( GSApiException $e )
 		{
+			$logger = new GigyaLogger();
 			if ( $e->getErrorCode() == 403036 )
 			{
 				return false;
 			}
-			error_log( $e->getMessage() );
+			$logger->error( $e->getMessage() );
 		}
 
 		return false;

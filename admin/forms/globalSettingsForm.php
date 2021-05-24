@@ -152,17 +152,30 @@ function globalSettingsForm() {
 			'desc'  => sprintf( __( 'Enter valid %s. See list of available ' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://help.sap.com/viewer/8b8d6fffe113457094a17701f63e3d6a/GIGYA/en-US/417fa48b70b21014bbc5a10ce4041860.html" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
 	);
 
-	$form['google_analytics'] = array(
-			'type'  => 'checkbox',
-			'label' => __( "Enable Google Social Analytics" ),
-			'value' => _gigParam( $values, 'google_analytics', 0 )
+	$form['logLevel']        = array(
+		'type'    => 'select',
+		'options' => array(
+			'error' => 'Error Only',
+			'info'  => 'Info',
+			'debug' => 'Debug'
+		),
+		'value'   => _gigParam( $values, 'logLevel', 'info' ),
+		'label'   => __( 'Log Level' ),
 	);
+	$global_log_level_messag = '<br>' . __( 'for more information click ' ) . '<a href="">here</a>' . '.';
+	if ( $form['logLevel']['value'] == 'error' ) {
+		$form['logLevel']['markup'] = __( 'This level is for general site errors only.' ) . '<br>' . __( 'It will include any error shown to the administrator by the SAP CDC plugin in the admin control panel. ' );
+	} elseif ( $form['logLevel']['value'] == 'info' ) {
+		$form['logLevel']['markup'] = __( 'Logs all actions done by the administrator in the SAP CDC plugin, including all the errors log that logs in the "Error Only" option. ' );
+	} elseif ( $form['logLevel']['value'] == 'debug' ) {
+		$form['logLevel']['markup'] = __( 'Logs all interactions with SAP CDC, i.e. every call made to SAP CDC is logged.' ) . '<br>' . __( ' Also including the "Debug" and "Error Only" levels.' );
+	}
+	$form['logLevel']['markup'] = '<small id="gigya_logLevel_markup">' . $form['logLevel']['markup'] . $global_log_level_messag . '</small>';
 
-	$form['debug'] = array(
-			'type'  => 'checkbox',
-			'label' => __( 'Enable SAP CDC debug log' ),
-			'value' => _gigParam( $values, 'debug', 0 ),
-			'desc'  => __( 'Log all SAP Customer Data Cloud\'s requests and responses. You can then find the log' ) . ' <a href="javascript:void(0)" class="gigya-debug-log">' . __( 'here' ) . '</a>'
+	$form['google_analytics'] = array(
+		'type'  => 'checkbox',
+		'label' => __( "Enable Google Social Analytics" ),
+		'value' => _gigParam( $values, 'google_analytics', 0 )
 	);
 
     /* Use this field in multisite to flag when sub site settings are saved locally for site */

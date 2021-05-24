@@ -17,8 +17,8 @@ class gigyaPluginsShortcodes {
 				if ( is_array( $advanced ) ) {
 					$attrs = array_merge( $attrs, $advanced );
 				} else if ( is_string( $advanced ) ) {
-					_gigya_error_log( "Error in " . __FUNCTION__ . " shortcode advanced parameters message: "
-					                  . $advanced );
+					$logger = new GigyaLogger();
+					$logger->error( "Error in " . __FUNCTION__ . " shortcode advanced parameters message: " . $advanced );
 				}
 			}
 		} else {
@@ -84,7 +84,8 @@ class gigyaPluginsShortcodes {
 				if ( is_array( $advanced ) ) {
 					$attrs = array_merge( $attrs, $advanced );
 				} else if ( is_string( $advanced ) ) {
-					_gigya_error_log( "Error in " . __FUNCTION__ . " shortcode advanced parameters message: " . $advanced );
+					$logger = new GigyaLogger();
+					$logger->error( "Error in " . __FUNCTION__ . " shortcode advanced parameters message: " . $advanced );
 				}
 			}
 		} else {

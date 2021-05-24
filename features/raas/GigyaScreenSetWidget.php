@@ -3,6 +3,9 @@
 /**
  * Adds ScreenSetWidget widget
  */
+
+use  Gigya\WordPress\GigyaLogger;
+
 class GigyaScreenSet_Widget extends WP_Widget {
 
 	/**
@@ -169,7 +172,9 @@ class GigyaScreenSet_Widget extends WP_Widget {
 	 * @return array
 	 */
 	public function update( $input_values, $db_values ) {
-		$valid = true;
+
+		$logger = new GigyaLogger();
+		$valid  = true;
 
 		$instance = array();
 		if ( ! empty( $input_values ) and ! empty( $db_values ) ) {
@@ -187,6 +192,7 @@ class GigyaScreenSet_Widget extends WP_Widget {
 		if ( ! $valid ) {
 			return ( empty( $db_values ) ) ? array() : $db_values;
 		}
+		$logger->info( '"Custom Screen-Sets" widget was saved successfully.' );
 
 		return $instance;
 	}

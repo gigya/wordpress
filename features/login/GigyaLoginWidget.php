@@ -1,6 +1,7 @@
 <?php
 
 use Gigya\WordPress\GigyaLoginSet;
+use Gigya\WordPress\GigyaLogger;
 
 /**
  * Adds LoginWidget widget.
@@ -135,7 +136,9 @@ class GigyaLogin_Widget extends WP_Widget {
 	 * @return array Updated safe values to be saved.
 	 */
 	public function update( $new_instance, $old_instance ) {
+		$logger                = new GigyaLogger();
 		$new_instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
+		$logger->info( '"SAP CDC RaaS" widget was saved successfully.' );
 
 		return $new_instance;
 	}
