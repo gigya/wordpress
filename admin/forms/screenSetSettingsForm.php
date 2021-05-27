@@ -202,7 +202,9 @@ page.</span></small>',
 		'markup' => '<h4>Custom Screen-Sets</h4><small>' . __( 'Configure custom screen-sets that will be made available as widgets.' ) . '</small>',
 	];
 
-	$gigya_cms      = new GigyaCMS();
+	$gigya_cms = new GigyaCMS();
+	$logger    = new GigyaLogger();
+
 	$screenset_list = $gigya_cms->getScreenSetsIdList();
 
 	if ( $screenset_list ) {
@@ -238,7 +240,6 @@ page.</span></small>',
 		);
 
 		if ( $screenset_list !== false ) {
-			$logger = new GigyaLogger();
 			$logger->error( 'The current site has no screen sets defined. Either the screen-sets are at the parent site level, or they have not been initialized. Check Screen-Set settings in the SAP CDC console.' );
 		}
 

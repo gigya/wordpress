@@ -40,7 +40,7 @@ class GigyaAction {
 			define( 'GIGYA__API_SECRET', $this->global_options['api_secret'] );
 			define( 'GIGYA__PRIVATE_KEY', $this->global_options['rsa_private_key'] ?? '' );
 			define( 'GIGYA__API_DOMAIN', _gigya_data_center( $this->global_options ) );
-			define( 'GIGYA__LOG_LEVEL', $this->global_options['logLevel'] );
+			define( 'GIGYA__LOG_LEVEL', $this->global_options['log_level'] );
 			define( 'GIGYA__JS_CDN', 'https://cdns.' . GIGYA__API_DOMAIN . '/js/socialize.js' );
 		} else {
 			define( 'GIGYA__API_KEY', '' );

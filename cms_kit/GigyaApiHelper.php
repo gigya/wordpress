@@ -83,7 +83,7 @@ class GigyaApiHelper
 			$callID = $response->getString( 'callId', 'N/A' );
 			$logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID: ' . $callID );
 		} catch ( GSKeyNotFoundException $e ) {
-			$logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID: M/A' );
+			$logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID: N/A' );
 		}
 		return $response;
 	}

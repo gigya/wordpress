@@ -29,6 +29,7 @@ function globalSettingsForm() {
 				'user_rsa'    => __( 'User key + RSA private key' ),
 			),
 			'value'   => _gigParam( $values, 'auth_mode', 'user_rsa' ),
+			'id' => 'auth_mode',
 		);
 
 		$form['api_secret']      = array(
@@ -141,7 +142,9 @@ function globalSettingsForm() {
 			),
 			'value'   => _gigParam( $values, 'lang', 'en' ),
 			'label'   => __( 'Language' ),
-			'desc'    => __( 'Please select the interface language' )
+			'desc'    => __( 'Please select the interface language' ),
+			'id' => 'auth_mode',
+
 	);
 
 	$form['advanced'] = array(
@@ -152,25 +155,38 @@ function globalSettingsForm() {
 			'desc'  => sprintf( __( 'Enter valid %s. See list of available ' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://help.sap.com/viewer/8b8d6fffe113457094a17701f63e3d6a/GIGYA/en-US/417fa48b70b21014bbc5a10ce4041860.html" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
 	);
 
-	$form['logLevel']        = array(
+	$form['log_level']            = array(
 		'type'    => 'select',
 		'options' => array(
 			'error' => 'Error Only',
 			'info'  => 'Info',
 			'debug' => 'Debug'
 		),
-		'value'   => _gigParam( $values, 'logLevel', 'info' ),
+		'value'   => _gigParam( $values, 'log_level', 'info' ),
 		'label'   => __( 'Log Level' ),
 	);
-	$global_log_level_messag = '<br>' . __( 'for more information click ' ) . '<a href="">here</a>' . '.';
-	if ( $form['logLevel']['value'] == 'error' ) {
-		$form['logLevel']['markup'] = __( 'This level is for general site errors only.' ) . '<br>' . __( 'It will include any error shown to the administrator by the SAP CDC plugin in the admin control panel. ' );
-	} elseif ( $form['logLevel']['value'] == 'info' ) {
-		$form['logLevel']['markup'] = __( 'Logs all actions done by the administrator in the SAP CDC plugin, including all the errors log that logs in the "Error Only" option. ' );
-	} elseif ( $form['logLevel']['value'] == 'debug' ) {
-		$form['logLevel']['markup'] = __( 'Logs all interactions with SAP CDC, i.e. every call made to SAP CDC is logged.' ) . '<br>' . __( ' Also including the "Debug" and "Error Only" levels.' );
-	}
-	$form['logLevel']['markup'] = '<small id="gigya_logLevel_markup">' . $form['logLevel']['markup'] . $global_log_level_messag . '</small>';
+	$form['log_level_desc_error'] = array(
+		'type'  => 'customDescription',
+		'label' => __( 'logLevelDesc' ),
+		'desc'  => __( 'This level is for general site errors only.' ) . '<br>' . __( 'It will include any error shown to the administrator by the SAP CDC plugin in the admin control panel. ' ) . '<br>' . __( 'for more information click ' ) . '<a href="">here.</a>',
+		'small' => true,
+		'depends_on' => [ 'log_level', 'error' ],
+	);
+	$form['log_level_desc_info']  = array(
+		'type'       => 'customDescription',
+		'label'      => __( 'logLevelDesc' ),
+		'desc'       => __( 'Logs all actions done by the administrator in the SAP CDC plugin, including all the errors log that logs in the "Error Only" option. ' ) . '<br>' . __( 'for more information click ' ) . '<a href="">here.</a>',
+		'small'      => true,
+		'depends_on' => [ 'log_level', 'info' ],
+	);
+	$form['log_level_desc_debug'] = array(
+		'type'       => 'customDescription',
+		'label'      => __( 'logLevelDesc' ),
+		'desc'       => __( 'Logs all interactions with SAP CDC, i.e. every call made to SAP CDC is logged.' ) . '<br>' . __( ' Also including the "Debug" and "Error Only" levels.' ) . '<br>' . __( 'for more information click ' ) . '<a href="">here.</a>',
+		'small'      => true,
+		'depends_on' => [ 'log_level', 'debug' ],
+	);
+
 
 	$form['google_analytics'] = array(
 		'type'  => 'checkbox',

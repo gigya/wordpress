@@ -23,7 +23,8 @@ define( 'GIGYA__MINIMUM_PHP_VERSION', '7.0' );
 define( 'GIGYA__VERSION', '6.3.0' );
 define( 'GIGYA__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GIGYA__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'GIGYA__LOG_FILE', GIGYA__PLUGIN_DIR . 'features/gigya_log/' );
+define( 'GIGYA__LOG_FILE_DIR', GIGYA__PLUGIN_DIR . 'gigya_log/' );
+define( 'GIGYA__LOG_FILE', GIGYA__LOG_FILE_DIR . 'gigya.log.txt' );
 define( 'GIGYA__USER_FILES', GIGYA__PLUGIN_DIR . 'user_files/' );
 define( 'GIGYA__DEFAULT_JS_CDN', 'https://cdns.gigya.com/js/socialize.js' );
 define( 'GIGYA__LOG_LIMIT', 50 );
@@ -134,7 +135,7 @@ function _gigya_render_tpl( $template_file, $variables = array() ) {
  * @return string
  */
 function _gigya_element_render( $el, $id, $name_prefix = '' ) {
-	$allowed_form_elements = array('checkbox', 'customText', 'hidden', 'password', 'radio', 'select', 'text', 'textarea');
+	$allowed_form_elements = array('checkbox', 'customText', 'hidden', 'password', 'radio', 'select', 'text', 'textarea', 'customDescription');
 	$render = '';
 		if ( empty( $el['type'] ) || $el['type'] == 'markup' ) {
 		$render .= $el['markup'];

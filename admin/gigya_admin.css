@@ -30,6 +30,10 @@
 .row {
     margin: 10px 0;
 }
+.custom-description {
+    margin-bottom: 10px ;
+
+}
 
 input[type=checkbox] {
     margin-right: 5px;
@@ -143,7 +147,8 @@ label[for=gigya_raasOverrideLinks] {
     display: inline-block;
 }
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
 }
+
 

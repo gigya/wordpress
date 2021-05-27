@@ -79,18 +79,15 @@ class GigyaCMS
 			$callID = $response->getString( 'callId', 'N/A' );
 			$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID: ' . $callID );
 		} catch ( GSKeyNotFoundException $e ) {
-			$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID: M/A' );
+			$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID: N/A' );
 		}
 		ini_restore( 'arg_separator.output' );
 
 		// Check for errors
 		$err_code = $response->getErrorCode();
 		if ( $err_code != 0 ) {
+			$this->logger->error( $response->getLog() );
 
-			$log = explode( "\r\n", $response->getLog() );
-			foreach ( $log as $new_log ) {
-				$this->logger->error( $new_log );
-			};
 			return new WP_Error( $err_code, $response->getErrorMessage() );
 
 		} else {

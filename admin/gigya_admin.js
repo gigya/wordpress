@@ -458,29 +458,6 @@
 		// --------------------------------------------------------------------
 
 		/*
-		* Global Settings page
-		*/
-
-		var endDisc = '<br>for more information click <a href="">here</a> ';
-		var description = '';
-
-		$('#gigya_logLevel').on('change', function () {
-			console.log(this.value);
-			if (this.value === 'error') {
-				description = 'This level is for general site errors only.<br>It will include any error shown to the administrator by the SAP CDC plugin in the admin control panel.';
-
-			} else if (this.value === 'info') {
-				description = 'Logs all actions done by the administrator in the SAP CDC plugin, including all the errors log that logs in the "Error Only" option.';
-			} else if (this.value === 'debug') {
-				description = 'Logs all interactions with SAP CDC, i.e. every call made to SAP CDC is logged.<br>Also including the "Debug" and "Error Only" levels.';
-			}
-
-			$('#gigya_logLevel_markup').html(description + endDisc);
-
-		});
-
-		// --------------------------------------------------------------------
-		/*
 		* Field-Mapping Settings page
 		*/
 		var enableOffLineSync = $('#gigya_map_offline_sync_enable');
@@ -622,7 +599,6 @@
 						handleGigyaFormElementDependency(depender_obj, dependee_obj, gigya_depends_on_json.slice(1));
 					});
 				}
-
 			});
 		};
 		handleGigyaFormDependency();
