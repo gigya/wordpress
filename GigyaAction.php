@@ -90,6 +90,7 @@ class GigyaAction {
 
 		/* Plugins shortcode activation switches */
 		require_once GIGYA__PLUGIN_DIR . 'features/gigyaPluginsShortcodes.php';
+
 		$shortcodes_class = new gigyaPluginsShortcodes();
 
 		add_shortcode( 'gigya-raas-login', array( $shortcodes_class, 'gigyaRaas' ) );
@@ -506,7 +507,7 @@ class GigyaAction {
 		}
 
 		if ( empty( $_POST['action'] ) ) {
-			$this->logger->error( 'Login: No POST action specified' );
+			$this->logger->info('Login: No POST action specified, an admin logged-in throw WordPress login page and not throw SAP CDC Screen-Sets.');
 		} else {
 			/* RaaS Login */
 			if ( $_POST['action'] === 'gigya_raas' ) {
@@ -838,7 +839,7 @@ class GigyaAction {
 				$job_config['last_run'] = round( microtime( true ) * 1000 );
 				update_option( 'gigya_offline_sync_params', $job_config );
 
-				$this->logger->error( 'Gigya offline sync completed. Users processed: ' . $processed_users . ( ( $users_not_found )
+				$this->logger->info( 'Gigya offline sync completed. Users processed: ' . $processed_users . ( ( $users_not_found )
 						? '. Users not found: ' . $users_not_found . PHP_EOL . implode( ',' . PHP_EOL, $uids_not_found )
 						: '' ) );
 

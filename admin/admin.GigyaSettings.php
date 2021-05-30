@@ -315,8 +315,10 @@ class GigyaSettings {
 
 				//Sending the warning message if necessary.
 				if ( ! empty( $error_message ) ) {
-					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', $error_message, 'warning' );
-					$logger->info('"Fields Mapping" settings page warning: '.strip_tags($error_message));//// need ot convert to text from html;
+					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', static::fieldMappingHTMLWarningBuilder($error_message), 'warning' );
+					$error_opening = 'Field Mapping settings page warning: ';
+					array_unshift($error_message, $error_opening);
+					$logger->info($error_message);//// need ot convert to text from html;
 				}
 			}
 
@@ -354,7 +356,7 @@ class GigyaSettings {
 	 * @param $data string The data of field mapping setting page.
 	 * @param $response array The response from 'accounts.getSchema' query.
 	 *
-	 * @return string The error message should be printing. Empty string will return in case of no errors.
+	 * @return array The error message should be printing. Empty string will return in case of no errors.
 	 * @throws Exception An exception will be thrown if there is an issue with the JSON, missing gigyName or cmsName, or if one of the properties is empty.
 	 */
 	private static function getDuplicateAndMissingFields( $data, $response ) {
@@ -364,11 +366,9 @@ class GigyaSettings {
 		$duplications_of_wp_fields  = array();
 		$unnecessary_fields         = array();
 		$not_existing_fields        = array();
-		$is_valid                   = true;
+		$warning_message            = array();
 		$invalid_json_error_message = 'Error: The field mapping configuration must be an array of objects containing the following fields: cmsName, gigyaName.';
-		$warning_message            = __( 'Settings saved.' ) . '<p>' . __( 'Warning:' ) . '</p>';
 		$json_block                 = json_decode( stripslashes( $data ), true );
-		$does_have_several_warnings = false;
 
 		//JSON validations.
 		if ( ( is_null( $json_block ) ) or ( $json_block === false ) or ( ! is_array( $json_block ) and ! empty( (array) $json_block ) ) ) {
@@ -421,48 +421,34 @@ class GigyaSettings {
 		$not_existing_fields_str       = implode( ', ', $not_existing_fields );
 		$unnecessary_fields_str        = implode( ', ', $unnecessary_fields );
 
-		//Checking if there is two different warnings cases
-		if ( ( ! empty( $duplications_of_wp_fields_str ) and ! empty( $not_existing_fields_str ) )
-			 or ( ! empty( $duplications_of_wp_fields_str ) and ! empty( $unnecessary_fields_str ) )
-			 or ( ! empty( $not_existing_fields_str ) and ! empty( $unnecessary_fields_str ) ) ) {
-
-			$warning_message            = __( 'Settings saved.' ) . '<p>' . __( 'Warning:' ) . '</p>' . '<ol class="gigya-field-mapping-error-p">';
-			$does_have_several_warnings = true;
-		}
-
-
 		//Builds the error message.
 		if ( ! empty( $not_existing_fields_str ) ) {
-			$case            = __( 'The following fields were not found in Customer Data Cloud\'s account schema:' );
-			$solution        = __( 'Please make sure that the names are spelled correctly, or add the fields in the schema editor.' );
-			$warning_message .= static:: fieldsMappingWarningsBuilder( $case, $not_existing_fields_str, $solution, $does_have_several_warnings );
-			$is_valid        = false;
+			$warning_message['not_existing_fields'] = array(
+				'case'     => __( 'The following fields were not found in Customer Data Cloud\'s account schema:' ),
+				'fields'   => $not_existing_fields_str,
+				'solution' => __( 'Please make sure that the names are spelled correctly, or add the fields in the schema editor.' ),
+
+			);
 		}
 
 		if ( ! empty( $duplications_of_wp_fields_str ) ) {
-
-			$case            = __( 'The following duplicates have been found in the cmsName field:' );
-			$solution        = __( 'Field mapping for these fields may not work as expected.' );
-			$warning_message .= static:: fieldsMappingWarningsBuilder( $case, $duplications_of_wp_fields_str, $solution, $does_have_several_warnings );
-			$is_valid        = false;
+			$warning_message['duplications_of_wp_fields'] = array(
+				'case'     => __( 'The following duplicates have been found in the cmsName field:' ),
+				'fields'   => $duplications_of_wp_fields_str,
+				'solution' => __( 'Field mapping for these fields may not work as expected.' ),
+			);
 		}
 
 		if ( ! empty( $unnecessary_fields_str ) ) {
+			$warning_message['unnecessary_fields'] = array(
+				'case'     => __( 'The following fields will be ignored:' ),
+				'fields'   => $unnecessary_fields_str,
+				'solution' => '',
+			);
 
-			$case            = __( 'The following fields will be ignored:' );
-			$solution        = '';
-			$warning_message .= static:: fieldsMappingWarningsBuilder( $case, $unnecessary_fields_str, $solution, $does_have_several_warnings );
-			$is_valid        = false;
-		}
-		if ( $does_have_several_warnings ) {
-			$warning_message .= '</ol>';
 		}
 
-		if ( $is_valid ) {
-			return '';
-		} else {
-			return $warning_message;
-		}
+		return $warning_message;
 	}
 
 	/**
@@ -554,6 +540,27 @@ class GigyaSettings {
 		}
 
 		return $error;
+	}
+
+	public static function fieldMappingHTMLWarningBuilder( $message_data ) {
+
+		$warning_message            = __( 'Settings saved.' ) . '<p>' . __( 'Warning:' ) . '</p>';
+		$does_have_several_warnings  = false;
+		if (count($message_data)>1) {
+			$does_have_several_warnings = true;
+		};
+
+		if($does_have_several_warnings)
+		{
+			$warning_message            = __( 'Settings saved.' ) . '<p>' . __( 'Warning:' ) . '</p>' . '<ol class="gigya-field-mapping-error-p">';
+		}
+		foreach ($message_data as $type_of_error) {
+			$warning_message .= static:: fieldsMappingWarningsBuilder( $type_of_error['case'], $type_of_error['fields'], $type_of_error['solution'], $does_have_several_warnings );
+		}
+		if ( $does_have_several_warnings ) {
+			$warning_message .= '</ol>';
+		}
+		return $warning_message;
 	}
 
 	/**

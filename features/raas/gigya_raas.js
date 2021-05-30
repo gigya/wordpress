@@ -110,6 +110,20 @@
 		 * Creates login/register screen set that goes on top of, or overrides, WP's default login screen. Also registers relevant event handlers for RaaS to work.
 		 */
 		var raasInit = function () {
+
+			var raasUpdatedProfile = function (res) {
+				var esData = GigyaWp.getEssentialParams(res);
+				var options = {
+					url: gigyaParams.ajaxurl,
+					type: 'POST',
+					dataType: 'json',
+					data: {
+						data: esData,
+						action: 'raas_update_profile'
+					}
+				};
+			};
+
 			/* Override default WP links to use Gigya's RaaS behavior */
 			if (gigyaRaasParams.raasOverrideLinks > 0) {
 				overrideLinks();
@@ -187,18 +201,6 @@
 				}
 			};
 
-			var raasUpdatedProfile = function (res) {
-				var esData = GigyaWp.getEssentialParams(res);
-				var options = {
-					url: gigyaParams.ajaxurl,
-					type: 'POST',
-					dataType: 'json',
-					data: {
-						data: esData,
-						action: 'raas_update_profile'
-					}
-				};
-			};
 		};
 // --------------------------------------------------------------------
 

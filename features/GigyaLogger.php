@@ -22,7 +22,7 @@ class GigyaLogger {
 
 	private function log( $message_type, $message ) {
 
-		if ( ! $this->doesTypeValid( $message_type ) ) {
+		if ( ! $this->isTypeValid( $message_type ) ) {
 			$error_message = 'Could not write the log info, the "Log Level". doesn\'t include the type (' . $message_type . ') of the message.';
 			error_log( $error_message );
 
@@ -39,7 +39,7 @@ class GigyaLogger {
 
 
 		$file        = fopen( GIGYA__LOG_FILE , 'a' );
-		$log_message = '[' . date( 'd-M-Y H:i:s' ) . ' UTC] ' . $this->wp_user_id . ' ' . $this->wp_user_username . '-' . strtoupper( $message_type ) . '-' . json_encode($message) . PHP_EOL;
+		$log_message = '[' . date( 'd-M-Y H:i:s e' ) . '] ' . $this->wp_user_id . ' ' . $this->wp_user_username . '-' . strtoupper( $message_type ) . '-' . json_encode($message) . PHP_EOL;
 		if ( fwrite( $file, $log_message ) === false ) {
 			$error_message = 'Could not write into the file at the path: ' . GIGYA__LOG_FILE;
 			error_log( $error_message );
@@ -72,7 +72,7 @@ class GigyaLogger {
 
 	}
 
-	private function doesTypeValid( $message_type ) {
+	private function isTypeValid( $message_type ) {
 
 		$message_type = strtolower( $message_type );
 
