@@ -507,7 +507,7 @@ class GigyaAction {
 		}
 
 		if ( empty( $_POST['action'] ) ) {
-			$this->logger->info('Login: No POST action specified, an admin logged-in throw WordPress login page and not throw SAP CDC Screen-Sets.');
+			$this->logger->info('Login: No POST action specified, it is possible that an admin logged in through the WordPress login page and not the SAP CDC screen-sets.');
 		} else {
 			/* RaaS Login */
 			if ( $_POST['action'] === 'gigya_raas' ) {
@@ -841,7 +841,11 @@ class GigyaAction {
 
 				$this->logger->info( 'Gigya offline sync completed. Users processed: ' . $processed_users . ( ( $users_not_found )
 						? '. Users not found: ' . $users_not_found . PHP_EOL . implode( ',' . PHP_EOL, $uids_not_found )
-						: '' ) );
+						: '' ),
+					array(
+						'id'       => '-1',
+						'nickname' => 'Offline Sync',
+					) );
 
 				$status = ( $users_not_found > 0 ) ? 'completed with errors' : 'succeeded';
 				$helper->sendCronEmail( 'offline sync', $status, $email_on_success, $processed_users, $users_not_found );

@@ -230,7 +230,6 @@ class GigyaSettings {
 			}
 			if ( ! $is_gigya_log_fie_valid ) {
 				add_settings_error( 'gigya_global_settings', 'gigya_validate', __( 'Settings saved.' ) . '<p>' . __( 'Warning: Could not open the SAP CDC log file at: ' . GIGYA__LOG_FILE . '. The parent directory of the file does not exist, or the file is not writable.'  ) . '</p>', 'warning' );
-				$logger->info( '"Global settings" page Warning: Could not open the SAP CDC log file at: ' . GIGYA__LOG_FILE . '. The parent directory of the file does not exist, or the file is not writable.');
 			} else {
 
 				$logger->info( '"Global Settings" page was saved successfully.' );
@@ -643,17 +642,14 @@ class GigyaSettings {
 	}
 
 	private static function isGigyaErrorLogValid() {
-		if ( ! is_dir( GIGYA__LOG_FILE_DIR ) ) {
-			$error_message = "Could not open the SAP CDC log file at: " . GIGYA__LOG_FILE_DIR . ". The parent directory of the file does not exist, or the file is not writable.";
+
+		$file = fopen( GIGYA__LOG_FILE, 'a' );
+		if ( $file === false ) {
+			$error_message = "Could not open the SAP CDC log file at: " . GIGYA__LOG_FILE . ". The parent directory of the file does not exist, or the file is not writable.";
 			error_log( $error_message );
-
-			return false;
 		};
-		$file = fopen( GIGYA__LOG_FILE , 'a' );
 
-		if ( ! fclose( $file ) ) {
-			return false;
-		}
+		fclose( $file );
 
 		return true;
 

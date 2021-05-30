@@ -111,6 +111,10 @@
 		 */
 		var raasInit = function () {
 
+			/* Override default WP links to use Gigya's RaaS behavior */
+			if (gigyaRaasParams.raasOverrideLinks > 0) {
+				overrideLinks();
+			}
 			var raasUpdatedProfile = function (res) {
 				var esData = GigyaWp.getEssentialParams(res);
 				var options = {
@@ -123,11 +127,6 @@
 					}
 				};
 			};
-
-			/* Override default WP links to use Gigya's RaaS behavior */
-			if (gigyaRaasParams.raasOverrideLinks > 0) {
-				overrideLinks();
-			}
 
 			/* Get admin=true cookie */
 			var admin = false;

@@ -155,7 +155,7 @@ function globalSettingsForm() {
 			'desc'  => sprintf( __( 'Enter valid %s. See list of available ' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://help.sap.com/viewer/8b8d6fffe113457094a17701f63e3d6a/GIGYA/en-US/417fa48b70b21014bbc5a10ce4041860.html" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
 	);
 
-	$form['log_level']            = array(
+	$form['log_level'] = array(
 		'type'    => 'select',
 		'options' => array(
 			'error' => 'Error Only',
@@ -165,24 +165,42 @@ function globalSettingsForm() {
 		'value'   => _gigParam( $values, 'log_level', 'info' ),
 		'label'   => __( 'Log Level' ),
 	);
+
+	$file_size = filesize( GIGYA__LOG_FILE );
+
+	if ( $file_size === false ) {
+		$end_of_desc = '<br>' . __( 'The path to the file: ' ) . GIGYA__LOG_FILE . '<br>' . __( ', Attention: currently the file is unreachable.' );
+	} else {
+		if ( $file_size < 1000000 ) {
+			$file_size = round( $file_size / 1000, 1 ) . __( ' KB.' );
+		} else {
+			$file_size = round( $file_size / 1000000, 1 ) . __( ' MB.' );
+
+		}
+		$end_of_desc = '<br>' . __( 'The path to the file: ' ) . GIGYA__LOG_FILE . __( ' and the size is: ' ) . $file_size;
+	}
+
+	$end_of_desc        .= '<br>' . __( 'for more information click ' ) . '<a href="">here.</a>';
+	$debug_mode_warning = '<strong class="gigya-raas-warn">' . __( 'WARNING: This level not recommended for production use, or for the long term. These cases will overflow the log file.' ) . '</strong>';
+
 	$form['log_level_desc_error'] = array(
-		'type'  => 'customDescription',
-		'label' => __( 'logLevelDesc' ),
-		'desc'  => __( 'This level is for general site errors only.' ) . '<br>' . __( 'It will include any error shown to the administrator by the SAP CDC plugin in the admin control panel. ' ) . '<br>' . __( 'for more information click ' ) . '<a href="">here.</a>',
-		'small' => true,
+		'type'       => 'customDescription',
+		'label'      => __( 'logLevelDesc' ),
+		'desc'       => __( 'This level is for general site errors only.' ) . '<br>' . __( 'It will include any error shown to the administrator by the SAP CDC plugin in the admin control panel. ' ) . $end_of_desc,
+		'small'      => true,
 		'depends_on' => [ 'log_level', 'error' ],
 	);
 	$form['log_level_desc_info']  = array(
 		'type'       => 'customDescription',
 		'label'      => __( 'logLevelDesc' ),
-		'desc'       => __( 'Logs all actions done by the administrator in the SAP CDC plugin, including all the errors log that logs in the "Error Only" option. ' ) . '<br>' . __( 'for more information click ' ) . '<a href="">here.</a>',
+		'desc'       => __( 'Logs all actions done by the administrator in the SAP CDC plugin, including all the errors log that logs in the "Error Only" option. ' ) . $end_of_desc,
 		'small'      => true,
 		'depends_on' => [ 'log_level', 'info' ],
 	);
 	$form['log_level_desc_debug'] = array(
 		'type'       => 'customDescription',
 		'label'      => __( 'logLevelDesc' ),
-		'desc'       => __( 'Logs all interactions with SAP CDC, i.e. every call made to SAP CDC is logged.' ) . '<br>' . __( ' Also including the "Debug" and "Error Only" levels.' ) . '<br>' . __( 'for more information click ' ) . '<a href="">here.</a>',
+		'desc'       => $debug_mode_warning . '<br>' . __( 'Logs all interactions with SAP CDC, i.e. every call made to SAP CDC is logged.' ) . '<br>' . __( ' Also including the "Debug" and "Error Only" levels.' ) . $end_of_desc,
 		'small'      => true,
 		'depends_on' => [ 'log_level', 'debug' ],
 	);
