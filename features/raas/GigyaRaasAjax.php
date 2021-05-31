@@ -21,12 +21,14 @@ class GigyaRaasAjax {
 	private $global_options;
 	private $login_options;
 	private $session_options;
+	private $logger;
 
 	public function __construct() {
 		/* Get settings variables */
 		$this->global_options  = get_option( GIGYA__SETTINGS_GLOBAL );
 		$this->login_options   = get_option( GIGYA__SETTINGS_LOGIN );
 		$this->session_options = get_option( GIGYA__SETTINGS_SESSION );
+		$this->logger = new GigyaLogger();
 	}
 
 	/**
@@ -125,7 +127,8 @@ class GigyaRaasAjax {
 			/* Register new user */
 			$this->register();
 		}
-
+		$this->logger->debug("The user was logged in.", array(
+			'id' => $wp_user->ID ));
 		wp_send_json_success();
 	}
 
@@ -235,8 +238,14 @@ class GigyaRaasAjax {
 				if ( ! is_wp_error( $gigya_account ) ) {
 					_gigya_add_to_wp_user_meta( $gigya_account, get_current_user_id() );
 				}
+				$this->logger->debug( "Updating profile was failed." );
+
 			}
+			$this->logger->debug( "This user has updated their profile." );
+		}else {
+			$this->logger->debug( "Un logged user tried to update some profile." );
 		}
+
 	}
 
 	public function getGltExpCookieExpiration( $session_type, $session_duration ) {

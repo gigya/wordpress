@@ -188,7 +188,7 @@ class GigyaSettings {
 
 		/* When a Gigya's setting page is submitted */
 		if ( isset( $_POST['gigya_global_settings'] ) ) {
-			$is_gigya_log_fie_valid = static::isGigyaErrorLogValid();
+			$is_gigya_log_field_valid = static::isGigyaErrorLogValid();
 
 			$auth_field = 'api_secret';
 			if ( $_POST['gigya_global_settings']['auth_mode'] === 'user_rsa' ) {
@@ -228,7 +228,7 @@ class GigyaSettings {
 
 				return;
 			}
-			if ( ! $is_gigya_log_fie_valid ) {
+			if ( ! $is_gigya_log_field_valid ) {
 				add_settings_error( 'gigya_global_settings', 'gigya_validate', __( 'Settings saved.' ) . '<p>' . __( 'Warning: Could not open the SAP CDC log file at: ' . GIGYA__LOG_FILE . '. The parent directory of the file does not exist, or the file is not writable.'  ) . '</p>', 'warning' );
 			} else {
 

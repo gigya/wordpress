@@ -40,6 +40,19 @@
 				}
 			});
 		};
+		var raasUpdatedProfile = function (res) {
+			var esData = GigyaWp.getEssentialParams(res);
+			var options = {
+				url: gigyaParams.ajaxurl,
+				type: 'POST',
+				dataType: 'json',
+				data: {
+					data: esData,
+					action: 'raas_update_profile'
+				}
+			};
+			$.ajax(options);
+		};
 
 		var overrideLinks = function () {
 			$(document).on('click', 'a[href]', function (e) {
@@ -78,8 +91,7 @@
 							raasLogout();
 							return false;
 					}
-				}
-				else if (path.indexOf('profile.php') !== -1 && gigyaRaasParams.canEditUsers !== 1) {
+				} else if (path.indexOf('profile.php') !== -1 && gigyaRaasParams.canEditUsers===false) {
 					/* Profile page */
 					gigya.accounts.showScreenSet({
 						screenSet: gigyaRaasParams.raasProfileWebScreen,
@@ -102,9 +114,21 @@
 		 * @param eventObj.errorMessage
 		 */
 		var onScreenSetErrorHandler = function (eventObj) {
+			var errorMessage = 'Error when loading SAP Customer Data Cloud screenset: ' + eventObj.errorCode + " – " + eventObj.errorMessage;
 			console.log('Error when loading SAP Customer Data Cloud screenset: ');
 			console.log(eventObj.errorCode + " – " + eventObj.errorMessage);
-		};
+			var options = {
+					url: gigyaParams.ajaxurl,
+					type: 'POST',
+					dataType: 'json',
+					data: {
+						data: errorMessage,
+						action: 'screen_set_error'
+					}
+				};
+			$.ajax(options);
+			};
+
 
 		/**
 		 * Creates login/register screen set that goes on top of, or overrides, WP's default login screen. Also registers relevant event handlers for RaaS to work.
@@ -115,18 +139,6 @@
 			if (gigyaRaasParams.raasOverrideLinks > 0) {
 				overrideLinks();
 			}
-			var raasUpdatedProfile = function (res) {
-				var esData = GigyaWp.getEssentialParams(res);
-				var options = {
-					url: gigyaParams.ajaxurl,
-					type: 'POST',
-					dataType: 'json',
-					data: {
-						data: esData,
-						action: 'raas_update_profile'
-					}
-				};
-			};
 
 			/* Get admin=true cookie */
 			var admin = false;

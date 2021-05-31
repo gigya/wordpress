@@ -70,6 +70,8 @@ class GigyaAction {
 		add_action( 'wp_ajax_clean_db', array( $this, 'ajaxCleanDB' ) );
 		add_action( 'wp_ajax_gigya_logout', array( $this, 'ajaxLogout' ) );
 		add_action( 'wp_ajax_nopriv_gigya_logout', array( $this, 'ajaxLogout' ) );
+		add_action( 'wp_ajax_nopriv_screen_set_error', array( $this, 'ajaxScreenSetError' ) );
+		add_action( 'wp_ajax_raas__screen_set_error', array( $this, 'ajaxScreenSetError' ) );
 		add_action( 'wp_ajax_raas_update_profile', array( $this, 'ajaxUpdateProfile' ) );
 		add_action( 'wp_login', array( $this, 'wpLogin' ), 10, 2 );
 		add_action( 'user_register', array( $this, 'userRegister' ), 10, 1 );
@@ -240,6 +242,7 @@ class GigyaAction {
 		require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginAjax.php';
 		$gigyaLoginAjax = new GigyaLoginAjax;
 		$gigyaLoginAjax->init();
+
 	}
 
 	/**
@@ -252,6 +255,7 @@ class GigyaAction {
 		require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasAjax.php';
 		$gigyaLoginAjax = new GigyaRaasAjax;
 		$gigyaLoginAjax->init();
+
 	}
 
 	/**
@@ -322,11 +326,14 @@ class GigyaAction {
 
 	public function ajaxLogout() {
 		wp_logout();
+		$this->logger->debug("Current user was logged out.");
 		$this->gigyaSyncLogout();
 		wp_send_json_success();
 	}
 
 	public function ajaxSetFixedSessionCookie() {
+
+		$this->logger->debug("Current user was logged in.");
 		$session_options = $this->getSessionOptions();
 
 		$return = array(
@@ -342,6 +349,10 @@ class GigyaAction {
 		echo json_encode( $return );
 
 		wp_die();
+	}
+
+	public function ajaxScreenSetError() {
+		$this->logger->debug( $_POST['data'] );
 	}
 
 	/**

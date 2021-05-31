@@ -86,7 +86,8 @@ class GigyaLoginAjax {
 				$this->register();
 			}
 		}
-
+		$this->logger->debug("The user was logged in.", array(
+			'id' => $wp_user->ID ));
 		wp_send_json_success();
 	}
 
@@ -187,6 +188,7 @@ class GigyaLoginAjax {
 	 * AJAX submission of custom login forms.
 	 */
 	public static function customLogin() {
+		$logger = new  GigyaLogger();
 		parse_str( $_POST['data'], $data );
 
 		$creds = array(
@@ -204,10 +206,12 @@ class GigyaLoginAjax {
 					$msg .= $err . "\n";
 				}
 			}
-
+			$logger->debug("Current user was faild in the login process.");
 			// Return JSON to client.
 			wp_send_json_error( array( 'msg' => $msg ) );
 		} else {
+
+			$logger->debug("Current user was logged in.");
 			wp_send_json_success();
 		}
 	}
