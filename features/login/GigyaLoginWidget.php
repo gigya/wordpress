@@ -8,6 +8,7 @@ use Gigya\WordPress\GigyaLogger;
  */
 class GigyaLogin_Widget extends WP_Widget {
 
+	protected $logger;
 	/**
 	 * Register widget with WordPress.
 	 */
@@ -16,6 +17,7 @@ class GigyaLogin_Widget extends WP_Widget {
 			'description' => __( 'Login by SAP Customer Data Cloud' )
 		);
 		parent::__construct( 'gigya_login', __( 'SAP CDC Login' ), $args );
+		$this->logger = new GigyaLogger();
 	}
 
 	/**
@@ -136,9 +138,8 @@ class GigyaLogin_Widget extends WP_Widget {
 	 * @return array Updated safe values to be saved.
 	 */
 	public function update( $new_instance, $old_instance ) {
-		$logger                = new GigyaLogger();
 		$new_instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
-		$logger->info( '"SAP CDC RaaS" widget was saved successfully.' );
+		$this->logger->info( '"SAP CDC RaaS widget" was saved successfully.' );
 
 		return $new_instance;
 	}

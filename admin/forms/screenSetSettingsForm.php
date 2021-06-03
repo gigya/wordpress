@@ -3,6 +3,7 @@
 use Gigya\CMSKit\GigyaCMS;
 use Gigya\WordPress\GigyaLogger;
 
+
 function buildCustomScreenSetRow( $screenSetList, $values = array(), $more_options = array(), $more_field_options = array() ) {
 	$more_field_options   = array_values( $more_field_options );
 	$desktop_list         = $screenSetList;
@@ -112,6 +113,7 @@ function buildExistingCustomScreenSetArray( $table_name, $screen_set_list ) {
  * Form builder for 'Custom Screen-Set Settings' configuration page.
  */
 function screenSetSettingsForm() {
+	$logger = new GigyaLogger();
 	$values = get_option( GIGYA__SETTINGS_SCREENSETS );
 	$form   = [];
 
@@ -203,7 +205,6 @@ page.</span></small>',
 	];
 
 	$gigya_cms = new GigyaCMS();
-	$logger    = new GigyaLogger();
 
 	$screenset_list = $gigya_cms->getScreenSetsIdList();
 
@@ -240,7 +241,7 @@ page.</span></small>',
 		);
 
 		if ( $screenset_list !== false ) {
-			$logger->error( 'The current site has no screen sets defined. Either the screen-sets are at the parent site level, or they have not been initialized. Check Screen-Set settings in the SAP CDC console.' );
+			$logger->error( 'The current site has no screen-sets defined. Either the screen-sets are at the parent site level, or they have not been initialized. Check Screen-Set settings in the SAP CDC console.' );
 		}
 
 		$connection_error['error_message'] = array( $first_line, $second_line );

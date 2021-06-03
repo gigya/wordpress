@@ -10,7 +10,6 @@ class GigyaInstall {
 	private $field_mapping_options;
 	private $screenset_options;
 	private $session_options;
-	private $log;
 
 	/**
 	 * Constructor.
@@ -21,7 +20,6 @@ class GigyaInstall {
 		$this->field_mapping_options = get_option( GIGYA__SETTINGS_FIELD_MAPPING );
 		$this->screenset_options     = get_option( GIGYA__SETTINGS_SCREENSETS );
 		$this->session_options       = get_option( GIGYA__SETTINGS_SESSION );
-		$this->log                   = get_option( 'gigya_log' );
 	}
 
 	/**
@@ -49,10 +47,6 @@ class GigyaInstall {
 
 		if ( empty ( $this->field_mapping_options ) ) {
 			add_option( GIGYA__SETTINGS_FIELD_MAPPING, array(), '', 'yes' );
-		}
-
-		if ( empty ( $this->log ) ) {
-			add_option( 'gigya_log', array(), '', 'no' );
 		}
 
 		$this->upgrade();

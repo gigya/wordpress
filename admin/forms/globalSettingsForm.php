@@ -29,7 +29,7 @@ function globalSettingsForm() {
 				'user_rsa'    => __( 'User key + RSA private key' ),
 			),
 			'value'   => _gigParam( $values, 'auth_mode', 'user_rsa' ),
-			'id' => 'auth_mode',
+			'id' => 'auth-mode',
 		);
 
 		$form['api_secret']      = array(
@@ -143,7 +143,7 @@ function globalSettingsForm() {
 			'value'   => _gigParam( $values, 'lang', 'en' ),
 			'label'   => __( 'Language' ),
 			'desc'    => __( 'Please select the interface language' ),
-			'id' => 'auth_mode',
+			'id' => 'global-language',
 
 	);
 
@@ -166,41 +166,39 @@ function globalSettingsForm() {
 		'label'   => __( 'Log Level' ),
 	);
 
-	$file_size = filesize( GIGYA__LOG_FILE );
-
-	if ( $file_size === false ) {
-		$end_of_desc = '<br>' . __( 'The path to the file: ' ) . GIGYA__LOG_FILE . '<br>' . __( ', Attention: currently the file is unreachable.' );
-	} else {
-		if ( $file_size < 1000000 ) {
-			$file_size = round( $file_size / 1000, 1 ) . __( ' KB.' );
+	$file_size   = filesize( GIGYA__LOG_FILE );
+	$end_of_desc = '';
+	if ( $file_size !== false ) {
+		if ( $file_size < 1024 * 1024 ) {
+			$file_size = round( $file_size / 1024, 1 ) . __( ' KB.' );
 		} else {
-			$file_size = round( $file_size / 1000000, 1 ) . __( ' MB.' );
+			$file_size = round( $file_size / ( 1024 * 1024 ), 1 ) . __( ' MB.' );
 
 		}
-		$end_of_desc = '<br>' . __( 'The path to the file: ' ) . GIGYA__LOG_FILE . __( ' and the size is: ' ) . $file_size;
+		$end_of_desc = '<br>' . __( 'The path to the file: ' ) . '<a class="gigya-debug-log" href="' . GIGYA__LOG_FILE . '" download>' . GIGYA__LOG_FILE . '</a>' . ( ( $file_size !== false ) ? ( __( ' and the size is: ' ) . $file_size ) : '' );
 	}
 
-	$end_of_desc        .= '<br>' . __( 'for more information click ' ) . '<a href="">here.</a>';
-	$debug_mode_warning = '<strong class="gigya-raas-warn">' . __( 'WARNING: This level not recommended for production use, or for the long term. These cases will overflow the log file.' ) . '</strong>';
+	//$end_of_desc        .= '<br>' . __( 'for more information click ' ) . '<a href="">here.</a>'; un comment when there is a new documentation link for this feature.
+	$debug_mode_warning = '<strong class="gigya-raas-warn">' . __( 'WARNING: The log file size caused by frequent debug logging may significantly degrade site performance. It is not recommended for production use, or for prolonged periods.' ) . '</strong>';
 
 	$form['log_level_desc_error'] = array(
 		'type'       => 'customDescription',
 		'label'      => __( 'logLevelDesc' ),
-		'desc'       => __( 'This level is for general site errors only.' ) . '<br>' . __( 'It will include any error shown to the administrator by the SAP CDC plugin in the admin control panel. ' ) . $end_of_desc,
+		'desc'       => __( 'This level is for general site errors only.' ) . '<br>' . __( 'Logs site-wide errors related to the SAP CDC plugin.' ) . $end_of_desc,
 		'small'      => true,
 		'depends_on' => [ 'log_level', 'error' ],
 	);
 	$form['log_level_desc_info']  = array(
 		'type'       => 'customDescription',
 		'label'      => __( 'logLevelDesc' ),
-		'desc'       => __( 'Logs all actions done by the administrator in the SAP CDC plugin, including all the errors log that logs in the "Error Only" option. ' ) . $end_of_desc,
+		'desc'       => __( 'Logs all actions done by the administrator in the SAP CDC plugin. ' ) . $end_of_desc,
 		'small'      => true,
 		'depends_on' => [ 'log_level', 'info' ],
 	);
 	$form['log_level_desc_debug'] = array(
 		'type'       => 'customDescription',
 		'label'      => __( 'logLevelDesc' ),
-		'desc'       => $debug_mode_warning . '<br>' . __( 'Logs all interactions with SAP CDC, i.e. every call made to SAP CDC is logged.' ) . '<br>' . __( ' Also including the "Debug" and "Error Only" levels.' ) . $end_of_desc,
+		'desc'       => $debug_mode_warning . '<br>' . __( 'Logs all interactions with SAP CDC, i.e. every call made to SAP CDC is logged.' ) . $end_of_desc,
 		'small'      => true,
 		'depends_on' => [ 'log_level', 'debug' ],
 	);

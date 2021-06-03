@@ -8,6 +8,8 @@ use  Gigya\WordPress\GigyaLogger;
 
 class GigyaScreenSet_Widget extends WP_Widget {
 
+	protected $logger;
+
 	/**
 	 * Register widget with WordPress.
 	 */
@@ -16,6 +18,8 @@ class GigyaScreenSet_Widget extends WP_Widget {
 			'description' => __( 'SAP Customer Data Cloud Screen-Set' )
 		);
 		parent::__construct( 'gigya_screenset', __( 'SAP CDC ScreenSet' ), $args );
+		$this->logger = new GigyaLogger();
+
 	}
 
 	protected function setWidgetMachineName( $widget_id ) {
@@ -173,7 +177,6 @@ class GigyaScreenSet_Widget extends WP_Widget {
 	 */
 	public function update( $input_values, $db_values ) {
 
-		$logger = new GigyaLogger();
 		$valid  = true;
 
 		$instance = array();
@@ -192,7 +195,7 @@ class GigyaScreenSet_Widget extends WP_Widget {
 		if ( ! $valid ) {
 			return ( empty( $db_values ) ) ? array() : $db_values;
 		}
-		$logger->info( '"Custom Screen-Sets" widget was saved successfully.' );
+		$this->logger->info( '"Custom Screen-Sets" widget was saved successfully.' );
 
 		return $instance;
 	}

@@ -21,6 +21,7 @@ class GigyaApiHelper
 	private $dataCenter;
 	private $defConfigFilePath;
 	private $env;
+	protected $logger;
 
 	const IV_SIZE = 16;
 
@@ -53,6 +54,7 @@ class GigyaApiHelper
 		$this->dataCenter = ! empty( $dataCenter ) ? $dataCenter : ( $confArray['dataCenter'] ?? 'us1.gigya.com' );
 
 		$this->env = '{"cms_name":"WordPress","cms_version":"WordPress_' . get_bloginfo( 'version' ) . '","gigya_version":"Gigya_module_' . GIGYA__VERSION . '","php_version":"' . phpversion() . '"}'; /* WordPress only */
+		$this->logger = new GigyaLogger();
 	}
 
 	/**
@@ -187,8 +189,7 @@ class GigyaApiHelper
 		{
 			$res = $this->sendApiCall("accounts.getAccountInfo", $params);
 		} catch ( GSApiException $e ) {
-			$logger = new GigyaLogger();
-			$logger->error( 'Error fetching SAP Customer Data Cloud account: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
+			$this->logger->error( 'Error fetching SAP Customer Data Cloud account: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
 			return false;
 		}
 
@@ -249,12 +250,11 @@ class GigyaApiHelper
 		}
 		catch ( GSApiException $e )
 		{
-			$logger = new GigyaLogger();
 			if ( $e->getErrorCode() == 403036 )
 			{
 				return false;
 			}
-			$logger->error( $e->getMessage() );
+			$this->logger->error( 'Failed to get global configuration from SAP CDC: ' . $e->getMessage() );
 		}
 
 		return false;

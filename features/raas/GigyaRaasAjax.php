@@ -135,13 +135,12 @@ class GigyaRaasAjax {
 				wp_send_json_error( $getAccountInfoError );
 			}
 		}
-		else
-		{
-			$this->logger->debug( "The user was found at SAP CDC but not in WordPress, now SAP CDC will try to register the user to WordPress.");
+		else {
+			$this->logger->debug( "Failed while trying to login: The user was found at SAP CDC but not in WordPress, now SAP CDC will try to register the user to WordPress." );
 			/* Register new user */
 			$this->register();
 		}
-		$this->logger->debug( "GigyaRaasAjax The user was logged in.", array(
+		$this->logger->debug( "The user was logged in.", array(
 			'id' => $wp_user->ID
 		) );
 		wp_send_json_success();
@@ -249,6 +248,21 @@ class GigyaRaasAjax {
 	 */
 	public function updateProfile( $data ) {
 		if ( is_user_logged_in() ) {
+			if ( ! array_key_exists( 'UIDSignature', $data ) ) {
+				$this->logger->debug( "Updating profile failed: The UIDSignature is invalid" );
+				wp_send_json_error();
+
+			}
+			$wp_user = get_users( array(
+				'meta_key'   => 'gigya_uid',
+				'meta_value' => $data['UID'],
+			) );
+			$wp_user_id = '';
+			if(!empty($wp_user))
+			{
+				$wp_user_id = $wp_user[0]->ID;
+			}
+
 			$is_sig_validate = SigUtils::validateUserSignature(
 				$data['UID'],
 				$data['signatureTimestamp'],
@@ -262,12 +276,12 @@ class GigyaRaasAjax {
 				if ( ! is_wp_error( $gigya_account ) ) {
 					_gigya_add_to_wp_user_meta( $gigya_account, get_current_user_id() );
 				}
-				$this->logger->debug( "Updating profile was failed." );
+				$this->logger->debug( "Updating profile failed: " . $gigya_account->getErrorMessage() );
 
 			}
-			$this->logger->debug( "This user has updated their profile." );
-		}else {
-			$this->logger->debug( "Un logged user tried to update some profile." );
+			$this->logger->debug( "This user has updated their profile.", ( ! empty( $wp_user_id ) ? array( 'id' => $wp_user_id ) : array() ) );
+		} else {
+			$this->logger->debug( "Un logged user tried to update some profile.", ( ! empty( $wp_user_id ) ? array( 'id' => $wp_user_id ) : array() ) );
 		}
 
 	}

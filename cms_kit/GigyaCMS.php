@@ -81,7 +81,7 @@ class GigyaCMS
 		// Check for errors
 		$err_code = $response->getErrorCode();
 		if ( $err_code != 0 ) {
-			$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID:' . $response->getString( "callId", "N/A" ) . ', was failed: ' . $response->getErrorMessage() . ' - ' . $response->getErrorMessage() );
+			$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID:' . $response->getString( "callId", "N/A" ) . ',  failed: ' . $response->getErrorMessage() . ' - ' . $response->getErrorMessage() );
 
 
 			return new WP_Error( $err_code, $response->getErrorMessage() );
@@ -97,14 +97,14 @@ class GigyaCMS
 				);
 
 				if ( ! empty( $valid ) ) {
-					$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID:' . $response->getString( "callId", "N/A" ) . ', was failed: ' . $response->getErrorMessage() . ' - ' . $response->getErrorMessage() );
+					$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID:' . $response->getString( "callId", "N/A" ) . ',  failed: ' . $response->getErrorMessage() . ' - ' . $response->getErrorMessage() );
 
 					return $err_code;
 				}
 			}
 		}
 
-		$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID:' . $response->getString( "callId", "N/A" ) . ', was succeeded.' );
+		$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID:' . $response->getString( "callId", "N/A" ) . ', was successful.' );
 
 		return $this->jsonToArray( $response->getResponseText() );
 	}
@@ -384,8 +384,8 @@ class GigyaCMS
 		try {
 			setcookie( $response["cookieName"], $response["cookieValue"], 0, $response["cookiePath"], $response["cookieDomain"] );
 		} catch ( Exception $e ) {
-			$this->logger->error( sprintf( 'error string SAP CDC cookie' ) );
-			$this->logger->error( sprintf( 'error message : %s', $e->getMessage() ) );
+			$this->logger->error( sprintf( 'Login to SAP CDC failed: error string SAP CDC cookie' ) );
+			$this->logger->error( sprintf( 'Login to SAP CDC failed error message : %s', $e->getMessage() ) );
 		}
 
 		return true;

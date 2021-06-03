@@ -97,7 +97,8 @@
 					gigya.accounts.showScreenSet({
 						screenSet: gigyaRaasParams.raasProfileWebScreen,
 						mobileScreenSet: gigyaRaasParams.raasProfileMobileScreen,
-						onAfterSubmit: raasUpdatedProfile
+						onAfterSubmit: raasUpdatedProfile,
+						onError: onScreenSetErrorHandler,
 					});
 					e.preventDefault();
 				}
@@ -180,6 +181,7 @@
 							mobileScreenSet: gigyaRaasParams.raasMobileScreen,
 							startScreen: gigyaRaasParams.raasRegisterScreen,
 							containerID: gigyaRaasParams.raasRegisterDiv,
+							onError: onScreenSetErrorHandler,
 							include: 'id_token' /* For JWT-based authentication */
 						};
 						gigya.accounts.showScreenSet(regScreenSetParams);
@@ -191,7 +193,8 @@
 							screenSet: gigyaRaasParams.raasProfileWebScreen,
 							mobileScreenSet: gigyaRaasParams.raasProfileMobileScreen,
 							containerID: gigyaRaasParams.raasProfileDiv,
-							onAfterSubmit: raasUpdatedProfile
+							onAfterSubmit: raasUpdatedProfile,
+							onError: onScreenSetErrorHandler,
 						});
 					}
 				} else {

@@ -300,10 +300,11 @@
 
 			var req = $.ajax(options);
 
-			req.done(function (res) {
-				if (res.success) {
+			req.done(function (req) {
+				console.log('req successs');
+				if (req.success) {
 					var pom = document.createElement('a');
-					pom.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(res.data, null, 4)));
+					pom.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(req.data, null, 4)));
 					pom.setAttribute('download', 'gigya-log.json');
 					pom.click();
 				}

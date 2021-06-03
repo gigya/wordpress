@@ -44,16 +44,17 @@ class GigyaApiRequest extends GSRequest
 
 		if ( $res->getErrorCode() == 0 ) {
 
-			$logger->debug( 'SAP CDC API called. Endpoint: ' . $this->method . ', call ID:' . $res->getString( "callId", "N/A" ) . ', was succeeded.' );
+			$logger->debug( 'SAP CDC API called. Endpoint: ' . $this->method . ', call ID:' . $res->getString( "callId", "N/A" ) . ', was successful.' );
+
 			return $res;
 		}
 
 		if ( ! empty( $res->getData() ) ) { /* Actual error response from Gigya */
-			$logger->debug( 'SAP CDC API called. Endpoint: ' . $this->method . ', call ID:' . $res->getString( "callId", "N/A" ) . ', was failed: ' . $res->getErrorMessage() . ' - ' . $res->getErrorMessage() );
+			$logger->debug( 'SAP CDC API called. Endpoint: ' . $this->method . ', call ID:' . $res->getString( "callId", "N/A" ) . ',  failed: ' . $res->getErrorMessage() . ' - ' . $res->getErrorMessage() );
 
 			throw new GSApiException( $res->getErrorMessage(), $res->getErrorCode(), $res->getResponseText(), $res->getString( "callId", "N/A" ) );
 		} else { /* Hard-coded error in PHP SDK, or another failure */
-			$logger->debug( 'SAP CDC API called. Endpoint: ' . $this->method . ', was failed: ' . $res->getErrorMessage() . ' - ' . $res->getErrorMessage() );
+			$logger->debug( 'SAP CDC API called. Endpoint: ' . $this->method . ',  failed: ' . $res->getErrorMessage() . ' - ' . $res->getErrorMessage() );
 
 			throw new GSException( $res->getErrorMessage(), $res->getErrorCode() );
 		}

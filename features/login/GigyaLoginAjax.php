@@ -81,7 +81,7 @@ class GigyaLoginAjax {
 			$users = get_users( 'meta_key=gigya_uid&meta_value=' . $this->gigya_user['UID'] );
 
 			if ( ! empty( $users ) ) {
-				$this->logger->debug( "GigyaLoginAjax The user was logged in.", array(
+				$this->logger->debug( "The user was logged in.", array(
 					'id' => $wp_user->ID
 				) );
 				/* If there one we return the login form to client */
@@ -92,11 +92,11 @@ class GigyaLoginAjax {
 			} else {
 				/* We now sure there no user in WP records connected
 				 * to this Gigya's UID. Lets try to register the user. */
-				$this->logger->debug( "The user was found at SAP CDC but not in WordPress, now SAP CDC will try to register the user to WordPress.");
+				$this->logger->debug( "Failed while trying to login: The user was found at SAP CDC but not in WordPress, now SAP CDC will try to register the user to WordPress." );
 				$this->register();
 			}
 		}
-		$this->logger->debug( "GigyaLoginAjax The user was logged in.", array(
+		$this->logger->debug( "The user was logged in.", array(
 			'id' => $wp_user->ID
 		) );
 		wp_send_json_success();

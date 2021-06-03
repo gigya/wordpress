@@ -20,7 +20,7 @@ class GigyaLogger {
 	}
 
 
-	private function log( $message_type, $message, $wp_user = array() ) {
+	public function log( $message_type, $message, $wp_user = array() ) {
 
 		if ( ! $this->isTypeValid( $message_type ) ) {
 			$error_message = 'Could not write the log info, the "Log Level". doesn\'t include the type (' . $message_type . ') of the message.';
@@ -29,22 +29,20 @@ class GigyaLogger {
 			return;
 
 		}
-		if ( ! $this->isMessageTypeIncludedInLogLevel( $message_type ) ) {
+		if ( ! $this->isMessageTypeIncludedInLogLevel( GIGYA__LOG_LEVEL, $message_type ) ) {
 			return;
 		}
 
-		$this->updateUserData( $wp_user );
+		$this->getUserData( $wp_user );
 
-		$file = fopen( GIGYA__LOG_FILE, 'a' );
+		$file = $this->getGigyaLogFilePointer();
 		if ( $file === false ) {
-			$error_message = "Could not open the SAP CDC log file at: " . GIGYA__LOG_FILE . ". The parent directory of the file does not exist, or the file is not writable.";
-			error_log( $error_message );
-
 			return;
-		};
+		}
+
 
 		if ( ! is_string( $message ) ) {
-			$message = var_export( $message,true );
+			$message = json_encode( $message );
 		}
 
 		$log_message = '[' . date( 'd-M-Y H:i:s e' ) . '] ' . $this->wp_user_id . ' ' . $this->wp_user_username . ' - ' . strtoupper( $message_type ) . ' - ' . $message . PHP_EOL;
@@ -67,16 +65,28 @@ class GigyaLogger {
 		$this->log( 'debug', $message, $wp_user );
 	}
 
-	private function isMessageTypeIncludedInLogLevel( $message_type ) {
+	public function getGigyaLogFilePointer() {
+		$file = fopen( GIGYA__LOG_FILE, 'a' );
+		if ( $file === false ) {
+			$error_message = "Could not open the SAP CDC log file at: " . GIGYA__LOG_FILE . ". The parent directory of the file does not exist, or the file is not writable.";
+			error_log( $error_message );
+
+			return false;
+		};
+
+		return $file;
+	}
+
+	private function isMessageTypeIncludedInLogLevel( $curr_log_level, $message_type ) {
 		$message_type = strtolower( $message_type );
 
 		switch ( $message_type ) {
 			case 'error':
 				return true;
 			case 'info':
-				return ( ( GIGYA__LOG_LEVEL === 'info' ) or ( GIGYA__LOG_LEVEL === 'debug' ) );
+				return ( ( $curr_log_level === 'info' ) or ( $curr_log_level === 'debug' ) );
 			case 'debug':
-				return ( GIGYA__LOG_LEVEL === 'debug' );
+				return ( $curr_log_level === 'debug' );
 			default:
 				return false;
 
@@ -92,7 +102,7 @@ class GigyaLogger {
 
 	}
 
-	private function updateUserData( $wp_user ) {
+	private function getUserData( $wp_user ) {
 		if ( empty( $wp_user ) or ! array_key_exists( 'id', $wp_user ) ) {
 			return;
 		}

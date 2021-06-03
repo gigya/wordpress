@@ -89,16 +89,6 @@ class GigyaAction {
 		add_action( 'get_out_of_sync_users', array( $this, 'getOutOfSyncUsers' ) );
 		add_action( 'wp_ajax_nopriv_get_out_of_sync_users', array( $this, 'getOutOfSyncUsers' ) );
 
-
-		/* Plugins shortcode activation switches */
-		require_once GIGYA__PLUGIN_DIR . 'features/gigyaPluginsShortcodes.php';
-
-		$shortcodes_class = new gigyaPluginsShortcodes();
-
-		add_shortcode( 'gigya-raas-login', array( $shortcodes_class, 'gigyaRaas' ) );
-		add_shortcode( 'gigya-raas-profile', array( $shortcodes_class, 'gigyaRaas' ) );
-		add_shortcode( 'gigya-social-login', array( $shortcodes_class, 'gigyaSocialLoginScode' ) );
-		/* End plugins shortcodes activation switches */
 	}
 
 	/**
@@ -144,6 +134,16 @@ class GigyaAction {
 			'sessionExpiration'           => $session_expirations['sessionExpiration'],
 			'rememberSessionExpiration'   => $session_expirations['rememberSessionExpiration']
 		);
+
+		/* Plugins shortcode activation switches */
+		require_once GIGYA__PLUGIN_DIR . 'features/gigyaPluginsShortcodes.php';
+
+		$shortcodes_class = new gigyaPluginsShortcodes();
+
+		add_shortcode( 'gigya-raas-login', array( $shortcodes_class, 'gigyaRaas' ) );
+		add_shortcode( 'gigya-raas-profile', array( $shortcodes_class, 'gigyaRaas' ) );
+		add_shortcode( 'gigya-social-login', array( $shortcodes_class, 'gigyaSocialLoginScode' ) );
+		/* End plugins shortcodes activation switches */
 
 		/* Sync Gigya and WordPress sessions */
 		$this->gigyaSyncLoginSession(
@@ -319,11 +319,22 @@ class GigyaAction {
 	 * Hook AJAX Debug Log.
 	 */
 	public function ajaxDebugLog() {
+		error_log('ajaxDebugLog');
 		if ( current_user_can( 'manage_options' ) ) {
-			wp_send_json_success( array( 'data' => get_option( 'gigya_log' ) ) );
+			$data = file_get_contents( GIGYA__LOG_FILE );
+			IF ( $data === false ) {
+				$error_message ='Error while trying to get access to the SAP CDC log file data: ' . 'can\'t get the file at the path: ' . GIGYA__LOG_FILE ;
+				error_log($error_message);
+				$this->logger->error( $error_message);
+				wp_send_json_error(array('msg'=>$error_message));
+			} else {
+				$this->logger->info( 'Current user got the SAP CDC log file.' );
+				wp_send_json_success( array( 'data' => $data ) );
+			}
 		}
-
-		wp_send_json_error();
+		$error_message =  'Error while trying to get access to the SAP CDC log file: ' . "The user doesn't have permissions to access to this data." ;
+		$this->logger->error($error_message);
+		wp_send_json_error(array('msg'=>$error_message));
 	}
 
 	public function ajaxLogout() {
@@ -622,6 +633,7 @@ class GigyaAction {
 		if ( empty( $this->login_options ) ) /* Only happens on initial activation, before configuring Gigya */ {
 			return false;
 		}
+		require_once GIGYA__PLUGIN_DIR . 'features/GigyaLogger.php';
 
 		/* Screen-set Widget */
 		require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaScreenSetWidget.php';
@@ -662,7 +674,7 @@ class GigyaAction {
 	public function getOutOfSyncUsers() {
 
 		if ( ! is_dir( GIGYA__USER_FILES ) ) {
-			$message = "Could not generate report: The path: " . GIGYA__USER_FILES . " does not exist";
+			$message = "Could not generate SAP CDC report: The path: " . GIGYA__USER_FILES . " does not exist";
 			$this->logger->error( $message );
 			wp_send_json_error( $message );
 
@@ -673,17 +685,19 @@ class GigyaAction {
 			$wp_to_gigya_compare = GigyaReportGenerator::getWPUsersNotInGigya();
 			$gigya_to_wp_compare = GigyaReportGenerator::getGigyaUsersNotInWP();
 		} catch ( GSApiException $e ) {
-			$message = "There was an error getting the data from SAP servers, callID: " . $e->getCallId() . ', Error Code: ' . $e->getErrorCode();
+			$message = "While trying to generate SAP CDC reports: There was an error getting the data from SAP servers, callID: " . $e->getCallId() . ', Error Code: ' . $e->getErrorCode();
 
 			wp_send_json_error( $message );
 			$this->logger->error( $message );
+
 			return;
 
 		} catch ( GSException $e ) {
-			$message = "Could not reach SAP server: " . $e->errorMessage;
+			$message = "While trying to generate SAP CDC reports: Could not reach SAP server: " . $e->errorMessage;
 
 			wp_send_json_error( $message );
 			$this->logger->error( $message );
+
 			return;
 		}
 
