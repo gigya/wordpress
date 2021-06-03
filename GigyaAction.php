@@ -280,14 +280,16 @@ class GigyaAction {
 
 					wp_send_json_success();
 				} catch ( Exception $e ) {
-					$this->logger->error( 'Unable to process field mapping for SAP Customer Data Cloud user ' . $gigya_uid );
+					$this->logger->debug( 'Unable to process field mapping for SAP Customer Data Cloud user ' . $gigya_uid );
 
 					wp_send_json_error( [ 'msg' => $generic_msg ] );
 				}
 			} else {
+				$this->logger->debug( 'Unable to process field mapping for SAP Customer Data Cloud user ' . $gigya_uid );
 				wp_send_json_error( [ 'msg' => $generic_msg ] );
 			}
 		} else {
+			$this->logger->debug( 'Unable to process field mapping for SAP Customer Data Cloud users.' );
 			wp_send_json_error( [ 'msg' => $generic_msg ] );
 		}
 	}
@@ -326,14 +328,12 @@ class GigyaAction {
 
 	public function ajaxLogout() {
 		wp_logout();
-		$this->logger->debug("Current user was logged out.");
 		$this->gigyaSyncLogout();
 		wp_send_json_success();
 	}
 
 	public function ajaxSetFixedSessionCookie() {
 
-		$this->logger->debug("Current user was logged in.");
 		$session_options = $this->getSessionOptions();
 
 		$return = array(
@@ -353,6 +353,7 @@ class GigyaAction {
 
 	public function ajaxScreenSetError() {
 		$this->logger->debug( $_POST['data'] );
+		wp_send_json_success();
 	}
 
 	/**
@@ -446,6 +447,8 @@ class GigyaAction {
 			setrawcookie( 'gltexp_' . GIGYA__API_KEY, null, - 1, '/' );
 		}
 		_gigya_remove_session_remember();
+		$this->logger->debug("Current user was logged out.");
+
 	}
 
 	public function appendUserMetaToRestAPI() {

@@ -67,7 +67,6 @@ class GigyaApiHelper
 	 */
 	public function sendApiCall( $method, $params ) {
 
-		$logger = new GigyaLogger();
 		$params['environment'] = $this->env;
 
 		if ( $this->authMode === 'user_rsa' ) {
@@ -79,12 +78,6 @@ class GigyaApiHelper
 		}
 
 		$response = $req->send();
-		try {
-			$callID = $response->getString( 'callId', 'N/A' );
-			$logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID: ' . $callID );
-		} catch ( GSKeyNotFoundException $e ) {
-			$logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID: N/A' );
-		}
 		return $response;
 	}
 

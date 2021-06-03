@@ -44,7 +44,7 @@ class GigyaLogger {
 		};
 
 		if ( ! is_string( $message ) ) {
-			$message = json_encode( $message );
+			$message = var_export( $message,true );
 		}
 
 		$log_message = '[' . date( 'd-M-Y H:i:s e' ) . '] ' . $this->wp_user_id . ' ' . $this->wp_user_username . ' - ' . strtoupper( $message_type ) . ' - ' . $message . PHP_EOL;

@@ -75,18 +75,14 @@ class GigyaCMS
 		// Make the request.
 		ini_set( 'arg_separator.output', '&' );
 		$response = $request->send();
-		try {
-			$callID = $response->getString( 'callId', 'N/A' );
-			$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID: ' . $callID );
-		} catch ( GSKeyNotFoundException $e ) {
-			$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID: N/A' );
-		}
+
 		ini_restore( 'arg_separator.output' );
 
 		// Check for errors
 		$err_code = $response->getErrorCode();
 		if ( $err_code != 0 ) {
-			$this->logger->error( $response->getLog() );
+			$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID:' . $response->getString( "callId", "N/A" ) . ', was failed: ' . $response->getErrorMessage() . ' - ' . $response->getErrorMessage() );
+
 
 			return new WP_Error( $err_code, $response->getErrorMessage() );
 
@@ -101,10 +97,14 @@ class GigyaCMS
 				);
 
 				if ( ! empty( $valid ) ) {
+					$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID:' . $response->getString( "callId", "N/A" ) . ', was failed: ' . $response->getErrorMessage() . ' - ' . $response->getErrorMessage() );
+
 					return $err_code;
 				}
 			}
 		}
+
+		$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID:' . $response->getString( "callId", "N/A" ) . ', was succeeded.' );
 
 		return $this->jsonToArray( $response->getResponseText() );
 	}

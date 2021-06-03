@@ -64,7 +64,8 @@
 					screenSet: gigyaRaasParams.raasWebScreen,
 					mobileScreenSet: gigyaRaasParams.raasMobileScreen,
 					startScreen: gigyaRaasParams.raasLoginScreen,
-					include: 'id_token'
+					include: 'id_token',
+					onError:onScreenSetErrorHandler
 				};
 
 				if (path.indexOf('wp-login.php') !== -1) {
@@ -114,20 +115,21 @@
 		 * @param eventObj.errorMessage
 		 */
 		var onScreenSetErrorHandler = function (eventObj) {
-			var errorMessage = 'Error when loading SAP Customer Data Cloud screenset: ' + eventObj.errorCode + " – " + eventObj.errorMessage;
+			var screen = eventObj.response.info.screen || 'unknown';
+			var errorMessage = 'Error returned by screen-set: screen ' + screen + ': ' + eventObj.errorCode + " – " + eventObj.errorMessage;
 			console.log('Error when loading SAP Customer Data Cloud screenset: ');
 			console.log(eventObj.errorCode + " – " + eventObj.errorMessage);
 			var options = {
-					url: gigyaParams.ajaxurl,
-					type: 'POST',
-					dataType: 'json',
-					data: {
-						data: errorMessage,
-						action: 'screen_set_error'
-					}
-				};
-			$.ajax(options);
+				url: gigyaParams.ajaxurl,
+				type: 'POST',
+				dataType: 'json',
+				data: {
+					data: errorMessage,
+					action: 'screen_set_error'
+				}
 			};
+			$.ajax(options);
+		};
 
 
 		/**
@@ -210,7 +212,7 @@
 
 					GigyaWp.regEvents = true;
 				}
-			};
+			}
 
 		};
 // --------------------------------------------------------------------
