@@ -65,7 +65,7 @@
 					mobileScreenSet: gigyaRaasParams.raasMobileScreen,
 					startScreen: gigyaRaasParams.raasLoginScreen,
 					include: 'id_token',
-					onError:onScreenSetErrorHandler
+					onError: onScreenSetErrorHandler
 				};
 
 				if (path.indexOf('wp-login.php') !== -1) {
@@ -92,7 +92,7 @@
 							raasLogout();
 							return false;
 					}
-				} else if (path.indexOf('profile.php') !== -1 && gigyaRaasParams.canEditUsers===false) {
+				} else if (path.indexOf('profile.php') !== -1 && gigyaRaasParams.canEditUsers === false) {
 					/* Profile page */
 					gigya.accounts.showScreenSet({
 						screenSet: gigyaRaasParams.raasProfileWebScreen,
@@ -117,7 +117,7 @@
 		 */
 		var onScreenSetErrorHandler = function (eventObj) {
 			var screen = eventObj.response.info.screen || 'unknown';
-			var errorMessage = 'Error returned by screen-set: screen ' + screen + ': ' + eventObj.errorCode + " – " + eventObj.errorMessage;
+			var jsonData = 'Error returned by screen-set: screen ' + screen + ': ' + eventObj.errorCode + " – " + eventObj.errorMessage;
 			console.log('Error when loading SAP Customer Data Cloud screenset: ');
 			console.log(eventObj.errorCode + " – " + eventObj.errorMessage);
 			var options = {
@@ -125,10 +125,10 @@
 				type: 'POST',
 				dataType: 'json',
 				data: {
-					data: errorMessage,
+					eventData: eventObj,
 					action: 'screen_set_error'
 				}
-			};
+			}
 			$.ajax(options);
 		};
 

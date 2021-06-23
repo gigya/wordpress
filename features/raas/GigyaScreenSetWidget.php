@@ -55,7 +55,12 @@ class GigyaScreenSet_Widget extends WP_Widget {
 
 			echo '</div>';
 
-			$custom_screen_sets = get_option( GIGYA__SETTINGS_SCREENSETS )['custom_screen_sets'];
+			$screen_set_setting = get_option( GIGYA__SETTINGS_SCREENSETS );
+			$custom_screen_sets = array();
+			if ( array_key_exists( 'custom_screen_sets', $screen_set_setting ) ) {
+				$this->logger->error( 'Screen-set widget error: The custom screen set table is empty, Add the screen to "custom screen set" at "Screen-Sets" setting page.' );
+				$custom_screen_sets = $screen_set_setting['custom_screen_sets'];
+			}
 			foreach ( $custom_screen_sets as $screen_set ) {
 				if ( ( ! empty( $screen_set['id'] ) ) && ( $screen_set['id'] == $instance['screenset_id'] ) ) {
 					$instance['screenset_id']        = $screen_set['desktop'];

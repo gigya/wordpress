@@ -43,9 +43,10 @@ class GigyaRaasAjax {
 		/* Trap for login users */
 		if ( is_user_logged_in() and ( ! is_multisite() ) ) {
 			$getAccountInfoError = array( 'msg' => __( 'You are already logged in' ) );
-			$this->logger->debug( 'Failed while trying to login: ' . $getAccountInfoError );
+			$this->logger->debug( 'Failed while trying to login: ' . $getAccountInfoError, $data['UID'] );
 			wp_send_json_error( $getAccountInfoError );
 		}
+
 
 		/* Check Gigya's signature validation */
 		$raas_validate_error = array( 'msg' => __( 'RaaS: There is a problem validating your user' ) );
@@ -56,7 +57,7 @@ class GigyaRaasAjax {
 			try {
 				$is_sig_valid = $gigya_api_helper->validateJwtAuth( $data['UID'], $data['id_token'] );
 			} catch ( Exception $e ) {
-				$this->logger->debug( 'Failed while trying to login: ' . $raas_validate_error['msg'] );
+				$this->logger->debug( 'Failed while trying to login: ' . $raas_validate_error['msg'], $data['UID'] );
 				wp_send_json_error( $raas_validate_error );
 			}
 		} else {
@@ -64,14 +65,14 @@ class GigyaRaasAjax {
 			try {
 				$is_sig_valid = $gigya_api_helper->validateUid( $data['UID'], $data['UIDSignature'], $data['signatureTimestamp'], 'raas' );
 			} catch ( Exception $e ) {
-				$this->logger->debug( 'Failed while trying to login: ' . $raas_validate_error['msg'] );
+				$this->logger->debug( 'Failed while trying to login: ' . $raas_validate_error['msg'], $data['UID'] );
 				wp_send_json_error( $raas_validate_error );
 			}
 		}
 
 		/* Gigya user validate trap */
 		if ( !( $is_sig_valid ) ) {
-			$this->logger->debug( 'Failed while trying to login: ' . $raas_validate_error['msg'] );
+			$this->logger->debug( 'Failed while trying to login: ' . $raas_validate_error['msg'], $data['UID'] );
 			wp_send_json_error( $raas_validate_error );
 		}
 
@@ -81,11 +82,11 @@ class GigyaRaasAjax {
 		try {
 			$this->gigya_account = $gigyaCMS->getAccount( $data['UID'] );
 		} catch (Exception $e) {
-			$this->logger->debug( 'Failed while trying to login: ' . $getAccountInfoError['msg'] );
+			$this->logger->debug( 'Failed while trying to login: ' . $getAccountInfoError['msg'], $data['UID'] );
 			wp_send_json_error( $getAccountInfoError );
 		}
 		if ( is_wp_error( $this->gigya_account ) ) {
-			$this->logger->debug( 'Failed while trying to login: ' . $getAccountInfoError['msg'] );
+			$this->logger->debug( 'Failed while trying to login: ' . $getAccountInfoError['msg'], $data['UID'] );
 			wp_send_json_error( $getAccountInfoError );
 		} else {
 			$this->gigya_account = $this->gigya_account->getData()->serialize();
@@ -118,9 +119,7 @@ class GigyaRaasAjax {
 				$msg = __( 'We found your email in our system.<br />Please use your existing account to login to the site, or create a new account using a different email address.' );
 
 				$getAccountInfoError = array( 'msg' => $msg );
-				$this->logger->debug( 'Failed while trying to login: ' . 'We found your email in our system. Please use your existing account to login to the site, or create a new account using a different email address.', array(
-					'id' => $wp_user->ID
-				) );
+				$this->logger->debug( 'Failed while trying to login: ' . 'We found your email in our system. Please use your existing account to login to the site, or create a new account using a different email address.', $data['UID'] );
 				wp_send_json_error( $getAccountInfoError );
 			}
 
@@ -128,21 +127,18 @@ class GigyaRaasAjax {
 			try {
 				$this->login( $wp_user );
 			} catch ( Exception $e ) {
-				$this->logger->debug( 'Failed while trying to login: ' .'Unable to log in.', array(
-					'id' => $wp_user->ID
-				) );
+				$this->logger->debug( 'Failed while trying to login: ' . 'Unable to log in.', $data['UID'] );
 				$getAccountInfoError = array( 'msg' => __( 'Unable to log in.' ) );
 				wp_send_json_error( $getAccountInfoError );
 			}
 		}
-		else {
-			$this->logger->debug( "Failed while trying to login: The user was found at SAP CDC but not in WordPress, now SAP CDC will try to register the user to WordPress." );
+		else
+		{
+			$this->logger->debug( "Failed while trying to login: The user was found at SAP CDC but not in WordPress, now SAP CDC will try to register the user to WordPress.", $data['UID'] );
 			/* Register new user */
 			$this->register();
 		}
-		$this->logger->debug( "The user was logged in.", array(
-			'id' => $wp_user->ID
-		) );
+		$this->logger->debug( "The user was logged in.", $data['UID'] );
 		wp_send_json_success();
 	}
 
@@ -214,9 +210,7 @@ class GigyaRaasAjax {
 				}
 			}
 			$user = get_user_by('email', $email);
-			$this->logger->debug( 'The user can\'t register: ' . strip_tags($log_message), array(
-				'id' => $user->ID
-			) );
+			$this->logger->debug( 'The user can\'t register: ' . strip_tags( $log_message ), $this->gigya_account['UID'] );
 			/* Return JSON to client */
 			wp_send_json_error( array( 'msg' => $msg ) );
 		}
@@ -232,9 +226,7 @@ class GigyaRaasAjax {
 			$this->login( $wp_user );
 		} catch ( Exception $e ) {
 			$prm = array( 'msg' => __( 'Unable to log in.' ) );
-			$this->logger->debug( 'Failed while trying to login: ' . 'Unable to log in', array(
-				'id' => $wp_user->ID
-			) );
+			$this->logger->debug( 'Failed while trying to login: ' . 'Unable to log in', $this->gigya_account['UID'] );
 			wp_send_json_error( $prm );
 		}
 	}
@@ -249,7 +241,7 @@ class GigyaRaasAjax {
 	public function updateProfile( $data ) {
 		if ( is_user_logged_in() ) {
 			if ( ! array_key_exists( 'UIDSignature', $data ) ) {
-				$this->logger->debug( "Updating profile failed: The UIDSignature is invalid" );
+				$this->logger->debug( "Updating profile failed: The UIDSignature is invalid.", $this->gigya_account['UID'] );
 				wp_send_json_error();
 
 			}
@@ -276,12 +268,13 @@ class GigyaRaasAjax {
 				if ( ! is_wp_error( $gigya_account ) ) {
 					_gigya_add_to_wp_user_meta( $gigya_account, get_current_user_id() );
 				}
-				$this->logger->debug( "Updating profile failed: " . $gigya_account->getErrorMessage() );
+				$this->logger->debug( "Updating profile failed: " . $gigya_account->getErrorMessage(), $data['UID'] );
 
 			}
-			$this->logger->debug( "This user has updated their profile.", ( ! empty( $wp_user_id ) ? array( 'id' => $wp_user_id ) : array() ) );
+			$this->logger->debug( "This user has updated their profile.", $data['UID'] );
 		} else {
-			$this->logger->debug( "Un logged user tried to update some profile.", ( ! empty( $wp_user_id ) ? array( 'id' => $wp_user_id ) : array() ) );
+
+			$this->logger->debug( "An unlogged-in user tried to update a profile..", $data['UID'] );
 		}
 
 	}

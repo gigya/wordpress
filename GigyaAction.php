@@ -319,21 +319,21 @@ class GigyaAction {
 	 * Hook AJAX Debug Log.
 	 */
 	public function ajaxDebugLog() {
-		error_log('ajaxDebugLog');
+		$gigya_uid = get_user_meta( get_current_user_id(), 'gigya_uid', true );
 		if ( current_user_can( 'manage_options' ) ) {
 			$data = file_get_contents( GIGYA__LOG_FILE );
-			IF ( $data === false ) {
+			if ( $data === false ) {
 				$error_message ='Error while trying to get access to the SAP CDC log file data: ' . 'can\'t get the file at the path: ' . GIGYA__LOG_FILE ;
 				error_log($error_message);
-				$this->logger->error( $error_message);
+				$this->logger->error( $error_message, $gigya_uid !== false ? $gigya_uid : '' );
 				wp_send_json_error(array('msg'=>$error_message));
 			} else {
-				$this->logger->info( 'Current user got the SAP CDC log file.' );
+				$this->logger->info( 'Current user got the SAP CDC log file.', $gigya_uid !== false ? $gigya_uid : '' );
 				wp_send_json_success( array( 'data' => $data ) );
 			}
 		}
 		$error_message =  'Error while trying to get access to the SAP CDC log file: ' . "The user doesn't have permissions to access to this data." ;
-		$this->logger->error($error_message);
+		$this->logger->error($error_message, $gigya_uid !== false ? $gigya_uid : '');
 		wp_send_json_error(array('msg'=>$error_message));
 	}
 
@@ -363,8 +363,35 @@ class GigyaAction {
 	}
 
 	public function ajaxScreenSetError() {
-		$this->logger->debug( $_POST['data'] );
+		$screen                = 'unknown';
+		$error_code            = 'unknown';
+		$error_screen_message  = 'Can\'t get error message';
+		$no_data_error_message = 'Screen error message: can\'t get the data about the screen error.';
+		if ( ! isset( $_POST['data'] ) ) {
+			$this->logger->debug( $no_data_error_message );
+			wp_send_json_error();
+
+		}
+		$event_data = json_decode( $_POST['data'], true );
+		if ( is_null( $event_data ) ) {
+			$this->logger->debug( $no_data_error_message );
+			wp_send_json_error();
+		}
+
+		if ( array_key_exists( 'response', $event_data ) and
+			 array_key_exists( 'info', $event_data['response'] ) and
+			 array_key_exists( 'screen', $event_data['response'] ['info'] ) ) {
+			$screen = $event_data['response'] ['info']['screen'];
+		}
+		if ( array_key_exists( 'errorCode', $event_data ) ) {
+			$error_code = $event_data['errorCode'];
+		}
+		if ( array_key_exists( 'errorMessage', $event_data ) ) {
+			$error_screen_message = $event_data['errorMessage'];
+		}
+		$error_message = 'Error returned by screen-set; screen ; ' . $screen . ', errorCode ; ' . $error_code . ', error message ; ' . $error_screen_message;
 		wp_send_json_success();
+
 	}
 
 	/**
@@ -458,7 +485,7 @@ class GigyaAction {
 			setrawcookie( 'gltexp_' . GIGYA__API_KEY, null, - 1, '/' );
 		}
 		_gigya_remove_session_remember();
-		$this->logger->debug("Current user was logged out.");
+		$this->logger->debug( "Current user was logged out." );
 
 	}
 
@@ -532,7 +559,8 @@ class GigyaAction {
 		}
 
 		if ( empty( $_POST['action'] ) ) {
-			$this->logger->info('Login: No POST action specified, it is possible that an admin logged in through the WordPress login page and not the SAP CDC screen-sets.');
+			$gigya_uid = get_user_meta($account->ID, 'gigya_uid', true );
+			$this->logger->info( 'Login: No POST action specified, it is possible that an admin logged in through the WordPress login page and not the SAP CDC screen-sets.', ( $gigya_uid !== false ? $gigya_uid : '' ) );
 		} else {
 			/* RaaS Login */
 			if ( $_POST['action'] === 'gigya_raas' ) {
@@ -672,10 +700,11 @@ class GigyaAction {
 	 * the file will be generated inside GIGYA__USER_FILES folder.
 	 */
 	public function getOutOfSyncUsers() {
-
+		$gigya_uid = get_user_meta(get_current_user_id(), 'gigya_uid', true);
 		if ( ! is_dir( GIGYA__USER_FILES ) ) {
+
 			$message = "Could not generate SAP CDC report: The path: " . GIGYA__USER_FILES . " does not exist";
-			$this->logger->error( $message );
+			$this->logger->error( $message, ( $gigya_uid !== false ) ? $gigya_uid : '' );
 			wp_send_json_error( $message );
 
 			return;
@@ -688,7 +717,7 @@ class GigyaAction {
 			$message = "While trying to generate SAP CDC reports: There was an error getting the data from SAP servers, callID: " . $e->getCallId() . ', Error Code: ' . $e->getErrorCode();
 
 			wp_send_json_error( $message );
-			$this->logger->error( $message );
+			$this->logger->error( $message, ( $gigya_uid !== false ) ? $gigya_uid : '' );
 
 			return;
 
@@ -696,7 +725,7 @@ class GigyaAction {
 			$message = "While trying to generate SAP CDC reports: Could not reach SAP server: " . $e->errorMessage;
 
 			wp_send_json_error( $message );
-			$this->logger->error( $message );
+			$this->logger->error( $message, ( $gigya_uid !== false ) ? $gigya_uid : '' );
 
 			return;
 		}

@@ -189,7 +189,7 @@ class GigyaApiHelper
 		{
 			$res = $this->sendApiCall("accounts.getAccountInfo", $params);
 		} catch ( GSApiException $e ) {
-			$this->logger->error( 'Error fetching SAP Customer Data Cloud account: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
+			$this->logger->error( 'Error fetching SAP Customer Data Cloud account: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId(), $uid );
 			return false;
 		}
 
@@ -254,7 +254,7 @@ class GigyaApiHelper
 			{
 				return false;
 			}
-			$this->logger->error( 'Failed to get global configuration from SAP CDC: ' . $e->getMessage() );
+			$this->logger->error( 'Failed to get global configuration from SAP CDC: ' . $e->getMessage()  );
 		}
 
 		return false;

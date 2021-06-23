@@ -300,21 +300,18 @@
 
 			var req = $.ajax(options);
 
-			req.done(function (req) {
-				console.log('req successs');
-				if (req.success) {
+			req.done(function (res) {
+				if (res.success) {
 					var pom = document.createElement('a');
-					pom.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(req.data, null, 4)));
+					pom.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(res.data, null, 4)));
 					pom.setAttribute('download', 'gigya-log.json');
 					pom.click();
 				}
 			});
-
 			req.fail(function (jqXHR, textStatus, errorThrown) {
 				console.log(errorThrown);
 			});
 		};
-
 		$(document).on('click', '.gigya-debug-log', function () {
 			debugLog();
 		});

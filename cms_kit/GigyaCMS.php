@@ -384,8 +384,7 @@ class GigyaCMS
 		try {
 			setcookie( $response["cookieName"], $response["cookieValue"], 0, $response["cookiePath"], $response["cookieDomain"] );
 		} catch ( Exception $e ) {
-			$this->logger->error( sprintf( 'Login to SAP CDC failed: error string SAP CDC cookie' ) );
-			$this->logger->error( sprintf( 'Login to SAP CDC failed error message : %s', $e->getMessage() ) );
+			$this->logger->error( 'Login to SAP CDC failed: error SAP CDC cookie message: ' . $e->getMessage(), $uid );
 		}
 
 		return true;

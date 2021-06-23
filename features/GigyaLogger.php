@@ -9,6 +9,7 @@ class GigyaLogger {
 
 	protected $wp_user_username;
 	protected $wp_user_id;
+	protected $gigya_uid;
 
 
 	public function __construct() {
@@ -16,11 +17,18 @@ class GigyaLogger {
 		$wp_user                = wp_get_current_user();
 		$this->wp_user_id       = $wp_user->ID;
 		$this->wp_user_username = ( $this->wp_user_id == 0 ) ? 'unknown user' : $wp_user->nickname;
+		$this->gigya_uid        = get_user_meta( get_current_user_id(), 'gigya_uid', true );
+		$this->gigya_uid        = ( $this->gigya_uid !== false ) ? $this->gigya_uid : 'unknown user';
+
 
 	}
 
-
-	public function log( $message_type, $message, $wp_user = array() ) {
+	/**
+	 * @param string $message_type
+	 * @param $message
+	 * @param string $uid
+	 */
+	public function log( $message_type, $message, $uid = '' ) {
 
 		if ( ! $this->isTypeValid( $message_type ) ) {
 			$error_message = 'Could not write the log info, the "Log Level". doesn\'t include the type (' . $message_type . ') of the message.';
@@ -33,7 +41,7 @@ class GigyaLogger {
 			return;
 		}
 
-		$this->getUserData( $wp_user );
+		$this->getUserData( $uid );
 
 		$file = $this->getGigyaLogFilePointer();
 		if ( $file === false ) {
@@ -45,25 +53,36 @@ class GigyaLogger {
 			$message = json_encode( $message );
 		}
 
-		$log_message = '[' . date( 'd-M-Y H:i:s e' ) . '] ' . $this->wp_user_id . ' ' . $this->wp_user_username . ' - ' . strtoupper( $message_type ) . ' - ' . $message . PHP_EOL;
+		$log_message = '[' . date( 'd-M-Y H:i:s e' ) . '] ' . $this->wp_user_id . ' ' . $this->wp_user_username . ' ' . $this->gigya_uid . ' - ' . strtoupper( $message_type ) . ' - ' . $message . PHP_EOL;
 		fwrite( $file, $log_message );
 		fclose( $file );
 
-		return;
 	}
 
-
-	public function error( $message, $wp_user = array() ) {
-		$this->log( 'error', $message, $wp_user );
+	/**
+	 * @param $message
+	 * @param string $uid
+	 */
+	public function error( $message, $uid = '' ) {
+		$this->log( 'error', $message, $uid );
 	}
 
-	public function info( $message, $wp_user = array() ) {
-		$this->log( 'info', $message, $wp_user );
+	/**
+	 * @param $message
+	 * @param string $uid
+	 */
+	public function info( $message, $uid = '' ) {
+		$this->log( 'info', $message, $uid );
 	}
 
-	public function debug( $message, $wp_user = array() ) {
-		$this->log( 'debug', $message, $wp_user );
+	/**
+	 * @param $message
+	 * @param string $uid
+	 */
+	public function debug( $message, $uid = '' ) {
+		$this->log( 'debug', $message, $uid );
 	}
+
 
 	public function getGigyaLogFilePointer() {
 		$file = fopen( GIGYA__LOG_FILE, 'a' );
@@ -102,23 +121,34 @@ class GigyaLogger {
 
 	}
 
-	private function getUserData( $wp_user ) {
-		if ( empty( $wp_user ) or ! array_key_exists( 'id', $wp_user ) ) {
+	private function getUserData( $uid ) {
+		if ( empty( $uid ) ) {
 			return;
 		}
+		$wp_users = get_users( array(
+			'meta_key'   => 'gigya_uid',
+			'meta_value' => $uid
+		) );
+		if ( ! empty( $wp_users ) ) {
+			$wp_user = $wp_users[0];
 
-		$this->wp_user_id = $wp_user['id'];
-
-		if ( ! array_key_exists( 'nickname', $wp_user ) ) {
-			$this->wp_user_username = get_user_by( 'id', $wp_user['id'] );
-			if ( $this->wp_user_username === false ) {
-				$this->wp_user_username = 'unknown user';
+			if ( ! array_key_exists( 'nickname', $wp_user ) ) {
+				$this->wp_user_username = get_user_by( 'id', $wp_user['id'] );
+				if ( $this->wp_user_username === false ) {
+					$this->wp_user_username = 'unknown user';
+				} else {
+					$this->wp_user_username = $this->wp_user_username->nickname;
+				}
 			} else {
-				$this->wp_user_username = $this->wp_user_username->nickname;
-			}
+				$this->wp_user_username = $wp_user['nickname'];
+			};
+			$this->gigya_uid = $uid;
 		} else {
-			$this->wp_user_username = $wp_user['nickname'];
-		};
+			if ( $this->gigya_uid === 'unknown user' and ! empty( $uid ) ) {
+				$this->gigya_uid = $uid;
+			}
+
+		}
 	}
 }
 

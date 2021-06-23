@@ -188,7 +188,9 @@ class GigyaSettings {
 
 		/* When a Gigya's setting page is submitted */
 		if ( isset( $_POST['gigya_global_settings'] ) ) {
-			$is_gigya_log_field_valid = $logger->getGigyaLogFilePointer();
+			$has_error = false;
+			$has_warnning = false;
+			$gigya_error_log_file = $logger->getGigyaLogFilePointer() ;
 
 			$auth_field = 'api_secret';
 			if ( $_POST['gigya_global_settings']['auth_mode'] === 'user_rsa' ) {
@@ -217,26 +219,28 @@ class GigyaSettings {
 						/* Prevent updating values */
 						static::_keepOldApiValues();
 						$logger->error( 'Error saving Global settings:' . 'Can\'t validate the admin user: ' . $res->getErrorCode() . ' - ' . $res->getErrorMessage() . ( ! empty( $res->getData() ) ? ( ', call ID: ' . $res->getString( "callId", "N/A" ) ) : '' ) );
-
-						return;
+						$has_error = true;
 					}
 				} else {
 					add_settings_error( 'gigya_global_settings', 'api_validate', __( 'Error sending request to SAP CDC' ), 'error' );
 					$logger->error( 'Global settings page error: ' . 'Error sending request to SAP CDC' );
-
-					return;
+				$has_error = true;
 				}
 			} else {
 				add_settings_error( 'gigya_global_settings', 'api_validate', __( 'Error retrieving existing secret key or private key from the database. This is normal if you have a multisite setup. Please re-enter the key.' ), 'error' );
 				$logger->error( '"Global Settings" page: error retrieving existing secret key or private key from the database. This is normal if you have a multisite setup. Please re-enter the key.' );
-
-				return;
+				$has_error = true;
 			}
-			if ( $is_gigya_log_field_valid === false ) {
-				add_settings_error( 'gigya_global_settings', 'gigya_validate', __( 'Settings saved.' ) . '<p>' . __( 'Warning: Could not open the SAP CDC log file at: ' . GIGYA__LOG_FILE . '. The parent directory of the file does not exist, or the file is not writable.' ) . '</p>', 'warning' );
+			if ( $gigya_error_log_file === false ) {
+				if ( ! $has_error ) {
+					add_settings_error( 'gigya_global_settings', 'gigya_validate', __( 'Settings saved.' ) . '<p>' . __( 'Warning: Could not open the SAP CDC log file at: ' . GIGYA__LOG_FILE . '. The parent directory of the file does not exist, or the file is not writable.' ) . '</p>', 'warning' );
+				}
+				$has_warnning = true;
 			} else {
-				fclose( $is_gigya_log_field_valid );
-				$logger->info( '"Global Settings" page was saved successfully.' );
+				fclose( $gigya_error_log_file );
+				if ( ! $has_error and ! $has_warnning ) {
+					$logger->info( '"Global Settings" page was saved successfully.' );
+				}
 			};
 		} elseif ( isset( $_POST['gigya_login_settings'] ) ) {
 			/*
@@ -250,6 +254,8 @@ class GigyaSettings {
 
 			$logger->info( '"User Management settings" page was saved successfully.' );
 		} elseif ( isset( $_POST['gigya_field_mapping_settings'] ) ) {
+			$has_error = false;
+
 
 			/* Validate field mapping settings, including offline sync */
 			$data = $_POST['gigya_field_mapping_settings'];
@@ -258,9 +264,9 @@ class GigyaSettings {
 					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate',
 						__( 'Error: Offline sync job frequency cannot be lower than ' . GIGYA__OFFLINE_SYNC_MIN_FREQ . ' minutes' ),
 						'error' );
-					$logger->error( '"Fields Mapping" settings page error: Offline sync job frequency cannot be lower than ' . GIGYA__OFFLINE_SYNC_MIN_FREQ . ' minutes.' );
+					$logger->error( '"Field Mapping" settings page error: Offline sync job frequency cannot be lower than ' . GIGYA__OFFLINE_SYNC_MIN_FREQ . ' minutes.' );
 					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
-					return;
+					$has_error = true;
 				}
 
 				$emails_are_valid = true;
@@ -271,9 +277,9 @@ class GigyaSettings {
 				}
 				if ( ! $emails_are_valid ) {
 					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Error: Invalid emails entered' ), 'error' );
-					$logger->error( '"Fields Mapping" settings page error: Invalid emails entered.' );
+					$logger->error( '"Field Mapping" settings page error: Invalid emails entered.' );
 					static::_keepOldApiValues( 'gigya_field_mapping_settings' );
-					return;
+					$has_error = true;
 				}
 			}
 
@@ -297,36 +303,35 @@ class GigyaSettings {
 				} catch ( GSException $e ) {
 					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Settings saved.' ) . '<p>' . __( 'Warning: Can\'t reach SAP servers, please check the global configuration settings.' ) . '</p>', 'warning' );
 					$logger->info( 'Fields Mapping" settings page Warning: Can\'t reach SAP servers, please check the global configuration settings' );
-
-					return;
+					$has_warnning = true;
 				}
 				if ( is_wp_error( $response ) ) {
 					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', __( 'Settings saved.' ) . '<p>' . __( 'Warning: Can\'t reach SAP servers, please check the global configuration settings: ' ) . $response->get_error_message() . '</p>', 'warning' );
 					$logger->info( '"Fields Mapping" settings page Warning: Can\'t reach SAP servers, please check the global configuration settings ' . $response->get_error_message() );
-
-					return;
+					$has_warnning = true;
 
 				} elseif ( $response['errorCode'] === 0 ) {
 					try {
 						$error_message = static::getDuplicateAndMissingFields( $data['map_raas_full_map'], $response );
 					} catch ( Exception $e ) {
 						add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', $e->getMessage(), 'error' );
-						$logger->error( '"Fields Mapping" settings page error: ' . $e->getMessage() );
+						$logger->error( '"Field Mapping" settings page error: ' . $e->getMessage() );
 						static::_keepOldApiValues( 'gigya_field_mapping_settings' );
-						return;
+						$has_error = true;
 					}
 				}
 
 				//Sending the warning message if necessary.
 				if ( ! empty( $error_message ) ) {
-					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', static::fieldMappingHTMLWarningBuilder( $error_message ), 'warning' );
+					add_settings_error( 'gigya_field_mapping_settings', 'gigya_validate', static::buildFieldMappingHTMLWarning( $error_message ), 'warning' );
 					$error_opening = 'Fields Mapping settings" page warning: ';
 					array_unshift( $error_message, $error_opening );
 					$logger->info( $error_message );
 				}
 			}
-
-			$logger->info( '"Fields Mapping settings" page was saved successfully.' );
+			if ( ! $has_error and ! $has_warnning ) {
+				$logger->info( '"Fields Mapping settings" page was saved successfully.' );
+			}
 		} elseif ( isset( $_POST['gigya_screenset_settings'] ) ) {
 			/* Screen-set page validation */
 			foreach ( $_POST['gigya_screenset_settings']['custom_screen_sets'] as $key => $screen_set ) {
@@ -546,24 +551,24 @@ class GigyaSettings {
 		return $error;
 	}
 
-	public static function fieldMappingHTMLWarningBuilder( $message_data ) {
+	public static function buildFieldMappingHTMLWarning( $message_data ) {
 
 		$warning_message            = __( 'Settings saved.' ) . '<p>' . __( 'Warning:' ) . '</p>';
-		$does_have_several_warnings  = false;
-		if (count($message_data)>1) {
+		$does_have_several_warnings = false;
+		if ( count( $message_data ) > 1 ) {
 			$does_have_several_warnings = true;
 		};
 
-		if($does_have_several_warnings)
-		{
-			$warning_message            = __( 'Settings saved.' ) . '<p>' . __( 'Warning:' ) . '</p>' . '<ol class="gigya-field-mapping-error-p">';
+		if ( $does_have_several_warnings ) {
+			$warning_message = __( 'Settings saved.' ) . '<p>' . __( 'Warning:' ) . '</p>' . '<ol class="gigya-field-mapping-error-p">';
 		}
-		foreach ($message_data as $type_of_error) {
+		foreach ( $message_data as $type_of_error ) {
 			$warning_message .= static::fieldsMappingWarningsBuilder( $type_of_error['case'], $type_of_error['fields'], $type_of_error['solution'], $does_have_several_warnings );
 		}
 		if ( $does_have_several_warnings ) {
 			$warning_message .= '</ol>';
 		}
+
 		return $warning_message;
 	}
 
