@@ -131,7 +131,7 @@ page.</span></small>',
 	];
 
 	$form['raas_screens'] = [
-		'markup' => '<h4>' . __( 'Login/Registration Screen Sets' ) . '</h4>',
+		'markup' => '<h4>' . __( 'Login/Registration Screen-Sets' ) . '</h4>',
 	];
 
 	$form['raasWebScreen'] = [
@@ -216,7 +216,7 @@ page.</span></small>',
 				if ( ( ( ! $desktop_screen_exist ) || ( ! $mobile_screen_exist ) ) && ! empty( ( $value['desktop'] ) && ! empty( $value['mobile'] ) ) ) {
 
 					$compare_error = array(
-						'error_message' => __( 'One or more of the screen-sets below does not exist at SAP Customer Data Cloud.' ),
+						'error_message' => __( 'One or more of the screen-Sets below does not exist at SAP Customer Data Cloud.' ),
 						'attrs'         => array( 'class' => 'notice notice-error is-dismissible' )
 					);
 					echo _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $compare_error );

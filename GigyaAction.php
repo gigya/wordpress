@@ -20,7 +20,7 @@ class GigyaAction {
 	protected $login_options;
 	protected $global_options;
 	protected $session_options;
-	protected $logger;
+	protected GigyaLogger $logger;
 
 	/**
 	 * Constructor.
@@ -132,7 +132,8 @@ class GigyaAction {
 			'enabledProviders'            => _gigParam( $this->global_options, 'enabledProviders', '*' ),
 			'lang'                        => _gigParam( $this->global_options, 'lang', 'en' ),
 			'sessionExpiration'           => $session_expirations['sessionExpiration'],
-			'rememberSessionExpiration'   => $session_expirations['rememberSessionExpiration']
+			'rememberSessionExpiration'   => $session_expirations['rememberSessionExpiration'],
+			'logLevel'                    => $this->global_options['log_level'],
 		);
 
 		/* Plugins shortcode activation switches */
@@ -323,18 +324,19 @@ class GigyaAction {
 		if ( current_user_can( 'manage_options' ) ) {
 			$data = file_get_contents( GIGYA__LOG_FILE );
 			if ( $data === false ) {
-				$error_message ='Error while trying to get access to the SAP CDC log file data: ' . 'can\'t get the file at the path: ' . GIGYA__LOG_FILE ;
-				error_log($error_message);
+				$error_message = 'Error while trying to get access to the SAP CDC log file data: ' . 'can\'t get the file at the path: ' . GIGYA__LOG_FILE;
+				error_log( $error_message );
 				$this->logger->error( $error_message, $gigya_uid !== false ? $gigya_uid : '' );
-				wp_send_json_error(array('msg'=>$error_message));
+				wp_send_json_error( array( 'msg' => $error_message ) );
 			} else {
 				$this->logger->info( 'Current user got the SAP CDC log file.', $gigya_uid !== false ? $gigya_uid : '' );
-				wp_send_json_success( array( 'data' => $data ) );
+				echo $data;
 			}
+		} else {
+			$error_message = 'Error while trying to get access to the SAP CDC log file: ' . "The user doesn't have permissions to access to this data.";
+			$this->logger->error( $error_message, $gigya_uid !== false ? $gigya_uid : '' );
+			wp_send_json_error( array( 'msg' => $error_message ) );
 		}
-		$error_message =  'Error while trying to get access to the SAP CDC log file: ' . "The user doesn't have permissions to access to this data." ;
-		$this->logger->error($error_message, $gigya_uid !== false ? $gigya_uid : '');
-		wp_send_json_error(array('msg'=>$error_message));
 	}
 
 	public function ajaxLogout() {
@@ -363,35 +365,21 @@ class GigyaAction {
 	}
 
 	public function ajaxScreenSetError() {
-		$screen                = 'unknown';
-		$error_code            = 'unknown';
-		$error_screen_message  = 'Can\'t get error message';
 		$no_data_error_message = 'Screen error message: can\'t get the data about the screen error.';
-		if ( ! isset( $_POST['data'] ) ) {
-			$this->logger->debug( $no_data_error_message );
-			wp_send_json_error();
-
-		}
-		$event_data = json_decode( $_POST['data'], true );
-		if ( is_null( $event_data ) ) {
+		if ( empty( $_POST['eventData'] ) ) {
 			$this->logger->debug( $no_data_error_message );
 			wp_send_json_error();
 		}
+		$event_data = $_POST['eventData'];
+		if ( empty( $event_data ) ) {
+			$this->logger->debug( $no_data_error_message );
+			wp_send_json_error();
+		}
 
-		if ( array_key_exists( 'response', $event_data ) and
-			 array_key_exists( 'info', $event_data['response'] ) and
-			 array_key_exists( 'screen', $event_data['response'] ['info'] ) ) {
-			$screen = $event_data['response'] ['info']['screen'];
-		}
-		if ( array_key_exists( 'errorCode', $event_data ) ) {
-			$error_code = $event_data['errorCode'];
-		}
-		if ( array_key_exists( 'errorMessage', $event_data ) ) {
-			$error_screen_message = $event_data['errorMessage'];
-		}
-		$error_message = 'Error returned by screen-set; screen ; ' . $screen . ', errorCode ; ' . $error_code . ', error message ; ' . $error_screen_message;
+		$error_message = 'Error returned by screen-set: screen  ' . $event_data['screen'] . ', error code: ' . $event_data['errorCode'] . ', error message: ' . $event_data['errorMessage'];
+		$this->logger->debug( $error_message );
+
 		wp_send_json_success();
-
 	}
 
 	/**

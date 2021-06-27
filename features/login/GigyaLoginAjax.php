@@ -38,7 +38,7 @@ class GigyaLoginAjax {
 
 		/* Trap for login users */
 		if ( is_user_logged_in() ) {
-			$this->logger->debug( 'Failed while trying to login: ' . 'There is already a logged in user', $data['UID'] );
+			$this->logger->debug( 'Login failed: There is already a logged in user', $data['UID'] );
 			wp_send_json_error( array( 'msg' => __( 'There is already a logged in user' ) ) );
 		}
 
@@ -53,14 +53,14 @@ class GigyaLoginAjax {
 		}
 		catch ( Exception $e )
 		{
-			$this->logger->debug( 'Failed while trying to login: ' . $login_validate_error, $data['UID'] );
+			$this->logger->debug( 'Login failed: ' . $login_validate_error, $data['UID'] );
 
 			wp_send_json_error( array( 'msg' => __( $login_validate_error ) ) );
 		}
 
 		/* Gigya user validate trap */
 		if ( !( $is_sig_validate ) ) {
-			$this->logger->debug( 'Failed while trying to login: ' . $login_validate_error, $data['UID'] );
+			$this->logger->debug( 'Login failed: ' . $login_validate_error, $data['UID'] );
 			wp_send_json_error( array( 'msg' => __( $login_validate_error ) ) );
 		}
 
@@ -90,7 +90,7 @@ class GigyaLoginAjax {
 			} else {
 				/* We now sure there no user in WP records connected
 				 * to this Gigya's UID. Lets try to register the user. */
-				$this->logger->debug( "Failed while trying to login: The user was found at SAP CDC but not in WordPress, now SAP CDC will try to register the user to WordPress.", $this->gigya_user['UID'] );
+				$this->logger->debug( "Login failed: The user was found at SAP CDC but not in WordPress, now SAP CDC will try to register the user to WordPress.", $this->gigya_user['UID'] );
 				$this->register();
 			}
 		}
@@ -166,7 +166,7 @@ class GigyaLoginAjax {
 			foreach ( $user_id->errors as $error ) {
 				foreach ( $error as $err ) {
 					$log_message .= $err . ' ';
-					$msg         .= $err . "\n";
+					$msg         .= $err . PHP_EOL;
 				}
 			}
 			$this->logger->debug( 'The user can\'t register: ' . strip_tags( $log_message ), $this->gigya_user['UID'] );
@@ -199,6 +199,7 @@ class GigyaLoginAjax {
 	 * AJAX submission of custom login forms.
 	 */
 	public static function customLogin() {
+		$logger = new GigyaLogger();
 		parse_str( $_POST['data'], $data );
 
 		$creds = array(
@@ -211,17 +212,19 @@ class GigyaLoginAjax {
 		// On login error.
 		if ( isset( $user->errors ) ) {
 			$msg = '';
+			$error_log = '';
 			foreach ( $user->errors as $error ) {
 				foreach ( $error as $err ) {
+					$error_log .= $err . ' ';
 					$msg .= $err . "\n";
 				}
 			}
-			static :: $logger->debug( "Failed while trying to login: " . $msg, static :: gigya_user['UID'] );
+			$logger->debug( "Login failed: " . $error_log );
 			// Return JSON to client.
 			wp_send_json_error( array( 'msg' => $msg ) );
 		} else {
 
-			static :: $logger->debug( "Current user was logged in.", static :: gigya_user['UID'] );
+			$logger->debug( "Current user was logged in." );
 			wp_send_json_success();
 		}
 	}

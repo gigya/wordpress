@@ -67,6 +67,7 @@ class GigyaCMS
 
 		// To be define on CMS code (or not).
 		$api_domain = GIGYA__API_DOMAIN;
+		$uid        = $request->getParams()->getString( 'UID', '' );
 
 		// Set the request path.
 		$domain = ! empty( $api_domain ) ? $api_domain : 'us1.gigya.com';
@@ -81,7 +82,7 @@ class GigyaCMS
 		// Check for errors
 		$err_code = $response->getErrorCode();
 		if ( $err_code != 0 ) {
-			$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID:' . $response->getString( "callId", "N/A" ) . ',  failed: ' . $response->getErrorMessage() . ' - ' . $response->getErrorMessage() );
+			$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID:' . $response->getString( "callId", "N/A" ) . ',  failed: ' . $response->getErrorMessage() . ' - ' . $response->getErrorMessage(), $uid );
 
 
 			return new WP_Error( $err_code, $response->getErrorMessage() );
@@ -97,14 +98,14 @@ class GigyaCMS
 				);
 
 				if ( ! empty( $valid ) ) {
-					$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID:' . $response->getString( "callId", "N/A" ) . ',  failed: ' . $response->getErrorMessage() . ' - ' . $response->getErrorMessage() );
+					$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID:' . $response->getString( "callId", "N/A" ) . ',  failed: ' . $response->getErrorMessage() . ' - ' . $response->getErrorMessage(), $uid );
 
 					return $err_code;
 				}
 			}
 		}
 
-		$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID:' . $response->getString( "callId", "N/A" ) . ', was successful.' );
+		$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID:' . $response->getString( "callId", "N/A" ) . ', was successful.', $uid );
 
 		return $this->jsonToArray( $response->getResponseText() );
 	}

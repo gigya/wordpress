@@ -8,11 +8,11 @@ function globalSettingsForm() {
 	$form   = array();
 
 	$form['api_key'] = array(
-			'type'  => 'text',
-			'label' => __( 'API Key' ),
-			'size' => 64,
-			'style' => 'font-family: monospace',
-			'value' => _gigParam( $values, 'api_key', '' )
+		'type'  => 'text',
+		'label' => __( 'API Key' ),
+		'size'  => 64,
+		'style' => 'font-family: monospace',
+		'value' => _gigParam( $values, 'api_key', '' )
 	);
 
 	$form['user_key'] = array(
@@ -29,7 +29,7 @@ function globalSettingsForm() {
 				'user_rsa'    => __( 'User key + RSA private key' ),
 			),
 			'value'   => _gigParam( $values, 'auth_mode', 'user_rsa' ),
-			'id' => 'auth-mode',
+			'id'      => 'auth-mode',
 		);
 
 		$form['api_secret']      = array(
@@ -92,10 +92,10 @@ function globalSettingsForm() {
 	);
 
 	$form['other_ds'] = array(
-		'type'    => 'text',
-		'class'   => 'other-data-center',
-		'value' => _gigParam( $values, 'other_ds', 'us1.gigya.com' ),
-		'depends_on' => ['data_center', 'other'],
+		'type'       => 'text',
+		'class'      => 'other-data-center',
+		'value'      => _gigParam( $values, 'other_ds', 'us1.gigya.com' ),
+		'depends_on' => [ 'data_center', 'other' ],
 	);
 
 	$form['enabledProviders'] = array(

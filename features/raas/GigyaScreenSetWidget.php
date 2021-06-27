@@ -58,7 +58,7 @@ class GigyaScreenSet_Widget extends WP_Widget {
 			$screen_set_setting = get_option( GIGYA__SETTINGS_SCREENSETS );
 			$custom_screen_sets = array();
 			if ( array_key_exists( 'custom_screen_sets', $screen_set_setting ) ) {
-				$this->logger->error( 'Screen-set widget error: The custom screen set table is empty, Add the screen to "custom screen set" at "Screen-Sets" setting page.' );
+				$this->logger->error( 'Screen-Set widget error: The custom screen-set table is empty, Add the screen to "custom screen set" at "Screen-Sets" setting page.' );
 				$custom_screen_sets = $screen_set_setting['custom_screen_sets'];
 			}
 			foreach ( $custom_screen_sets as $screen_set ) {
@@ -113,13 +113,13 @@ class GigyaScreenSet_Widget extends WP_Widget {
 					'class' => 'gigya-error-message-notice-div notice notice-error is-dismissible'
 				);
 
-				$select_error['error_message'] = __( 'Screen-set removed by administrator.' );
+				$select_error['error_message'] = __( 'Screen-Set removed by administrator.' );
 				$select_error['attrs']         = array( 'class' => 'gigya-error-message-notice-div' );
 
 				$select_attrs['class'] = 'gigya-wp-field-error';
 				array_unshift( $screen_sets_list, array(
 						'value' => $selected_screen_set_id,
-						'attrs' => array( 'class' => 'invalid-gigya-screen-set-option', 'selected' => 'true' )
+						'attrs' => array( 'class' => 'invalid-gigya-screen-Set-option', 'selected' => 'true' )
 					)
 				);
 				echo _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $form_error );

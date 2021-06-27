@@ -10,15 +10,16 @@ class GigyaLogger {
 	protected $wp_user_username;
 	protected $wp_user_id;
 	protected $gigya_uid;
+	protected $default_user_name;
 
 
 	public function __construct() {
-
-		$wp_user                = wp_get_current_user();
-		$this->wp_user_id       = $wp_user->ID;
-		$this->wp_user_username = ( $this->wp_user_id == 0 ) ? 'unknown user' : $wp_user->nickname;
-		$this->gigya_uid        = get_user_meta( get_current_user_id(), 'gigya_uid', true );
-		$this->gigya_uid        = ( $this->gigya_uid !== false ) ? $this->gigya_uid : 'unknown user';
+		$this->default_user_name = 'unknown_user';
+		$wp_user                 = wp_get_current_user();
+		$this->wp_user_id        = $wp_user->ID;
+		$this->wp_user_username  = ( $this->wp_user_id == 0 ) ? $this->default_user_name : $wp_user->display_name;
+		$this->gigya_uid         = get_user_meta( get_current_user_id(), 'gigya_uid', true );
+		$this->gigya_uid         = ( $this->gigya_uid !== false ) ? $this->gigya_uid : $this->default_user_name;
 
 
 	}
@@ -41,7 +42,7 @@ class GigyaLogger {
 			return;
 		}
 
-		$this->getUserData( $uid );
+		$this->updateUserData( $uid );
 
 		$file = $this->getGigyaLogFilePointer();
 		if ( $file === false ) {
@@ -121,7 +122,7 @@ class GigyaLogger {
 
 	}
 
-	private function getUserData( $uid ) {
+	private function updateUserData( $uid ) {
 		if ( empty( $uid ) ) {
 			return;
 		}
@@ -130,21 +131,13 @@ class GigyaLogger {
 			'meta_value' => $uid
 		) );
 		if ( ! empty( $wp_users ) ) {
-			$wp_user = $wp_users[0];
+			$wp_user                = $wp_users[0];
+			$this->wp_user_username = $wp_user->display_name;
+			$this->wp_user_id       = $wp_user->ID;
+			$this->gigya_uid        = $uid;
 
-			if ( ! array_key_exists( 'nickname', $wp_user ) ) {
-				$this->wp_user_username = get_user_by( 'id', $wp_user['id'] );
-				if ( $this->wp_user_username === false ) {
-					$this->wp_user_username = 'unknown user';
-				} else {
-					$this->wp_user_username = $this->wp_user_username->nickname;
-				}
-			} else {
-				$this->wp_user_username = $wp_user['nickname'];
-			};
-			$this->gigya_uid = $uid;
 		} else {
-			if ( $this->gigya_uid === 'unknown user' and ! empty( $uid ) ) {
+			if ( $this->gigya_uid === $this->default_user_name and ! empty( $uid ) ) {
 				$this->gigya_uid = $uid;
 			}
 

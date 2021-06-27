@@ -15,7 +15,8 @@
 		 */
 		/**
 		 * @class    gigyaParams
-		 * @property    {String}    ajaxurl
+		 * @property    {String}  ajaxurl
+		 * @property {string} logLevel
 		 */
 		/**
 		 * @class    gigyaRaasParams
@@ -116,19 +117,24 @@
 		 * @param eventObj.errorMessage
 		 */
 		var onScreenSetErrorHandler = function (eventObj) {
+			if (gigyaParams.logLevel === 'debug') {
+				console.log('Error when loading SAP Customer Data Cloud screenset: ');
+				console.log(eventObj.errorCode + " – " + eventObj.errorMessage);
+			}
 			var screen = eventObj.response.info.screen || 'unknown';
-			var jsonData = 'Error returned by screen-set: screen ' + screen + ': ' + eventObj.errorCode + " – " + eventObj.errorMessage;
-			console.log('Error when loading SAP Customer Data Cloud screenset: ');
-			console.log(eventObj.errorCode + " – " + eventObj.errorMessage);
 			var options = {
 				url: gigyaParams.ajaxurl,
 				type: 'POST',
 				dataType: 'json',
 				data: {
-					eventData: eventObj,
+					eventData: {
+						"screen": screen,
+						"errorCode": eventObj.errorCode,
+						"errorMessage": eventObj.errorMessage
+					},
 					action: 'screen_set_error'
 				}
-			}
+			};
 			$.ajax(options);
 		};
 
