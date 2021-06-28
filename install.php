@@ -96,7 +96,7 @@ class GigyaInstall {
 		$this->setVar( $this->global_options, 'providers', $old['providers'] );
 		$this->setVar( $this->global_options, 'lang', $old['lang'] );
 		$this->setVar( $this->global_options, 'google_analytics', $old['google_analytics'] );
-		$this->setVar( $this->global_options, 'debug', $old['gigya_debug'] );
+		$this->setVar( $this->global_options, 'log_level', ($old['gigya_debug']) ? 'debug' : 'info' );
 
 		$this->setJson( $this->global_options, 'advanced', $old['global_params'] );
 
