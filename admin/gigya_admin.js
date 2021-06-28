@@ -315,7 +315,8 @@
 				console.log(errorThrown);
 			});
 		};
-		$(document).on('click', '.gigya-debug-log', function () {
+		$(document).on('click', '.gigya-debug-log', function (e) {
+			e.preventDefault();
 			debugLog();
 		});
 
