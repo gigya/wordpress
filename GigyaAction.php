@@ -133,7 +133,6 @@ class GigyaAction {
 			'lang'                        => _gigParam( $this->global_options, 'lang', 'en' ),
 			'sessionExpiration'           => $session_expirations['sessionExpiration'],
 			'rememberSessionExpiration'   => $session_expirations['rememberSessionExpiration'],
-			'logLevel'                    => $this->global_options['log_level'],
 		);
 
 		/* Plugins shortcode activation switches */
@@ -168,6 +167,7 @@ class GigyaAction {
 
 		/* Load params to be available to client-side script */
 		wp_localize_script( 'gigya_js', 'gigyaParams', $params );
+		wp_localize_script( 'gigya_js', 'gigyaGlobalSettings', array( 'logLevel' => $this->global_options['log_level'] ) );
 
 		/* Checking that we have an API key and Gigya's plugin is turned on */
 		$api_key = GIGYA__API_KEY;

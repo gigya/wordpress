@@ -55,12 +55,15 @@ class GigyaScreenSet_Widget extends WP_Widget {
 
 			echo '</div>';
 
-			$screen_set_setting = get_option( GIGYA__SETTINGS_SCREENSETS );
-			$custom_screen_sets = array();
-			if ( array_key_exists( 'custom_screen_sets', $screen_set_setting ) ) {
-				$this->logger->error( 'Screen-Set widget error: The custom screen-set table is empty, Add the screen to "custom screen set" at "Screen-Sets" setting page.' );
-				$custom_screen_sets = $screen_set_setting['custom_screen_sets'];
+			$screen_set_settings = get_option( GIGYA__SETTINGS_SCREENSETS );
+			$custom_screen_sets  = array();
+			if ( array_key_exists( 'custom_screen_sets', $screen_set_settings ) ) {
+				$custom_screen_sets = $screen_set_settings['custom_screen_sets'];
 			}
+			if ( empty( $custom_screen_sets ) ) {
+				$this->logger->debug( 'Screen-set widget error: The custom screen-set table is empty, please add the custom screen-set used in widget ' . $args['widget_id'] . ' to the "Screen-Sets" settings page. ' );
+			}
+
 			foreach ( $custom_screen_sets as $screen_set ) {
 				if ( ( ! empty( $screen_set['id'] ) ) && ( $screen_set['id'] == $instance['screenset_id'] ) ) {
 					$instance['screenset_id']        = $screen_set['desktop'];
@@ -83,9 +86,13 @@ class GigyaScreenSet_Widget extends WP_Widget {
 		$select_error                  = array();
 		$screen_sets_list              = array();
 		$selected_screen_set_id        = esc_attr( _gigParam( $instance, 'screenset_id', '' ) );
-		$custom_screen_sets            = get_option( GIGYA__SETTINGS_SCREENSETS )['custom_screen_sets'];
+		$screen_set_option             = get_option( GIGYA__SETTINGS_SCREENSETS );
 		$select_attrs['data-required'] = 'empty-selection';
-
+		if ( array_key_exists( 'custom_screen_sets', $screen_set_option ) ) {
+			$custom_screen_sets = $screen_set_option['custom_screen_sets'];
+		} else {
+			$custom_screen_sets = '';
+		}
 		if ( ! empty( $custom_screen_sets ) ) {
 			foreach ( $custom_screen_sets as $screen_set ) {
 				if ( empty( $screen_set['desktop'] ) ) {
@@ -122,6 +129,7 @@ class GigyaScreenSet_Widget extends WP_Widget {
 						'attrs' => array( 'class' => 'invalid-gigya-screen-Set-option', 'selected' => 'true' )
 					)
 				);
+				$this->logger->error( $form_error['error_message'] );
 				echo _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $form_error );
 			}
 		} else {
@@ -182,7 +190,7 @@ class GigyaScreenSet_Widget extends WP_Widget {
 	 */
 	public function update( $input_values, $db_values ) {
 
-		$valid  = true;
+		$valid = true;
 
 		$instance = array();
 		if ( ! empty( $input_values ) and ! empty( $db_values ) ) {

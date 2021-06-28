@@ -16,7 +16,6 @@
 		/**
 		 * @class    gigyaParams
 		 * @property    {String}  ajaxurl
-		 * @property {string} logLevel
 		 */
 		/**
 		 * @class    gigyaRaasParams
@@ -33,6 +32,11 @@
 		 * @property    raasRegisterScreen
 		 * @property    raasWebScreen
 		 * @property    raasLang
+		 */
+		/**
+		 * @class gigyaGlobalSettings
+		 * @property {string} logLevel
+
 		 */
 
 		var raasLogout = function () {
@@ -117,7 +121,7 @@
 		 * @param eventObj.errorMessage
 		 */
 		var onScreenSetErrorHandler = function (eventObj) {
-			if (gigyaParams.logLevel === 'debug') {
+			if (gigyaGlobalSettings.logLevel === 'debug') {
 				console.log('Error when loading SAP Customer Data Cloud screenset: ');
 				console.log(eventObj.errorCode + " – " + eventObj.errorMessage);
 			}
