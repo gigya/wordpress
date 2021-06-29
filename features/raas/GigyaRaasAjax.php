@@ -134,7 +134,7 @@ class GigyaRaasAjax {
 		}
 		else
 		{
-			$this->logger->debug( "Login failed: The user was found at SAP CDC but not in WordPress, now SAP CDC will try to register the user to WordPress.", $data['UID'] );
+			$this->logger->debug( "The user is registered at SAP CDC, and will now be registered to WordPress.", $data['UID'] );
 			/* Register new user */
 			$this->register();
 		}

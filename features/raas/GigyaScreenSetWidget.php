@@ -86,10 +86,10 @@ class GigyaScreenSet_Widget extends WP_Widget {
 		$select_error                  = array();
 		$screen_sets_list              = array();
 		$selected_screen_set_id        = esc_attr( _gigParam( $instance, 'screenset_id', '' ) );
-		$screen_set_option             = get_option( GIGYA__SETTINGS_SCREENSETS );
+		$screen_set_settings           = get_option( GIGYA__SETTINGS_SCREENSETS );
 		$select_attrs['data-required'] = 'empty-selection';
-		if ( array_key_exists( 'custom_screen_sets', $screen_set_option ) ) {
-			$custom_screen_sets = $screen_set_option['custom_screen_sets'];
+		if ( array_key_exists( 'custom_screen_sets', $screen_set_settings ) ) {
+			$custom_screen_sets = $screen_set_settings['custom_screen_sets'];
 		} else {
 			$custom_screen_sets = '';
 		}

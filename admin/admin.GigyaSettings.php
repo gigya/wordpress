@@ -218,7 +218,7 @@ class GigyaSettings {
 
 						/* Prevent updating values */
 						static::_keepOldApiValues();
-						$logger->error( 'Error saving Global Settings:' . 'Can\'t validate the admin user: ' . $res->getErrorCode() . ' - ' . $res->getErrorMessage() . ( ! empty( $res->getData() ) ? ( ', call ID: ' . $res->getString( "callId", "N/A" ) ) : '' ) );
+						$logger->error( 'Error saving Global Settings: Can\'t validate the admin user: ' . $res->getErrorCode() . ' - ' . $res->getErrorMessage() . ( ! empty( $res->getData() ) ? ( ', call ID: ' . $res->getString( "callId", "N/A" ) ) : '' ) );
 						$has_error = true;
 					}
 				} else {
