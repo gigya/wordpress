@@ -885,12 +885,7 @@ class GigyaAction {
 				update_option( 'gigya_offline_sync_params', $job_config );
 
 				$this->logger->info( 'Gigya offline sync completed. Users processed: ' . $processed_users . ( ( $users_not_found )
-						? '. Users not found: ' . $users_not_found . PHP_EOL . implode( ',' . PHP_EOL, $uids_not_found )
-						: '' ),
-					array(
-						'id'       => '-1',
-						'nickname' => 'Offline Sync',
-					) );
+						? '. Users not found: ' . $users_not_found . PHP_EOL . implode( ',' . PHP_EOL, $uids_not_found ) : '' ), 'Offline Sync' );
 
 				$status = ( $users_not_found > 0 ) ? 'completed with errors' : 'succeeded';
 				$helper->sendCronEmail( 'offline sync', $status, $email_on_success, $processed_users, $users_not_found );
