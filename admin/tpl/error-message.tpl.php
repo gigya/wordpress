@@ -8,8 +8,8 @@
 
 <div
 	<?php $button_exists = false;
-	if ( isset( $attrs ) ) {
-		foreach ( $attrs as $attr => $parent_attr_value ) {
+	if ( isset( $var['attrs'] ) ) {
+		foreach ( $var['attrs'] as $attr => $parent_attr_value ) {
 			echo $attr . '="' . $parent_attr_value . '"' . PHP_EOL;
 			if ( $attr == 'class' and strpos($parent_attr_value,'is-dismissible' ) )
 			{
@@ -17,18 +17,18 @@
 			}
 		}
 	}; ?>>
-	<p <?php if ( isset( $p_attrs ) ) {
-		foreach ( $p_attrs as $attr => $parent_attr_value ) {
+	<p <?php if ( isset( $var['p_attrs'] ) ) {
+		foreach ( $var['p_attrs'] as $attr => $parent_attr_value ) {
 			echo $attr . '="' . $parent_attr_value . '"' . PHP_EOL;
 		}
 	}; ?>>
-		<?php if ( is_array( $error_message ) ): ?>
-			<?php foreach ( $error_message as $key => $error_line ): ?>
+		<?php if ( is_array( $var['error_message'] ) ): ?>
+			<?php foreach ( $var['error_message'] as $key => $error_line ): ?>
 				<strong><?php echo $error_line ?> </strong><br>
 			<?php endforeach ?>
 		<?php else: ?>
 			<?php
-			echo '<strong>' . $error_message . '</strong>'; ?>
+			echo '<strong>' . $var['error_message'] . '</strong>'; ?>
 		<?php endif ?>
 	</p>
 	<?php

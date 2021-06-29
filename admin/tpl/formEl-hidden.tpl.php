@@ -5,7 +5,8 @@
  */
 ?>
 
-<input class="gigya-form-field" type="hidden" id="<?php echo $id ?>" name="<?php echo $name; ?>" value="<?php echo $value; ?>">
-<?php if ( !empty($msg) ) { ?>
-    <p class="<?php echo $class ?>"><?php echo $msg_txt ?></p>
+<input class="gigya-form-field" type="hidden" id="<?php echo $var['id'] ?>" name="<?php echo $var['name']; ?>"
+	   value="<?php echo $var['value']; ?>">
+<?php if ( ! empty( $var['msg'] ) ) { ?>
+	<p class="<?php echo $var['class'] ?>"><?php echo $var['msg_txt'] ?></p>
 <?php } ?>

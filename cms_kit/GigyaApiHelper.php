@@ -33,8 +33,13 @@ class GigyaApiHelper
 	 * @param string $authMode Authentication method: user_secret or user_rsa
 	 */
 	public function __construct( $apiKey, $userKey, $authKey, $dataCenter, $authMode = 'user_secret' ) {
+
 		$this->defConfigFilePath = '..' . DIRECTORY_SEPARATOR . 'configuration/DefaultConfiguration.json';
-		$defaultConf             = @file_get_contents( $this->defConfigFilePath );
+		$defaultConf             = false;
+
+		if ( file_exists( $this->defConfigFilePath ) and is_readable( $this->defConfigFilePath ) ) {
+			$defaultConf = file_get_contents( $this->defConfigFilePath );
+		}
 		if ( ! $defaultConf ) {
 			$confArray = array();
 		} else {

@@ -4,9 +4,9 @@
  * Render with @see _gigya_render_tpl().
  */
 ?>
-<tr class="row <?php echo ( isset( $class ) ) ? $class : ''; ?>">
+<tr class="row <?php echo ( isset( $var['class'] ) ) ? $var['class'] : ''; ?>">
 	<?php
-	foreach ( $fields as $field ):
+	foreach ( $var['fields'] as $field ):
 		$size = ( isset( $field['size'] ) ) ? (string) $field['size'] : '60';
 		$subclass = ( isset( $field['subclass'] ) ) ? $field['subclass'] : 'input-xlarge';
 		$id = ( isset( $field['id'] ) ) ? $field['id'] : preg_replace( '/\[|\]/', '-', $field['name'] );
@@ -80,22 +80,22 @@
 				<?php if ( isset( $field['error'] ) ) :
 					echo $field['error'];
 				endif ?>
-				<?php if ( isset( $desc ) ): ?>
-					<small><?php echo $desc; ?></small>
+				<?php if ( isset( $var['desc'] ) ): ?>
+					<small><?php echo $var['desc']; ?></small>
 				<?php endif; ?>
 			<?php endif; ?>
 			<?php
-			if ( isset( $markup ) ):echo $markup;endif; ?>
+			if ( isset( $var['markup'] ) ):echo $var['markup'];endif; ?>
 		</td>
 	<?php
 	endforeach;
 	?>
 	<td>
 		&nbsp;<br/><a
-				class="button gigya-remove-dynamic-field-line button-primary dashicons-before dashicons-trash" <?php echo ( isset( $disabled ) ) ? 'disabled' : ''; ?>></a>
+				class="button gigya-remove-dynamic-field-line button-primary dashicons-before dashicons-trash" <?php echo ( isset( $var['disabled'] ) ) ? 'disabled' : ''; ?>></a>
 	</td>
 
-	<?php if ( ! empty( $desc ) ): ?>
-		<small><?php echo $desc; ?></small>
+	<?php if ( ! empty( $var['desc'] ) ): ?>
+		<small><?php echo $var['desc']; ?></small>
 	<?php endif; ?>
 </tr>
