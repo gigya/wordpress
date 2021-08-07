@@ -7,6 +7,8 @@ use Gigya\PHP\GSObject;
 use Gigya\PHP\GSRequest;
 use Gigya\PHP\GSResponse;
 use Gigya\PHP\GSKeyNotFoundException;
+use Gigya\WordPress\GigyaLogger;
+use http\Params;
 
 class GigyaAuthRequest extends GSRequest
 {
@@ -37,18 +39,24 @@ class GigyaAuthRequest extends GSRequest
 	 * @throws GSApiException
 	 * @throws GSKeyNotFoundException
 	 */
-	public function send($timeout = null) {
-		$res = parent::send($timeout);
+	public function send( $timeout = null ) {
+		$logger = new GigyaLogger();
+		$uid    = $this->getParams()->getString( 'UID', '' );
 
-		if ($res->getErrorCode() == 0)
-		{
+		$res = parent::send( $timeout );
+
+		if ( $res->getErrorCode() == 0 ) {
+			$logger->debug( 'SAP CDC API called. Endpoint: ' . $this->method . ', call ID:' . $res->getString( "callId", "N/A" ) . ', was successful.', $uid );
+
 			return $res;
 		}
 
-		if (!empty($res->getData())) { /* Actual error response from Gigya */
-			throw new GSApiException($res->getErrorMessage(), $res->getErrorCode(), $res->getResponseText(), $res->getString("callId", "N/A"));
+		if ( ! empty( $res->getData() ) ) { /* Actual error response from Gigya */
+			$logger->debug( 'SAP CDC API called. Endpoint: ' . $this->method . ', call ID:' . $res->getString( "callId", "N/A" ) . ',  failed: ' . $res->getErrorMessage() . ' - ' . $res->getErrorMessage(), $uid );
+			throw new GSApiException( $res->getErrorMessage(), $res->getErrorCode(), $res->getResponseText(), $res->getString( "callId", "N/A" ) );
 		} else { /* Hard-coded error in PHP SDK, or another failure */
-			throw new GSException($res->getErrorMessage(), $res->getErrorCode());
+			$logger->debug( 'SAP CDC API called. Endpoint: ' . $this->method . ',  failed: ' . $res->getErrorMessage() . ' - ' . $res->getErrorMessage(), $uid );
+			throw new GSException( $res->getErrorMessage(), $res->getErrorCode() );
 		}
 	}
 }

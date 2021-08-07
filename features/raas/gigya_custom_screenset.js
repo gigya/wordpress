@@ -1,5 +1,6 @@
 (function ($) {
 	$(function () {
+
 		var processFieldMapping = function() {
 			var options = {
 				url: gigyaParams.ajaxurl,
@@ -39,6 +40,7 @@
 					var screenSetParams = {
 						screenSet: gigyaScreenSetParams.screenset_id,
 						mobileScreenSet: gigyaScreenSetParams.mobile_screenset_id,
+						onerror: onScreenSetErrorHandler,
 						include: 'id_token'
 					};
 
@@ -59,5 +61,22 @@
 				}
 			}
 		});
+
+		var onScreenSetErrorHandler = function (eventObj) {
+			var screen = eventObj.response.info.screen || 'unknown';
+			var errorMessage = 'Error returned by screen-set: screen ' + screen + ': ' + eventObj.errorCode + " – " + eventObj.errorMessage;
+			console.log('Error when loading SAP Customer Data Cloud screenset: ');
+			console.log(eventObj.errorCode + " – " + eventObj.errorMessage);
+			var options = {
+				url: gigyaParams.ajaxurl,
+				type: 'POST',
+				dataType: 'json',
+				data: {
+					data: errorMessage,
+					action: 'screen_set_error'
+				}
+			};
+			$.ajax(options);
+		};
 	});
 })(jQuery);

@@ -8,6 +8,7 @@ use Gigya\PHP\GSKeyNotFoundException;
 use Gigya\PHP\GSRequest;
 use Gigya\PHP\GSResponse;
 use Gigya\PHP\SigUtils;
+use Gigya\WordPress\GigyaLogger;
 use stdClass;
 use WP_Error;
 
@@ -21,6 +22,7 @@ class GigyaCMS
 	protected $api_secret;
 	protected $rsa_private_key;
 	protected $auth_mode;
+	protected $logger;
 
 	/**
 	 * Constructs a GigyaApi object.
@@ -29,8 +31,9 @@ class GigyaCMS
 		$this->api_key         = GIGYA__API_KEY;
 		$this->user_key        = GIGYA__USER_KEY ?: ''; /* For backwards compatibility--in the past the user key had not been required */
 		$this->api_secret      = GigyaApiHelper::decrypt( GIGYA__API_SECRET, SECURE_AUTH_KEY );
-		$this->rsa_private_key = (!empty(GIGYA__PRIVATE_KEY)) ? GigyaApiHelper::decrypt( GIGYA__PRIVATE_KEY, SECURE_AUTH_KEY ) : '';
+		$this->rsa_private_key = ( ! empty( GIGYA__PRIVATE_KEY ) ) ? GigyaApiHelper::decrypt( GIGYA__PRIVATE_KEY, SECURE_AUTH_KEY ) : '';
 		$this->auth_mode       = GIGYA__AUTH_MODE;
+		$this->logger          = new GigyaLogger();
 	}
 
 	/**
@@ -64,6 +67,7 @@ class GigyaCMS
 
 		// To be define on CMS code (or not).
 		$api_domain = GIGYA__API_DOMAIN;
+		$uid        = $request->getParams()->getString( 'UID', '' );
 
 		// Set the request path.
 		$domain = ! empty( $api_domain ) ? $api_domain : 'us1.gigya.com';
@@ -72,17 +76,17 @@ class GigyaCMS
 		// Make the request.
 		ini_set( 'arg_separator.output', '&' );
 		$response = $request->send();
+
 		ini_restore( 'arg_separator.output' );
 
 		// Check for errors
 		$err_code = $response->getErrorCode();
 		if ( $err_code != 0 ) {
-			if ( function_exists( '_gigya_error_log' ) ) {
-				$log = explode( "\r\n", $response->getLog() );
-				_gigya_error_log( $log );
+			$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID:' . $response->getString( "callId", "N/A" ) . ',  failed: ' . $response->getErrorMessage() . ' - ' . $response->getErrorMessage(), $uid );
 
-				return new WP_Error( $err_code, $response->getErrorMessage() );
-			}
+
+			return new WP_Error( $err_code, $response->getErrorMessage() );
+
 		} else {
 			if ( ! empty( $user_info ) ) {
 				/* Check validation in the response */
@@ -94,10 +98,14 @@ class GigyaCMS
 				);
 
 				if ( ! empty( $valid ) ) {
+					$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID:' . $response->getString( "callId", "N/A" ) . ',  failed: ' . $response->getErrorMessage() . ' - ' . $response->getErrorMessage(), $uid );
+
 					return $err_code;
 				}
 			}
 		}
+
+		$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID:' . $response->getString( "callId", "N/A" ) . ', was successful.', $uid );
 
 		return $this->jsonToArray( $response->getResponseText() );
 	}
@@ -113,11 +121,11 @@ class GigyaCMS
 		try {
 			$res = $gigya_api_helper->sendGetScreenSetsCall();
 		} catch ( GSApiException $e ) {
-			error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
+			$this->logger->error( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
 
 			return false;
 		} catch ( GSException $e ) {
-			error_log( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getMessage() );
+			$this->logger->error( 'Error fetching SAP Customer Data Cloud Screen-Sets: ' . $e->getMessage() );
 
 			return false;
 		}
@@ -377,8 +385,7 @@ class GigyaCMS
 		try {
 			setcookie( $response["cookieName"], $response["cookieValue"], 0, $response["cookiePath"], $response["cookieDomain"] );
 		} catch ( Exception $e ) {
-			error_log( sprintf( 'error string SAP CDC cookie' ) );
-			error_log( sprintf( 'error message : %s', $e->getMessage() ) );
+			$this->logger->error( 'Login to SAP CDC failed: error SAP CDC cookie message: ' . $e->getMessage(), $uid );
 		}
 
 		return true;

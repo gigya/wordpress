@@ -8,6 +8,7 @@ use Gigya\PHP\GSResponse;
 use \Exception;
 use Gigya\PHP\JWTUtils;
 use Gigya\PHP\SigUtils;
+use Gigya\WordPress\GigyaLogger;
 use InvalidArgumentException;
 use stdClass;
 
@@ -20,6 +21,7 @@ class GigyaApiHelper
 	private $dataCenter;
 	private $defConfigFilePath;
 	private $env;
+	protected $logger;
 
 	const IV_SIZE = 16;
 
@@ -52,6 +54,7 @@ class GigyaApiHelper
 		$this->dataCenter = ! empty( $dataCenter ) ? $dataCenter : ( $confArray['dataCenter'] ?? 'us1.gigya.com' );
 
 		$this->env = '{"cms_name":"WordPress","cms_version":"WordPress_' . get_bloginfo( 'version' ) . '","gigya_version":"Gigya_module_' . GIGYA__VERSION . '","php_version":"' . phpversion() . '"}'; /* WordPress only */
+		$this->logger = new GigyaLogger();
 	}
 
 	/**
@@ -65,9 +68,10 @@ class GigyaApiHelper
 	 * @throws GSKeyNotFoundException
 	 */
 	public function sendApiCall( $method, $params ) {
+
 		$params['environment'] = $this->env;
 
-		if ($this->authMode === 'user_rsa') {
+		if ( $this->authMode === 'user_rsa' ) {
 			$req = GSFactory::createGSRequestPrivateKey( $this->apiKey, $this->userKey, $this->authKey, $method,
 				GSFactory::createGSObjectFromArray( $params ), $this->dataCenter );
 		} else {
@@ -75,7 +79,8 @@ class GigyaApiHelper
 				GSFactory::createGSObjectFromArray( $params ), $this->dataCenter );
 		}
 
-		return $req->send();
+		$response = $req->send();
+		return $response;
 	}
 
 	/**
@@ -183,10 +188,8 @@ class GigyaApiHelper
 		try
 		{
 			$res = $this->sendApiCall("accounts.getAccountInfo", $params);
-		}
-		catch (GSApiException $e)
-		{
-			error_log( 'Error fetching SAP Customer Data Cloud account: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
+		} catch ( GSApiException $e ) {
+			$this->logger->error( 'Error fetching SAP Customer Data Cloud account: ' . $e->getErrorCode() . ': ' . $e->getMessage() . '. Call ID: ' . $e->getCallId(), $uid );
 			return false;
 		}
 
@@ -251,7 +254,7 @@ class GigyaApiHelper
 			{
 				return false;
 			}
-			error_log( $e->getMessage() );
+			$this->logger->error( 'Failed to get global configuration from SAP CDC: ' . $e->getMessage()  );
 		}
 
 		return false;

@@ -301,20 +301,22 @@
 			var req = $.ajax(options);
 
 			req.done(function (res) {
-				if (res.success) {
+				var lastChar = res[res.length - 1];
+				if (lastChar === '0')
+					res = res.slice(0, -1);
+				if (res) {
 					var pom = document.createElement('a');
-					pom.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(res.data, null, 4)));
-					pom.setAttribute('download', 'gigya-log.json');
+					pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(res));
+					pom.setAttribute('download', 'sap_cdc.log');
 					pom.click();
 				}
 			});
-
 			req.fail(function (jqXHR, textStatus, errorThrown) {
 				console.log(errorThrown);
 			});
 		};
-
-		$(document).on('click', '.gigya-debug-log', function () {
+		$(document).on('click', '.gigya-debug-log', function (e) {
+			e.preventDefault();
 			debugLog();
 		});
 
@@ -456,6 +458,7 @@
 		});
 
 		// --------------------------------------------------------------------
+
 		/*
 		* Field-Mapping Settings page
 		*/
@@ -598,7 +601,6 @@
 						handleGigyaFormElementDependency(depender_obj, dependee_obj, gigya_depends_on_json.slice(1));
 					});
 				}
-
 			});
 		};
 		handleGigyaFormDependency();

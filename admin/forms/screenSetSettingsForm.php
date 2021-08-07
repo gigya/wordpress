@@ -1,6 +1,8 @@
 <?php
 
 use Gigya\CMSKit\GigyaCMS;
+use Gigya\WordPress\GigyaLogger;
+
 
 function buildCustomScreenSetRow( $screenSetList, $values = array(), $more_options = array(), $more_field_options = array() ) {
 	$more_field_options   = array_values( $more_field_options );
@@ -111,6 +113,7 @@ function buildExistingCustomScreenSetArray( $table_name, $screen_set_list ) {
  * Form builder for 'Custom Screen-Set Settings' configuration page.
  */
 function screenSetSettingsForm() {
+	$logger = new GigyaLogger();
 	$values = get_option( GIGYA__SETTINGS_SCREENSETS );
 	$form   = [];
 
@@ -128,7 +131,7 @@ page.</span></small>',
 	];
 
 	$form['raas_screens'] = [
-		'markup' => '<h4>' . __( 'Login/Registration Screen Sets' ) . '</h4>',
+		'markup' => '<h4>' . __( 'Login/Registration Screen-Sets' ) . '</h4>',
 	];
 
 	$form['raasWebScreen'] = [
@@ -201,7 +204,8 @@ page.</span></small>',
 		'markup' => '<h4>Custom Screen-Sets</h4><small>' . __( 'Configure custom screen-sets that will be made available as widgets.' ) . '</small>',
 	];
 
-	$gigya_cms      = new GigyaCMS();
+	$gigya_cms = new GigyaCMS();
+
 	$screenset_list = $gigya_cms->getScreenSetsIdList();
 
 	if ( $screenset_list ) {
@@ -212,7 +216,7 @@ page.</span></small>',
 				if ( ( ( ! $desktop_screen_exist ) || ( ! $mobile_screen_exist ) ) && ! empty( ( $value['desktop'] ) && ! empty( $value['mobile'] ) ) ) {
 
 					$compare_error = array(
-						'error_message' => __( 'One or more of the screen-sets below does not exist at SAP Customer Data Cloud.' ),
+						'error_message' => __( 'One or more of the screen-Sets below does not exist at SAP Customer Data Cloud.' ),
 						'attrs'         => array( 'class' => 'notice notice-error is-dismissible' )
 					);
 					echo _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $compare_error );
@@ -236,14 +240,11 @@ page.</span></small>',
 			'attrs'         => array( 'class' => 'notice notice-error is-dismissible' )
 		);
 
-		if ( ! empty( get_option( GIGYA__SETTINGS_GLOBAL )['debug'] ) ) {
-			if ( $screenset_list !== false ) {
-				error_log( 'The current site has no screen sets defined. Either the screen-sets are at the parent site level, or they have not been initialized. Check Screen-Set settings in the SAP CDC console.' );
-			}
-			$connection_error['error_message'] = array( $first_line, $second_line );
-		} else {
-			$connection_error['error_message'] = array( $first_line );
-		};
+		if ( $screenset_list !== false ) {
+			$logger->error( 'The current site has no screen-sets defined. Either the screen-sets are at the parent site level, or they have not been initialized. Check Screen-Set settings in the SAP CDC console.' );
+		}
+
+		$connection_error['error_message'] = array( $first_line, $second_line );
 
 		echo _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $connection_error );
 	}
