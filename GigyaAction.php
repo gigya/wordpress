@@ -104,13 +104,16 @@ class GigyaAction {
 		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaUserFactory.php';
 		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaProfile.php';
 		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaUser.php';
-		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaApiRequest.php';
-		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaAuthRequest.php';
-		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GSApiException.php';
-		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GSFactory.php';
 		require_once GIGYA__PLUGIN_DIR . 'features/GigyaLogger.php';
 
-		GSResponse::init();
+		if ( class_exists( 'Gigya\\PHP\\GSRequest' ) ) {
+			require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaApiRequest.php';
+			require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaAuthRequest.php';
+			require_once GIGYA__PLUGIN_DIR . 'cms_kit/GSApiException.php';
+			require_once GIGYA__PLUGIN_DIR . 'cms_kit/GSFactory.php';
+
+			GSResponse::init();
+		}
 
 		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaApiHelper.php';
 		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaCMS.php';
@@ -167,7 +170,7 @@ class GigyaAction {
 
 		/* Load params to be available to client-side script */
 		wp_localize_script( 'gigya_js', 'gigyaParams', $params );
-		wp_localize_script( 'gigya_js', 'gigyaGlobalSettings', array( 'logLevel' => $this->global_options['log_level'] ) );
+		wp_localize_script( 'gigya_js', 'gigyaGlobalSettings', [ 'logLevel' => GIGYA__LOG_LEVEL ] );
 
 		/* Checking that we have an API key and Gigya's plugin is turned on */
 		$api_key = GIGYA__API_KEY;

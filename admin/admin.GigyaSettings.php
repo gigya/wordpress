@@ -81,13 +81,14 @@ class GigyaSettings {
 
 			// Register the sub-menus Gigya setting pages.
 			foreach ( $this->getSections() as $section ) {
-
 				require_once GIGYA__PLUGIN_DIR . 'admin/forms/' . $section['func'] . '.php';
-				add_submenu_page( 'gigya_global_settings', __( $section['title'], $section['title'] ), __( $section['title'], $section['title'] ), GIGYA__PERMISSION_LEVEL, $section['slug'], array(
-					$this,
-					'adminPage'
-				) );
-
+				add_submenu_page( 'gigya_global_settings',
+					__( $section['title'], $section['title'] ),
+					__( $section['title'], $section['title'] ),
+					GIGYA__PERMISSION_LEVEL, $section['slug'], [
+						$this,
+						'adminPage',
+					] );
 			}
 		} elseif ( current_user_can( CUSTOM_GIGYA_EDIT ) ) {
 			// Register the main Gigya setting route page.
@@ -100,11 +101,14 @@ class GigyaSettings {
 			foreach ( $this->getSections() as $section ) {
 
 				require_once GIGYA__PLUGIN_DIR . 'admin/forms/' . $section['func'] . '.php';
-				add_submenu_page( 'gigya_global_settings', __( $section['title'], $section['title'] ), __( $section['title'], $section['title'] ), CUSTOM_GIGYA_EDIT, $section['slug'], array(
-					$this,
-					'adminPage'
-				) );
-
+				add_submenu_page( 'gigya_global_settings',
+					__( $section['title'], $section['title'] ),
+					__( $section['title'], $section['title'] ),
+					CUSTOM_GIGYA_EDIT,
+					$section['slug'], [
+						$this,
+						'adminPage',
+					] );
 			}
 		}
 	}
@@ -156,10 +160,16 @@ class GigyaSettings {
 		$page   = $_GET['page'];
 		$render = '';
 
+		$are_dependencies_installed = class_exists('Gigya\\PHP\\GSRequest');
+		$dependencies_missing_message = __('Fatal error: SAP Customer Data Cloud PHP SDK has not been installed. The plugin will not work. Please install Composer dependencies before proceeding.');
+
 		echo _gigya_render_tpl( 'admin/tpl/adminPage-wrapper.tpl.php', array(
 			'sections' => self::getSections(),
 			'page'     => $page,
 		) );
+		if (!$are_dependencies_installed) {
+			add_settings_error($page, 'dependencies-not-installed-error', $dependencies_missing_message, 'error');
+		}
 		settings_errors();
 
 		echo '<form class="gigya-settings" action="options.php" method="post">' . PHP_EOL;
@@ -168,8 +178,13 @@ class GigyaSettings {
 		wp_nonce_field( 'update-options', 'update_options_nonce' );
 		wp_nonce_field( 'wp_rest', 'wp_rest_nonce' );
 		settings_fields( $page . '-group' );
-		do_settings_sections( $page );
-		submit_button();
+
+		if ($are_dependencies_installed) {
+			do_settings_sections( $page );
+			submit_button();
+		} else {
+			echo '<h4>' . $dependencies_missing_message . '</h4>';
+		}
 
 		echo '</form>';
 
