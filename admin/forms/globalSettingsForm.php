@@ -166,16 +166,16 @@ function globalSettingsForm() {
 		'label'   => __( 'Log Level' ),
 	);
 
-	$file_size   = filesize( GIGYA__LOG_FILE );
 	$end_of_desc = '';
-	if ( $file_size !== false ) {
+	if ( file_exists( GIGYA__LOG_FILE ) and ( $file_size = filesize( GIGYA__LOG_FILE ) ) !== false ) {
 		if ( $file_size < 1024 * 1024 ) {
 			$file_size = round( $file_size / 1024, 1 ) . __( ' KB.' );
 		} else {
 			$file_size = round( $file_size / ( 1024 * 1024 ), 1 ) . __( ' MB.' );
 
 		}
-		$end_of_desc = '<br>' . __( 'The path to the file: ' ) . '<a class="gigya-debug-log" href="#">' . GIGYA__LOG_FILE . '</a>' . ( ( $file_size !== false ) ? ( __( ' and the size is: ' ) . $file_size ) : '' );
+		$end_of_desc = '<br>' . __( 'The path to the file: ' ) . '<a class="gigya-debug-log" href="#">' . GIGYA__LOG_FILE . '</a>' . ( ( $file_size !== false )
+				? ( __( ' and the size is: ' ) . $file_size ) : '' );
 	}
 
 	//$end_of_desc        .= '<br>' . __( 'for more information click ' ) . '<a href="">here.</a>'; un comment when there is a new documentation link for this feature.
