@@ -53,7 +53,7 @@ define( 'GIGYA__OFFLINE_SYNC_MIN_FREQ', 5 );
 define( 'GIGYA__OFFLINE_SYNC_MAX_USERS', 1000 );
 define( 'GIGYA__OFFLINE_SYNC_UPDATE_DELAY', 10 );
 
-/**  get out of sync users */
+/** Get out of sync user constants */
 define( 'GIGYA__ACCOUNT_SEARCH_NUMBER_OF_PAGES', 5 );
 define( 'GIGYA__SYNC_REPORT_MAX_PAGE_SIZE', 2000 );
 define( 'GIGYA__SEARCH_MAX_QUERY_LENGTH', 30000 );//This number was tested.
