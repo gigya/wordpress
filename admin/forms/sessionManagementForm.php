@@ -2,7 +2,7 @@
 /**
  * Form builder for 'Global Settings' configuration page.
  *
- * Note: gigya_admin.js has some client-side controls for this form. Any change in the form might affect those, so check them!
+ * Note: gigya_admin.js has some client-side controls for this form. Any change in the form might affect those, so check them!!
  */
 function sessionManagementForm() {
 
