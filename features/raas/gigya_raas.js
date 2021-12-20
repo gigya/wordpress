@@ -75,7 +75,7 @@
 			{
 				console.log('abv',$('#' +screenSetContainerPrefix + container));
 				if ($('#' + screenSetContainerPrefix + container).text().indexOf("error has occurred") > -1) {
-					$('#' + screenSetContainerPrefix + container).remove();
+					$('#' + screenSetContainerPrefix + container).hide();
 
 				} else {
 					$('#' + container).each(function () {
@@ -155,14 +155,15 @@
 		var onScreenSetErrorHandler = function (eventObj, containerHtml) {
 			console.log('onError: container',containerHtml);
 			console.log('onError: containerID',eventObj.response.requestParams.containerID);
-			$('#'+ eventObj.response.requestParams.containerID).html('abc');
+			var jq = $('#' +eventObj.response.requestParams.containerID );
+			jq.remove();
 
-			console.log('onError: containerObject', $('#'+ eventObj.response.requestParams.containerID),$('#'+ eventObj.response.requestParams.containerID).length)
-
+			console.log('onError: containerObject',jq.length)
 			if (gigyaGlobalSettings.logLevel === 'debug') {
 				console.log('Error when loading SAP Customer Data Cloud screenset: ');
 				console.log(eventObj.errorCode + " – " + eventObj.errorMessage);ן
 			}
+
 
 			//	var screen = eventObj.response.info.screen || 'unknown';
 			// var options = {
@@ -224,11 +225,11 @@
 							containerID:  getGigContainer(gigyaRaasParams.raasLoginDiv),
 							include: 'id_token', /* For JWT-based authentication */
 							onError: function (e){return onScreenSetErrorHandler(e,container)},
-							onAfterScreenLoad: function(e) {return onAfterLoadingScreen(e, container)}
+							onAfterScreenLoad: removeElementFromScreenSetContainer,
 						};
 						gigya.accounts.showScreenSet(loginScreenSetParams);
 						console.log("login screen: before adding gigya screenSet");
-					//	$('#' + gigyaRaasParams.raasLoginDiv).bind('DOMSubtreeModified',removeElementFromScreenSetContainer(gigyaRaasParams.raasLoginDiv));
+					$('#' + getGigContainer(gigyaRaasParams.raasRegisterDiv)).bind('DOMSubtreeModified',removeElementFromScreenSetContainer(gigyaRaasParams.raasLoginDiv));
 						console.log("login screen: after adding gigya screenSet");
 
 					}
@@ -242,11 +243,12 @@
 							startScreen: gigyaRaasParams.raasRegisterScreen,
 							containerID: getGigContainer(gigyaRaasParams.raasRegisterDiv),
 							onError: onScreenSetErrorHandler,
+							onAfterScreenLoad:removeElementFromScreenSetContainer,
 							include: 'id_token' /* For JWT-based authentication */
 						};
 						console.log("register screen: before adding gigya screenSet");
 						gigya.accounts.showScreenSet(regScreenSetParams);
-						//$('#' + gigyaRaasParams.raasRegisterDiv).bind('DOMSubtreeModified',removeElementFromScreenSetContainer(gigyaRaasParams.raasRegisterDiv));
+						$('#' + getGigContainer(gigyaRaasParams.raasRegisterDiv)).bind('DOMSubtreeModified',removeElementFromScreenSetContainer(gigyaRaasParams.raasRegisterDiv));
 						console.log("register screen: after adding gigya screenSet");
 
 					}
