@@ -50,12 +50,14 @@
 
 					$('#' + gigyaScreenSetParams.link_id).on('click', function (e) {
 						e.preventDefault();
-
+						console.log('custom screen-set link');
 						gigya.accounts.showScreenSet(screenSetParams);
 					});
 
 					if (gigyaScreenSetParams.type === 'embed') {
 						screenSetParams['containerID'] = gigyaScreenSetParams.container_id;
+						console.log('custom screen-set embed');
+
 						gigya.accounts.showScreenSet(screenSetParams);
 					}
 				}

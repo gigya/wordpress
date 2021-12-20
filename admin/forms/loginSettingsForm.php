@@ -44,7 +44,18 @@ function loginSettingsForm() {
 			];
 		}
 	}
+	if ( empty( $global_settings ) ) {
+		$form['raas_error'] = [
+			'markup' => '<div id="setting-error-api_validate" class="notice notice-warning is-dismissible">
+								<p>
+								<strong>' . __( 'Warning: retriving SAP CDC data failed, please make sure your Global configuration is set.' ) . '</strong>
+								</p>
+								<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
+							</div>',
+		];
 
+		$form['mode']['disabled'] = true;
+	}
 	if ( $is_raas ) {
 		$form['mode']['class'] = 'raas_enabled';
 	}

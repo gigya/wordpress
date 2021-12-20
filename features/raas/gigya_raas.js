@@ -39,6 +39,8 @@
 
 		 */
 
+		var screenSetContainerPrefix = "gig_";
+
 		var raasLogout = function () {
 			gigya.accounts.logout({
 				callback: function (e) {
@@ -59,6 +61,32 @@
 			$.ajax(options);
 		};
 
+		var insertGigContainerIntoWPContainer = function (container) {
+			$('#' + container).append($('<div id= ' + screenSetContainerPrefix + container + '>'));
+		}
+		
+		var getGigContainer = function (container){
+			return screenSetContainerPrefix + container;
+		}
+
+		var removeElementFromScreenSetContainer = function (container) {
+			console.log("inside removeElementFromScreenSetContainer");
+			if(gigyaRaasParams.raasOverrideLinks > 0)
+			{
+				console.log('abv',$('#' +screenSetContainerPrefix + container));
+				if ($('#' + screenSetContainerPrefix + container).text().indexOf("error has occurred") > -1) {
+					$('#' + screenSetContainerPrefix + container).remove();
+
+				} else {
+					$('#' + container).each(function () {
+						if ($(this).id !== undefined && $(this).id === screenSetContainerPrefix + container) {
+							$(this).remove();
+						}
+					})
+				}
+			}
+		}
+
 		var overrideLinks = function () {
 			$(document).on('click', 'a[href]', function (e) {
 				/** @function    gigya.accounts.showScreenSet */
@@ -77,12 +105,14 @@
 					switch (true) {
 						case (search === ''):
 							// Login page
+							console.log('link login screen-set');
 							gigya.accounts.showScreenSet(screenSetParams);
 							e.preventDefault();
 							break;
 
 						case (search === '?action=register'):
 							// Register page
+							console.log('link registration screen-set');
 							gigya.accounts.showScreenSet(screenSetParams);
 							e.preventDefault();
 							break;
@@ -99,6 +129,7 @@
 					}
 				} else if (path.indexOf('profile.php') !== -1 && gigyaRaasParams.canEditUsers === false) {
 					/* Profile page */
+					console.log('link profile screen-set');
 					gigya.accounts.showScreenSet({
 						screenSet: gigyaRaasParams.raasProfileWebScreen,
 						mobileScreenSet: gigyaRaasParams.raasProfileMobileScreen,
@@ -117,42 +148,50 @@
 
 		/**
 		 * @param eventObj
+		 * @param eventObj.response.requestParams
 		 * @param eventObj.errorCode
 		 * @param eventObj.errorMessage
 		 */
-		var onScreenSetErrorHandler = function (eventObj) {
+		var onScreenSetErrorHandler = function (eventObj, containerHtml) {
+			console.log('onError: container',containerHtml);
+			console.log('onError: containerID',eventObj.response.requestParams.containerID);
+			$('#'+ eventObj.response.requestParams.containerID).html('abc');
+
+			console.log('onError: containerObject', $('#'+ eventObj.response.requestParams.containerID),$('#'+ eventObj.response.requestParams.containerID).length)
+
 			if (gigyaGlobalSettings.logLevel === 'debug') {
 				console.log('Error when loading SAP Customer Data Cloud screenset: ');
-				console.log(eventObj.errorCode + " – " + eventObj.errorMessage);
+				console.log(eventObj.errorCode + " – " + eventObj.errorMessage);ן
 			}
-			var screen = eventObj.response.info.screen || 'unknown';
-			var options = {
-				url: gigyaParams.ajaxurl,
-				type: 'POST',
-				dataType: 'json',
-				data: {
-					eventData: {
-						"screen": screen,
-						"errorCode": eventObj.errorCode,
-						"errorMessage": eventObj.errorMessage
-					},
-					action: 'screen_set_error'
-				}
-			};
-			$.ajax(options);
+
+			//	var screen = eventObj.response.info.screen || 'unknown';
+			// var options = {
+			// 	url: gigyaParams.ajaxurl,
+			// 	type: 'POST',
+			// 	dataType: 'json',
+			// 	data: {
+			// 		eventData: {
+			// 			"screen": screen,
+			// 			"screenContainer": eventObj.response.requestParams.containerID,
+			// 			"errorCode": eventObj.errorCode,
+			// 			"errorMessage": eventObj.errorMessage
+			// 		},
+			// 		action: 'screen_set_error'
+			// 	}
+			// };
+		//	$.ajax(options);
 		};
 
+		var onAfterLoadingScreen = function (eventobj , containerHtml) {
+			console.log('onLoad: container',containerHtml);
+			console.log('onLoad: containerID',eventObj.response.requestParams.containerID);
 
+		}
 		/**
 		 * Creates login/register screen set that goes on top of, or overrides, WP's default login screen. Also registers relevant event handlers for RaaS to work.
 		 */
 		var raasInit = function () {
-
-			/* Override default WP links to use Gigya's RaaS behavior */
-			if (gigyaRaasParams.raasOverrideLinks > 0) {
-				overrideLinks();
-			}
-
+			var container;
 			/* Get admin=true cookie */
 			var admin = false;
 			var name = "gigya_admin=true";
@@ -169,43 +208,63 @@
 			 * If there is a reason to access the default WordPress profile page for the administrator, replace the following line with this one:
 			 * if (location.search.indexOf('admin=true') === -1 && !admin) {
 			 */
+			/* Override default WP links to use Gigya's RaaS behavior */
 			if (gigyaRaasParams.raasOverrideLinks > 0) {
+				overrideLinks();
+
 				if (location.search.indexOf('admin=true') === -1) {
 					/* Login screens */
 					if ($('#' + gigyaRaasParams.raasLoginDiv).length > 0) {
+						container = $('#'+gigyaRaasParams.raasLoginDiv ).html();
+						insertGigContainerIntoWPContainer(gigyaRaasParams.raasLoginDiv);
 						var loginScreenSetParams = {
 							screenSet: gigyaRaasParams.raasWebScreen,
 							mobileScreenSet: gigyaRaasParams.raasMobileScreen,
 							startScreen: gigyaRaasParams.raasLoginScreen,
-							containerID: gigyaRaasParams.raasLoginDiv,
-							onError: onScreenSetErrorHandler,
-							include: 'id_token' /* For JWT-based authentication */
+							containerID:  getGigContainer(gigyaRaasParams.raasLoginDiv),
+							include: 'id_token', /* For JWT-based authentication */
+							onError: function (e){return onScreenSetErrorHandler(e,container)},
+							onAfterScreenLoad: function(e) {return onAfterLoadingScreen(e, container)}
 						};
 						gigya.accounts.showScreenSet(loginScreenSetParams);
+						console.log("login screen: before adding gigya screenSet");
+					//	$('#' + gigyaRaasParams.raasLoginDiv).bind('DOMSubtreeModified',removeElementFromScreenSetContainer(gigyaRaasParams.raasLoginDiv));
+						console.log("login screen: after adding gigya screenSet");
+
 					}
 
 					/* Reg screens */
 					if ($('#' + gigyaRaasParams.raasRegisterDiv).length > 0) {
+						insertGigContainerIntoWPContainer(gigyaRaasParams.raasRegisterDiv);
 						var regScreenSetParams = {
 							screenSet: gigyaRaasParams.raasWebScreen,
 							mobileScreenSet: gigyaRaasParams.raasMobileScreen,
 							startScreen: gigyaRaasParams.raasRegisterScreen,
-							containerID: gigyaRaasParams.raasRegisterDiv,
+							containerID: getGigContainer(gigyaRaasParams.raasRegisterDiv),
 							onError: onScreenSetErrorHandler,
 							include: 'id_token' /* For JWT-based authentication */
 						};
+						console.log("register screen: before adding gigya screenSet");
 						gigya.accounts.showScreenSet(regScreenSetParams);
+						//$('#' + gigyaRaasParams.raasRegisterDiv).bind('DOMSubtreeModified',removeElementFromScreenSetContainer(gigyaRaasParams.raasRegisterDiv));
+						console.log("register screen: after adding gigya screenSet");
+
 					}
 
 					/* Profile screens */
 					if (parseInt(gigyaRaasParams.canEditUsers) !== 1) {
-						gigya.accounts.showScreenSet({
-							screenSet: gigyaRaasParams.raasProfileWebScreen,
-							mobileScreenSet: gigyaRaasParams.raasProfileMobileScreen,
-							containerID: gigyaRaasParams.raasProfileDiv,
-							onAfterSubmit: raasUpdatedProfile,
-							onError: onScreenSetErrorHandler,
-						});
+						insertGigContainerIntoWPContainer(gigyaRaasParams.raasProfileDiv);
+						console.log("profile screen: before adding gigya screenSet");
+						console.log("raasProfileDiv",gigyaRaasParams.raasProfileDiv);
+						// gigya.accounts.showScreenSet({
+						// 	screenSet: gigyaRaasParams.raasProfileWebScreen,
+						// 	mobileScreenSet: gigyaRaasParams.raasProfileMobileScreen,
+						// 	containerID: getGigContainer(gigyaRaasParams.raasProfileDiv),
+						// 	onAfterSubmit: raasUpdatedProfile,
+						// 	onError: onScreenSetErrorHandler,
+						// });
+						// //	$('#' + gigyaRaasParams.raasProfileDiv).bind('DOMSubtreeModified',removeElementFromScreenSetContainer(gigyaRaasParams.raasProfileDiv));
+
 					}
 				} else {
 					/* Set admin=true cookie */
