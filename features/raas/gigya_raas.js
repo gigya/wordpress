@@ -64,27 +64,25 @@
 		var insertGigContainerIntoWPContainer = function (container) {
 			$('#' + container).append($('<div id= ' + screenSetContainerPrefix + container + '>'));
 		}
-		
-		var getGigContainer = function (container){
+
+		var getGigContainer = function (container) {
 			return screenSetContainerPrefix + container;
 		}
 
 		var removeElementFromScreenSetContainer = function (container) {
-			console.log("inside removeElementFromScreenSetContainer");
-			if(gigyaRaasParams.raasOverrideLinks > 0)
-			{
-				var gigFormJQ = $('#' + screenSetContainerPrefix + container);
-				if (gigFormJQ.text().indexOf("error has occurred") > -1) {
-					gigFormJQ.remove();
 
-				} else {
-					$('#' + container).children().each(function () {
-						if ($(this).attr('id') === undefined ||  $(this).attr('id') !== screenSetContainerPrefix + container) {
-							$(this).remove();
-						}
-					})
-				}
+			var gigFormJQ = $('#' + screenSetContainerPrefix + container);
+			if (gigFormJQ.text().indexOf("error has occurred") > -1) {
+				gigFormJQ.remove();
+
+			} else {
+				$('#' + container).children().each(function () {
+					if ($(this).attr('id') === undefined || $(this).attr('id') !== screenSetContainerPrefix + container) {
+						$(this).remove();
+					}
+				})
 			}
+
 			return null;
 		}
 
@@ -162,7 +160,7 @@
 
 			if (gigyaGlobalSettings.logLevel === 'debug') {
 				console.log('Error when loading SAP Customer Data Cloud screenset: ');
-				console.log(eventObj.errorCode + " – " + eventObj.errorMessage);ן
+				console.log(eventObj.errorCode + " – " + eventObj.errorMessage);
 			}
 
 			var screen = eventObj.response.info.screen || 'unknown';

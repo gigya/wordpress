@@ -43,7 +43,7 @@ class GigyaRaasAjax {
 		/* Trap for login users */
 		if ( is_user_logged_in() and ( ! is_multisite() ) ) {
 			$getAccountInfoError = array( 'msg' => __( 'You are already logged in' ) );
-			$this->logger->debug( 'Login failed: ' . $getAccountInfoError, $data['UID'] );
+			$this->logger->debug( 'Login failed: ' . var_export($getAccountInfoError,true), $data['UID'] );
 			wp_send_json_error( $getAccountInfoError );
 		}
 
