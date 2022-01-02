@@ -1,23 +1,24 @@
 (function ($) {
 	$(function () {
 
-		var insertGigContainerIntoWPContainer = function (container) {
+		const screenSetContainerPrefix = 'gig_';
+		var insertGigyaContainerIntoWPContainer = function (container) {
 			$('#' + container).append($('<div id= ' + screenSetContainerPrefix + container + '>'));
 		}
 
-		var getGigContainer = function (container) {
+		var getGigyaContainer = function (container) {
 			return screenSetContainerPrefix + container;
 		}
 
 		var removeElementFromScreenSetContainer = function (container) {
 
-			var gigFormJQ = $('#' + screenSetContainerPrefix + container);
-			if (gigFormJQ.text().indexOf("error has occurred") > -1) {
-				gigFormJQ.remove();
+			var gigyaFormElement = $('#' + screenSetContainerPrefix + container);
+			if (gigyaFormElement.text().indexOf("error has occurred") > -1) {
+				gigyaFormElement.remove();
 
 			} else {
 				$('#' + container).children().each(function () {
-					if ($(this).attr('id') === undefined || $(this).attr('id') !== screenSetContainerPrefix + container) {
+					if ($(this).attr('id') !== screenSetContainerPrefix + container) {
 						$(this).remove();
 					}
 				})
@@ -65,9 +66,11 @@
 						screenSet: gigyaScreenSetParams.screenset_id,
 						mobileScreenSet: gigyaScreenSetParams.mobile_screenset_id,
 						onerror: function (e) {
-							return onScreenSetErrorHandler(e, false)
+							return screenSetErrorHandler
+							(e, false)
 						},
-						include: 'id_token'
+						include: 'id_token',
+
 					};
 
 					if (gigyaScreenSetParams.is_sync_data) {
@@ -80,21 +83,23 @@
 					});
 
 					if (gigyaScreenSetParams.type === 'embed') {
-						insertGigContainerIntoWPContainer(gigyaScreenSetParams.container_id);
-						screenSetParams['containerID'] = getGigContainer(gigyaScreenSetParams.container_id);
+						insertGigyaContainerIntoWPContainer(gigyaScreenSetParams.container_id);
+						screenSetParams['containerID'] = getGigyaContainer(gigyaScreenSetParams.container_id);
 						screenSetParams['onerror'] = function (e) {
-							return onScreenSetErrorHandler(e, true)
+							return screenSetErrorHandler(e, true);
+						};
+						screenSetParams['onAfterScreenLoad'] = function () {
+							return removeElementFromScreenSetContainer(gigyaScreenSetParams.container_id)
 						};
 
 						gigya.accounts.showScreenSet(screenSetParams);
-						$('#' + getGigContainer(gigyaScreenSetParams.container_id)).bind('DOMSubtreeModified', removeElementFromScreenSetContainer(gigyaScreenSetParams.container_id));
 					}
 				}
 			}
 		});
 
-		var onScreenSetErrorHandler = function (eventObj, isEmbedCase) {
-			if (isEmbedCase) {
+		var screenSetErrorHandler = function (eventObj, isEmbedded) {
+			if (isEmbedded) {
 				$('#' + eventObj.response.requestParams.containerID).remove();
 			}
 

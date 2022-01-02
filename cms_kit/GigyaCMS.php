@@ -83,7 +83,7 @@ class GigyaCMS
 		$err_code = $response->getErrorCode();
 		if ( $err_code != 0 ) {
 
-			//	$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID:' . $response->getString( "callId", "N/A" ) . ',  failed: ' . $response->getErrorCode() . ' - ' . $response->getErrorMessage(), $uid );
+				$this->logger->debug( 'SAP CDC API called. Endpoint: ' . $method . ', call ID:' . $response->getString( "callId", "N/A" ) . ',  failed: ' . $response->getErrorCode() . ' - ' . $response->getErrorMessage(), $uid );
 
 			return new WP_Error( $err_code, $response->getErrorMessage() );
 

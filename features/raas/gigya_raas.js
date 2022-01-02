@@ -61,23 +61,23 @@
 			$.ajax(options);
 		};
 
-		var insertGigContainerIntoWPContainer = function (container) {
+		var insertGigyaContainerIntoWPContainer = function (container) {
 			$('#' + container).append($('<div id= ' + screenSetContainerPrefix + container + '>'));
 		}
 
-		var getGigContainer = function (container) {
+		var getGigyaContainer= function (container) {
 			return screenSetContainerPrefix + container;
 		}
 
 		var removeElementFromScreenSetContainer = function (container) {
 
-			var gigFormJQ = $('#' + screenSetContainerPrefix + container);
-			if (gigFormJQ.text().indexOf("error has occurred") > -1) {
-				gigFormJQ.remove();
+			var gigyaFormElement = $('#' + screenSetContainerPrefix + container);
+			if (gigyaFormElement.text().indexOf("error has occurred") > -1) {
+				gigyaFormElement.remove();
 
 			} else {
 				$('#' + container).children().each(function () {
-					if ($(this).attr('id') === undefined || $(this).attr('id') !== screenSetContainerPrefix + container) {
+					if ($(this).attr('id') !== screenSetContainerPrefix + container) {
 						$(this).remove();
 					}
 				})
@@ -97,7 +97,7 @@
 					mobileScreenSet: gigyaRaasParams.raasMobileScreen,
 					startScreen: gigyaRaasParams.raasLoginScreen,
 					include: 'id_token',
-					onError: function (e){return onScreenSetErrorHandler(e,false)},
+					onError: function (e){return screenSetErrorHandler(e,false)},
 				};
 
 				if (path.indexOf('wp-login.php') !== -1) {
@@ -126,12 +126,11 @@
 					}
 				} else if (path.indexOf('profile.php') !== -1 && gigyaRaasParams.canEditUsers === false) {
 					/* Profile page */
-					console.log('link profile screen-set');
 					gigya.accounts.showScreenSet({
 						screenSet: gigyaRaasParams.raasProfileWebScreen,
 						mobileScreenSet: gigyaRaasParams.raasProfileMobileScreen,
 						onAfterSubmit: raasUpdatedProfile,
-						onError: function (e){return onScreenSetErrorHandler(e,false)},
+						onError: function (e){return screenSetErrorHandler(e,false)},
 					});
 					e.preventDefault();
 				}
@@ -145,17 +144,16 @@
 
 		/**
 		 * @param eventObj
-		 * @param embedScreenSet
+		 * @param isEmbedded
 		 * @param eventObj.response.requestParams
 		 * @param eventObj.response.info
 		 * @param eventObj.errorCode
 		 * @param eventObj.errorMessage
 		 */
-		var onScreenSetErrorHandler = function (eventObj, embedScreenSet) {
+		var screenSetErrorHandler = function (eventObj, isEmbedded) {
 
-			if(embedScreenSet) {
-				var jq = $('#' +eventObj.response.requestParams.containerID );
-				jq.remove();
+			if(isEmbedded) {
+				$('#' +eventObj.response.requestParams.containerID ).remove();
 			}
 
 			if (gigyaGlobalSettings.logLevel === 'debug') {
@@ -210,47 +208,49 @@
 					if ($('#' + gigyaRaasParams.raasLoginDiv).length > 0) {
 						var gigyaLoginDivID = gigyaRaasParams.raasLoginDiv;
 
-						insertGigContainerIntoWPContainer(gigyaRaasParams.raasLoginDiv);
+						insertGigyaContainerIntoWPContainer(gigyaRaasParams.raasLoginDiv);
 						var loginScreenSetParams = {
 							screenSet: gigyaRaasParams.raasWebScreen,
 							mobileScreenSet: gigyaRaasParams.raasMobileScreen,
 							startScreen: gigyaRaasParams.raasLoginScreen,
-							containerID: getGigContainer(gigyaRaasParams.raasLoginDiv),
+							containerID: getGigyaContainer(gigyaLoginDivID),
 							include: 'id_token', /* For JWT-based authentication */
-							onError: function (e){return onScreenSetErrorHandler(e,true)},
+							onError: function (e){return screenSetErrorHandler(e,true)},
+							onAfterScreenLoad:function (){return removeElementFromScreenSetContainer(gigyaLoginDivID)},
 						};
+
 						gigya.accounts.showScreenSet(loginScreenSetParams);
-						$('#' + getGigContainer(gigyaLoginDivID)).bind('DOMSubtreeModified', removeElementFromScreenSetContainer(gigyaLoginDivID));
 					}
 
 					/* Reg screens */
 					if ($('#' + gigyaRaasParams.raasRegisterDiv).length > 0) {
-						insertGigContainerIntoWPContainer(gigyaRaasParams.raasRegisterDiv);
+						insertGigyaContainerIntoWPContainer(gigyaRaasParams.raasRegisterDiv);
 						var regScreenSetParams = {
 							screenSet: gigyaRaasParams.raasWebScreen,
 							mobileScreenSet: gigyaRaasParams.raasMobileScreen,
 							startScreen: gigyaRaasParams.raasRegisterScreen,
-							containerID: getGigContainer(gigyaRaasParams.raasRegisterDiv),
-							onError: function (e){return onScreenSetErrorHandler(e,true)},
-							include: 'id_token' /* For JWT-based authentication */
+							containerID: getGigyaContainer(gigyaRaasParams.raasRegisterDiv),
+							include: 'id_token', /* For JWT-based authentication */
+							onError: function (e){return screenSetErrorHandler(e,true)},
+							onAfterScreenLoad:function (){return removeElementFromScreenSetContainer(gigyaRaasParams.raasRegisterDiv)},
+
 						};
 						gigya.accounts.showScreenSet(regScreenSetParams);
-						$('#' + getGigContainer(gigyaRaasParams.raasRegisterDiv)).bind('DOMSubtreeModified', removeElementFromScreenSetContainer(gigyaRaasParams.raasRegisterDiv));
 					}
 
 					/* Profile screens */
 					if (parseInt(gigyaRaasParams.canEditUsers) !== 1) {
-						var gigyaRaaSProfileDivID = gigyaRaasParams.raasProfileDiv.raasProfileDiv;
-						insertGigContainerIntoWPContainer(gigyaRaasParams.raasProfileDiv);
+						insertGigyaContainerIntoWPContainer(gigyaRaasParams.raasProfileDiv);
 						gigya.accounts.showScreenSet({
 							screenSet: gigyaRaasParams.raasProfileWebScreen,
 							mobileScreenSet: gigyaRaasParams.raasProfileMobileScreen,
-							containerID: getGigContainer(gigyaRaasParams.raasProfileDiv),
+							containerID: getGigyaContainer(gigyaRaasParams.raasProfileDiv),
 							onAfterSubmit: raasUpdatedProfile,
-							onError: function (e){return onScreenSetErrorHandler(e,true)},
+							include: 'id_token', /* For JWT-based authentication */
+							onError: function (e){return screenSetErrorHandler(e,true)},
+							onAfterScreenLoad:function (){return removeElementFromScreenSetContainer(gigyaRaasParams.raasProfileDiv)},
 
 						});
-						$('#' + gigyaRaaSProfileDivID).bind('DOMSubtreeModified', removeElementFromScreenSetContainer(gigyaRaaSProfileDivID));
 					}
 
 				} else {
