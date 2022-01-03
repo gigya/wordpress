@@ -71,17 +71,11 @@
 
 		var removeElementFromScreenSetContainer = function (container) {
 
-			var gigyaFormElement = $('#' + screenSetContainerPrefix + container);
-			if (gigyaFormElement.text().indexOf("error has occurred") > -1) {
-				gigyaFormElement.remove();
-
-			} else {
-				$('#' + container).children().each(function () {
-					if ($(this).attr('id') !== screenSetContainerPrefix + container) {
-						$(this).remove();
-					}
-				})
-			}
+			$('#' + container).children().each(function () {
+				if ($(this).attr('id') !== screenSetContainerPrefix + container) {
+					$(this).remove();
+				}
+			})
 
 			return null;
 		}
