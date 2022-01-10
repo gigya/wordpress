@@ -33,7 +33,7 @@ class GigyaCMS
 	 */
 	public function call( $method, $params ) {
 		// Initialize new request.
-		$request   = (isset($this->user_key)) ? new GSRequest( $this->api_key, $this->api_secret, $method, null, null, $this->user_key ) : new GSRequest( $this->api_key, $this->api_secret, $method );
+		$request   = (isset($this->user_key)) ? new GSRequest( $this->api_key, $this->api_secret, $method, null, true, $this->user_key ) : new GSRequest( $this->api_key, $this->api_secret, $method, null, true );
 		$user_info = null;
 		if ( ! empty( $params ) ) {
 			foreach ( $params as $param => $val ) {
@@ -137,7 +137,7 @@ class GigyaCMS
 	 * @throws Exception
 	 */
 	public function apiValidate( $api_key, $user_key, $api_secret, $api_domain ) {
-		$request = new GSRequest( $api_key, $api_secret, 'socialize.getProvidersConfig', null, null, $user_key );
+		$request = new GSRequest( $api_key, $api_secret, 'socialize.getProvidersConfig', null, true, $user_key );
 
 		$request->setAPIDomain( $api_domain );
 		ini_set('arg_separator.output', '&');

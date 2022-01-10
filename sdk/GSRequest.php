@@ -408,3 +408,5 @@ class GSRequest
         array_push($this->traceLog, $name . "=" . print_r($value, true));
     }
 }
+
+GSRequest::__constructStatic();
