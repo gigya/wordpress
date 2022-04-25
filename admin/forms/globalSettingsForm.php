@@ -8,11 +8,11 @@ function globalSettingsForm() {
 	$form   = array();
 
 	$form['api_key'] = array(
-			'type'  => 'text',
-			'label' => __( 'API Key' ),
-			'size' => 64,
-			'style' => 'font-family: monospace',
-			'value' => _gigParam( $values, 'api_key', '' )
+		'type'  => 'text',
+		'label' => __( 'API Key' ),
+		'size'  => 64,
+		'style' => 'font-family: monospace',
+		'value' => _gigParam( $values, 'api_key', '' )
 	);
 
 	$form['user_key'] = array(
@@ -29,6 +29,7 @@ function globalSettingsForm() {
 				'user_rsa'    => __( 'User key + RSA private key' ),
 			),
 			'value'   => _gigParam( $values, 'auth_mode', 'user_rsa' ),
+			'id'      => 'auth-mode',
 		);
 
 		$form['api_secret']      = array(
@@ -91,10 +92,10 @@ function globalSettingsForm() {
 	);
 
 	$form['other_ds'] = array(
-		'type'    => 'text',
-		'class'   => 'other-data-center',
-		'value' => _gigParam( $values, 'other_ds', 'us1.gigya.com' ),
-		'depends_on' => ['data_center', 'other'],
+		'type'       => 'text',
+		'class'      => 'other-data-center',
+		'value'      => _gigParam( $values, 'other_ds', 'us1.gigya.com' ),
+		'depends_on' => [ 'data_center', 'other' ],
 	);
 
 	$form['enabledProviders'] = array(
@@ -141,7 +142,9 @@ function globalSettingsForm() {
 			),
 			'value'   => _gigParam( $values, 'lang', 'en' ),
 			'label'   => __( 'Language' ),
-			'desc'    => __( 'Please select the interface language' )
+			'desc'    => __( 'Please select the interface language' ),
+			'id' => 'global-language',
+
 	);
 
 	$form['advanced'] = array(
@@ -152,17 +155,59 @@ function globalSettingsForm() {
 			'desc'  => sprintf( __( 'Enter valid %s. See list of available ' ), '<a class="gigya-json-example" href="javascript:void(0)">' . __( 'JSON format' ) . '</a>' ) . ' <a href="https://help.sap.com/viewer/8b8d6fffe113457094a17701f63e3d6a/GIGYA/en-US/417fa48b70b21014bbc5a10ce4041860.html" target="_blank" rel="noopener noreferrer">' . __( 'parameters' ) . '</a>'
 	);
 
-	$form['google_analytics'] = array(
-			'type'  => 'checkbox',
-			'label' => __( "Enable Google Social Analytics" ),
-			'value' => _gigParam( $values, 'google_analytics', 0 )
+	$form['log_level'] = array(
+		'type'    => 'select',
+		'options' => array(
+			'error' => 'Error Only',
+			'info'  => 'Info',
+			'debug' => 'Debug'
+		),
+		'value'   => _gigParam( $values, 'log_level', 'info' ),
+		'label'   => __( 'Log Level' ),
 	);
 
-	$form['debug'] = array(
-			'type'  => 'checkbox',
-			'label' => __( 'Enable SAP CDC debug log' ),
-			'value' => _gigParam( $values, 'debug', 0 ),
-			'desc'  => __( 'Log all SAP Customer Data Cloud\'s requests and responses. You can then find the log' ) . ' <a href="javascript:void(0)" class="gigya-debug-log">' . __( 'here' ) . '</a>'
+	$end_of_desc = '';
+	if ( file_exists( GIGYA__LOG_FILE ) and ( $file_size = filesize( GIGYA__LOG_FILE ) ) !== false ) {
+		if ( $file_size < 1024 * 1024 ) {
+			$file_size = round( $file_size / 1024, 1 ) . __( ' KB.' );
+		} else {
+			$file_size = round( $file_size / ( 1024 * 1024 ), 1 ) . __( ' MB.' );
+
+		}
+		$end_of_desc = '<br>' . __( 'The path to the file: ' ) . '<a class="gigya-debug-log" href="#">' . GIGYA__LOG_FILE . '</a>' . ( ( $file_size !== false )
+				? ( __( ' and the size is: ' ) . $file_size ) : '' );
+	}
+
+	//$end_of_desc        .= '<br>' . __( 'for more information click ' ) . '<a href="">here.</a>'; un comment when there is a new documentation link for this feature.
+	$debug_mode_warning = '<strong class="gigya-raas-warn">' . __( 'WARNING: The log file size caused by frequent debug logging may significantly degrade site performance. It is not recommended for production use, or for prolonged periods.' ) . '</strong>';
+
+	$form['log_level_desc_error'] = array(
+		'type'       => 'customDescription',
+		'label'      => __( 'logLevelDesc' ),
+		'desc'       => __( 'This level is for general site errors only.' ) . '<br>' . __( 'Logs site-wide errors related to the SAP CDC plugin.' ) . $end_of_desc,
+		'small'      => true,
+		'depends_on' => [ 'log_level', 'error' ],
+	);
+	$form['log_level_desc_info']  = array(
+		'type'       => 'customDescription',
+		'label'      => __( 'logLevelDesc' ),
+		'desc'       => __( 'Logs all actions done by the administrator in the SAP CDC plugin. ' ) . $end_of_desc,
+		'small'      => true,
+		'depends_on' => [ 'log_level', 'info' ],
+	);
+	$form['log_level_desc_debug'] = array(
+		'type'       => 'customDescription',
+		'label'      => __( 'logLevelDesc' ),
+		'desc'       => $debug_mode_warning . '<br>' . __( 'Logs all interactions with SAP CDC, i.e. every call made to SAP CDC is logged.' ) . $end_of_desc,
+		'small'      => true,
+		'depends_on' => [ 'log_level', 'debug' ],
+	);
+
+
+	$form['google_analytics'] = array(
+		'type'  => 'checkbox',
+		'label' => __( "Enable Google Social Analytics" ),
+		'value' => _gigParam( $values, 'google_analytics', 0 )
 	);
 
     /* Use this field in multisite to flag when sub site settings are saved locally for site */

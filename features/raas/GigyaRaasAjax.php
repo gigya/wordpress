@@ -21,12 +21,14 @@ class GigyaRaasAjax {
 	private $global_options;
 	private $login_options;
 	private $session_options;
+	private $logger;
 
 	public function __construct() {
 		/* Get settings variables */
 		$this->global_options  = get_option( GIGYA__SETTINGS_GLOBAL );
 		$this->login_options   = get_option( GIGYA__SETTINGS_LOGIN );
 		$this->session_options = get_option( GIGYA__SETTINGS_SESSION );
+		$this->logger = new GigyaLogger();
 	}
 
 	/**
@@ -41,17 +43,21 @@ class GigyaRaasAjax {
 		/* Trap for login users */
 		if ( is_user_logged_in() and ( ! is_multisite() ) ) {
 			$getAccountInfoError = array( 'msg' => __( 'You are already logged in' ) );
+			$this->logger->debug( 'Login failed: ' . $getAccountInfoError['msg'], $data['UID'] );
 			wp_send_json_error( $getAccountInfoError );
 		}
+
 
 		/* Check Gigya's signature validation */
 		$raas_validate_error = array( 'msg' => __( 'RaaS: There is a problem validating your user' ) );
 		$is_sig_valid     = false;
+
 		if ( ! empty( $data['id_token'] ) and $this->global_options['auth_mode'] === 'user_rsa' ) {
 			$gigya_api_helper = new GigyaApiHelper( GIGYA__API_KEY, GIGYA__USER_KEY, GIGYA__AUTH_KEY, GIGYA__API_DOMAIN, 'user_rsa' );
 			try {
 				$is_sig_valid = $gigya_api_helper->validateJwtAuth( $data['UID'], $data['id_token'] );
 			} catch ( Exception $e ) {
+				$this->logger->debug( 'Login failed: ' . $raas_validate_error['msg'], $data['UID'] );
 				wp_send_json_error( $raas_validate_error );
 			}
 		} else {
@@ -59,12 +65,14 @@ class GigyaRaasAjax {
 			try {
 				$is_sig_valid = $gigya_api_helper->validateUid( $data['UID'], $data['UIDSignature'], $data['signatureTimestamp'], 'raas' );
 			} catch ( Exception $e ) {
+				$this->logger->debug( 'Login failed: ' . $raas_validate_error['msg'], $data['UID'] );
 				wp_send_json_error( $raas_validate_error );
 			}
 		}
 
 		/* Gigya user validate trap */
 		if ( !( $is_sig_valid ) ) {
+			$this->logger->debug( 'Login failed: ' . $raas_validate_error['msg'], $data['UID'] );
 			wp_send_json_error( $raas_validate_error );
 		}
 
@@ -74,9 +82,11 @@ class GigyaRaasAjax {
 		try {
 			$this->gigya_account = $gigyaCMS->getAccount( $data['UID'] );
 		} catch (Exception $e) {
+			$this->logger->debug( 'Login failed: ' . $getAccountInfoError['msg'], $data['UID'] );
 			wp_send_json_error( $getAccountInfoError );
 		}
 		if ( is_wp_error( $this->gigya_account ) ) {
+			$this->logger->debug( 'Login failed: ' . $getAccountInfoError['msg'], $data['UID'] );
 			wp_send_json_error( $getAccountInfoError );
 		} else {
 			$this->gigya_account = $this->gigya_account->getData()->serialize();
@@ -109,6 +119,7 @@ class GigyaRaasAjax {
 				$msg = __( 'We found your email in our system.<br />Please use your existing account to login to the site, or create a new account using a different email address.' );
 
 				$getAccountInfoError = array( 'msg' => $msg );
+				$this->logger->debug( 'Login failed: We found your email in our system. Please use your existing account to login to the site, or create a new account using a different email address.', $data['UID'] );
 				wp_send_json_error( $getAccountInfoError );
 			}
 
@@ -116,16 +127,18 @@ class GigyaRaasAjax {
 			try {
 				$this->login( $wp_user );
 			} catch ( Exception $e ) {
+				$this->logger->debug( 'Login failed: ' . 'Unable to log in.', $data['UID'] );
 				$getAccountInfoError = array( 'msg' => __( 'Unable to log in.' ) );
 				wp_send_json_error( $getAccountInfoError );
 			}
 		}
 		else
 		{
+			$this->logger->debug( "The user is registered at SAP CDC, and will now be registered to WordPress.", $data['UID'] );
 			/* Register new user */
 			$this->register();
 		}
-
+		$this->logger->debug( "The user was logged in.", $data['UID'] );
 		wp_send_json_success();
 	}
 
@@ -188,12 +201,15 @@ class GigyaRaasAjax {
 		/* On registration error. */
 		if ( ! empty( $user_id->errors ) ) {
 			$msg = '';
+			$log_message = '';
+
 			foreach ( $user_id->errors as $error ) {
 				foreach ( $error as $err ) {
 					$msg .= $err . "\n";
+					$log_message .= $err . ' ';
 				}
 			}
-
+			$this->logger->debug( 'The user can\'t register: ' . strip_tags( $log_message ), $this->gigya_account['UID'] );
 			/* Return JSON to client */
 			wp_send_json_error( array( 'msg' => $msg ) );
 		}
@@ -209,6 +225,7 @@ class GigyaRaasAjax {
 			$this->login( $wp_user );
 		} catch ( Exception $e ) {
 			$prm = array( 'msg' => __( 'Unable to log in.' ) );
+			$this->logger->debug( 'Login failed: ' . 'Unable to log in', $this->gigya_account['UID'] );
 			wp_send_json_error( $prm );
 		}
 	}
@@ -222,6 +239,11 @@ class GigyaRaasAjax {
 	 */
 	public function updateProfile( $data ) {
 		if ( is_user_logged_in() ) {
+			if ( ! array_key_exists( 'UIDSignature', $data ) ) {
+				$this->logger->debug( "Updating profile failed: The UIDSignature is invalid.", $this->gigya_account['UID'] );
+				wp_send_json_error();
+
+			}
 			$is_sig_validate = SigUtils::validateUserSignature(
 				$data['UID'],
 				$data['signatureTimestamp'],
@@ -235,8 +257,15 @@ class GigyaRaasAjax {
 				if ( ! is_wp_error( $gigya_account ) ) {
 					_gigya_add_to_wp_user_meta( $gigya_account, get_current_user_id() );
 				}
+				$this->logger->debug( "Updating profile failed: " . $gigya_account->getErrorMessage(), $data['UID'] );
+
 			}
+			$this->logger->debug( "This user has updated their profile.", $data['UID'] );
+		} else {
+
+			$this->logger->debug( "A user tried to update a profile without having logged in.", $data['UID'] );
 		}
+
 	}
 
 	public function getGltExpCookieExpiration( $session_type, $session_duration ) {

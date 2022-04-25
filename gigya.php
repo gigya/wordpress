@@ -3,7 +3,7 @@
  * Plugin Name: SAP Customer Data Cloud
  * Plugin URI: https://www.sap.com/products/crm/customer-data-management.html
  * Description: Allows sites to utilize the SAP Customer Data Cloud API for authentication and social network updates.
- * Version: 6.3.0
+ * Version: 6.5.0
  * Author: SAP SE
  * Author URI: https://www.sap.com/products/crm/customer-data-management.html
  * License: Apache v2.0
@@ -20,9 +20,10 @@ use Gigya\WordPress\GigyaAction;
  */
 define( 'GIGYA__MINIMUM_WP_VERSION', '4.7' );
 define( 'GIGYA__MINIMUM_PHP_VERSION', '7.0' );
-define( 'GIGYA__VERSION', '6.3.0' );
+define( 'GIGYA__VERSION', '6.5.0' );
 define( 'GIGYA__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GIGYA__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'GIGYA__LOG_FILE', GIGYA__PLUGIN_DIR . 'log/sap_cdc.log' );
 define( 'GIGYA__USER_FILES', GIGYA__PLUGIN_DIR . 'user_files/' );
 define( 'GIGYA__DEFAULT_JS_CDN', 'https://cdns.gigya.com/js/socialize.js' );
 define( 'GIGYA__LOG_LIMIT', 50 );
@@ -52,7 +53,7 @@ define( 'GIGYA__OFFLINE_SYNC_MIN_FREQ', 5 );
 define( 'GIGYA__OFFLINE_SYNC_MAX_USERS', 1000 );
 define( 'GIGYA__OFFLINE_SYNC_UPDATE_DELAY', 10 );
 
-/**  get out of sync users */
+/** Get out of sync user constants */
 define( 'GIGYA__ACCOUNT_SEARCH_NUMBER_OF_PAGES', 5 );
 define( 'GIGYA__SYNC_REPORT_MAX_PAGE_SIZE', 2000 );
 define( 'GIGYA__SEARCH_MAX_QUERY_LENGTH', 30000 );//This number was tested.
@@ -131,7 +132,7 @@ function _gigya_render_tpl( $template_file, $var = array() ) {
  * @return string
  */
 function _gigya_element_render( $el, $id, $name_prefix = '' ) {
-	$allowed_form_elements = array('checkbox', 'customText', 'hidden', 'password', 'radio', 'select', 'text', 'textarea');
+	$allowed_form_elements = array('checkbox', 'customText', 'hidden', 'password', 'radio', 'select', 'text', 'textarea', 'customDescription');
 	$render = '';
 		if ( empty( $el['type'] ) || $el['type'] == 'markup' ) {
 		$render .= $el['markup'];
@@ -436,40 +437,6 @@ function _DefaultAdminValue( $values, $role, $settings_role_name ) {
 
 // --------------------------------------------------------------------
 
-/**
- * Implements _gigya_error_log from gigyaCMS().
- *
- * @param $new_log
- *
- * @internal param $log
- */
-function _gigya_error_log( $new_log ) {
-	/* Get global debug */
-	$gigya_debug = GIGYA__API_DEBUG;
-	if ( ! empty( $gigya_debug ) && is_array( $new_log ) )
-	{
-		// Get to existing log from DB.
-		$exist_log = get_option( 'gigya_log' );
-
-		// Initialize if there is no existing one.
-		if ( ! is_array( $exist_log ) ) {
-			$exist_log = array();
-		}
-
-		// Push new entries to the beginning of the array.
-		foreach ( $new_log as $entry ) {
-			array_unshift( $exist_log, $entry );
-		}
-
-		// Cut the array to max limit log entries.
-		$log = array_slice( $exist_log, 0, GIGYA__LOG_LIMIT );
-
-		// Update the DB with new entries.
-		update_option( 'gigya_log', $log );
-	}
-}
-
-// --------------------------------------------------------------------
 
 /**
  * @param $options

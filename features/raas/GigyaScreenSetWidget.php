@@ -3,7 +3,12 @@
 /**
  * Adds ScreenSetWidget widget
  */
+
+use  Gigya\WordPress\GigyaLogger;
+
 class GigyaScreenSet_Widget extends WP_Widget {
+
+	protected $logger;
 
 	/**
 	 * Register widget with WordPress.
@@ -13,6 +18,8 @@ class GigyaScreenSet_Widget extends WP_Widget {
 			'description' => __( 'SAP Customer Data Cloud Screen-Set' )
 		);
 		parent::__construct( 'gigya_screenset', __( 'SAP CDC ScreenSet' ), $args );
+		$this->logger = new GigyaLogger();
+
 	}
 
 	protected function setWidgetMachineName( $widget_id ) {
@@ -48,7 +55,15 @@ class GigyaScreenSet_Widget extends WP_Widget {
 
 			echo '</div>';
 
-			$custom_screen_sets = get_option( GIGYA__SETTINGS_SCREENSETS )['custom_screen_sets'];
+			$screen_set_settings = get_option( GIGYA__SETTINGS_SCREENSETS );
+			$custom_screen_sets  = array();
+			if ( array_key_exists( 'custom_screen_sets', $screen_set_settings ) ) {
+				$custom_screen_sets = $screen_set_settings['custom_screen_sets'];
+			}
+			if ( empty( $custom_screen_sets ) ) {
+				$this->logger->debug( 'Screen-set widget error: The custom screen-set table is empty, please add the custom screen-set used in widget ' . $args['widget_id'] . ' to the "Screen-Sets" settings page. ' );
+			}
+
 			foreach ( $custom_screen_sets as $screen_set ) {
 				if ( ( ! empty( $screen_set['id'] ) ) && ( $screen_set['id'] == $instance['screenset_id'] ) ) {
 					$instance['screenset_id']        = $screen_set['desktop'];
@@ -71,9 +86,13 @@ class GigyaScreenSet_Widget extends WP_Widget {
 		$select_error                  = array();
 		$screen_sets_list              = array();
 		$selected_screen_set_id        = esc_attr( _gigParam( $instance, 'screenset_id', '' ) );
-		$custom_screen_sets            = get_option( GIGYA__SETTINGS_SCREENSETS )['custom_screen_sets'];
+		$screen_set_settings           = get_option( GIGYA__SETTINGS_SCREENSETS );
 		$select_attrs['data-required'] = 'empty-selection';
-
+		if ( array_key_exists( 'custom_screen_sets', $screen_set_settings ) ) {
+			$custom_screen_sets = $screen_set_settings['custom_screen_sets'];
+		} else {
+			$custom_screen_sets = '';
+		}
 		if ( ! empty( $custom_screen_sets ) ) {
 			foreach ( $custom_screen_sets as $screen_set ) {
 				if ( empty( $screen_set['desktop'] ) ) {
@@ -101,15 +120,16 @@ class GigyaScreenSet_Widget extends WP_Widget {
 					'class' => 'gigya-error-message-notice-div notice notice-error is-dismissible'
 				);
 
-				$select_error['error_message'] = __( 'Screen-set removed by administrator.' );
+				$select_error['error_message'] = __( 'Screen-Set removed by administrator.' );
 				$select_error['attrs']         = array( 'class' => 'gigya-error-message-notice-div' );
 
 				$select_attrs['class'] = 'gigya-wp-field-error';
 				array_unshift( $screen_sets_list, array(
 						'value' => $selected_screen_set_id,
-						'attrs' => array( 'class' => 'invalid-gigya-screen-set-option', 'selected' => 'true' )
+						'attrs' => array( 'class' => 'invalid-gigya-screen-Set-option', 'selected' => 'true' )
 					)
 				);
+				$this->logger->error( $form_error['error_message'] );
 				echo _gigya_render_tpl( 'admin/tpl/error-message.tpl.php', $form_error );
 			}
 		} else {
@@ -169,6 +189,7 @@ class GigyaScreenSet_Widget extends WP_Widget {
 	 * @return array
 	 */
 	public function update( $input_values, $db_values ) {
+
 		$valid = true;
 
 		$instance = array();
@@ -187,6 +208,7 @@ class GigyaScreenSet_Widget extends WP_Widget {
 		if ( ! $valid ) {
 			return ( empty( $db_values ) ) ? array() : $db_values;
 		}
+		$this->logger->info( '"Custom Screen-Sets" widget was saved successfully.' );
 
 		return $instance;
 	}

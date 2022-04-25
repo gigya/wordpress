@@ -1,8 +1,8 @@
 {
-  "name": "gigya/wordpress",
+  "name": "gigya/gigya-wordpress",
   "description": "Integrate your WordPress site with SAP Customer Data Cloud",
   "type": "wordpress-plugin",
-  "license": "Apache 2.0",
+  "license": "Apache-2.0",
   "authors": [
     {
       "name": "Yan Nasonov",

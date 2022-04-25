@@ -10,6 +10,7 @@ use Gigya\PHP\GSResponse;
 use Gigya\WordPress\Admin\GigyaSettings;
 use GigyaHookException;
 use GigyaInstall;
+
 use WP_User;
 
 /**
@@ -19,6 +20,7 @@ class GigyaAction {
 	protected $login_options;
 	protected $global_options;
 	protected $session_options;
+	protected GigyaLogger $logger;
 
 	/**
 	 * Constructor.
@@ -38,7 +40,7 @@ class GigyaAction {
 			define( 'GIGYA__API_SECRET', $this->global_options['api_secret'] );
 			define( 'GIGYA__PRIVATE_KEY', $this->global_options['rsa_private_key'] ?? '' );
 			define( 'GIGYA__API_DOMAIN', _gigya_data_center( $this->global_options ) );
-			define( 'GIGYA__API_DEBUG', $this->global_options['debug'] );
+			define( 'GIGYA__LOG_LEVEL', $this->global_options['log_level'] ?? 'info' );
 			define( 'GIGYA__JS_CDN', 'https://cdns.' . GIGYA__API_DOMAIN . '/js/socialize.js' );
 		} else {
 			define( 'GIGYA__API_KEY', '' );
@@ -48,7 +50,7 @@ class GigyaAction {
 			define( 'GIGYA__API_SECRET', '' );
 			define( 'GIGYA__PRIVATE_KEY', '' );
 			define( 'GIGYA__API_DOMAIN', '' );
-			define( 'GIGYA__API_DEBUG', '' );
+			define( 'GIGYA__LOG_LEVEL', 'info' );
 			define( 'GIGYA__JS_CDN', GIGYA__DEFAULT_JS_CDN );
 		}
 
@@ -68,6 +70,8 @@ class GigyaAction {
 		add_action( 'wp_ajax_clean_db', array( $this, 'ajaxCleanDB' ) );
 		add_action( 'wp_ajax_gigya_logout', array( $this, 'ajaxLogout' ) );
 		add_action( 'wp_ajax_nopriv_gigya_logout', array( $this, 'ajaxLogout' ) );
+		add_action( 'wp_ajax_nopriv_screen_set_error', array( $this, 'ajaxScreenSetError' ) );
+		add_action( 'wp_ajax_raas__screen_set_error', array( $this, 'ajaxScreenSetError' ) );
 		add_action( 'wp_ajax_raas_update_profile', array( $this, 'ajaxUpdateProfile' ) );
 		add_action( 'wp_login', array( $this, 'wpLogin' ), 10, 2 );
 		add_action( 'user_register', array( $this, 'userRegister' ), 10, 1 );
@@ -85,15 +89,6 @@ class GigyaAction {
 		add_action( 'get_out_of_sync_users', array( $this, 'getOutOfSyncUsers' ) );
 		add_action( 'wp_ajax_nopriv_get_out_of_sync_users', array( $this, 'getOutOfSyncUsers' ) );
 
-
-		/* Plugins shortcode activation switches */
-		require_once GIGYA__PLUGIN_DIR . 'features/gigyaPluginsShortcodes.php';
-		$shortcodes_class = new gigyaPluginsShortcodes();
-
-		add_shortcode( 'gigya-raas-login', array( $shortcodes_class, 'gigyaRaas' ) );
-		add_shortcode( 'gigya-raas-profile', array( $shortcodes_class, 'gigyaRaas' ) );
-		add_shortcode( 'gigya-social-login', array( $shortcodes_class, 'gigyaSocialLoginScode' ) );
-		/* End plugins shortcodes activation switches */
 	}
 
 	/**
@@ -109,12 +104,16 @@ class GigyaAction {
 		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaUserFactory.php';
 		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaProfile.php';
 		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaUser.php';
-		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaApiRequest.php';
-		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaAuthRequest.php';
-		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GSApiException.php';
-		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GSFactory.php';
+		require_once GIGYA__PLUGIN_DIR . 'features/GigyaLogger.php';
 
-		GSResponse::init();
+		if ( class_exists( 'Gigya\\PHP\\GSRequest' ) ) {
+			require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaApiRequest.php';
+			require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaAuthRequest.php';
+			require_once GIGYA__PLUGIN_DIR . 'cms_kit/GSApiException.php';
+			require_once GIGYA__PLUGIN_DIR . 'cms_kit/GSFactory.php';
+
+			GSResponse::init();
+		}
 
 		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaApiHelper.php';
 		require_once GIGYA__PLUGIN_DIR . 'cms_kit/GigyaCMS.php';
@@ -136,8 +135,18 @@ class GigyaAction {
 			'enabledProviders'            => _gigParam( $this->global_options, 'enabledProviders', '*' ),
 			'lang'                        => _gigParam( $this->global_options, 'lang', 'en' ),
 			'sessionExpiration'           => $session_expirations['sessionExpiration'],
-			'rememberSessionExpiration'   => $session_expirations['rememberSessionExpiration']
+			'rememberSessionExpiration'   => $session_expirations['rememberSessionExpiration'],
 		);
+
+		/* Plugins shortcode activation switches */
+		require_once GIGYA__PLUGIN_DIR . 'features/gigyaPluginsShortcodes.php';
+
+		$shortcodes_class = new gigyaPluginsShortcodes();
+
+		add_shortcode( 'gigya-raas-login', array( $shortcodes_class, 'gigyaRaas' ) );
+		add_shortcode( 'gigya-raas-profile', array( $shortcodes_class, 'gigyaRaas' ) );
+		add_shortcode( 'gigya-social-login', array( $shortcodes_class, 'gigyaSocialLoginScode' ) );
+		/* End plugins shortcodes activation switches */
 
 		/* Sync Gigya and WordPress sessions */
 		$this->gigyaSyncLoginSession(
@@ -161,6 +170,7 @@ class GigyaAction {
 
 		/* Load params to be available to client-side script */
 		wp_localize_script( 'gigya_js', 'gigyaParams', $params );
+		wp_localize_script( 'gigya_js', 'gigyaGlobalSettings', [ 'logLevel' => GIGYA__LOG_LEVEL ] );
 
 		/* Checking that we have an API key and Gigya's plugin is turned on */
 		$api_key = GIGYA__API_KEY;
@@ -211,6 +221,7 @@ class GigyaAction {
 
 			new GigyaSettings;
 		}
+		$this->logger = new GigyaLogger();
 	}
 
 	/**
@@ -235,6 +246,7 @@ class GigyaAction {
 		require_once GIGYA__PLUGIN_DIR . 'features/login/GigyaLoginAjax.php';
 		$gigyaLoginAjax = new GigyaLoginAjax;
 		$gigyaLoginAjax->init();
+
 	}
 
 	/**
@@ -247,6 +259,7 @@ class GigyaAction {
 		require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaRaasAjax.php';
 		$gigyaLoginAjax = new GigyaRaasAjax;
 		$gigyaLoginAjax->init();
+
 	}
 
 	/**
@@ -271,14 +284,16 @@ class GigyaAction {
 
 					wp_send_json_success();
 				} catch ( Exception $e ) {
-					error_log( 'Unable to process field mapping for SAP Customer Data Cloud user ' . $gigya_uid );
+					$this->logger->debug( 'Unable to process field mapping for SAP Customer Data Cloud user ' . $gigya_uid );
 
 					wp_send_json_error( [ 'msg' => $generic_msg ] );
 				}
 			} else {
+				$this->logger->debug( 'Unable to process field mapping for SAP Customer Data Cloud user ' . $gigya_uid );
 				wp_send_json_error( [ 'msg' => $generic_msg ] );
 			}
 		} else {
+			$this->logger->debug( 'Unable to process field mapping for SAP Customer Data Cloud users.' );
 			wp_send_json_error( [ 'msg' => $generic_msg ] );
 		}
 	}
@@ -308,11 +323,23 @@ class GigyaAction {
 	 * Hook AJAX Debug Log.
 	 */
 	public function ajaxDebugLog() {
+		$gigya_uid = get_user_meta( get_current_user_id(), 'gigya_uid', true );
 		if ( current_user_can( 'manage_options' ) ) {
-			wp_send_json_success( array( 'data' => get_option( 'gigya_log' ) ) );
+			$data = file_get_contents( GIGYA__LOG_FILE );
+			if ( $data === false ) {
+				$error_message = 'Error while trying to get access to the SAP CDC log file data: ' . 'can\'t get the file at the path: ' . GIGYA__LOG_FILE;
+				error_log( $error_message );
+				$this->logger->error( $error_message, $gigya_uid !== false ? $gigya_uid : '' );
+				wp_send_json_error( array( 'msg' => $error_message ) );
+			} else {
+				$this->logger->info( 'Current user got the SAP CDC log file.', $gigya_uid !== false ? $gigya_uid : '' );
+				echo $data;
+			}
+		} else {
+			$error_message = 'Error while trying to get access to the SAP CDC log file: ' . "The user doesn't have permissions to access to this data.";
+			$this->logger->error( $error_message, $gigya_uid !== false ? $gigya_uid : '' );
+			wp_send_json_error( array( 'msg' => $error_message ) );
 		}
-
-		wp_send_json_error();
 	}
 
 	public function ajaxLogout() {
@@ -322,6 +349,7 @@ class GigyaAction {
 	}
 
 	public function ajaxSetFixedSessionCookie() {
+
 		$session_options = $this->getSessionOptions();
 
 		$return = array(
@@ -337,6 +365,24 @@ class GigyaAction {
 		echo json_encode( $return );
 
 		wp_die();
+	}
+
+	public function ajaxScreenSetError() {
+		$no_data_error_message = 'Screen error message: can\'t get the data about the screen error.';
+		if ( empty( $_POST['eventData'] ) ) {
+			$this->logger->debug( $no_data_error_message );
+			wp_send_json_error();
+		}
+		$event_data = $_POST['eventData'];
+		if ( empty( $event_data ) ) {
+			$this->logger->debug( $no_data_error_message );
+			wp_send_json_error();
+		}
+
+		$error_message = 'Error returned by screen-set: screen  ' . $event_data['screen'] . ', error code: ' . $event_data['errorCode'] . ', error message: ' . $event_data['errorMessage'];
+		$this->logger->debug( $error_message );
+
+		wp_send_json_success();
 	}
 
 	/**
@@ -430,6 +476,8 @@ class GigyaAction {
 			setrawcookie( 'gltexp_' . GIGYA__API_KEY, null, - 1, '/' );
 		}
 		_gigya_remove_session_remember();
+		$this->logger->debug( "Current user was logged out." );
+
 	}
 
 	public function appendUserMetaToRestAPI() {
@@ -502,7 +550,8 @@ class GigyaAction {
 		}
 
 		if ( empty( $_POST['action'] ) ) {
-			error_log( 'Login: No POST action specified' );
+			$gigya_uid = get_user_meta($account->ID, 'gigya_uid', true );
+			$this->logger->info( 'Login: No POST action specified, it is possible that an admin logged in through the WordPress login page and not the SAP CDC screen-sets.', ( $gigya_uid !== false ? $gigya_uid : '' ) );
 		} else {
 			/* RaaS Login */
 			if ( $_POST['action'] === 'gigya_raas' ) {
@@ -603,6 +652,7 @@ class GigyaAction {
 		if ( empty( $this->login_options ) ) /* Only happens on initial activation, before configuring Gigya */ {
 			return false;
 		}
+		require_once GIGYA__PLUGIN_DIR . 'features/GigyaLogger.php';
 
 		/* Screen-set Widget */
 		require_once GIGYA__PLUGIN_DIR . 'features/raas/GigyaScreenSetWidget.php';
@@ -641,10 +691,11 @@ class GigyaAction {
 	 * the file will be generated inside GIGYA__USER_FILES folder.
 	 */
 	public function getOutOfSyncUsers() {
-
+		$gigya_uid = get_user_meta(get_current_user_id(), 'gigya_uid', true);
 		if ( ! is_dir( GIGYA__USER_FILES ) ) {
-			$message = "Could not generate report: The path: " . GIGYA__USER_FILES . " does not exist";
-			error_log( $message );
+
+			$message = "Could not generate SAP CDC report: The path: " . GIGYA__USER_FILES . " does not exist";
+			$this->logger->error( $message, ( $gigya_uid !== false ) ? $gigya_uid : '' );
 			wp_send_json_error( $message );
 
 			return;
@@ -654,17 +705,19 @@ class GigyaAction {
 			$wp_to_gigya_compare = GigyaReportGenerator::getWPUsersNotInGigya();
 			$gigya_to_wp_compare = GigyaReportGenerator::getGigyaUsersNotInWP();
 		} catch ( GSApiException $e ) {
-			$message = "There was an error getting the data from SAP servers, callID: " . $e->getCallId() . ', Error Code: ' . $e->getErrorCode();
+			$message = "While trying to generate SAP CDC reports: There was an error getting the data from SAP servers, callID: " . $e->getCallId() . ', Error Code: ' . $e->getErrorCode();
 
 			wp_send_json_error( $message );
-			error_log( $message );
+			$this->logger->error( $message, ( $gigya_uid !== false ) ? $gigya_uid : '' );
+
 			return;
 
 		} catch ( GSException $e ) {
-			$message = "Could not reach SAP server: " . $e->errorMessage;
+			$message = "While trying to generate SAP CDC reports: Could not reach SAP server: " . $e->errorMessage;
 
 			wp_send_json_error( $message );
-			error_log( $message );
+			$this->logger->error( $message, ( $gigya_uid !== false ) ? $gigya_uid : '' );
+
 			return;
 		}
 
@@ -826,7 +879,7 @@ class GigyaAction {
 							$uids_not_found[] = $gigya_user['UID'];
 						}
 					} else {
-						error_log( 'Gigya offline sync: unable to process user due to a lack of essential data. User data received: ' . json_encode( $gigya_user,
+						$this->logger->error( 'Gigya offline sync: unable to process user due to a lack of essential data. User data received: ' . json_encode( $gigya_user,
 								JSON_PRETTY_PRINT ) );
 					}
 				}
@@ -834,22 +887,21 @@ class GigyaAction {
 				$job_config['last_run'] = round( microtime( true ) * 1000 );
 				update_option( 'gigya_offline_sync_params', $job_config );
 
-				error_log( 'Gigya offline sync completed. Users processed: ' . $processed_users . ( ( $users_not_found )
-						? '. Users not found: ' . $users_not_found . PHP_EOL . implode( ',' . PHP_EOL, $uids_not_found )
-						: '' ) );
+				$this->logger->info( 'Gigya offline sync completed. Users processed: ' . $processed_users . ( ( $users_not_found )
+						? '. Users not found: ' . $users_not_found . PHP_EOL . implode( ',' . PHP_EOL, $uids_not_found ) : '' ), 'Offline Sync' );
 
 				$status = ( $users_not_found > 0 ) ? 'completed with errors' : 'succeeded';
 				$helper->sendCronEmail( 'offline sync', $status, $email_on_success, $processed_users, $users_not_found );
 			} catch ( GigyaHookException $e ) {
-				error_log( 'Gigya offline sync: There was a problem adding custom data to field mapping: ' . $e->getMessage() );
+				$this->logger->error( 'Gigya offline sync: There was a problem adding custom data to field mapping: ' . $e->getMessage() );
 				$status = 'failed';
 				$helper->sendCronEmail( 'offline sync', $status, $email_on_failure );
 			} catch ( GSApiException $e ) {
-				error_log( 'Offline sync failed: ' . $e->getErrorCode() . ' – ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
+				$this->logger->error( 'Offline sync failed: ' . $e->getErrorCode() . ' – ' . $e->getMessage() . '. Call ID: ' . $e->getCallId() );
 				$status = 'failed';
 				$helper->sendCronEmail( 'offline sync', $status, $email_on_failure );
 			} catch ( Exception $e ) {
-				error_log( 'Offline sync failed: ' . $e->getMessage() );
+				$this->logger->error( 'Offline sync failed: ' . $e->getMessage() );
 				$status = 'failed';
 				$helper->sendCronEmail( 'offline sync', $status, $email_on_failure );
 			}
