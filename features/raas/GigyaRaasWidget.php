@@ -50,9 +50,9 @@ class GigyaRaas_Widget extends WP_Widget {
 		} else {
 			$current_user = wp_get_current_user();
 			$output .= '<div class="gigya-wp-account-widget">';
-			$output .= '<a class="gigya-wp-avatar" href="' . user_admin_url( 'profile.php' ) . '">' . get_avatar( $current_user->ID ) . '</a>';
+			$output .= '<a class="gigya-wp-avatar" href="' . admin_url( 'profile.php' ) . '">' . get_avatar( $current_user->ID ) . '</a>';
 			$output .= '<div class="gigya-wp-info">';
-			$output .= '<a class="gigya-wp-name" href="' . user_admin_url( 'profile.php' ) . '">' . $current_user->display_name . '</a>';
+			$output .= '<a class="gigya-wp-name" href="' . admin_url( 'profile.php' ) . '">' . $current_user->display_name . '</a>';
 			$output .= '<a class="gigya-wp-logout" href="' . wp_logout_url() . '">' . __( 'Log Out' ) . '</a>';
 			$output .= '</div></div>';
 		}
