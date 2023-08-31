@@ -25,5 +25,10 @@
       "type": "vcs",
       "url": "https://github.com/SAP/gigya-php-sdk.git"
     }
-  ]
+  ],
+  "config": {
+    "allow-plugins": {
+      "composer/installers": true
+    }
+  }
 }
