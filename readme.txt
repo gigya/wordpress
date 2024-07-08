@@ -4,7 +4,7 @@ Contributors: SAP SE/gigya.com konforti, luciodiri, ynhockey, shaharzillber.
 Tags: CIAM, CIM, Registration, Social Login, Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, SAP Customer Data Cloud, Social Infrastructure, feed
 Requires at least: 4.2
 Tested up to: 5.8
-Stable tag: 6.5.0
+Stable tag: 6.5.1
 License: Apache v2.0
 
 Integrate your WordPress site with SAP Customer Data Cloud.
@@ -224,6 +224,9 @@ For question about installations or configuration, please contact your account m
 = 6.5.0 =
 * Changed package name to gigya/gigya-wordpress (!) for more practical automated installation
 * Graceful failure when Composer dependencies have not been installed
+
+= 6.5.1=
+* Fixed a logout issue with dynamic session
 
 == FAQ ==
 
