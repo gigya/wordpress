@@ -309,9 +309,6 @@
 				exp_timestamp = Date.now() + (response.expires_in * 1000);
 			}
 
-			if (response.provider === 'site') {
-				return false;
-			}
 
 			/* Gigya temp user */
 			if (typeof response.UID === 'undefined' || response.UID.indexOf('_temp_') === 0) {
