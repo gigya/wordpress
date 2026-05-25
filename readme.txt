@@ -1,7 +1,8 @@
 === SAP Customer Data Cloud / Gigya - Social Infrastructure  ===
 
 Contributors: SAP SE/gigya.com konforti, luciodiri, ynhockey, shaharzillber.
-Tags: CIAM, CIM, Registration, Social Login, Oauth, OpenSocial, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID,  newsfeed, tweet, status update, registration, social APIs, sharing, plugin, social bookmark, social network, Facebook, community, comments, reactions, game mechanics, register, SAP Customer Data Cloud, Social Infrastructure, feed
+Tags: CIAM, CIM, Registration, Social Login, Oauth, Graph API, Facebook Connect, Linkedin, Twitter, authentication, OpenID Connect, tweet, registration, social APIs, social network, Facebook, register, SAP Customer Data Cloud, Social Infrastructure.  
+
 Requires at least: 4.2
 Tested up to: 5.8
 Stable tag: 6.5.1
